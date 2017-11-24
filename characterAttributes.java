@@ -113,4 +113,52 @@ public interface characterAttributes
 	
 	// method to get points 
 	int getPoints();
+	
+	// method to set fire resistance
+	void setFireResistance(int resistFire);
+	
+	// method to get fire resistance
+	int getFireResistance();
+	
+	// method to set water resistance
+	void setWaterResistance(int resistWater);
+	
+	// method to get water resistance
+	int getWaterResistance();
+	
+	// method to set ice resistance
+	void setIceResistance(int resistIce);
+	
+	// method to get ice resistance
+	int getIceResistance();
+	
+	// method to set lightning resistance
+	void setLightningResistance(int resistLightning);
+	
+	// method to get lightning resistance
+	int getLightningResistance();
+
+	// method to set poison resistance
+	void setPoisonResistance(int resistPoison);
+	
+	// method to get poison resistance
+	int getPoisonResistance();
+
+	// method to set sonic resistance
+	void setSonicResistance(int resistSonic);
+	
+	// method to get sonic resistance
+	int getSonicResistance();
+
+	// method to set energy resistance
+	void setEnergyResistance(int resistEnergy);
+	
+	// method to get energy resistance
+	int getEnergyResistance();
+
+	// method to set nano resistance
+	void setNanoResistance(int resistNano);
+	
+	// method to get nano resistance
+	int getNanoResistance();
 }

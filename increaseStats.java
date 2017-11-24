@@ -15,6 +15,21 @@ public class increaseStats
 	private int newValue = 0;	
 	private String morePointsToStat;
 	
+	public void levelStatsRandomly(genericCharacter character)
+	{
+		Scanner sc = new Scanner(System.in);
+		
+		System.out.println("Stats increased!\n"); 
+		
+		System.out.println("Previous stats:");
+		increasableStatsTable(character);
+
+		randStatsUp(character);
+
+		System.out.println("New stats:");
+		increasableStatsTable(character);
+	}
+	
 	public void allocateStatPoints(genericCharacter character)
 	{
 		Scanner sc = new Scanner(System.in);
@@ -64,15 +79,15 @@ public class increaseStats
 
 		int i = rand.nextInt(10) + 1;
 		
-		character.setMaxHP(character.getMaxHP() + (rand.nextInt(6) + 3));
-		character.setAttack(character.getAttack() + rand.nextInt(5) + 1);
-		character.setDefense(character.getDefense() + rand.nextInt(5) + 1);
-		character.setMagic(character.getMagic() + rand.nextInt(5) + 2);
-		character.setStamina(character.getStamina() + rand.nextInt(6) + 3);
-		character.setDexterity(character.getDexterity() + rand.nextInt(4) + 1);
-		character.setHitChance(character.getHitChance() + rand.nextInt(4) + 1);
-		character.setMagicAttack(character.getMagicAttack() + rand.nextInt(4) + 1);
-		character.setMagicDefense(character.getMagicDefense() + rand.nextInt(4) + 1);
+		character.setMaxHP(character.getMaxHP() + (rand.nextInt(3) + 2));
+		character.setAttack(character.getAttack() + rand.nextInt(2) + 1);
+		character.setDefense(character.getDefense() + rand.nextInt(2) + 1);
+		character.setMagic(character.getMagic() + rand.nextInt(3) + 1);
+		character.setStamina(character.getStamina() + rand.nextInt(3) + 2);
+		character.setDexterity(character.getDexterity() + rand.nextInt(3) + 1);
+		character.setHitChance(character.getHitChance() + rand.nextInt(2) + 1);
+		character.setMagicAttack(character.getMagicAttack() + rand.nextInt(2));
+		character.setMagicDefense(character.getMagicDefense() + rand.nextInt(2));
 		
 		character.setEvasion(character.getEvasion() + rand.nextInt(2) + 1);
 		character.setMagicEvasion(character.getMagicEvasion() + rand.nextInt(2) + 1);
@@ -403,7 +418,7 @@ public class increaseStats
 		Scanner sc = new Scanner(System.in);
 		
 		System.out.println("Total stat points: "+character.getPoints());
-		System.out.print("Enter points to increase stat by (enter 0 to escape): ");
+		System.out.print("Enter points to increase stat (enter 0 to escape): ");
 		
 		// You don't have to parseInt or worry about NumberFormatException. 
 		// Note that since hasNextXXX methods doesn't advance past any input, 
@@ -433,8 +448,8 @@ public class increaseStats
 		if(character.getPoints() != 0)
 		{
 			System.out.println("\nRemaining stat points: "+character.getPoints());
-			System.out.println("Would you like to add more points to a stat?");
-			System.out.print("Press 'y' to add use more stat points. Press 'n' to end level up process: ");
+			System.out.println("Would you like to add points to another stat?");
+			System.out.print("Press 'y' to add points to another stat. Press 'n' to end level up process: ");
 			
 			morePointsToStat = sc.nextLine();
 			

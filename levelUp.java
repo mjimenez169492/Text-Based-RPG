@@ -12,7 +12,6 @@ public class levelUp
 	private int exp = 21; 
 	private int nextLevelExp;
 	
-	// error in code. level up once if large exp acquired. Need wole loop to increment?
 	public void levelUp(genericCharacter character)
 	{
 		increaseStats stats = new increaseStats();
@@ -26,7 +25,17 @@ public class levelUp
 				character.setLevel(character.getLevel() + 1);
 					System.out.println("\nLevel up!\n"); 
 						showExpAndLevel(character);
-							stats.allocateStatPoints(character);
+							// placeholder to be altered later
+							// consider reseting character level to 
+							// 0 for 2nd choice or break level cap
+							if(character.getLevel() < 60)
+							{
+								stats.levelStatsRandomly(character);
+							}
+							else
+							{
+								stats.allocateStatPoints(character);
+							}
 			}
 		}
 		else
@@ -43,7 +52,7 @@ public class levelUp
 		int i = expNeeded(character);
 		nextLevelExp = i - character.getExperience();
 		
-		System.out.println("Character:  "+character.getName()+"	Total EXP:  "+character.getExperience()+"/"+i+" EXP");
+		System.out.println("Character:  "+character.getName()+"		Total EXP:  "+character.getExperience()+"/"+i+" EXP");
 		System.out.println("Level:	    "+character.getLevel()+"				Next Level: "+nextLevelExp+" EXP\n");
 	}
 	
