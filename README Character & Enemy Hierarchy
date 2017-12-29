@@ -1,0 +1,17 @@
+Character and enemy hierarchy was redone for the previous version had issues relating to the constructor. Proposed file 
+genericEnemy could not extend genericCharacter properly in order to use some (but not all) methods in genericCharacter 
+since the constructor in genericEnemy had to be structured similarly to the consturctor in its superclass--in this case 
+the genericCharacter class. This means that an 'enemy' object would have to be constructed similarly to a 'character'
+object even though the 'enemy' object would not need to use the info it was built with at all. 
+
+I think it would be best to create a hierarchy that is easier to understand. It should be structured like so: interface 
+characterAttributes, characterAttributesDefined which implements and defines methods within interface characterAttributes, 
+and two other files that would extend characterAttributesDefined. The two files would be genericCharacter and genericEnemy.
+So the two files would each extend characterAttributesDefined and use the constructor that was built in that file to help
+with object creation. It would help in that it would allow programmers to avoid code reuse while also allowing programmers
+to easily create classes related to characters and enemies by extending the functionalities of characterAttributesDefined.
+
+
+
+
+
