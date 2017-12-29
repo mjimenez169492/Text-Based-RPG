@@ -6,11 +6,15 @@
 
 public interface characterAttributes
 {	
+/* character name */
+	
 	// method to set character name (fits both 1st and last names)
 	void setName(String firstLastname); 
 	
 	// method to retrieve character name 
 	String getName(); 
+	
+/* character stat information */ 
 	
 	// method to set Max Hit Points takes argument to set MaxHP
 	void setMaxHP(int maxHitPoints); 
@@ -108,11 +112,7 @@ public interface characterAttributes
 	// method to get luck (unique bonuses to each stat)
 	int getLuck();
 	
-	// method to set points gained upon level up which are used to increase stats 
-	void setPoints(int charPoints);
-	
-	// method to get points 
-	int getPoints();
+/* character resistance information */
 	
 	// method to set fire resistance
 	void setFireResistance(int resistFire);
@@ -161,4 +161,10 @@ public interface characterAttributes
 	
 	// method to get nano resistance
 	int getNanoResistance();
+	
+	// method to set character/enemy status in and outside of battle
+	//private String status; 			// sets character status 
+
+	
+	
 }
