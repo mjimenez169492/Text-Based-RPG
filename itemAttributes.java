@@ -5,10 +5,10 @@
 
 interface itemAttributes
 {
-	// sets ID for item 
+	// sets item ID for item 
 	void setItemID(int itemID);
 	
-	// gets ID for item
+	// gets item ID for item
 	int getItemID();
 	
 	// sets name for item 
