@@ -1,0 +1,619 @@
+/*
+								Master List of Status Effects 
+		
+	Positive Status Effects That Increase Resistances (3 tiers)
+	
+		"Fleeting Charm" effect items (33 point increase to specified resistance)
+			Note: only one (1) charm of any type can be active at a time (new charm overwrites old charm)
+				Turns: 1-6 
+	
+			Fleeting Fire Charm 
+				"character became slightly resistant to fire-based attacks!"
+				"character's Fleeting Fire Charm wore out!" 
+			
+			Fleeting Water Charm 
+				"character became slightly resistant to water-based attacks!"
+				"character's Fleeting Water Charm wore out!" 
+			
+			Fleeting Ice Charm 
+				"character became slightly resistant to ice-based attacks!"
+				"character's Fleeting Ice Charm wore out!" 
+			
+			Fleeting Electricity Charm 
+				"character became slightly resistant to electricity-based attacks!"
+				"character's Fleeting Electricity Charm wore out!" 
+			
+			Fleeting Poison Charm 
+				"character became slightly resistant to poison-based attacks!"
+				"character's Fleeting Poison Charm wore out!" 
+			
+			Fleeting Sonic Charm 
+				"character became slightly resistant to sonic-based attacks!"
+				"character's Fleeting Sonic Charm wore out!" 
+			
+			Fleeting Plasma Charm 
+				"character became slightly resistant to plasma-based attacks!"
+				"character's Fleeting Plasma Charm wore out!" 
+			
+			Fleeting Wind Charm 
+				"character became slightly resistant to wind-based attacks!"
+				"character's Fleeting Wind Charm wore out!" 			
+	
+		"Fleeting Guard" effect items (66 point increase to specified resistance)
+			Note: only one (1) guard of any type can be active at a time (new guard overwrites old guard)
+				Turns: 2-4 
+	
+			Fleeting Fire Guard 
+				"character became more resistant to fire-based attacks!"
+				"character's Fleeting Fire Guard wore out!" 
+			
+			Fleeting Water Guard 
+				"character became more resistant to water-based attacks!"
+				"character's Fleeting Water Guard wore out!" 
+			
+			Fleeting Ice Guard 
+				"character became more resistant to ice-based attacks!"
+				"character's Fleeting Ice Guard wore out!" 
+			
+			Fleeting Electricity Guard 
+				"character became more resistant to electricity-based attacks!"
+				"character's Fleeting Electricity Guard wore out!" 
+			
+			Fleeting Poison Guard 
+				"character became more resistant to poison-based attacks!"
+				"character's Fleeting Poison Guard wore out!" 
+			
+			Fleeting Sonic Guard 
+				"character became more resistant to sonic-based attacks!"
+				"character's Fleeting Sonic Guard wore out!" 
+			
+			Fleeting Plasma Guard 
+				"character became more resistant to plasma-based attacks!"
+				"character's Fleeting Plasma Guard wore out!" 
+			
+			Fleeting Wind Guard 
+				"character became more resistant to wind-based attacks!"
+				"character's Fleeting Wind Guard wore out!" 		
+
+		"Fleeting Proof" effect items (100 point increase to specified resistance)
+			Note: only one (1) proof of any type can be active at a time (new proof overwrites old proof)
+				Turns: 3 
+	
+			Fleeting Fire Proof 
+				"character became greatly resistant to fire-based attacks!"
+				"character's Fleeting Fire Proof wore out!" 
+			
+			Fleeting Water Proof 
+				"character became greatly resistant to water-based attacks!"
+				"character's Fleeting Water Proof wore out!" 
+			
+			Fleeting Ice Proof 
+				"character became greatly resistant to ice-based attacks!"
+				"character's Fleeting Ice Proof wore out!" 
+			
+			Fleeting Electricity Proof 
+				"character became greatly resistant to electricity-based attacks!"
+				"character's Fleeting Electricity Proof wore out!" 
+			
+			Fleeting Poison Proof 
+				"character became greatly resistant to poison-based attacks!"
+				"character's Fleeting Poison Proof wore out!" 
+			
+			Fleeting Sonic Proof 
+				"character became greatly resistant to sonic-based attacks!"
+				"character's Fleeting Sonic Proof wore out!" 
+			
+			Fleeting Plasma Proof 
+				"character became greatly resistant to plasma-based attacks!"
+				"character's Fleeting Plasma Proof wore out!" 
+			
+			Fleeting Wind Proof 
+				"character became greatly resistant to wind-based attacks!"
+				"character's Fleeting Wind Proof wore out!" 	
+	
+	Status Effects That Remove Negative Status Effects That Reduce Resistances 
+		
+		Note: status effect is removed and the affect is had on the resistance type set to 0 if not removed 
+		
+			Remove Dry
+				Effect: removes negative status effect "Dry"
+		
+			Remove Wet 
+				Effect: removes negative status effect "Wet"
+		
+			Remove Cold 
+				Effect: removes negative status effect "Cold"
+		
+			Remove Conductive 
+				Effect: removes negative status effect "Dry"
+		
+			Remove Sickness 
+				Effect: removes negative status effect "Dry"
+		
+			Remove Hypersensitive 
+				Effect: removes negative status effect "Dry"
+		
+			Remove Coated 
+				Effect: removes negative status effect "Dry"
+		
+			Remove Lightweight 
+				Effect: removes negative status effect "Dry"
+	
+	Negative Status Effects That Reduce Resistances (curable only by item or skill)
+	
+		Note: impact of status depends on skill used by enemy 
+		ex: 
+			poison by regular enemy does 4% max hp damage per turn
+			poison by boss enemy does 8% max hp damage per turn
+				both curable with same item or skill 
+		
+		Note: status effect on stat can stack 
+		ex: 
+			poison by regular enemy does 4% current hp damage per turn
+			poison by boss enemy does 8% current hp damage per turn
+				total poison damage to current hp is 12% 
+	
+		Dry 
+			"character became more vulnerable to fire-based attacks!" 
+			"character's Fire Resistance returned to normal!" 
+				Turns: infinite
+					Effect: Fire Resistance Down, Electricity Resistance up
+	
+		Wet	
+			"character became more vulnerable to electricity and ice-based attacks!"
+			"character's Electricity Resistance and Ice Resistance returned to normal!" 
+				Turns: infinite
+					Effect: Electricity Resistance Down, Ice Resistance Down
+		
+		Cold 
+			"character became more vulnerable to ice and water-based attacks!"
+			"character's Ice Resistance and Water Resistance returned to normal!" 
+				Turns: infinite 
+					Effect: Ice Resistance Down, Water Resistance Down, Fire Resistance Up
+
+		Conductive 
+			"character became more vulnerable to electricity-based attacks!"
+			"character's Electricity Resistance returned to normal!" 
+				Turns: infinite 
+					Effect: Electricity Resistance Down
+
+		// lowers poison resistance due to low immune system
+		Sickness 
+			"character became more vulnerable to poison-based attacks!"
+			"character's Poison Resistance returned to normal!" 
+				Turns: infinite 
+					Effect: Poison Resistance Down 
+	
+		// lowers sonic resistance due to sensitive ears 
+		Hypersensitive
+			"character became more vulnerable to sonic-based attacks!"
+			"character's Sonic Resistance returned to normal!" 
+				Turns: infinite
+					Effect: Sonic Resistance Down
+	
+		// lowers plasma resistance due to being coated with substance that increases potency of plasma weapons 
+		Coated 
+			"character became more vulnerable to plasma-based attacks!"
+			"character's Plasma Resistance returned to normal!"
+				Turns: infinite
+					Effect: Plasma Resistance Down
+	
+		// lower wind resistance due to enemy making a character more easily blown about by 
+		// affecting the character's connection between themselves and the ground (friction)
+		Lightweight
+			"character became more vulnerable to wind-based attacks!" 
+			"character's Wind Resistance returned to normal!" 
+				Turns: infinite
+					Effect: Wind Resistance Down 
+			
+	
+	
+	Negative Status Effects That Reduce Character Attributes (categorized by type)
+		
+		Party member taken out of battle (incapacitated, ect.)
+			
+			KO
+				Attribute affected: current hp
+					Effect: character is knocked out (KO) once current hp reaches 0 and 
+							cannot participate in battle until KO status is removed; the 
+							game will end once all party members are Ko'ed 
+						Cure: items, stamina skills, nano skills 
+			
+			Cocooned
+				Attribute affected: current hp
+					Effect: character is forcibly placed within a makeshift cocoon and 
+							cannot move in battle until the cocoon is destroyed; the 
+							game will end once all party members are cocooned or if the
+							last party member "alive" is cocooned
+						Cure: physical attacks, fire attacks
+			
+			Captured 
+				Attribute affected: current hp
+					Effect: character is captured by the enemy and cannot move in battle
+							until the mechanism that initiated the capture is destroyed;
+							the game will end if the character remains captured and all
+							party members are KO
+						Cure: stamina skills, nano skills 
+			
+			Absorbed
+				Attribute affected: current hp
+					Effect: character is absorbed by the enemy; instant game over 
+						Cure: none 
+
+			Death
+				Attribute affected: current hp
+					Effect: character is killed by the enemy; instant game over
+						Cure: none 
+			
+			Frozen
+				Attribute affected: current hp
+					Effect: character is frozen in ice; instant game over 
+						Cure: none 
+			
+			Incinerated
+				Attribute affected: current hp
+					Effect: character is reduced to ash; instant game over 
+		
+		All Character Attributes Negatively Affected
+		
+			Grazed (tier 1 injury)
+				Attribute Affected: Max Hp Down, Current Hp Down, Attack Down, Defense
+									Down, Nano Down, Stamina Down, Dexterity Down, 
+									Critical Down, Accuracy Down, Nano Attack Down,
+									Nano Defense Down 
+					Effect: character has a small injury which reduces all stats by 10%
+						Cure: Nano skills, medical professional 
+			
+			Hurt (tier 2 injury)
+				Attribute Affected: Max Hp Down, Current Hp Down, Attack Down, Defense
+									Down, Nano Down, Stamina Down, Dexterity Down, 
+									Critical Down, Accuracy Down, Nano Attack Down,
+									Nano Defense Down 
+					Effect: character has a significant injury which reduces all stats 
+							by 20%
+						Cure: Nano skills, medical professional 
+			
+			Wounded (tier 3 injury)
+				Attribute Affected: Max Hp Down, Current Hp Down, Attack Down, Defense
+									Down, Nano Down, Stamina Down, Dexterity Down, 
+									Critical Down, Accuracy Down, Nano Attack Down,
+									Nano Defense Down 
+					Effect: character has a grave injury which reduces all stats by 30%
+						Cure: Nano skills, medical professional 
+			
+			Withdrawal 
+				Attribute Affected: Max Hp Down, Current Hp Down, Attack Down, Defense
+									Down, Nano Down, Stamina Down, Dexterity Down, 
+									Critical Down, Accuracy Down, Nano Attack Down,
+									Nano Defense Down 
+					Effect: character experiences withdrawal from certain item which 
+							results in all stats being reduced by 5% per turn for 5
+							turns; all stats then recover by 5% per turn for 5 turns 
+						Cure: Time, Nano skills, medical professional 
+			
+			Irradiated
+				Attribute Affected: Max Hp Down, Current Hp Down, Attack Down, Defense
+									Down, Nano Down, Stamina Down, Dexterity Down, 
+									Critical Down, Accuracy Down, Nano Attack Down,
+									Nano Defense Down 
+					Effect: character suffers radiation poisoning which reduces all 
+							stats by 10% per turn
+						Cure: Nano skills, medical professional 
+
+		Character Attributes Improved Near KO
+		
+			Desperation
+				Attributes Affected: Attack, Dexterity, Nano Attack, Critical
+					Effect: attack related attributes are boosted the close character 
+							is to KO starting when the character is >= 25% of Max Hp 
+							and <= 1% of Max Hp. Maximum power boost is 1.5 of base
+							stats. 
+						Cure: Healing
+					
+		General Increase and Decrease in Character Attributes (portion of list may/may not be useful)
+						
+			Character Attribute Current Hp Affected 
+			
+				Ablaze 
+					Attribute Affected: Current Hp Down
+						Effect: character is on fire so current hp is lowered by 7% per turn 
+							Turns: 2-3
+								Cure: Time 
+			
+				Bleed
+					Attribute Affected: Current Hp Down
+						Effect: character bleeds due to injuries reducing current hp by 4% 
+								per turn
+							Turns: 4-6
+								Cure: Time, items, Nano skills 
+	
+				Poisoned
+					Attribute Affected: Current Hp Down
+						Effect: character is poisoned reducing current hp by 6% per turn
+							Turns: infinite 
+								Cure: items, Nano skills 
+				
+				Hp Regen
+					Attribute Affected: Current Hp Up 
+						Effect: character recovers current hp by 4% of Max Hp per turn
+							Turns: 5 
+		
+			Character Attribute Attack Affected 
+		
+				Attack Up 
+		
+				Attack Down
+				
+				Focus
+					Attribute Affected: AttackUp
+						Effect: boosts attack and nano attack 
+							Turns: 1 
+				
+			Character Attribute Defense Affected 
+		
+				Defense Up 
+		
+				Defense Down
+			
+				Defend
+					Attribute Affected: Defense Up, Stamina Up
+						Effect: halve physical damage received and recovers stamina by 
+								8% of Max Stamina
+							Turns: 1 
+		
+			Character Attribute Nano Affected 
+		
+				Nano Up
+		
+				Nano Down
+				
+				Np Regen
+					Attribute Affected: Nano Up 
+						Effect: character recovers current nano by 4% of Max Nano per turn
+							Turns: 5 
+				
+			Character Attribute Stamina Affected 
+		
+				Stamina Up
+		
+				Stamina Down
+				
+				Sp Regen 
+					Attribute Affected: Stamina 
+						Effect: regenerate Current Sp by 4% of Max Sp every turn 
+							Turns: 5
+		
+			Character Attribute Dexterity Affected 
+		
+				Dexterity Up
+		
+				Dexterity Down
+				
+				Rush 
+					Attribute Affected: Dexterity 
+						Effect: boosts character's Dexterity (and fills ATB Guage faster???)
+							Turns: 3
+							
+			Character Attribute Critical Affected 
+		
+				Critical Up 
+		
+				Critical Down
+				
+				Lock On 
+					Attribute Affected: Critical 
+						Effect: boosts character's Critical rate by 25%
+							Turns: 3
+		
+			Character Attribute Accuracy (Accuracy) Affected 
+		
+				Accuracy Up
+		
+				Accuracy Down
+			
+				Blinded
+					Attribute affected: Accuracy down 
+						Effect: character cannot see very well due to being temporarily
+								blinded by an opponent's attack 
+							Turns: 2-3 
+		
+			Character Attribute Nano Attack Affected 
+		
+				Nano Attack Up
+		
+				Nano Attack Down
+				
+			Character Attribute Nano Defense Affected 
+		
+				Nano Defense Up
+		
+				Nano Defense Down
+		
+				Nano Shield 
+					Attribute Affected: Defense, Nano Defense 
+						Effect: shield the body in nanomachines and halve damage taken 
+								from nanomachine attacks and resistance based attacks 
+							turns:1 
+				
+				Nano Armor
+					Attribute Affected: Defense 
+						Effect: completely	nullify all physical attacks
+							turns: infinite until removed 
+		
+		Special Statuses
+		
+			Shutdown
+				Attribute Affected: Nano, Nano Attack, Nano Defense 
+						Effect: nanomachine skills can no longer be used 
+							turns: infinite until removed 
+			
+			Revitalize
+				Attribute Affected: none 
+					Effect: character  attacks the enemy uncontrollably (may use skills)
+						Turns: 8 turns (or infinite until removed IDK) 
+			
+			Wait
+				Attribute Affected: Stamina 
+					Effect: character does not move for a turn and regains 14% of Max Stamina
+						Turns: 1
+		
+		General Increase and Decrease in Resistances (portion of list may/may not be useful)
+		
+			Character Fire Resistance Affected
+		
+				Fire Resistance Up
+		
+				Fire Resistance Down
+		
+			Character Water Resistance Affected 
+		
+				Water Resistance Up
+		
+				Water Resistance Down
+		
+			Character Ice Resistance Affected
+		
+				Ice Resistance Up 
+		
+				Ice Resistance Down
+		
+			Character Electricity Resistance Affected
+		
+				Electricity Resistance Up
+			
+				Electricity Resistance Down
+			
+			Character Poison Resistance Affected
+			
+				Poison Resistance Up
+			
+				Poison Resistance Down
+			
+			Character Sonic Resistance Affected
+		
+				Sonic Resistance Up
+			
+				Sonic Resistance Down
+			
+			Character Plasma Resistance Affected
+		
+				Plasma Resistance Up
+		
+				Plasma Resistance Down
+		
+			Character Wind Resistance Affected
+			
+				Wind Resistance Up
+		
+				Wind Resistance Down		
+		
+		Status That Affects MC Only 
+		
+			Note: exclusive weakness for MC
+			
+			Tempted
+				Attribute Affected: Defense 
+					Effect: character takes more damage from female opponents
+						Turns: 1-4 
+
+		Status That Affects Party Member Behavior 
+		
+			Confused
+				Attribute Affected: none 
+					Effect: character makes a random action against friend/enemy
+						Turns: 1-5 
+			
+			Enamored
+				Attribute Affected: none 
+					Effect: character temporarily falls in love with a party member 
+							(actions may very)
+						Turns: 1-4 
+			
+			Infatuated
+				Attribute Affected: none 
+					Effect: character assists enemy by helping the enemy in battle
+						Turns: 1-3 
+			
+			Berserk
+				Attribute Affected: none 
+					Effect: character  attacks the enemy uncontrollably (may use skills)
+						Turns: 8 turns (or infinite until removed IDK) 
+		
+		Status That Affect Turns In Battle 
+	
+			Flinched 
+				Attribute affected: none 
+					Effect: character cannot make a move until the next turn in order 
+							to recover from the opponent's attack 
+						Turns: 1 
+			
+			Stunned 
+				Attribute affected: Defense Down, Dexterity Down
+					Effect: character cannot make a move as a result of being sent reeling 
+							from an opponent's attack
+						Turns: 1-2 
+			
+			Scared 
+				Attribute affected: none 
+					Effect: fear may cause the character to not make a move at all
+						Turns: 1-2 
+			
+			Bound
+				Attribute affected: Dexterity 
+					Effect: character is bound/constrained in some way and cannot 
+							move for a time
+						Turns: 2-3 
+			
+			Sleep 
+				Attribute affected: Defense Down, Dexterity, Nano Defense Down
+					Effect: character falls asleep and cannot make a move
+						Turns: 1-5 
+			
+			Tranced
+				Attribute affected: Defense Down, Nano Defense Down
+					Effect: character is captivated somehow and refuses to move
+						Turns: 1-3
+	
+			Shocked
+				Attribute affected: Dexterity Down, Critical Down
+					Effect: character may/may not make a move aside from being 
+							slowed down
+						Turns: 1-4 
+			
+			Slowed
+				Attribute affected: Dexterity 
+					Effect: character is slowed down somehow
+						Turns: 2-3
+	
+			Stopped
+				Attribute affected: Dexterity 
+					Effect: character is frozen in place by nanomachines
+						Turns: 2-3
+			
+			Slimed
+				Attribute affected: Dexterity 
+					Effect: character is slowed down and made more vulnerable to nano 
+							attakcs
+						Turns: 1-4
+			
+			Tired 
+				Attribute affected: none 
+					Effect: character must take a turn to recovery after using a strong 
+							attack 
+						Turns: 1
+	
+	Status That Nullifies All Positive Status Effects
+
+		Nullify Positive Effects
+			Effect: Nullify all positive effects 
+	
+	Status That Nullifies All Negative Status Effects
+	
+		Nullify Negative Effects
+			Effect: Nullify all Negative effects 
+	
+	Status That Nullifies All Status Effects
+	
+		Nullify All Status Effects
+			Effect: Nullify all status effects 
+*/
