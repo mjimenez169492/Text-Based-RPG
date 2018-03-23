@@ -38,242 +38,382 @@
 		inventory.values()		displays the 'value' within a HashMap
 */
 
+//import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
+//import java.util.TreeMap;
 
-// create inventories for: items, weapons, armors, and accessories with add, remove, 
-// and print inventory methods 
+// create universal inventory that accepts items, weapons, armors, and accessories 
+// create methods to add objects, remove objects, and print out all or some objects
+// change genericItem 		->	 	itemAttributesDefined
 
 public class partyInventory 
-{		
-	// instance variables 
-	private int inventoryLimit; 
-	//private int weaponLimit = 5;		\ 	
-	//private int armorLimit = 15; 		 | --> consider separate variables to manage
-	//private int accessoryLimit = 20; 	/	   limits in other inventories
-	private String key;
-	private int counter;
-	private int total;
+{	
+	private int inventoryGroupsLimit = 2; 	// limits number of different item groups that
+											// can exist in the inventory 			(put 2)
+	private int itemGroupSizeLimit = 2;		// limit number of items that can be "stacked"
+											// or held in a group in an inventory 	(put 2) 
+	private String objectName;				// hold the name of an object in the inventory 
 	
-	// create hashmap inventory that will exclusively store items 
-	HashMap<String, ArrayList<String>> itemsInventory = new HashMap<String, ArrayList<String>>();
 	
-	// method adds item to items inventory 
-	public void addItem(items item)
+	
+	private int counter;				  // denotes position of an item in the inventory
+	private int arrayListTotal;			  // holds total number of items in an item group 
+	
+	// item categories which object must belong to in order to be stored in inventory
+	private String[] validItemCategories = {"items", "weapons", "armors", "accessories"}; 	
+	
+	// set the number of different item groups that can exist in the inventory 
+	public void setInventoryGroupsLimit(int inventoryGroupsLimit)
 	{
-		// set item limit for item inventory 
-		inventoryLimit = 15;
-		
-		// create item group array list and assign it the name of the item to be 
-		// added to the hashmap 
-		ArrayList<String> itemGroup = itemsInventory.get(item.getItemName());
-
-		// if no group with the item name exists already, add in a new group with 
-		// the name of the item that is being added 
-		if(itemGroup == null) 
+		if(inventoryGroupsLimit < 0)
 		{
-			itemGroup = new ArrayList<String>();
-			
-			// insert item name as key and the itemgroup as its value 
-			itemsInventory.put(item.getItemName(), itemGroup);
+			inventoryGroupsLimit = 0;
+		}
+		else if(inventoryGroupsLimit > 30)
+		{
+			inventoryGroupsLimit = 30;
 		}
 		
-		// if-else statement determines item group capacity. Remove if-else to 
-		// add as many items as user wants 
-		if(itemGroup.size() < inventoryLimit)
+		this.inventoryGroupsLimit = inventoryGroupsLimit;
+	}
+	
+	// get the number of different item groups that can exist in the inventory 
+	public int getInventoryGroupsLimit()
+	{
+		return itemGroupSizeLimit;
+	}
+	
+	// set the item group size limit for the inventory 
+	public void setItemGroupSizeLimit(int itemGroupSizeLimit)
+	{
+		if(itemGroupSizeLimit < 0)
 		{
-			itemGroup.add(item.getItemName());
+			itemGroupSizeLimit = 0;
+		}
+		else if(itemGroupSizeLimit > 30)
+		{
+			itemGroupSizeLimit = 30;
+		}
+		
+		this.itemGroupSizeLimit = itemGroupSizeLimit;
+	}
+	
+	// get the item group size limit 
+	public int getItemGroupSizeLimit()
+	{
+		return itemGroupSizeLimit;
+	}
+	
+	// constructor creates partyInventory object which can call methods related to 
+	// managing the party inventory 
+	public partyInventory()
+	{
+		// constructor with no body
+	}
+	
+	// create hashmap object that will serve as an inventory that will store items 
+	// Hashmap has a key of type itemAttributesDefined and an array list of type 
+	// itemAttributesDefined as its value
+	HashMap<itemAttributesDefined, ArrayList<itemAttributesDefined>> itemInventory = 
+		new HashMap<itemAttributesDefined, ArrayList<itemAttributesDefined>>();
+	
+	// generic method where object created in a subclass of itemAttributesDefined is 
+	// treated as an object to be added to the inventory if it is valid 
+	public <T extends itemAttributesDefined> boolean isObjectValid(T object) 
+	{
+		// boolean checks to see if object being added is valid 
+		boolean validArgument = false;
+		
+		// proceed into if statement if object is not null 
+		if(object != null)
+		{
+			// proceed into if statement if item category of the object is not null 
+			if(object.getItemCategory() != null)
+			{
+				// enhanced for loop traverses array and adds item to inventory if 
+				// object category matches one of the categories specified in array
+				for(String element : validItemCategories)
+				{
+					if(object.getItemCategory().equals(element))
+					{
+						validArgument = true;
+					}
+				}
+				// return boolean value held in variable 
+				return validArgument;
+			}
+			else
+			{
+				// return boolean value held in variable 
+				return validArgument;
+			}
 		}
 		else
 		{
-			System.out.println("\n\nItem '" + item.getItemName() + "' could not be added to the items inventory!"); 
-			System.out.println("Inventory items cannot store more than " + inventoryLimit + " " +item.getItemName()+"s at a time!\n"); 
+			// return boolean value held in variable 
+			return validArgument;
 		}
 	}
 	
-	// method removes item from inventory 
-	public void removeItem(items item)
+		// style: public <T extends Vehicle> void exampleMethod(Class<T> type)
+	
+	// method adds a subclass object of superclass itemAttributesDefined to inventory 
+	public <T extends itemAttributesDefined> void addObject(T object)
 	{
-		// item group object created and assigned key belonging to item that will
-		// be removed
-		ArrayList<String> itemGroup = itemsInventory.get(item.getItemName());
+		// if object is valid, proceed into if statement 
+		if(isObjectValid(object) == true)
+		{
+			/*
+				The get(Object key) method is used to return the value to which 
+				the specified key is mapped, or null if the hashmap contains no 
+				mapping for the key.
+			*/
+			
+			// check to see whether hashmap contains a mapping for key 
+			// in this case, mapping refers to whether an item group for the object
+			// already exists as an array list and if it does then it will be retrieved
+			// Note: initial size of the array list was not set which is okay 
+			ArrayList<itemAttributesDefined> itemGroup = itemInventory.get(object);
+			
+			// if the size of the inventory is equal to the item group limit, print out
+			// statements regarding why object could be added else create a new array
+			// list for the object and add it to the hashmap 
+			if(itemInventory.size() == inventoryGroupsLimit)
+			{
+				// print statements saying that there are too many different item groups
+				System.out.println("\n\n'" + object.getItemName() + "' could not be added to the party inventory!"); 
+				System.out.println("The inventory cannot store more than " + inventoryGroupsLimit + " different item groups at a time!\n"); 				
+
+			}
+			else
+			{
+				// if no group with the item name exists already, add in a new group with 
+				// the name of the item that is being added 
+				if(itemGroup == null) 
+				{
+					// itemGroup array list of type String is created 
+					itemGroup = new ArrayList<itemAttributesDefined>();
+					
+					// insert object into hashmap with object as key and item group as value 
+					itemInventory.put(object, itemGroup);
+				}
+			}
+			
+			// if-else statement determines item group capacity. Remove if-else to 
+			// add as many items as user wants (no item limit cap)
+			if(itemGroup != null)
+			{
+				// if the itemGroup size is equal to itemGroupSizeLimit print out why 
+				// object could not be added to an existing item group 
+				if(itemGroup.size() == itemGroupSizeLimit)
+				{
+					// print statements saying that max number of items for the group has been reached 
+					System.out.println("\n\n'" + object.getItemName() + "' could not be added to the party inventory!"); 
+					System.out.println("The inventory cannot store more than " + itemGroupSizeLimit + " " +object.getItemName()+"s at a time!\n"); 
+				}
+				else
+				{			
+					// increment item group size by 1 by adding object to array list 
+					itemGroup.add(object);
+				}
+			}
+		}	
+	}
+	
+	// method removes the specified object from the inventory if it exists 
+	public <T extends itemAttributesDefined> void removeObject(T object)
+	{
+		/*
+			The get(Object key) method is used to return the value to which 
+			the specified key is mapped, or null if the hashmap contains no 
+			mapping for the key.
+		*/
+			
+		// check to see whether hashmap contains a mapping for key 
+		// in this case, mapping refers to whether an item group for the object
+		// already exists as an array list and if it does then it will be retrieved
+		// Note: initial size of the array list was not set which is okay 
+		ArrayList<itemAttributesDefined> itemGroup = itemInventory.get(object);
 		
-		// end method execution if item from item group does not exist 
+		// end method execution if object item group does not exist 
 		if(itemGroup == null) return;
 		
-		// remove item from item group causing the item group size to decrement 
-		// by one 
-		itemGroup.remove(item.getItemName());
+		// remove item from item group causing item group size to decrement by one 
+		itemGroup.remove(object);
 
-		// if item group contains no items (i.e. empty), remove the item group
-		// from the item inventory hashmap by removing its key and value 
+		// if item group contains no objects (it is empty), remove item group from 
+		// the item inventory hashmap by removing its key and value 
 		if(itemGroup.size() == 0)
 		{
-			itemsInventory.remove(item.getItemName(), itemGroup);
+			itemInventory.remove(object, itemGroup);
 		}
 	}
 	
-	// prints contents of hashmap inventory like so: itemName: # of items 
-	public void printItemsInventory()
+	// prints contents of hashmap inventory like so: position # itemName: # of items 
+	public <T extends itemAttributesDefined> void printInventory()
 	{
-		// initialize counter instance variable to 0 each time the method 
-		// printItemsInventory() is called 
-		counter = 0; 
+		// initialize counter instance variable to 0 each time the method is called 
+		counter = 1; 
 		
-		// for loop creates hashmap object to access info in itemsInventory hashmap
-		// it traverses itemsInventory hashmap until all entries are accounted for 
-		for(Map.Entry<String, ArrayList<String>> itemsInventoryCopy : itemsInventory.entrySet()) 
+		/*
+		
+		Iterator it = itemInventory.entrySet().iterator();
+		
+		while (it.hasNext()) 
 		{
-			// get key for current inventory item 
-			// key is the name of the item in the hashmap 
-			key = itemsInventoryCopy.getKey();
-			
-			// format key so that key can only contain a 16 character string 
-			key = key.format("%1.16s", key);
-			
-			// format key so that string is written 16 spaces from start position 
-			// format modifier '-' alligns string to the left instead of right
-			key = key.format("%-16s", key);
-			
-			// get and store value associated with key 
-			// value is the item group 
-			ArrayList<String> value = itemsInventoryCopy.getValue();
-			
-			// get size of item group (number of items inside item group)
-			total = value.size();
-			
-			// notify player about what is about to be printed 
-			if(counter  == 0)
-			{
-				System.out.println("Contents of items inventory...");
-			}
-			
-			// if-else statement displays list 
-			// if remainder is 0, display item on left otherwise display item on 
-			// the right 
-			if(counter % 2 == 0)
-			{
-				System.out.print(key + ": " + total);
-					counter++;
-			}
-			else 
-			{
-				System.out.print("\t" + key + ": " + total + "\n");
-					counter++;
-			}
+			Map.Entry pair = (Map.Entry)it.next();
+			System.out.println(pair.getKey() + " = " + pair.getValue());
+			it.remove(); // avoids a ConcurrentModificationException
 		}
 		
-		// print new line to improve readability 
-		System.out.print("\n");
-	}
-	
-	// create hashmap inventory that will exclusively store weapons  
-	HashMap<String, ArrayList<String>> weaponsInventory = new HashMap<String, ArrayList<String>>();
-
-	// method adds weapon to weapons inventory 
-	public void addWeapon(weapons weapon)
-	{
-		// set weapon limit for weapon inventory 
-		inventoryLimit = 10;
+		*/
 		
-		// create weapon group array list and assign it the name of the weapon to be 
-		// added to the hashmap 
-		ArrayList<String> weaponGroup = weaponsInventory.get(weapon.getItemName());
-
-		// if no group with the weapon name exists already, add in a new group with 
-		// the name of the weapon that is being added 
-		if(weaponGroup == null) 
+		// if there is at least one object stores in the party inventory then enter 
+		// the if statement else print out statement saying inventory is empty 
+		if(itemInventory.size() !=  0)
 		{
-			weaponGroup = new ArrayList<String>();
-			
-			// insert weapon name as key and the weapon group as its value 
-			weaponsInventory.put(weapon.getItemName(), weaponGroup);
-		}
-		
-		// if-else statement determines weapon group capacity. Remove if-else to 
-		// add as many weapons as user wants 
-		if(weaponGroup.size() < inventoryLimit)
-		{
-			weaponGroup.add(weapon.getItemName());
+			// for loop creates hashmap object itemInventoryCopy with itemAttributesDefined
+			// as its key and an array list of type itemAttributesDefined as its value which 
+			// is identical to the types of hashmap object itemInventory 
+			// itemInventoryCopy iterates across itemInventory and retrieves all of the entry 
+			// sets (keys and values) of hashmap itemInventory 
+			for(Map.Entry<itemAttributesDefined, ArrayList<itemAttributesDefined>> itemInventoryCopy : itemInventory.entrySet()) 
+			{
+				// store name of the inventory item object in String variable objectName			
+				objectName = itemInventoryCopy.getKey().getItemName();
+				
+				// format objectName such that the string is aligned 20 spaces to the left
+				// using format modifier '-' with a specification of 20 before the s; if 
+				// the modifier is not included, the string will default to the right 
+				objectName = objectName.format("%-20s", objectName);
+				
+				// store array list associated with object key in array list object value
+				ArrayList<itemAttributesDefined> value = itemInventoryCopy.getValue();
+				
+				// get the size of the item group (number of items inside of item group)
+				arrayListTotal = value.size();
+				
+				// notify player about what is about to be printed 
+				if(counter  == 1)
+				{
+					System.out.println("Contents of party inventory...");
+				}
+				
+				// if-else statement displays the party inventory 
+				// if remainder is 1, display item on left otherwise display it on the right 
+				if(counter % 2 == 1)
+				{
+					System.out.printf("(%d). %s: %d", counter, objectName, arrayListTotal);
+						counter++;
+				}
+				else 
+				{
+					System.out.printf("\t(%d). %s: %d\n", counter, objectName, arrayListTotal);
+						counter++;
+				}
+			}
 		}
 		else
 		{
-			System.out.println("\n\nWeapon '" + weapon.getItemName() + "' could not be added to the weapons inventory!"); 
-			System.out.println("Inventory weapons cannot store more than " + inventoryLimit + " " +weapon.getItemName()+"s at a time!\n"); 
+			System.out.println("There are no items stored in the party inventory.");
 		}
+		
+		// print new line to improve readability 
+		System.out.println();
 	}
 	
-	// method removes weapon from inventory 
-	public void removeWeapon(weapons weapon)
-	{
-		// weapon group object created and assigned key belonging to weapon that will
-		// be removed
-		ArrayList<String> weaponGroup = weaponsInventory.get(weapon.getItemName());
-		
-		// end method execution if weapon from weapon group does not exist 
-		if(weaponGroup == null) return;
-		
-		// remove weapon from weapon group causing the weapon group size to decrement 
-		// by one 
-		weaponGroup.remove(weapon.getItemName());
+	
+	/*
+		items class 
+			private String[] usage = {"consumable", "throwable", "field", "unusable", "key item"};
 
-		// if weapon group contains no weapons (i.e. empty), remove the weapon group
-		// from the weapon inventory hashmap by removing its key and value 
-		if(weaponGroup.size() == 0)
-		{
-			weaponsInventory.remove(weapon.getItemName(), weaponGroup);
-		}
-	}
 	
-	//  prints contents of hashmap inventory like so: itemName: # of items 
-	public void printWeaponsInventory()
+		Customization options for items inventory (sort alphabetically)
+			
+			Customize:	player personally customizes item placement in inventory 
+			Specific Sort
+			  - example1
+			  - example2
+			  - example3
+			General Sort 
+			  - example1
+			  - example2
+			  - example3
+			
+			(Specific Sort)
+			exclusive to "items" class only 
+				Consumable:	items that can be used by party members 
+				Throwable:	items that can be thrown at an enemy 
+				Unusable:	items that cannot be used in any way 
+				Key Item:	items that play an important role in the story; cannot be sold
+				Field: 		items exclusively meant to be used outside of battle 
+			
+			(General Sort)
+			Name: 			sort by item name 
+			Most: 			sort items by quantity with the most being at the top (or front)
+			Least: 			sort items by quantity with the least being at the top (or front)
+			Category: 		sort by category that item belongs to 			
+			Super Type: 	sort by item superType (group)
+			Sub Type: 		sort by item subType (sub group)
+			Buy Price: 		sort by most expensive items to buy 
+			Sell Price: 	sort by items that sell for the most 
+						
+	*/
+	
+	// method below must be updated or removed
+	
+	
+	/*
+	
+	// method where only inventory items of a desired item type are printed 
+	public void printDesiredItems(String desiredType) 
 	{
 		// initialize counter instance variable to 0 each time the method 
-		// printWeaponsInventory() is called 
+		// printWeaponsOnly() is called 
 		counter = 0; 
 		
-		// for loop creates hashmap object to access info in weaponsInventory hashmap
-		// it traverses weaponsInventory hashmap until all entries are accounted for 
-		for(Map.Entry<String, ArrayList<String>> weaponsInventoryCopy : weaponsInventory.entrySet()) 
+		// for loop creates hashmap object to access info in itemInventory hashmap
+		// it traverses itemInventory hashmap until all entries are accounted for 
+		for(Map.Entry<String, ArrayList<String>> itemInventoryCopy : itemInventory.entrySet()) 
 		{
-			// get key for current inventory weapon 
-			// key is the name of the weapon in the hashmap 
-			key = weaponsInventoryCopy.getKey();
 			
-			// format key so that key can only contain a 16 character string 
-			key = key.format("%1.16s", key);
-			
-			// format key so that string is written 16 spaces from start position 
-			// format modifier '-' alligns string to the left instead of right
-			key = key.format("%-16s", key);
-			
-			// get and store value associated with key 
-			// value is the weapon group 
-			ArrayList<String> value = weaponsInventoryCopy.getValue();
-			
-			// get size of weapon group (number of weapons inside weapon group)
-			total = value.size();
-			
-			// notify player about what is about to be printed 
-			if(counter  == 0)
+			if(keyType(itemInventoryCopy.getKey()).equals(desiredType))
 			{
-				System.out.println("Contents of weapons inventory...");
-			}
+				// get key for current inventory item 
+				// key is the name of the item in the hashmap 
+				key = itemInventoryCopy.getKey();
 			
-			// if-else statement displays list 
-			// if remainder is 0, display weapon on left otherwise display weapon on 
-			// the right 
-			if(counter % 2 == 0)
-			{
-				System.out.print(key + ": " + total);
-					counter++;
-			}
-			else 
-			{
-				System.out.print("\t" + key + ": " + total + "\n");
-					counter++;
+				// format key so that string is written 20 spaces from start position 
+				// format modifier '-' alligns string to the left instead of right
+				key = key.format("%-20s", key);
+			
+				// get and store value associated with key 
+				// value is the item group 
+				ArrayList<String> value = itemInventoryCopy.getValue();
+			
+				// get size of item group (number of items inside item group)
+				total = value.size();
+			
+				// notify player about what is about to be printed 
+				if(counter  == 0)
+				{
+					System.out.println("Contents of weapons inventory...");
+				}
+			
+				// if-else statement displays list 
+				// if remainder is 0, display item on left otherwise display on right 
+				if(counter % 2 == 0)
+				{
+					System.out.print(counter + ". " + key + ": " + total);
+						counter++;
+				}
+				else 
+				{
+					System.out.print("\t" + counter + ". " + key + ": " + total + "\n");
+						counter++;
+				}
 			}
 		}
 		
@@ -281,227 +421,13 @@ public class partyInventory
 		System.out.print("\n");
 	}
 	
-	// create hashmap inventory that will exclusively store armor  
-	HashMap<String, ArrayList<String>> armorsInventory = new HashMap<String, ArrayList<String>>();
-
-	// method adds armor to armors inventory 
-	public void addArmor(armors armor)
+	// method returns the type of an item key type which is shown in the first 
+	// 4 characters of the key name 
+	public String keyType(String key) 
 	{
-		// set armor limit for armor inventory 
-		inventoryLimit = 10;
-		
-		// create armor group array list and assign it the name of the armor to be 
-		// added to the hashmap 
-		ArrayList<String> armorGroup = armorsInventory.get(armor.getItemName());
-
-		// if no group with the armor name exists already, add in a new group with 
-		// the name of the armor that is being added 
-		if(armorGroup == null) 
-		{
-			armorGroup = new ArrayList<String>();
-			
-			// insert armor name as key and the armor group as its value 
-			armorsInventory.put(armor.getItemName(), armorGroup);
-		}
-		
-		// if-else statement determines armor group capacity. Remove if-else to 
-		// add as many armors as user wants 
-		if(armorGroup.size() < inventoryLimit)
-		{
-			armorGroup.add(armor.getItemName());
-		}
-		else
-		{
-			System.out.println("\n\nArmor '" + armor.getItemName() + "' could not be added to the armors inventory!"); 
-			System.out.println("Inventory armors cannot store more than " + inventoryLimit + " " +armor.getItemName()+"s at a time!\n"); 
-		}
+		return key.substring(0, 4);
 	}
 	
-	// method removes armor from inventory 
-	public void removeArmor(armors armor)
-	{
-		// armor group object created and assigned key belonging to armor that will
-		// be removed
-		ArrayList<String> armorGroup = armorsInventory.get(armor.getItemName());
-		
-		// end method execution if armor from armor group does not exist 
-		if(armorGroup == null) return;
-		
-		// remove armor from armor group causing the armor group size to decrement 
-		// by one 
-		armorGroup.remove(armor.getItemName());
-
-		// if armor group contains no armors (i.e. empty), remove the armor group
-		// from the armor inventory hashmap by removing its key and value 
-		if(armorGroup.size() == 0)
-		{
-			armorsInventory.remove(armor.getItemName(), armorGroup);
-		}
-	}
+	*/
 	
-	//  prints contents of hashmap inventory like so: itemName: # of items 
-	public void printArmorsInventory()
-	{
-		// initialize counter instance variable to 0 each time the method 
-		// printArmorsInventory() is called 
-		counter = 0; 
-		
-		// for loop creates hashmap object to access info in armorsInventory hashmap
-		// it traverses armorsInventory hashmap until all entries are accounted for 
-		for(Map.Entry<String, ArrayList<String>> armorsInventoryCopy : armorsInventory.entrySet()) 
-		{
-			// get key for current inventory armor 
-			// key is the name of the armor in the hashmap 
-			key = armorsInventoryCopy.getKey();
-			
-			// format key so that key can only contain a 16 character string 
-			key = key.format("%1.16s", key);
-			
-			// format key so that string is written 16 spaces from start position 
-			// format modifier '-' alligns string to the left instead of right
-			key = key.format("%-16s", key);
-			
-			// get and store value associated with key 
-			// value is the armor group 
-			ArrayList<String> value = armorsInventoryCopy.getValue();
-			
-			// get size of armor group (number of armors inside armor group)
-			total = value.size();
-			
-			// notify player about what is about to be printed 
-			if(counter  == 0)
-			{
-				System.out.println("Contents of armors inventory...");
-			}
-			
-			// if-else statement displays list 
-			// if remainder is 0, display armor on left otherwise display armor on 
-			// the right 
-			if(counter % 2 == 0)
-			{
-				System.out.print(key + ": " + total);
-					counter++;
-			}
-			else 
-			{
-				System.out.print("\t" + key + ": " + total + "\n");
-					counter++;
-			}
-		}
-		
-		// print new line to improve readability 
-		System.out.print("\n");
-	}
-	
-	// create hashmap inventory that will exclusively store accessories  
-	HashMap<String, ArrayList<String>> accessoriesInventory = new HashMap<String, ArrayList<String>>();
-
-	// method adds accessory to accessories inventory 
-	public void addAccessory(accessories accessory)
-	{
-		// set accessory limit for accessories inventory 
-		inventoryLimit = 5;
-		
-		// create accessory group array list and assign it the name of the accessory to be 
-		// added to the hashmap 
-		ArrayList<String> accessoryGroup = accessoriesInventory.get(accessory.getItemName());
-
-		// if no group with the accessory name exists already, add in a new group with 
-		// the name of the accessory that is being added 
-		if(accessoryGroup == null) 
-		{
-			accessoryGroup = new ArrayList<String>();
-			
-			// insert accessory name as key and the accessory group as its value 
-			accessoriesInventory.put(accessory.getItemName(), accessoryGroup);
-		}
-		
-		// if-else statement determines accessory group capacity. Remove if-else to 
-		// add as many accessories as user wants 
-		if(accessoryGroup.size() < inventoryLimit)
-		{
-			accessoryGroup.add(accessory.getItemName());
-		}
-		else
-		{
-			System.out.println("\n\nAccessory'" + accessory.getItemName() + "' could not be added to the accessories inventory!"); 
-			System.out.println("Inventory accessories cannot store more than " + inventoryLimit + " " +accessory.getItemName()+"s at a time!\n"); 
-		}
-	}
-	
-	// method removes accessory from inventory 
-	public void removeAccessory(accessories accessory)
-	{
-		// accessory group object created and assigned key belonging to accessory that will
-		// be removed
-		ArrayList<String> accessoryGroup = accessoriesInventory.get(accessory.getItemName());
-		
-		// end method execution if accessory from accessory group does not exist 
-		if(accessoryGroup == null) return;
-		
-		// remove accessory from accessory group causing the accessory group size to decrement 
-		// by one 
-		accessoryGroup.remove(accessory.getItemName());
-
-		// if accessory group contains no accessorys (i.e. empty), remove the accessory group
-		// from the accessory inventory hashmap by removing its key and value 
-		if(accessoryGroup.size() == 0)
-		{
-			accessoriesInventory.remove(accessory.getItemName(), accessoryGroup);
-		}
-	}
-	
-	//  prints contents of hashmap inventory like so: itemName: # of items 
-	public void printAccessoriesInventory()
-	{
-		// initialize counter instance variable to 0 each time the method 
-		// printAccessoriesInventory() is called 
-		counter = 0; 
-		
-		// for loop creates hashmap object to access info in accessoriesInventory hashmap
-		// it traverses accessoriesInventory hashmap until all entries are accounted for 
-		for(Map.Entry<String, ArrayList<String>> accessoriesInventoryCopy : accessoriesInventory.entrySet()) 
-		{
-			// get key for current inventory armor 
-			// key is the name of the armor in the hashmap 
-			key = accessoriesInventoryCopy.getKey();
-			
-			// format key so that key can only contain a 16 character string 
-			key = key.format("%1.16s", key);
-			
-			// format key so that string is written 16 spaces from start position 
-			// format modifier '-' alligns string to the left instead of right
-			key = key.format("%-16s", key);
-			
-			// get and store value associated with key 
-			// value is the armor group 
-			ArrayList<String> value = accessoriesInventoryCopy.getValue();
-			
-			// get size of armor group (number of armors inside armor group)
-			total = value.size();
-			
-			// notify player about what is about to be printed 
-			if(counter  == 0)
-			{
-				System.out.println("Contents of armors inventory...");
-			}
-			
-			// if-else statement displays list 
-			// if remainder is 0, display armor on left otherwise display armor on 
-			// the right 
-			if(counter % 2 == 0)
-			{
-				System.out.print(key + ": " + total);
-					counter++;
-			}
-			else 
-			{
-				System.out.print("\t" + key + ": " + total + "\n");
-					counter++;
-			}
-		}
-		
-		// print new line to improve readability 
-		System.out.print("\n");
-	}
 }

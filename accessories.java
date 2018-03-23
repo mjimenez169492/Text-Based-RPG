@@ -6,334 +6,625 @@
 	accessories
 		rings
 		necklaces
-		gloves***
+		gloves
 		capes
 		shields
-		head***
+		head
 */
+import java.util.Random;
 
-public class accessories extends genericItem
-{
-	// accessory affects...
-	private int experience;			// experience received 
-	private int maxHP;				// maxHP 
-	private int attack;				// attack stat 
-	private int defense;			// defense stat 
-	private int magic;				// magic stat 
-	private int stamina;			// stamina stat 
-	private int dexterity;			// dexterity stat 
-	private int critical;			// critical stat 
-	private int hitChance;			// hit chance stat 
-	private int magicAttack;		// magic attack stat 
-	private int magicDefense;		// magic defense stat 
-	private int evasion;			// magic defense stat 
-	private int magicEvasion;		// magic evasion  stat 	
-	private int luck;				// luck stat (hidden special stat)
-	private int fireResistance;		// resistance to fire attacks
-	private int waterResistance;	// resistance to water attacks
-	private int iceResistance;		// resistance to ice attacks
-	private int lightningResistance;// resistance to lightning attacks
-	private int poisonResistance;	// resistance to poison attacks
-	private int sonicResistance;	// resistance to sonic (sound-based) attacks
-	private int energyResistance;	// resistance to energy (laser-based) attacks
-	private int nanoResistance;		// resistance to nano (nanomachine-based) attacks
+public class accessories extends itemAttributesDefined
+{	
+	private double accessoryExp;				// accessory effect on character's experience  
+	private int accessoryMaxHp;					// accessory effect on character's max HP 
+	private int accessoryCurrentHp;				// accessory effect on character's current hp 
+	private int accessoryAttack;				// accessory effect on character's attack stat 
+	private int accessoryDefense;				// accessory effect on character's defense stat 
+	private int accessoryNano;					// accessory effect on character's nano stat 
+	private int accessoryStamina;				// accessory effect on character's stamina stat 
+	private int accessoryDexterity;				// accessory effect on character's dexterity stat 
+	private int accessoryCritical;				// accessory effect on character's critical stat 
+	private int accessoryAccuracy;				// accessory effect on character's accuracy stat 
+	private int accessoryNanoAttack;			// accessory effect on character's nano attack stat 
+	private int accessoryNanoDefense;			// accessory effect on character's nano defense stat 	
 	
-	public accessories(int itemID, String itemName, String itemType, 
-		int itemBuyPrice, int itemSellPrice, int experience, int maxHP,
-		int attack, int defense, int magic, int stamina, int dexterity,
-		int critical, int hitChance, int magicAttack, int magicDefense, 
-		int evasion, int magicEvasion, int luck, int fireResistance,
-		int waterResistance, int iceResistance, int lightningResistance, 
-		int poisonResistance, int sonicResistance, int  energyResistance,
-		int nanoResistance)
+	// hold status that accessories can resist
+	private String[] resistAttributeStatus = {"Attack Down", "Defense Down", "Nano Down", 
+		"Stamina Down", "Dexterity Down", "Critical Down", "Accuracy Down", "Nano Attack Down",
+		"Nano Defense Down"}; 
+	
+	// hold accessory status resistances 
+	private String[] resistResistanceStatus = {"Dry", "Wet", "Cold", "Conductive", 
+		"Sickness", "Hypersensitive", "Coated", "Lightweight"};
+	
+	// hold behavior that accessories can resist 
+	private String[] resistBehavior = {"Enamore", "Infatuate"};
+	
+	// hold turn statuses that accessories can resist 
+	private String[] resistNegativeTurnStatus = {"Stun", "Sleep", "Shock", "Slow",
+		"Stop", "Slime"};	
+	
+	// flatten arrays concerning accessory resistances into one array 
+	private String[] holdResistStatus [] = {resistAttributeStatus, 
+		resistResistanceStatus, resistBehavior, resistNegativeTurnStatus};
+
+	// hold valid types for an accessory slot 
+	private String[] validSlotTypes = {null, "Max Hp", "Current Hp", "Attack", 
+		"Defense", "Nano", "Stamina", "Dexterity", "Critical", "Accuracy", 
+		"Nano Attack", "Nano Defense", "Any Accessory Core"};
+
+	// accessories can resist up to three status ailments at a time 
+	private String resistStatusOne; 		// hold first status accessory resists
+	private String resistStatusTwo; 		// hold second status accessory resists
+	private String resistStatusThree; 		// hold third status accessory resists
+	
+	// slot types can be altered for a large price if desired 
+	// cores can be transferred across armor 
+	// cores run out over time with use and they are replaceable 
+	
+	private boolean randomSlots;	// determines whether all slot types should be randomized 
+	private String slotOneType;		// store what type of slot that slot one is 
+	private core slotOneCore;		// stores core in the specified accessory slot 
+	
+	public accessories(int itemId, String itemName, String itemCategory, 
+		String itemSuperType, String itemSubType, int itemBuyPrice, 
+		int itemSellPrice, double accessoryExp, int accessoryMaxHp,
+		int accessoryCurrentHp, int accessoryAttack, int accessoryDefense, 
+		int accessoryNano, int accessoryStamina, int accessoryDexterity,
+		int accessoryCritical, int accessoryAccuracy, int accessoryNanoAttack, 
+		int accessoryNanoDefense, Boolean randomSlots)
 	{
-		super(itemID, itemName, itemType, itemBuyPrice, itemSellPrice);
+		// supply arguments to superclass constructor 
+		super(itemId, itemName, itemCategory, itemSuperType, itemSubType, itemBuyPrice, itemSellPrice);
 		
-		this.experience = experience;
-		this.maxHP = maxHP;
-		this.attack = attack;
-		this.defense = defense;
-		this.magic = magic;
-		this.stamina = stamina;
-		this.dexterity = dexterity;
-		this.critical = critical;
-		this.hitChance = hitChance;
-		this.magicAttack = magicAttack;
-		this.magicDefense = magicDefense;
-		this.evasion = evasion; 
-		this.magicEvasion = magicEvasion;
-		this.luck = luck;
-		this.fireResistance = fireResistance;
-		this.waterResistance = waterResistance;
-		this.iceResistance = iceResistance;
-		this.lightningResistance = lightningResistance;
-		this.poisonResistance = poisonResistance;
-		this.sonicResistance = sonicResistance;
-		this.energyResistance = energyResistance;
-		this.nanoResistance = nanoResistance; 
+		setAccessoryExp(accessoryExp);
+		setAccessoryMaxHp(accessoryMaxHp);
+		setAccessoryCurrentHp(accessoryCurrentHp);
+		setAccessoryAttack(accessoryAttack);
+		setAccessoryDefense(accessoryDefense);
+		setAccessoryNano(accessoryNano);
+		setAccessoryStamina(accessoryStamina);
+		setAccessoryDexterity(accessoryDexterity);
+		setAccessoryCritical(accessoryCritical);
+		setAccessoryAccuracy(accessoryAccuracy);
+		setAccessoryNanoAttack(accessoryNanoAttack);
+		setAccessoryNanoDefense(accessoryNanoDefense);
+		setRandomSlots(randomSlots);
+		randomizeSlotTypes(getRandomSlots());
+		
+		
+		
 	}
-
-	// set max hp value accessory takes/adds to character 
-	public void setMaxHP(int maxHP) 
-	{
-		this.maxHP = maxHP; 
-	} 
-	
-	// get max hp value accessory takes/adds to character 
-	public int getMaxHP()
-	{
-		return maxHP; 
-	} 
 	
 	// set experience value accessory affects character experience by
-	public void setExperience(int experience)
+	public void setAccessoryExp(double accessoryExp)
 	{
-		this.experience = experience;
+		if(accessoryExp < 0)
+		{
+			accessoryExp = 0;
+		}
+		else if(accessoryExp > 3)
+		{
+			accessoryExp = 3;
+		}
+		
+		this.accessoryExp = accessoryExp;
 	}
 	
 	// get experience value accessory affects character experience by
-	public int getExperience()
+	public double getAccessoryExp()
 	{
-		return experience; 
+		return accessoryExp; 
+	} 
+	
+	// set max hp value accessory takes/adds to character 
+	public void setAccessoryMaxHp(int accessoryMaxHp) 
+	{
+		if(accessoryMaxHp < 0)
+		{
+			accessoryMaxHp = 0;
+		}
+		else if(accessoryMaxHp > 500)
+		{
+			accessoryMaxHp = 500;
+		}
+		
+		this.accessoryMaxHp = accessoryMaxHp; 
+	} 
+	
+	/*
+	oathkeeper Sinclair
+	Heather Van Der Lind
+	Envoy of the End 
+	The End 
+	Nero of the downtrodden  l
+	He that is Here but not there
+	Queen of the Western Isles
+	*/
+	
+	// get max hp value accessory takes/adds to character 
+	public int getAccessoryMaxHp()
+	{
+		return accessoryMaxHp; 
+	} 
+	
+	// set current HP value accessory takes/adds to character 
+	public void setAccessoryCurrentHp(int accessoryCurrentHp)
+	{	
+		if(accessoryCurrentHp < 0)
+		{
+			accessoryCurrentHp = 0;
+		}
+		else if(accessoryCurrentHp > 500)
+		{
+			accessoryCurrentHp = 500;
+		}
+		
+		this.accessoryCurrentHp = accessoryCurrentHp;
+	}
+	
+	// get current HP value accessory takes/adds to character 
+	public int getAccessoryCurrentHp()
+	{
+		return accessoryCurrentHp; 
 	} 
 	
 	// set attack value accessory takes/adds to character 
-	public void setAttack(int attack)
+	public void setAccessoryAttack(int accessoryAttack)
 	{
-		this.attack = attack;
+		if(accessoryAttack < 0)
+		{
+			accessoryAttack = 0;
+		}
+		else if(accessoryAttack > 500)
+		{
+			accessoryAttack = 500;
+		}
+		
+		this.accessoryAttack = accessoryAttack;
 	}
 	
 	// get attack value accessory takes/adds to character 
-	public int getAttack()
+	public int getAccessoryAttack()
 	{
-		return attack; 
+		return accessoryAttack; 
 	} 
 	
+	
 	// set defense value accessory takes/adds to character 
-	public void setDefense(int defense)
+	public void setAccessoryDefense(int accessoryDefense)
 	{
-		this.defense = defense;
+		if(accessoryDefense < 0)
+		{
+			accessoryDefense = 0;
+		}
+		else if(accessoryDefense > 500)
+		{
+			accessoryDefense = 500;
+		}
+		
+		this.accessoryDefense = accessoryDefense;
 	}
 	
 	// get defense value accessory takes/adds to character 
-	public int getDefense()
+	public int getAccessoryDefense()
 	{
-		return defense; 
+		return accessoryDefense; 
 	} 
 	
-	// set magic value accessory takes/adds to character 
-	public void setMagic(int magic)
+	// set nano value accessory takes/adds to character 
+	public void setAccessoryNano(int accessoryNano)
 	{
-		this.magic = magic;
+		if(accessoryNano < 0)
+		{
+			accessoryNano = 0;
+		}
+		else if(accessoryNano > 500)
+		{
+			accessoryNano = 500;
+		}
+		
+		this.accessoryNano = accessoryNano;
 	}
 	
-	// get magic value accessory takes/adds to character 
-	public int getMagic()
+	// get nano value accessory takes/adds to character 
+	public int getAccessoryNano()
 	{
-		return magic; 
+		return accessoryNano; 
 	} 
 	
 	// set stamina value accessory takes/adds to character 
-	public void setStamina(int stamina)
+	public void setAccessoryStamina(int accessoryStamina)
 	{
-		this.stamina = stamina;
+		if(accessoryStamina < 0)
+		{
+			accessoryStamina = 0;
+		}
+		else if(accessoryStamina > 500)
+		{
+			accessoryStamina = 500;
+		}
+		
+		this.accessoryStamina = accessoryStamina;
 	}
 	
 	// get stamina value accessory takes/adds to character 
-	public int getStamina()
+	public int getAccessoryStamina()
 	{
-		return stamina; 
+		return accessoryStamina; 
 	} 
 	
 	// set dexterity value accessory takes/adds to character 
-	public void setDexterity(int dexterity)
+	public void setAccessoryDexterity(int accessoryDexterity)
 	{
-		this.dexterity = dexterity;
+		if(accessoryDexterity < 0)
+		{
+			accessoryDexterity = 0;
+		}
+		else if(accessoryDexterity > 500)
+		{
+			accessoryDexterity = 500;
+		}
+		
+		this.accessoryDexterity = accessoryDexterity;
 	}
 	
 	// get dexterity value accessory takes/adds to character 
-	public int getDexterity()
+	public int getAccessoryDexterity()
 	{
-		return dexterity; 
+		return accessoryDexterity; 
 	} 
 	
 	// set critical value accessory takes/adds to character 
-	public void setCritical(int critical)
+	public void setAccessoryCritical(int accessoryCritical)
 	{
-		this.critical = critical;
+		if(accessoryCritical < 0)
+		{
+			accessoryCritical = 0;
+		}
+		else if(accessoryCritical > 500)
+		{
+			accessoryCritical = 500;
+		}
+		
+		this.accessoryCritical = accessoryCritical;
 	}
 	
 	// get critical value accessory takes/adds to character 
-	public int getCritical()
+	public int getAccessoryCritical()
 	{
-		return critical; 
+		return accessoryCritical; 
 	} 
 	
-	// set hit chance value accessory takes/adds to character 
-	public void setHitChance(int hitChance)
+	// set accuracy value accessory takes/adds to character 
+	public void setAccessoryAccuracy(int accessoryAccuracy)
 	{
-		this.hitChance = hitChance;
+		if(accessoryAccuracy < 0)
+		{
+			accessoryAccuracy = 0;
+		}
+		else if(accessoryAccuracy > 500)
+		{
+			accessoryAccuracy = 500;
+		}
+		
+		this.accessoryAccuracy = accessoryAccuracy;
 	}
 	
-	// get hit chance value accessory takes/adds to character 
-	public int getHitChance()
+	// get accuracy value accessory takes/adds to character 
+	public int getAccessoryAccuracy()
 	{
-		return hitChance; 
+		return accessoryAccuracy; 
 	} 
 	
-	// set magic attack value accessory takes/adds to character 
-	public void setMagicAttack(int magicAttack)
+	// set nano attack value accessory takes/adds to character 
+	public void setAccessoryNanoAttack(int accessoryNanoAttack)
 	{
-		this.magicAttack = magicAttack;
+		if(accessoryNanoAttack < 0)
+		{
+			accessoryNanoAttack = 0;
+		}
+		else if(accessoryNanoAttack > 500)
+		{
+			accessoryNanoAttack = 500;
+		}
+		
+		this.accessoryNanoAttack = accessoryNanoAttack;
 	}
 	
-	// get magic attack value accessory takes/adds to character 
-	public int getMagicAttack()
+	// get nano attack value accessory takes/adds to character 
+	public int getAccessoryNanoAttack()
 	{
-		return magicAttack; 
+		return accessoryNanoAttack; 
 	} 
 	
-	// set magic defense value accessory takes/adds to character 
-	public void setMagicDefense(int magicDefense)
+	// set nano defense value accessory takes/adds to character 
+	public void setAccessoryNanoDefense(int accessoryNanoDefense)
 	{
-		this.magicDefense = magicDefense;
+		if(accessoryNanoDefense < 0)
+		{
+			accessoryNanoDefense = 0;
+		}
+		else if(accessoryNanoDefense > 500)
+		{
+			accessoryNanoDefense = 500;
+		}
+		
+		this.accessoryNanoDefense = accessoryNanoDefense;
 	}
 	
-	// get magic defense value accessory takes/adds to character 
-	public int getMagicDefense()
+	// get nano defense value accessory takes/adds to character 
+	public int getAccessoryNanoDefense()
 	{
-		return magicDefense; 
+		return accessoryNanoDefense; 
 	} 
 	
-	// set evasion value accessory takes/adds to character 
-	public void setEvasion(int evasion)
+	// set whether random slots are generated for a accessory
+	public void setRandomSlots(boolean randomSlots)
 	{
-		this.evasion = evasion;
+		this.randomSlots = randomSlots;
 	}
 	
-	// get evasion value accessory takes/adds to character 
-	public int getEvasion()
+	// return random slots option for accessories 
+	public boolean getRandomSlots()
 	{
-		return evasion; 
-	} 
-	
-	// set magic evasion value accessory takes/adds to character 
-	public void setMagicEvasion(int magicEvasion)
-	{
-		this.magicEvasion = magicEvasion;
+		return randomSlots;
 	}
 	
-	// get magic evasion value accessory takes/adds to character 
-	public int getMagicEvasion()
+	// check whether the status supplied as an argument is valid 
+	public boolean isResistStatusValid(String resistStatus)
 	{
-		return magicEvasion; 
-	} 
-	
-	// set luck value accessory takes/adds to character 
-	public void setLuck(int luck)
-	{
-		this.luck = luck;
+		boolean validArgument = false;
+		
+		if(resistStatus != null)
+		{
+			for(int i = 0; i < holdResistStatus.length; i++)
+			{
+				if(resistStatus.equals(holdResistStatus[i]))
+				{
+					validArgument = true;
+				}
+			}
+			return validArgument;
+		}
+		else
+		{
+			return validArgument;
+		}
 	}
 	
-	// get luck value accessory takes/adds to character 
-	public int getLuck()
+	// set first status that accessory resists 
+	public void setResistStatusOne(String resistStatusOne)
 	{
-		return luck; 
-	} 
-	
-	// set fire resistance value accessory takes/adds to character 
-	public void setFireResistance(int fireResistance)
-	{
-		this.fireResistance = fireResistance;
+		if(isResistStatusValid(resistStatusOne) == true)
+		{
+			this.resistStatusOne = resistStatusOne;
+		}
 	}
 	
-	// get fire resistance value accessory takes/adds to character 
-	public int getFireResistance()
+	// get first status that accessory resists  
+	public String getResistStatusOne()
 	{
-		return fireResistance;
+		return resistStatusOne;
 	}
 	
-	// set water resistance value accessory takes/adds to character 
-	public void setWaterResistance(int waterResistance)
+	// set second status that armor resists 
+	public void setResistStatusTwo(String resistStatusTwo)
 	{
-		this.waterResistance = waterResistance;
+		if(isResistStatusValid(resistStatusTwo) == true)
+		{
+			this.resistStatusTwo = resistStatusTwo;
+		}
 	}
 	
-	// get water resistance value accessory takes/adds to character 
-	public int getWaterResistance()
+	// get second status that armor resists  
+	public String getResistStatusTwo()
 	{
-		return waterResistance;
+		return resistStatusTwo;
 	}
 	
-	// set ice resistance value accessory takes/adds to character 
-	public void setIceResistance(int iceResistance)
+	// set third status that armor resists 
+	public void setResistStatusThree(String resistStatusThree)
 	{
-		this.iceResistance = iceResistance;
+		if(isResistStatusValid(resistStatusThree) == true)
+		{
+			this.resistStatusThree = resistStatusThree;
+		}
 	}
 	
-	// get ice resistance value accessory takes/adds to character 
-	public int getIceResistance()
+	// get third status that armor resists  
+	public String getResistStatusThree()
 	{
-		return iceResistance;
+		return resistStatusThree;
 	}
 	
-	// set lightning resistance value accessory takes/adds to character 
-	public void setLightningResistance(int lightningResistance)
+	/*
+		8 options
+			1	40% Null (no slot)
+			2	5	Max Hp
+			3	5	Current Hp
+			4	5	Attack
+			5	5	Defense
+			6	5	Nano
+			7	5	Stamina
+			8	5	Dexterity
+			9	5	Critical
+			10	5	Accuracy
+			11	5	Nano Attack
+			12	5	Nano Defense
+			13	5	Any Core Type 
+	*/
+	
+	// returns a String that was selected randomly
+	public String determineSlotType()
 	{
-		this.lightningResistance = lightningResistance;
+		// create random object to call random methods 
+		Random rand = new Random();
+		
+		// int variable will hold a random number form 1 to 100
+		int holdInt = rand.nextInt(100 + 1);
+		
+		// initialize holdSlotType meant to be assigned a String for slot type 
+		String holdSlotType = null;
+		
+		// portion of if else statement executes depending on value of variable 
+		if(holdInt <= 40)
+		{
+			holdSlotType = "None";
+		}
+		else if(holdInt <= 45)
+		{
+			holdSlotType = "Max Hp";
+		}
+		else if(holdInt <= 50)
+		{
+			holdSlotType = "Current Hp";
+		}
+		else if(holdInt <= 55)
+		{
+			holdSlotType = "Attack";
+		}
+		else if(holdInt <= 60)
+		{
+			holdSlotType = "Defense";
+		}
+		else if(holdInt <= 65)
+		{
+			holdSlotType = "Nano";
+		}
+		else if(holdInt <= 70)
+		{
+			holdSlotType = "Stamina";
+		}
+		else if(holdInt <= 75)
+		{
+			holdSlotType = "Dexterity";
+		}
+		else if(holdInt <= 80)
+		{
+			holdSlotType = "Critical";
+		}
+		else if(holdInt <= 85)
+		{
+			holdSlotType = "Accuracy";
+		}
+		else if(holdInt <= 90)
+		{
+			holdSlotType = "Nano Attack";
+		}
+		else if(holdInt <= 95)
+		{
+			holdSlotType = "Nano Defense";
+		}
+		else if(holdInt <= 100)
+		{
+			holdSlotType = "Any Accessory Core";
+		}
+		// return slot type 
+		return holdSlotType;
 	}
 	
-	// get lightning resistance value accessory takes/adds to character 
-	public int getLightningResistance()
+	// randomize slot type for accessories
+	public void randomizeSlotTypes(Boolean randomSlots)
 	{
-		return lightningResistance;
+		// if boolean variable is true, set slot types for all five slots randomly 
+		if(randomSlots == true)
+		{
+			setSlotOneType(determineSlotType());
+		}
 	}
 	
-	// set poison resistance value accessory takes/adds to character 
-	public void setPoisonResistance(int poisonResistance)
+	// determine whether the supplied string is valid 
+	public boolean isSlotTypeValid(String slotType)
 	{
-		this.poisonResistance = poisonResistance;
+		// variable will be set to true is argument is valid 
+		boolean validArgument = false;
+		
+		if(slotType !=null)
+		{
+			// for loop compares string against elements in array 
+			for(int i = 0; i < validSlotTypes.length; i++)
+			{
+				// if supplied string matches element in the array, assign boolean with true 
+				if(slotType.equals(validSlotTypes[i]))
+				{
+					validArgument = true;
+				}
+			}
+			return validArgument;
+		}
+		else
+		{
+			// return value held in boolean
+			return validArgument;
+		}
 	}
 	
-	// get poison resistance value accessory takes/adds to character 
-	public int getPoisonResistance()
+	// determine whether the supplied accessory core is valid 
+	public boolean isCoreTypeValid(core core)
 	{
-		return poisonResistance;
+		// variable will be set to true is argument is valid 
+		boolean validArgument = false;
+		
+		if(core != null)
+		{
+			// for loop compares core type against elements in array 
+			for(int i = 0; i < validSlotTypes.length; i++)
+			{
+				// if supplied string matches element in the array, assign boolean with true 
+				if(core.getCoreType().equals(validSlotTypes[i]))
+				{
+					validArgument = true;
+				}
+			}
+			return validArgument;
+		}
+		else
+		{
+			// return value held in boolean
+			return validArgument;
+		}
 	}
 	
-	// set sonic resistance value accessory takes/adds to character 
-	public void setSonicResistance(int sonicResistance)
+	// set the type for accessory slot one 
+	public void setSlotOneType(String slotOneType)
 	{
-		this.sonicResistance = sonicResistance;
+		if(isSlotTypeValid(slotOneType) == true)
+		{
+			this.slotOneType = slotOneType;
+		}
 	}
 	
-	// get sonic resistance value accessory takes/adds to character 
-	public int getSonicResistance()
+	// get accessory slot type 
+	public String getSlotOneType()
 	{
-		return sonicResistance;
+		return slotOneType;
 	}
 	
-	// set energy resistance value accessory takes/adds to character 
-	public void setEnergyResistance(int energyResistance)
+	// set core into accessory slot if it is the same type as the slot 
+	public void setSlotOneCore(core slotOneCore)
 	{
-		this.energyResistance = energyResistance;
+		if(getSlotOneType() != null)
+		{
+			// must check for null 
+			if(isCoreTypeValid(slotOneCore) == true)
+			{
+				// check if core matches slot type 
+				if(getSlotOneType().equals("Any Accessory Core"))
+				{
+					this.slotOneCore = slotOneCore;
+				}
+				else if(slotOneCore.getCoreType().equals(getSlotOneType()))
+				{
+					this.slotOneCore = slotOneCore;
+				}
+			}
+		}
 	}
 	
-	// get energy resistance value accessory takes/adds to character 
-	public int getEnergyResistance()
+	// get the core set in slot one 
+	public core getSlotOneCore()
 	{
-		return energyResistance;
-	}
-	
-	// set nano resistance value accessory takes/adds to character 
-	public void setNanoResistance(int nanoResistance)
-	{
-		this.nanoResistance = nanoResistance;
-	}
-	
-	// get nano resistance value accessory takes/adds to character 
-	public int getNanoResistance()
-	{
-		return nanoResistance;
+		return slotOneCore;
 	}
 }
