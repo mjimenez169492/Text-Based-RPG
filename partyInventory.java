@@ -81,11 +81,12 @@ public class partyInventory
 	private int arrayListTotal;			// holds total number of items in an item group 
 	private int counter;				// denotes position of an item in the inventory
 	private int stringComparisonResult; // store result of string comparison (1, 0, -1)
+	private int intComparisonResult;	// store result of an int comparison (1, 0, -1)
 	private int specifiedSortChoice;	// value determines which class will be sorted 
 										// in the selection sort method (accepts # 1-4)
 	
 	// item categories which object must belong to in order to be stored in inventory
-	private String[] validItemCategories = {"items", "weapons", "armors", "accessories"}; 	
+	private String[] validItemCategories = {"items", "cores", "weapons", "armors", "accessories"}; 	
 	
 	// set the number of different item groups that can exist in the inventory 
 	public void setInventoryGroupsLimit(int inventoryGroupsLimit)
@@ -136,14 +137,14 @@ public class partyInventory
 		setItemGroupSizeLimit(itemGroupSizeLimit);
 	}
 	
-	// create LinkedHashMap object that will serve as an inventory by storing objects
-	// itemInventory has a key of type itemAttributesDefined and an array list of type 
-	// itemAttributesDefined as its value 
+	// create LinkedHashMap object itemInventory that will serve as an inventory for 
+	// the game by storing the objects collected; it has itemAttributesDefined as its
+	// key (accepts only objects created in subclasses of itemAttributesDefined) and 
+	// an array list of type itemAttributesDefined as its value 
 	LinkedHashMap<itemAttributesDefined, ArrayList<itemAttributesDefined>> itemInventory = 
 		new LinkedHashMap<itemAttributesDefined, ArrayList<itemAttributesDefined>>();
 	
-	// generic method determines whether the object that is about to be added to the 
-	// inventory is valid or not 
+	// method determines if object about to be added to the inventory is valid or not 
 	public <T extends itemAttributesDefined> boolean isObjectValid(T object) 
 	{
 		// boolean checks to see if object being added is valid 
@@ -181,12 +182,12 @@ public class partyInventory
 		}
 	}
 	
+		// note on usage of generics (sort of): 
 		// subclass method below has Vehicle as the superclass 
 		// style: public <T extends Vehicle> void exampleMethod(Class<T> type)
 		// where T is an object of Vehicle which allows use of superclass methods
 	
-	// generic method where object created in a subclass of itemAttributesDefined can 
-	// be added to the inventory if it is considered valid 
+	// method adds object to the inventory if it passes several checks 
 	public <T extends itemAttributesDefined> void addObject(T object)
 	{
 		// if object is valid, proceed into if statement 
@@ -198,14 +199,14 @@ public class partyInventory
 				mapping for the key.
 			*/
 			
-			// check to see whether linked hashmap contains mapping for key 
-			// in this case, mapping refers to whether an item group for the object
-			// already exists as an array list and if it does then it will be retrieved
+			// check to see whether linked hashmap itemInventory contains mapping for 
+			// key where mapping refers to whether an item group for object already 
+			// exists as an array list and if it does then it will be retrieved 
 			ArrayList<itemAttributesDefined> itemGroup = itemInventory.get(object);
 			
-			// if the size of the inventory is equal to the item group limit, print out
-			// statements regarding why object could be added else create a new array
-			// list for the object and add it to the hashmap 
+			// if item group limit is equal to the size of itemInventory, print out
+			// statements saying why object could not be added else create new array
+			// list for the object and put it into the itemInventory 
 			if(itemInventory.size() == inventoryGroupsLimit)
 			{
 				// print statements saying that there are too many different item groups
@@ -256,9 +257,9 @@ public class partyInventory
 			mapping for the key.
 		*/
 			
-		// check to see whether linked hashmap contains a mapping for key 
-		// in this case, mapping refers to whether an item group for the object
-		// already exists as an array list and if it does then it will be retrieved
+		// check to see whether itemInventory contains mapping for key where mapping 
+		// refers to whether an item group for the object already exists as an array 
+		// list and if it does then it will be retrieved
 		ArrayList<itemAttributesDefined> itemGroup = itemInventory.get(object);
 		
 		// end method execution if object item group does not exist 
@@ -268,7 +269,7 @@ public class partyInventory
 		itemGroup.remove(object);
 
 		// if item group contains no objects (it is empty), remove item group from 
-		// the item inventory hashmap by removing its key and value 
+		// itemInventory by removing its key and value 
 		if(itemGroup.size() == 0)
 		{
 			itemInventory.remove(object, itemGroup);
@@ -288,14 +289,14 @@ public class partyInventory
 		}
 	*/
 	
-	// prints contents of linked hashmap inventory: position #. itemName: # of items 
+	// prints contents of itemInventory like so: position #. itemName: # of items 
 	public void printInventory()
 	{
 		// initialize counter instance variable to 1 each time the method is called 
 		counter = 1; 
 		
-		// if there is at least one object stores in the party inventory then enter 
-		// the if statement else print out statement saying inventory is empty 
+		// if there is at least one object stores in itemInventory then enter the if 
+		// statement else print out statement saying itemInventory is empty 
 		if(itemInventory.size() !=  0)
 		{
 			// enhanced for loop creates linked hashmap object itemInventoryCopy with 
@@ -312,19 +313,16 @@ public class partyInventory
 				// the modifier is not included, the string will default to the right 
 				objectName = objectName.format("%-20s", objectName);
 				
-				// store array list associated with object key in array list object value
-				ArrayList<itemAttributesDefined> value = itemInventoryCopy.getValue();
+				// get and store item group size (number of objects in item group)
+				arrayListTotal = itemInventoryCopy.getValue().size();
 				
-				// get the size of the item group (number of items inside of item group)
-				arrayListTotal = value.size();
-				
-				// notify player about what is about to be printed 
+				// notify user about what is about to be printed 
 				if(counter  == 1)
 				{
 					System.out.println("Contents of party inventory...");
 				}
 				
-				// if-else statement displays the party inventory 
+				// if-else statement displays itemInventory along with a counter 
 				// if remainder is 1, display item on left otherwise display it on the right 
 				if(counter % 2 == 1)
 				{
@@ -367,7 +365,7 @@ public class partyInventory
 				- itemSellPrice);
 				- highestQuantity
 				- lowestQuantity
-			General Sort:		sort all objects at once 
+			General Sort:		sort all objects at once as desired 
 			  - itemId			sort by item Id				NOT IMPLEMENTED 
 			  - itemName		sort by item name 
 			  - itemCategory	sort by category that item belongs to 	
@@ -380,19 +378,20 @@ public class partyInventory
 	*/
 	
 	// START: CUSTOMIZE 
-	// SWAPPING POSITIONS OF TWO ENTRY SETS IN INVENTORY IF SUPPLIED POSITIONS ARE VALID
+	// SWAP POSITIONS OF TWO ENTRY SETS IN INVENTORY IF SUPPLIED POSITIONS ARE VALID
 	/********************************************************************************/
 	
-	// method places entry sets in linked hashmap itemInventory inside of linked hashmap
-	// holdItemInventory and places the entry sets meant to be swapped in swapEntries
-	public void swapInventoryContents(LinkedHashMap<itemAttributesDefined, 
+	// method places itemInventory entry sets in linked hashmap object holdItemInventory 
+	// and places entry sets meant to be swapped in linked hashmap object swapEntries
+	public void customizeSwapInventoryContents(LinkedHashMap<itemAttributesDefined, 
 		ArrayList<itemAttributesDefined>> holdItemInventory, LinkedHashMap<itemAttributesDefined, 
 		ArrayList<itemAttributesDefined>> swapEntries, int entrySelected, int swapToPosition)
 	{
 		// assign counter to 1 to start counting from 1 or first entry 
 		counter = 1;
 		
-		// enhanced for loop iterates through party inventory linked hashmap itemInventory 
+		// enhanced for loop iterates through contents of itemInventory using linked
+		// hashmap object itemInventoryCopy
 		for(Map.Entry<itemAttributesDefined, ArrayList<itemAttributesDefined>> itemInventoryCopy : itemInventory.entrySet()) 
 		{
 			// store entries of itemInventory linked hashmap in linked hashmap holdItemInventory 
@@ -415,11 +414,10 @@ public class partyInventory
 		}
 	}
 	
-	// method fills party inventory linked hashmap itemInventory with contents of the
-	// linked hashmap holdItemInventory (which holds all the entry sets itemInventory
-	// had before it was cleared) and linked swapEntries which holds the entry sets 
-	// meant to be swapped 
-	public void fillItemInventory(LinkedHashMap<itemAttributesDefined, 
+	// method fills itemInventory with contents of linked hashmap holdItemInventory 
+	// (which holds all the entry sets itemInventory had before it was cleared) and 
+	// linked hashmap swapEntries which holds the entry sets meant to be swapped 
+	public void customizeFillItemInventory(LinkedHashMap<itemAttributesDefined, 
 		ArrayList<itemAttributesDefined>> holdItemInventory, LinkedHashMap<itemAttributesDefined, 
 		ArrayList<itemAttributesDefined>> swapEntries, int entrySelected, int swapToPosition)
 	{
@@ -430,6 +428,7 @@ public class partyInventory
 		// iterate through entry sets of linked hashmap holdItemInventory 
 		for(Map.Entry<itemAttributesDefined, ArrayList<itemAttributesDefined>> holdItemInventoryCopy : holdItemInventory.entrySet())
 		{
+			// make swaps when counter reaches of the locations specified for swap
 			if(counter == entrySelected)
 			{
 				// enhanced for loop creates linked hashmap object swapEntriesCopy
@@ -492,32 +491,30 @@ public class partyInventory
 					// with itself is pretty silly 
 					if(itemInventory.size() >  1)
 					{
-						// linked hashmap object holdItemInventory was made in order 
-						// to store all entry sets of linked hashmap itemInventory
+						// linked hashmap object holdItemInventory stores itemInventory 
+						// entry sets 
 						LinkedHashMap<itemAttributesDefined, ArrayList<itemAttributesDefined>> holdItemInventory = 
 							new LinkedHashMap<itemAttributesDefined, ArrayList<itemAttributesDefined>>();
 						
-						// create linked hashmap object swapEntries which is meant to 
-						// hold the entry that the user wants to swap held at position 
-						// entrySelected and entry located at position that the user 
-						// wants to swap it to as indicated by value of swapToPosition
+						// linked hashmap object swapEntries stores entry sets that the 
+						// user wants to swap which are located at position entrySelected 
+						// and swapToPosition 
 						LinkedHashMap<itemAttributesDefined, ArrayList<itemAttributesDefined>> swapEntries = 
 							new LinkedHashMap<itemAttributesDefined, ArrayList<itemAttributesDefined>>();
 						
 						// supply linked hashmaps created in customizeInventory() and 
-						// the int values that were passed to customizeInventory() to 
-						// swapInventoryContents()
-						swapInventoryContents(holdItemInventory, swapEntries, entrySelected, swapToPosition);
+						// int values passed to customizeInventory() to the method 
+						// customizeSwapInventoryContents()
+						customizeSwapInventoryContents(holdItemInventory, swapEntries, entrySelected, swapToPosition);
 						
-						// clear the contents of linked hashmap itemInventory in order 
-						// to place entry sets of holdItemInventory and swapEntries in
-						// itemInventory later on 
+						// clear contents itemInventory in order to place entry sets of 
+						// holdItemInventory and swapEntries in itemInventory later on 
 						itemInventory.clear();
 						
 						// supply linked hashmaps created in customizeInventory() and 
-						// the int values that were passed to customizeInventory() to 
-						// fillItemInventory()
-						fillItemInventory(holdItemInventory, swapEntries, entrySelected, swapToPosition);
+						// int values passed to customizeInventory() to the method 
+						// customizeFillItemInventory()
+						customizeFillItemInventory(holdItemInventory, swapEntries, entrySelected, swapToPosition);
 					}
 				}
 			}
@@ -560,8 +557,54 @@ public class partyInventory
 	// SORT TREEMAPS BY KEY ACCORDING TO RULE ESTABLISHED BY COMPARATOR 
 	/*------------------------------------------------------------------------------*/
 	
-	// custom TreeMap comparator sorts the objects of a TreeMap by name 
-	// Note: coded such that numbers appear first, then uppercase, then lowercase 
+	// compare two strings and determine whether they are the same or different regardless
+	// of case (i.e. "example" would be considered the same as "Example") 
+	// method used in comparators for TreeMaps involving string comparison between keys
+	public int compareStrings(String argumentOne, String arguementTwo)
+	{
+		// code compares names without regard to case and stores result of comparison 
+		// (1, 0, -1) in variable stringComparisonResult (1, -1 is different & 0 is same)
+		stringComparisonResult = String.CASE_INSENSITIVE_ORDER.compare(argumentOne, arguementTwo);
+		
+		// if strings are identical, set stringComparisonResult to 1 in order to place 
+		// entry after the entry it is being compared to since order does not matter 
+		// as they are the same String wise 
+		if(stringComparisonResult == 0)
+		{
+			// if stringComparisonResult was not changed here, the key of the entry 
+			// that is being compared to the key of entry that exists in the TreeMap 
+			// would "merge/disappear" or not be added to the TreeMap along with its 
+			// value resulting in data loss 
+			stringComparisonResult = 1;
+		}
+		
+		// return value held in stringComparisonResult
+		return stringComparisonResult;
+	}
+	
+	// compare int values and return whether they are the same or different 
+	// method used in comparators for TreeMaps involving int comparison between keys
+	public int compareIntegers(int argumentOne, int arguementTwo)
+	{
+		// place arguementTwo after argumentOne if it is less than argumentOne else 
+		// put arguementTwo above argumentOne 
+		if (argumentOne >= arguementTwo)
+		{
+			intComparisonResult = -1;
+		} 
+		else
+		{
+			intComparisonResult = 1;
+		}
+		
+		// return value held in intComparisonResult
+		return intComparisonResult;
+	}
+	
+	// why compareTo() is not used...
+	// compareTo() method sorts by: number, Uppercase, lowercase -> 1Apple, Apple, Bee, apple
+		
+	// custom TreeMap comparator sorts the objects of a TreeMap by name alphabetically
 	public Comparator<itemAttributesDefined> sortByName = new Comparator<itemAttributesDefined>() 
 	{
 		// method compares the names of each object and sorts the objects such that
@@ -569,29 +612,12 @@ public class partyInventory
 		@Override 
 		public int compare(itemAttributesDefined objectOne, itemAttributesDefined objectTwo) 
 		{
-			// code compares names without regard to case (i.e. "example" would be 
-			// equal to "Example") and stores the result of the compasion (1, 0, -1)
-			// in variable stringComparisonResult 
-			stringComparisonResult = String.CASE_INSENSITIVE_ORDER.compare(objectOne.getItemName(), objectTwo.getItemName());
-			
-			// if strings are identical, set stringComparisonResult to 1 in order to 
-			// place entry set after the entry it is being compared to since order 
-			// does not matter since they are the same name-wise
-			if(stringComparisonResult == 0)
-			{
-				// if value was not changed here, the key of the entry set that is 
-				// being compared to the key of entry set that exists in the TreeMap 
-				// would "disappear" or not be added to the TreeMap along with its 
-				// value resulting in data loss 
-				stringComparisonResult = 1;
-			}
-			
-			// return the result of the string comparison in stringComparisonResult
-			return stringComparisonResult;
+			// return result of string comparison which will dictate TreeMap ordering
+			return compareStrings(objectOne.getItemName(), objectTwo.getItemName());
 		}
 	}; 
 	
-	// custom TreeMap comparator sorts the objects of a TreeMap by category 
+	// custom TreeMap comparator sorts the objects of a TreeMap by category alphabetically
 	public Comparator<itemAttributesDefined> sortByCategory = new Comparator<itemAttributesDefined>() 
 	{
 		// method compares the category of each object and sorts the objects such that
@@ -599,11 +625,12 @@ public class partyInventory
 		@Override 
 		public int compare(itemAttributesDefined objectOne, itemAttributesDefined objectTwo) 
 		{
-			return objectOne.getItemCategory().compareTo(objectTwo.getItemCategory());
+			// return result of string comparison which will dictate TreeMap ordering
+			return compareStrings(objectOne.getItemCategory(), objectTwo.getItemCategory());
 		}
 	}; 
 	
-	// custom TreeMap comparator sorts the objects of a TreeMap by super type 
+	// custom TreeMap comparator sorts the objects of a TreeMap by super type alphabetically
 	public Comparator<itemAttributesDefined> sortBySuperType = new Comparator<itemAttributesDefined>() 
 	{
 		// method compares the super type of each object and sorts the objects such that
@@ -611,11 +638,12 @@ public class partyInventory
 		@Override 
 		public int compare(itemAttributesDefined objectOne, itemAttributesDefined objectTwo) 
 		{
-			return objectOne.getItemSuperType().compareTo(objectTwo.getItemSuperType());
+			// return result of string comparison which will dictate TreeMap ordering
+			return compareStrings(objectOne.getItemSuperType(), objectTwo.getItemSuperType());
 		}
 	}; 
 	
-	// custom TreeMap comparator sorts the objects of a TreeMap by sub type 
+	// custom TreeMap comparator sorts the objects of a TreeMap by sub type alphabetically
 	public Comparator<itemAttributesDefined> sortBySubType = new Comparator<itemAttributesDefined>() 
 	{
 		// method compares the sub type of each object and sorts the objects such that
@@ -623,11 +651,12 @@ public class partyInventory
 		@Override 
 		public int compare(itemAttributesDefined objectOne, itemAttributesDefined objectTwo) 
 		{
-			return objectOne.getItemSubType().compareTo(objectTwo.getItemSubType());
+			// return result of string comparison which will dictate TreeMap ordering
+			return compareStrings(objectOne.getItemSubType(), objectTwo.getItemSubType());
 		}
 	}; 
 	
-	// custom TreeMap comparator sorts the objects of a TreeMap by buy price
+	// custom TreeMap comparator sorts the objects of a TreeMap by highest buy price 
 	public Comparator<itemAttributesDefined> sortByBuyPrice = new Comparator<itemAttributesDefined>() 
 	{
 		// method compares the buy price of each object and sorts the objects such that
@@ -635,20 +664,12 @@ public class partyInventory
 		@Override 
 		public int compare(itemAttributesDefined objectOne, itemAttributesDefined objectTwo) 
 		{
-			// place objectTwo after objectOne if it is less than buy price of objectOne
-			// else put objectTwo above objectOne 
-			if (objectOne.getItemBuyPrice() >= objectTwo.getItemBuyPrice())
-			{
-				return -1;
-			} 
-			else
-			{
-				return 1;
-			}
+			// return result of int comparison which will dictate TreeMap ordering
+			return compareIntegers(objectOne.getItemBuyPrice(), objectTwo.getItemBuyPrice());
 		}
 	}; 
 	
-	// custom TreeMap comparator sorts the objects of a TreeMap by sell price
+	// custom TreeMap comparator sorts the objects of a TreeMap by lowest sell price
 	public Comparator<itemAttributesDefined> sortBySellPrice = new Comparator<itemAttributesDefined>() 
 	{
 		// method compares the sell price of each object and sorts the objects such that
@@ -656,16 +677,8 @@ public class partyInventory
 		@Override 
 		public int compare(itemAttributesDefined objectOne, itemAttributesDefined objectTwo) 
 		{
-			// place objectTwo after objectOne if it is less than sell price of objectOne
-			// else put objectTwo above objectOne 
-			if (objectOne.getItemSellPrice() >= objectTwo.getItemSellPrice())
-			{
-				return -1;
-			} 
-			else
-			{
-				return 1;
-			}
+			// return result of int comparison which will dictate TreeMap ordering
+			return compareIntegers(objectOne.getItemSellPrice(), objectTwo.getItemSellPrice());
 		}
 	}; 
 	
@@ -678,16 +691,8 @@ public class partyInventory
 		@Override 
 		public int compare(ArrayList<itemAttributesDefined> arrayListOne, ArrayList<itemAttributesDefined> arrayListTwo) 
 		{
-			// place arrayListTwo after arrayListOne if it has a smaller size else put 
-			// arrayListTwo above arrayListOne
-			if (arrayListOne.size() >= arrayListTwo.size())
-			{
-				return -1;
-			} 
-			else
-			{
-				return 1;
-			}
+			// return result of int comparison which will dictate TreeMap ordering
+			return compareIntegers(arrayListOne.size(), arrayListTwo.size());
 		}
 	}; 
 	
@@ -700,16 +705,10 @@ public class partyInventory
 		@Override 
 		public int compare(ArrayList<itemAttributesDefined> arrayListOne, ArrayList<itemAttributesDefined> arrayListTwo) 
 		{
-			// place arrayListTwo after arrayListOne if it has a larger size else put 
-			// arrayListTwo above arrayListOne
-			if (arrayListOne.size() <= arrayListTwo.size())
-			{
-				return -1;
-			} 
-			else
-			{
-				return 1;
-			}
+			// return result of int comparison which will dictate TreeMap ordering
+			// multiply value of comparison by negative 1 (-1) to inverse the order
+			// given by comparator sortByHighestQuanity to sort by lowest quantity
+			return -1 * compareIntegers(arrayListOne.size(), arrayListTwo.size());
 		}
 	}; 
 	
@@ -736,17 +735,18 @@ public class partyInventory
 	// return an integer that is within the specified bounds as indicated below
 	public int checkSelectionSortChoice(int choice)
 	{
-		// if-else checks the integer that is supplied
+		// if-else checks the integer that is supplied andif it is not valid then the 
+		// value of their choice is altered to be within the specified bounds 
 		if(choice < 1)
 		{
 			choice = 1;
 		}
-		else if(choice > 4)
+		else if(choice > 5)
 		{
-			choice = 4;
+			choice = 5;
 		}
 		
-		// return the argument after it was checked
+		// return users choice after it was checked
 		return choice;
 	}
 	
@@ -762,7 +762,7 @@ public class partyInventory
 		// through the use of an enhanced for loop 
 		switch(choice)
 		{
-			case 1: // sort objects from class items 
+			case 1: // sort objects from class items ONLY
 				for(Map.Entry<itemAttributesDefined, ArrayList<itemAttributesDefined>> itemInventoryCopy : itemInventory.entrySet())
 				{
 					if(itemInventoryCopy.getKey().getClass() == items.class)
@@ -775,7 +775,7 @@ public class partyInventory
 					}
 				}
 					break;
-			case 2: // sort objects from class weapons 
+			case 2: // sort objects from class weapons ONLY
 				for(Map.Entry<itemAttributesDefined, ArrayList<itemAttributesDefined>> itemInventoryCopy : itemInventory.entrySet())
 				{
 					if(itemInventoryCopy.getKey().getClass() == weapons.class)
@@ -788,7 +788,7 @@ public class partyInventory
 					}
 				}
 					break;
-			case 3: // sort objects from class armors 
+			case 3: // sort objects from class armors ONLY
 				for(Map.Entry<itemAttributesDefined, ArrayList<itemAttributesDefined>> itemInventoryCopy : itemInventory.entrySet())
 				{
 					if(itemInventoryCopy.getKey().getClass() == armors.class)
@@ -801,7 +801,7 @@ public class partyInventory
 					}
 				}
 					break;
-			case 4: // sort objects from class accessories 
+			case 4: // sort objects from class accessories ONLY
 				for(Map.Entry<itemAttributesDefined, ArrayList<itemAttributesDefined>> itemInventoryCopy : itemInventory.entrySet())
 				{
 					if(itemInventoryCopy.getKey().getClass() == accessories.class)
@@ -814,24 +814,34 @@ public class partyInventory
 					}
 				}
 					break;
+			case 5: // sort objects from class cores ONLY
+				for(Map.Entry<itemAttributesDefined, ArrayList<itemAttributesDefined>> itemInventoryCopy : itemInventory.entrySet())
+				{
+					if(itemInventoryCopy.getKey().getClass() == cores.class)
+					{
+						sortObjectsBy.put(itemInventoryCopy.getKey(), itemInventoryCopy.getValue());
+					}
+					else
+					{
+						holdItemInventory.put(itemInventoryCopy.getKey(), itemInventoryCopy.getValue());
+					}
+				}
+					break;
 		}
 	}
 	
-	// method refills contents of party inventory linked hashmap itemInventory with 
-	// the contents of a sorted TreeMap followed by the linked hashmap that contains
-	// all of the other elements once held in itemInventory
-	public void refillItemInventory(TreeMap<itemAttributesDefined, ArrayList<itemAttributesDefined>> sortObjectsBy, 
+	// method fills contents of itemInventory with contents of sorted TreeMap followed 
+	// by linked hashmap that holds all of the other entry sets once held in itemInventory
+	public void specifiedFillItemInventory(TreeMap<itemAttributesDefined, ArrayList<itemAttributesDefined>> sortObjectsBy, 
 		LinkedHashMap<itemAttributesDefined, ArrayList<itemAttributesDefined>> holdItemInventory)
 	{
-		// enhanced for loop places sorted entry sets from TreeMap into party inventory 
-		// linked hashmap itemInventory first 
+		// enhanced for loop places sorted entry sets from TreeMap into itemInventory first 
 		for(Map.Entry<itemAttributesDefined, ArrayList<itemAttributesDefined>> sortObjectsByCopy : sortObjectsBy.entrySet())
 		{
 			itemInventory.put(sortObjectsByCopy.getKey(), sortObjectsByCopy.getValue());
 		}
 		
-		// enhanced for loop places the entry sets of a linked hashmap which originally 
-		// belonged to the party inventory linked hashmap itemInventory first 
+		// enhanced for loop places entry sets of linked hashmap back into itemInventory  
 		for(Map.Entry<itemAttributesDefined, ArrayList<itemAttributesDefined>> holdItemInventoryCopy : holdItemInventory.entrySet())
 		{
 			itemInventory.put(holdItemInventoryCopy.getKey(), holdItemInventoryCopy.getValue());		
@@ -840,19 +850,20 @@ public class partyInventory
 	
 	// sort desired class objects, empty party inventory itemInventory, and put all 
 	// contents of the TreeMap and linked hashmap back into itemInventory
-	public void specifiedKeySort(TreeMap<itemAttributesDefined, ArrayList<itemAttributesDefined>> sortObjectsBy, 
+	public void specifiedSort(TreeMap<itemAttributesDefined, ArrayList<itemAttributesDefined>> sortObjectsBy, 
 		LinkedHashMap<itemAttributesDefined, ArrayList<itemAttributesDefined>> holdItemInventory, int choice)
 	{
-		// pass TreeMap, linked hashmapand, and the choice for what class objects will 
+		// pass TreeMap, linked hashmap and, and the choice for what class objects will 
 		// be sorted to method sortObjectsByClass
 		sortObjectsByClass(sortObjectsBy, holdItemInventory, checkSelectionSortChoice(choice));
 		
-		// clear party inventory linked hashmap itemInventory in order to refill it the
-		// sorted TreeMap entry sets first and followed by entry sets of holdItemInventory
+		// clear itemInventory in order to refill it with the sorted TreeMap entry sets 
+		// first followed by the entry sets of holdItemInventory
 		itemInventory.clear();
 		
-		// pass TreeMap and linked hashmap to method sortObjectsByClass
-		refillItemInventory(sortObjectsBy, holdItemInventory);
+		// pass TreeMap and linked hashmap to method specifiedFillItemInventory() to 
+		// fill itemInventory after the specified sort
+		specifiedFillItemInventory(sortObjectsBy, holdItemInventory);
 	}
 	
 	// method stores the key of one TreeMap as the value of the other TreeMap and the
@@ -860,17 +871,17 @@ public class partyInventory
 	public void specifiedSwapKeysAndValues(TreeMap<itemAttributesDefined, ArrayList<itemAttributesDefined>> sortObjectsBy, 
 		TreeMap<ArrayList<itemAttributesDefined>, itemAttributesDefined> sortArrayListBy)
 	{
-		// enhanced for loop performs key and value swapping 
+		// enhanced for loop performs key/value swapping using TreeMap object sortObjectsByCopy
 		for(Map.Entry<itemAttributesDefined, ArrayList<itemAttributesDefined>> sortObjectsByCopy : sortObjectsBy.entrySet())
 		{
 			sortArrayListBy.put(sortObjectsByCopy.getValue(), sortObjectsByCopy.getKey());
 		}
 	}
 	
-	// method fills party inventory linked hashmap itemInventory with the contents of 
-	// the TreeMap that contains the values of itemInventory as its keys and the keys 
-	// as its values and the linked hashmap that stored the rest of the objects 
-	public void specifiedFillItemInventory(TreeMap<ArrayList<itemAttributesDefined>, itemAttributesDefined> sortArrayListBy, 
+	// method refills itemInventory with contents of sorted TreeMap that contains the 
+	// values of itemInventory as its keys and the keys as its values and the linked 
+	// hashmap that stored the rest of the objects 
+	public void specifiedRefillItemInventory(TreeMap<ArrayList<itemAttributesDefined>, itemAttributesDefined> sortArrayListBy, 
 		LinkedHashMap<itemAttributesDefined, ArrayList<itemAttributesDefined>> holdItemInventory)
 	{
 		// enhanced for loop places sorted entry sets from TreeMap into party inventory 
@@ -908,8 +919,8 @@ public class partyInventory
 		// sorted TreeMap entry sets first and followed by entry sets of holdItemInventory
 		itemInventory.clear();
 		
-		// pass TreeMap and linked hashmap to method specifiedFillItemInventory
-		specifiedFillItemInventory(sortArrayListBy, holdItemInventory);
+		// pass TreeMap and linked hashmap to method specifiedRefillItemInventory()
+		specifiedRefillItemInventory(sortArrayListBy, holdItemInventory);
 	}
 	
 	// END: METHODS USED THROUGHOUT SPECIFIED SORT
@@ -933,14 +944,14 @@ public class partyInventory
 		TreeMap<itemAttributesDefined, ArrayList<itemAttributesDefined>> sortObjectsBy = 
 			new TreeMap<itemAttributesDefined, ArrayList<itemAttributesDefined>>(sortByName);
 		
-		// linked hashmap object holdItemInventory stores all entry sets of the party 
-		// inventory hashmap itemInventory not stored in TreeMap sortObjectsBy
+		// linked hashmap object holdItemInventory stores all entry sets of itemInventory 
+		// not stored in TreeMap sortObjectsBy
 		LinkedHashMap<itemAttributesDefined, ArrayList<itemAttributesDefined>> holdItemInventory = 
 			new LinkedHashMap<itemAttributesDefined, ArrayList<itemAttributesDefined>>();			
 		
 		// pass TreeMap, linked hashmap, and the choice for what class objects will 
-		// be sorted to method specifiedKeySort()
-		specifiedKeySort(sortObjectsBy, holdItemInventory, specifiedSortChoice);
+		// be sorted to method specifiedSort()
+		specifiedSort(sortObjectsBy, holdItemInventory, specifiedSortChoice);
 	}
 	
 	// method sorts objects from class (category) specified by integer by category  
@@ -955,14 +966,14 @@ public class partyInventory
 		TreeMap<itemAttributesDefined, ArrayList<itemAttributesDefined>> sortObjectsBy = 
 			new TreeMap<itemAttributesDefined, ArrayList<itemAttributesDefined>>(sortByCategory);
 		
-		// linked hashmap object holdItemInventory stores all entry sets of the party 
-		// inventory hashmap itemInventory not stored in TreeMap sortObjectsBy
+		// linked hashmap object holdItemInventory stores all entry sets of itemInventory 
+		// not stored in TreeMap sortObjectsBy
 		LinkedHashMap<itemAttributesDefined, ArrayList<itemAttributesDefined>> holdItemInventory = 
 			new LinkedHashMap<itemAttributesDefined, ArrayList<itemAttributesDefined>>();			
 		
 		// pass TreeMap, linked hashmap, and the choice for what class objects will 
-		// be sorted to method specifiedKeySort()
-		specifiedKeySort(sortObjectsBy, holdItemInventory, specifiedSortChoice);
+		// be sorted to method specifiedSort()
+		specifiedSort(sortObjectsBy, holdItemInventory, specifiedSortChoice);
 	}
 	
 	// method sorts objects from class (category) specified by integer by super type  
@@ -977,14 +988,14 @@ public class partyInventory
 		TreeMap<itemAttributesDefined, ArrayList<itemAttributesDefined>> sortObjectsBy = 
 			new TreeMap<itemAttributesDefined, ArrayList<itemAttributesDefined>>(sortBySuperType);
 		
-		// linked hashmap object holdItemInventory stores all entry sets of the party 
-		// inventory hashmap itemInventory not stored in TreeMap sortObjectsBy
+		// linked hashmap object holdItemInventory stores all entry sets of itemInventory 
+		// not stored in TreeMap sortObjectsBy
 		LinkedHashMap<itemAttributesDefined, ArrayList<itemAttributesDefined>> holdItemInventory = 
 			new LinkedHashMap<itemAttributesDefined, ArrayList<itemAttributesDefined>>();			
 		
 		// pass TreeMap, linked hashmap, and the choice for what class objects will 
-		// be sorted to method specifiedKeySort()
-		specifiedKeySort(sortObjectsBy, holdItemInventory, specifiedSortChoice);
+		// be sorted to method specifiedSort()
+		specifiedSort(sortObjectsBy, holdItemInventory, specifiedSortChoice);
 	}
 	
 	// method sorts objects from class (category) specified by integer by sub type  
@@ -999,14 +1010,14 @@ public class partyInventory
 		TreeMap<itemAttributesDefined, ArrayList<itemAttributesDefined>> sortObjectsBy = 
 			new TreeMap<itemAttributesDefined, ArrayList<itemAttributesDefined>>(sortBySubType);
 		
-		// linked hashmap object holdItemInventory stores all entry sets of the party 
-		// inventory hashmap itemInventory not stored in TreeMap sortObjectsBy
+		// linked hashmap object holdItemInventory stores all entry sets of itemInventory 
+		// not stored in TreeMap sortObjectsBy
 		LinkedHashMap<itemAttributesDefined, ArrayList<itemAttributesDefined>> holdItemInventory = 
 			new LinkedHashMap<itemAttributesDefined, ArrayList<itemAttributesDefined>>();			
 		
 		// pass TreeMap, linked hashmap, and the choice for what class objects will 
-		// be sorted to method specifiedKeySort()
-		specifiedKeySort(sortObjectsBy, holdItemInventory, specifiedSortChoice);
+		// be sorted to method specifiedSort()
+		specifiedSort(sortObjectsBy, holdItemInventory, specifiedSortChoice);
 	}
 	
 	// method sorts objects from class (category) specified by integer by buy price  
@@ -1021,14 +1032,14 @@ public class partyInventory
 		TreeMap<itemAttributesDefined, ArrayList<itemAttributesDefined>> sortObjectsBy = 
 			new TreeMap<itemAttributesDefined, ArrayList<itemAttributesDefined>>(sortByBuyPrice);
 		
-		// linked hashmap object holdItemInventory stores all entry sets of the party 
-		// inventory hashmap itemInventory not stored in TreeMap sortObjectsBy
+		// linked hashmap object holdItemInventory stores all entry sets of itemInventory 
+		// not stored in TreeMap sortObjectsBy
 		LinkedHashMap<itemAttributesDefined, ArrayList<itemAttributesDefined>> holdItemInventory = 
 			new LinkedHashMap<itemAttributesDefined, ArrayList<itemAttributesDefined>>();			
 		
 		// pass TreeMap, linked hashmap, and the choice for what class objects will 
-		// be sorted to method specifiedKeySort()
-		specifiedKeySort(sortObjectsBy, holdItemInventory, specifiedSortChoice);
+		// be sorted to method specifiedSort()
+		specifiedSort(sortObjectsBy, holdItemInventory, specifiedSortChoice);
 	}
 	
 	// method sorts objects from class (category) specified by integer by sell price  
@@ -1043,14 +1054,14 @@ public class partyInventory
 		TreeMap<itemAttributesDefined, ArrayList<itemAttributesDefined>> sortObjectsBy = 
 			new TreeMap<itemAttributesDefined, ArrayList<itemAttributesDefined>>(sortBySellPrice);
 		
-		// linked hashmap object holdItemInventory stores all entry sets of the party 
-		// inventory hashmap itemInventory not stored in TreeMap sortObjectsBy
+		// linked hashmap object holdItemInventory stores all entry sets of itemInventory 
+		// not stored in TreeMap sortObjectsBy
 		LinkedHashMap<itemAttributesDefined, ArrayList<itemAttributesDefined>> holdItemInventory = 
 			new LinkedHashMap<itemAttributesDefined, ArrayList<itemAttributesDefined>>();			
 		
 		// pass TreeMap, linked hashmap, and the choice for what class objects will 
-		// be sorted to method specifiedKeySort() 
-		specifiedKeySort(sortObjectsBy, holdItemInventory, specifiedSortChoice);
+		// be sorted to method specifiedSort() 
+		specifiedSort(sortObjectsBy, holdItemInventory, specifiedSortChoice);
 	}
 	
 	// END: METHODS FOR SPECIFIED SORT OF KEYS
@@ -1069,24 +1080,25 @@ public class partyInventory
 		// assign argument to private instance variable specifiedSortChoice
 		specifiedSortChoice = choice;
 		
-		// linked hashmap object holdItemInventory stores all entry sets of the party 
-		// inventory hashmap itemInventory not stored in TreeMap sortObjectsBy
+		// linked hashmap object holdItemInventory stores all entry sets of itemInventory 
+		// not stored in TreeMap sortObjectsBy
 		LinkedHashMap<itemAttributesDefined, ArrayList<itemAttributesDefined>> holdItemInventory = 
 			new LinkedHashMap<itemAttributesDefined, ArrayList<itemAttributesDefined>>();			
 				
 		// TreeMap object sortObjectsBy will ONLY hold objects from specified class 
-		// sortObjectsBy has custom comparator sortByName implemented at the end 
-		// Note: needed to use sortObjectsByClass() to separate desired class objects
+		// sortObjectsBy has custom comparator sortByName implemented at the end and 
+		// is needed in order to store the objects in a way TreeMao will understand 
+		// Note: TreeMap needed to use sortObjectsByClass() to separate class objects
 		TreeMap<itemAttributesDefined, ArrayList<itemAttributesDefined>> sortObjectsBy = 
 			new TreeMap<itemAttributesDefined, ArrayList<itemAttributesDefined>>(sortByName);		
 		
-		// TreeMap object sortArrayListBy will store the values of the party inventory
-		// linked hashmap itemInventory as its key and the keys of itemInventory as 
-		// its value and it will sort them using comparator sortByHighestQuanity
+		// TreeMap object sortArrayListBy will store the values of itemInventory as 
+		// its key and the keys of itemInventory as its value and it will sort them 
+		// using comparator sortByHighestQuanity
 		TreeMap<ArrayList<itemAttributesDefined>, itemAttributesDefined> sortArrayListBy = 
 			new TreeMap<ArrayList<itemAttributesDefined>, itemAttributesDefined>(sortByHighestQuanity);
 		
-		// pass both TreeMaps, the linked hashmapand, and the choice for what class 
+		// pass both TreeMaps, the linked hashmap and, and the choice for what class 
 		// objects will be sorted to method specifiedValueSort()
 		specifiedValueSort(sortObjectsBy, sortArrayListBy, holdItemInventory, 
 			checkSelectionSortChoice(choice));
@@ -1105,17 +1117,19 @@ public class partyInventory
 			new LinkedHashMap<itemAttributesDefined, ArrayList<itemAttributesDefined>>();			
 				
 		// TreeMap object sortObjectsBy will ONLY hold objects from specified class 
-		// sortObjectsBy has custom comparator sortBySellPrice implemented at the end 
+		// sortObjectsBy has custom comparator sortByName implemented at the end and 
+		// is needed in order to store the objects in a way TreeMao will understand 
+		// Note: TreeMap needed to use sortObjectsByClass() to separate class objects
 		TreeMap<itemAttributesDefined, ArrayList<itemAttributesDefined>> sortObjectsBy = 
 			new TreeMap<itemAttributesDefined, ArrayList<itemAttributesDefined>>(sortByName);		
 		
-		// TreeMap object sortArrayListBy will store the values of the party inventory
-		// linked hashmap itemInventory as its key and the keys of itemInventory as 
-		// its value and it will sort them using comparator sortByLowestQuanity
+		// TreeMap object sortArrayListBy will store the values of itemInventory as 
+		// its key and the keys of itemInventory as its value and it will sort them 
+		// using comparator sortByLowestQuanity
 		TreeMap<ArrayList<itemAttributesDefined>, itemAttributesDefined> sortArrayListBy = 
 			new TreeMap<ArrayList<itemAttributesDefined>, itemAttributesDefined>(sortByLowestQuanity);
 		
-		// pass both TreeMaps, the linked hashmapand, and the choice for what class 
+		// pass both TreeMaps, the linked hashmap and, and the choice for what class 
 		// objects will be sorted to method specifiedValueSort()
 		specifiedValueSort(sortObjectsBy, sortArrayListBy, holdItemInventory, 
 			checkSelectionSortChoice(choice));
@@ -1140,29 +1154,41 @@ public class partyInventory
 	// METHODS ARE USED TO REDUCE DUPLICATE CODE AND TO ISOLATE ERRORS THEY MAY CAUSE
 	/*------------------------------------------------------------------------------*/	
 	
-	// method fills TreeMap with keys and values of linked hashmap itemInventory
+	// method fills TreeMap with keys and values of itemInventory
 	public void fillTreeMapKeyValue(TreeMap<itemAttributesDefined, ArrayList<itemAttributesDefined>> sortInventoryBy)
 	{
 		// enhanced for loop creates linked hashmap object itemInventoryCopy that can
-		// be used get the keys and values of each entry set 
+		// be used get the keys and values of each entry set of the itemInventory
 		for(Map.Entry<itemAttributesDefined, ArrayList<itemAttributesDefined>> itemInventoryCopy : itemInventory.entrySet())
 		{
 			sortInventoryBy.put(itemInventoryCopy.getKey(), itemInventoryCopy.getValue());
 		}
 	}
 	
-	// method fills party inventory linked hashmap itemInventory with contents of TreeMap
+	// method fills itemInventory with contents of the sorted TreeMap
 	public void generalFillInventory(TreeMap<itemAttributesDefined, ArrayList<itemAttributesDefined>> sortInventoryBy)
 	{
 		// enhanced for loop creates linked hashmap object sortInventoryByCopy that can
-		// be used get the keys and values of each entry set 
+		// be used get the keys and values of each entry set of the itemInventory
 		for(Map.Entry<itemAttributesDefined, ArrayList<itemAttributesDefined>> sortInventoryByCopy : sortInventoryBy.entrySet())
 		{
 			itemInventory.put(sortInventoryByCopy.getKey(), sortInventoryByCopy.getValue());
 		}
 	}
 	
-	// method calls other methods to sort all objects in party inventory linked hashmap itemInventory
+	// fill itemInventory with contents of sorted TreeMap by placing value of TreeMap 
+	// as the key for itemInventory and the key as the value for itemInventory
+	public void generalFillItemInventory(TreeMap<ArrayList<itemAttributesDefined>, 
+		itemAttributesDefined> sortInventoryBy)
+	{
+		// enhanced for loop performs key and value swapping for TreeMap 
+		for(Map.Entry<ArrayList<itemAttributesDefined>, itemAttributesDefined> sortInventoryByCopy : sortInventoryBy.entrySet())
+		{
+			itemInventory.put(sortInventoryByCopy.getValue(), sortInventoryByCopy.getKey());
+		}
+	}
+	
+	// method calls other methods to sort all objects in itemInventory using TreeMap
 	public void generalSort(TreeMap<itemAttributesDefined, ArrayList<itemAttributesDefined>> sortInventoryBy)
 	{
 		// fill empty TreeMap which will sort by rules established by comparator
@@ -1175,29 +1201,16 @@ public class partyInventory
 		generalFillInventory(sortInventoryBy);
 	}
 	
-	// method puts the key of party inventory linked hashmap itemInventory as the value 
-	// for the TreeMap and the value as the key of the TreeMap 
+	// method puts the key of itemInventory as the value for the TreeMap and value as
+	// the key of the TreeMap 
 	public void generalSwapKeysAndValues(TreeMap<ArrayList<itemAttributesDefined>, 
 		itemAttributesDefined> sortInventoryBy)
 	{
-		// enhanced for loop performs key and value swapping as indicated above 
+		// enhanced for loop performs key and value swapping for TreeMap 
 		for(Map.Entry<itemAttributesDefined, ArrayList<itemAttributesDefined>> itemInventoryCopy : itemInventory.entrySet())
 		{
 			sortInventoryBy.put(itemInventoryCopy.getValue(), itemInventoryCopy.getKey());
 		}		
-	}
-	
-	// fill party inventory linked hashmap itemInventory with contents of sorted TreeMap
-	// by placing the value of the TreeMap as the key for itemInventory and the value as
-	// the key for itemInventory
-	public void generalFillItemInventory(TreeMap<ArrayList<itemAttributesDefined>, 
-		itemAttributesDefined> sortInventoryBy)
-	{
-		// enhanced for loop performs key and value swapping as indicated above 
-		for(Map.Entry<ArrayList<itemAttributesDefined>, itemAttributesDefined> sortInventoryByCopy : sortInventoryBy.entrySet())
-		{
-			itemInventory.put(sortInventoryByCopy.getValue(), sortInventoryByCopy.getKey());
-		}
 	}
 	
 	// method calls other methods to sort by value 
