@@ -1,442 +1,268 @@
 /*
-	public class accessories extends public class genericItem & defines methods 
-	related to equipable accessories which can either increase or decrease stats 
-	once equipped 
+	public class accessories extends public class genericObject and defines methods related 
+	to creating accessories that can be used to increase the attributes of the wearer
+	as well as defend the wearer from a variable number of status effects 
 	
-	accessories
-		rings
-		necklaces
-		gloves
-		capes
-		shields
-		head
+	Note on imported libraries: 
+	
+		Import SecureRandom to get numbers that are more random than from Random class 
+		
+		Import LinkedHashSet to create a hash set which maintains the insertion order 
+		of something (like arrays). Linked Hash Sets do not add objects if they are 
+		not "unique" (if value to be added to hash set is already in the set then the 
+		duplicate will not be added to the set). The elements in Linked Hash Sets are 
+		ordered by insertion order. Note that entries are maintained in a linked list 
+		meaning objects can be added with .add()
+		
+		Import ArrayList and List to have a list which keeps track of status effects
+		that belong to a particular accessory. Since the number of status effects an
+		accessory can resist is not known, it would be best to use an array list in 
+		order hold Strings passed through the use of a var args (variable arguments)
+		at the end of the constructor (which is the only place it would be valid)
 */
-import java.util.Random;
 
-public class accessories extends itemAttributesDefined
+import java.security.SecureRandom;
+import java.util.LinkedHashSet;  
+import java.util.ArrayList;
+
+public class accessories extends genericObject
 {	
-	private double accessoryExp;				// accessory effect on character's experience  
-	private int accessoryMaxHp;					// accessory effect on character's max HP 
-	private int accessoryCurrentHp;				// accessory effect on character's current hp 
-	private int accessoryAttack;				// accessory effect on character's attack stat 
-	private int accessoryDefense;				// accessory effect on character's defense stat 
-	private int accessoryNano;					// accessory effect on character's nano stat 
-	private int accessoryStamina;				// accessory effect on character's stamina stat 
-	private int accessoryDexterity;				// accessory effect on character's dexterity stat 
-	private int accessoryCritical;				// accessory effect on character's critical stat 
-	private int accessoryAccuracy;				// accessory effect on character's accuracy stat 
-	private int accessoryNanoAttack;			// accessory effect on character's nano attack stat 
-	private int accessoryNanoDefense;			// accessory effect on character's nano defense stat 	
-	
-	// hold status that accessories can resist
-	private String[] resistAttributeStatus = {"Attack Down", "Defense Down", "Nano Down", 
-		"Stamina Down", "Dexterity Down", "Critical Down", "Accuracy Down", "Nano Attack Down",
-		"Nano Defense Down"}; 
-	
-	// hold accessory status resistances 
-	private String[] resistResistanceStatus = {"Dry", "Wet", "Cold", "Conductive", 
-		"Sickness", "Hypersensitive", "Coated", "Lightweight"};
-	
-	// hold behavior that accessories can resist 
-	private String[] resistBehavior = {"Enamore", "Infatuate"};
-	
-	// hold turn statuses that accessories can resist 
-	private String[] resistNegativeTurnStatus = {"Stun", "Sleep", "Shock", "Slow",
-		"Stop", "Slime"};	
-	
-	// flatten arrays concerning accessory resistances into one array 
-	private String[] holdResistStatus [] = {resistAttributeStatus, 
-		resistResistanceStatus, resistBehavior, resistNegativeTurnStatus};
+	private double expMultiplier;			// accessory effect on character's experience  
+	private int maxHp;						// accessory effect on character's max HP 
+	private int currentHp;					// accessory effect on character's current hp 
+	private int attack;						// accessory effect on character's attack stat 
+	private int defense;					// accessory effect on character's defense stat 
+	private int nano;						// accessory effect on character's nano stat 
+	private int stamina;					// accessory effect on character's stamina stat 
+	private int dexterity;					// accessory effect on character's dexterity stat 
+	private int critical;					// accessory effect on character's critical stat 
+	private int accuracy;					// accessory effect on character's accuracy stat 
+	private int nanoAttack;					// accessory effect on character's nano attack stat 
+	private int nanoDefense;				// accessory effect on character's nano defense stat 	
 
 	// hold valid types for an accessory slot 
-	private String[] validSlotTypes = {null, "Max Hp", "Current Hp", "Attack", 
+	private String[] validSlotTypes = {"Max Hp", "Current Hp", "Attack", 
 		"Defense", "Nano", "Stamina", "Dexterity", "Critical", "Accuracy", 
 		"Nano Attack", "Nano Defense", "Any Accessory Core"};
-
-	// accessories can resist up to three status ailments at a time 
-	private String resistStatusOne; 		// hold first status accessory resists
-	private String resistStatusTwo; 		// hold second status accessory resists
-	private String resistStatusThree; 		// hold third status accessory resists
+	
+	// create an array list that will hold various Strings supplied to var args
+	private ArrayList<String> statusAccessoryResists = new ArrayList<String>();
 	
 	// slot types can be altered for a large price if desired 
 	// cores can be transferred across armor 
 	// cores run out over time with use and they are replaceable 
 	
-	private boolean randomSlots;	// determines whether all slot types should be randomized 
-	private String slotOneType;		// store what type of slot that slot one is 
-	private core slotOneCore;		// stores core in the specified accessory slot 
+	private String slotOneType;				// store what type of slot that slot one is 
+	private cores slotOneCore;				// stores core in the specified accessory slot 
 	
-	public accessories(int itemId, String itemName, String itemCategory, 
-		String itemSuperType, String itemSubType, int itemBuyPrice, 
-		int itemSellPrice, double accessoryExp, int accessoryMaxHp,
-		int accessoryCurrentHp, int accessoryAttack, int accessoryDefense, 
-		int accessoryNano, int accessoryStamina, int accessoryDexterity,
-		int accessoryCritical, int accessoryAccuracy, int accessoryNanoAttack, 
-		int accessoryNanoDefense, Boolean randomSlots)
+	private int coreSum;					// stores sum of core points in sumOfCores()
+	private int totalMaxHp;					// accessory Max Hp with Max Hp core applied 
+	private int totalCurrentHp;				// accessory Current Hp with Current Hp core applied 
+	private int totalAttack;				// accessory Attack with Attack core applied 
+	private int totalDefense;				// accessory Defense with Defense core applied 
+	private int totalNano;					// accessory Nano with Nano core applied 
+	private int totalStamina;				// accessory Stamina with Stamina core applied 
+	private int totalDexterity;				// accessory Dexterity with Dexterity core applied 
+	private int totalCritical;				// accessory Critical with Critical core applied 
+	private int totalAccuracy;				// accessory Accuracy with Accuracy core applied 
+	private int totalNanoAttack;			// accessory Nano Attack with Nano Attack cores applied
+	private int totalNanoDefense;			// accessory Nano Defense with Nano Defense cores applied
+	
+	// create accessories with nothing supplied to super constructor due to too many parameters
+	// objects created through this constructor can be customized further by calling set 
+	// methods within this class
+	public accessories()
 	{
-		// supply arguments to superclass constructor 
-		super(itemId, itemName, itemCategory, itemSuperType, itemSubType, itemBuyPrice, itemSellPrice);
-		
-		setAccessoryExp(accessoryExp);
-		setAccessoryMaxHp(accessoryMaxHp);
-		setAccessoryCurrentHp(accessoryCurrentHp);
-		setAccessoryAttack(accessoryAttack);
-		setAccessoryDefense(accessoryDefense);
-		setAccessoryNano(accessoryNano);
-		setAccessoryStamina(accessoryStamina);
-		setAccessoryDexterity(accessoryDexterity);
-		setAccessoryCritical(accessoryCritical);
-		setAccessoryAccuracy(accessoryAccuracy);
-		setAccessoryNanoAttack(accessoryNanoAttack);
-		setAccessoryNanoDefense(accessoryNanoDefense);
-		setRandomSlots(randomSlots);
-		randomizeSlotTypes(getRandomSlots());
-		
-		
-		
+		// empty constructor 
 	}
 	
-	// set experience value accessory affects character experience by
-	public void setAccessoryExp(double accessoryExp)
+	// create accessories that only have a var args which can allows the wearer to resist
+	// a variables number of status effects nothing supplied to super constructor due to too many parameters
+	public accessories(String...array)
 	{
-		if(accessoryExp < 0)
+		varArgsToLinkedHashSet(array);
+	}
+	
+	
+	
+	
+	
+	
+	// START: ACCESSORY EFFECTS ON ATTRIBUTES
+	/*******************************************************************************/
+
+	// set experience value accessory affects character experience by
+	public void setExpMultiplier(double expMultiplier)
+	{
+		if(expMultiplier < 1)
 		{
-			accessoryExp = 0;
+			expMultiplier = 1;
 		}
-		else if(accessoryExp > 3)
+		else if(expMultiplier > 3)
 		{
-			accessoryExp = 3;
+			expMultiplier = 3;
 		}
 		
-		this.accessoryExp = accessoryExp;
+		this.expMultiplier = expMultiplier;
 	}
 	
 	// get experience value accessory affects character experience by
-	public double getAccessoryExp()
+	public double getExpMultiplier()
 	{
-		return accessoryExp; 
+		return expMultiplier; 
 	} 
 	
-	// set max hp value accessory takes/adds to character 
-	public void setAccessoryMaxHp(int accessoryMaxHp) 
+	// returns an int that is within the range specified in validAttribute
+	public int validAttribute(int attribute)
 	{
-		if(accessoryMaxHp < 0)
+		if(attribute < -500)
 		{
-			accessoryMaxHp = 0;
+			attribute = -500;
 		}
-		else if(accessoryMaxHp > 500)
+		else if(attribute > 500)
 		{
-			accessoryMaxHp = 500;
+			attribute = 500;
 		}
 		
-		this.accessoryMaxHp = accessoryMaxHp; 
+		return attribute;
+	}
+	
+	// set max hp value accessory takes/adds to character 
+	public void setMaxHp(int maxHp) 
+	{
+		this.maxHp = validAttribute(maxHp); 
 	} 
 	
-	/*
-	oathkeeper Sinclair
-	Heather Van Der Lind
-	Envoy of the End 
-	The End 
-	Nero of the downtrodden  l
-	He that is Here but not there
-	Queen of the Western Isles
-	*/
-	
 	// get max hp value accessory takes/adds to character 
-	public int getAccessoryMaxHp()
+	public int getMaxHp()
 	{
-		return accessoryMaxHp; 
+		return maxHp; 
 	} 
 	
 	// set current HP value accessory takes/adds to character 
-	public void setAccessoryCurrentHp(int accessoryCurrentHp)
+	public void setCurrentHp(int currentHp)
 	{	
-		if(accessoryCurrentHp < 0)
-		{
-			accessoryCurrentHp = 0;
-		}
-		else if(accessoryCurrentHp > 500)
-		{
-			accessoryCurrentHp = 500;
-		}
-		
-		this.accessoryCurrentHp = accessoryCurrentHp;
+		this.currentHp = validAttribute(currentHp);
 	}
 	
 	// get current HP value accessory takes/adds to character 
-	public int getAccessoryCurrentHp()
+	public int getCurrentHp()
 	{
-		return accessoryCurrentHp; 
+		return currentHp; 
 	} 
 	
 	// set attack value accessory takes/adds to character 
-	public void setAccessoryAttack(int accessoryAttack)
+	public void setAttack(int attack)
 	{
-		if(accessoryAttack < 0)
-		{
-			accessoryAttack = 0;
-		}
-		else if(accessoryAttack > 500)
-		{
-			accessoryAttack = 500;
-		}
-		
-		this.accessoryAttack = accessoryAttack;
+		this.attack = validAttribute(attack);
 	}
 	
 	// get attack value accessory takes/adds to character 
-	public int getAccessoryAttack()
+	public int getAttack()
 	{
-		return accessoryAttack; 
+		return attack; 
 	} 
 	
-	
 	// set defense value accessory takes/adds to character 
-	public void setAccessoryDefense(int accessoryDefense)
+	public void setDefense(int defense)
 	{
-		if(accessoryDefense < 0)
-		{
-			accessoryDefense = 0;
-		}
-		else if(accessoryDefense > 500)
-		{
-			accessoryDefense = 500;
-		}
-		
-		this.accessoryDefense = accessoryDefense;
+		this.defense = validAttribute(defense);
 	}
 	
 	// get defense value accessory takes/adds to character 
-	public int getAccessoryDefense()
+	public int getDefense()
 	{
-		return accessoryDefense; 
+		return defense; 
 	} 
 	
 	// set nano value accessory takes/adds to character 
-	public void setAccessoryNano(int accessoryNano)
+	public void setNano(int nano)
 	{
-		if(accessoryNano < 0)
-		{
-			accessoryNano = 0;
-		}
-		else if(accessoryNano > 500)
-		{
-			accessoryNano = 500;
-		}
-		
-		this.accessoryNano = accessoryNano;
+		this.nano = validAttribute(nano);
 	}
 	
 	// get nano value accessory takes/adds to character 
-	public int getAccessoryNano()
+	public int getNano()
 	{
-		return accessoryNano; 
+		return nano; 
 	} 
 	
 	// set stamina value accessory takes/adds to character 
-	public void setAccessoryStamina(int accessoryStamina)
+	public void setStamina(int stamina)
 	{
-		if(accessoryStamina < 0)
-		{
-			accessoryStamina = 0;
-		}
-		else if(accessoryStamina > 500)
-		{
-			accessoryStamina = 500;
-		}
-		
-		this.accessoryStamina = accessoryStamina;
+		this.stamina = validAttribute(stamina);
 	}
 	
 	// get stamina value accessory takes/adds to character 
-	public int getAccessoryStamina()
+	public int getStamina()
 	{
-		return accessoryStamina; 
+		return stamina; 
 	} 
 	
 	// set dexterity value accessory takes/adds to character 
-	public void setAccessoryDexterity(int accessoryDexterity)
+	public void setDexterity(int dexterity)
 	{
-		if(accessoryDexterity < 0)
-		{
-			accessoryDexterity = 0;
-		}
-		else if(accessoryDexterity > 500)
-		{
-			accessoryDexterity = 500;
-		}
-		
-		this.accessoryDexterity = accessoryDexterity;
+		this.dexterity = validAttribute(dexterity);
 	}
 	
 	// get dexterity value accessory takes/adds to character 
-	public int getAccessoryDexterity()
+	public int getDexterity()
 	{
-		return accessoryDexterity; 
+		return dexterity; 
 	} 
 	
 	// set critical value accessory takes/adds to character 
-	public void setAccessoryCritical(int accessoryCritical)
+	public void setCritical(int critical)
 	{
-		if(accessoryCritical < 0)
-		{
-			accessoryCritical = 0;
-		}
-		else if(accessoryCritical > 500)
-		{
-			accessoryCritical = 500;
-		}
-		
-		this.accessoryCritical = accessoryCritical;
+		this.critical = validAttribute(critical);
 	}
 	
 	// get critical value accessory takes/adds to character 
-	public int getAccessoryCritical()
+	public int getCritical()
 	{
-		return accessoryCritical; 
+		return critical; 
 	} 
 	
 	// set accuracy value accessory takes/adds to character 
-	public void setAccessoryAccuracy(int accessoryAccuracy)
+	public void setAccuracy(int accuracy)
 	{
-		if(accessoryAccuracy < 0)
-		{
-			accessoryAccuracy = 0;
-		}
-		else if(accessoryAccuracy > 500)
-		{
-			accessoryAccuracy = 500;
-		}
-		
-		this.accessoryAccuracy = accessoryAccuracy;
+		this.accuracy = validAttribute(accuracy);
 	}
 	
 	// get accuracy value accessory takes/adds to character 
-	public int getAccessoryAccuracy()
+	public int getAccuracy()
 	{
-		return accessoryAccuracy; 
+		return accuracy; 
 	} 
 	
 	// set nano attack value accessory takes/adds to character 
-	public void setAccessoryNanoAttack(int accessoryNanoAttack)
+	public void setNanoAttack(int nanoAttack)
 	{
-		if(accessoryNanoAttack < 0)
-		{
-			accessoryNanoAttack = 0;
-		}
-		else if(accessoryNanoAttack > 500)
-		{
-			accessoryNanoAttack = 500;
-		}
-		
-		this.accessoryNanoAttack = accessoryNanoAttack;
+		this.nanoAttack = validAttribute(nanoAttack);
 	}
 	
 	// get nano attack value accessory takes/adds to character 
-	public int getAccessoryNanoAttack()
+	public int getNanoAttack()
 	{
-		return accessoryNanoAttack; 
+		return nanoAttack; 
 	} 
 	
 	// set nano defense value accessory takes/adds to character 
-	public void setAccessoryNanoDefense(int accessoryNanoDefense)
+	public void setNanoDefense(int nanoDefense)
 	{
-		if(accessoryNanoDefense < 0)
-		{
-			accessoryNanoDefense = 0;
-		}
-		else if(accessoryNanoDefense > 500)
-		{
-			accessoryNanoDefense = 500;
-		}
-		
-		this.accessoryNanoDefense = accessoryNanoDefense;
+		this.nanoDefense = validAttribute(nanoDefense);
 	}
 	
 	// get nano defense value accessory takes/adds to character 
-	public int getAccessoryNanoDefense()
+	public int getNanoDefense()
 	{
-		return accessoryNanoDefense; 
+		return nanoDefense; 
 	} 
 	
-	// set whether random slots are generated for a accessory
-	public void setRandomSlots(boolean randomSlots)
-	{
-		this.randomSlots = randomSlots;
-	}
+	// END: ACCESSORY EFFECTS ON ATTRIBUTES
+	/*******************************************************************************/
 	
-	// return random slots option for accessories 
-	public boolean getRandomSlots()
-	{
-		return randomSlots;
-	}
 	
-	// check whether the status supplied as an argument is valid 
-	public boolean isResistStatusValid(String resistStatus)
-	{
-		boolean validArgument = false;
-		
-		if(resistStatus != null)
-		{
-			for(int i = 0; i < holdResistStatus.length; i++)
-			{
-				if(resistStatus.equals(holdResistStatus[i]))
-				{
-					validArgument = true;
-				}
-			}
-			return validArgument;
-		}
-		else
-		{
-			return validArgument;
-		}
-	}
-	
-	// set first status that accessory resists 
-	public void setResistStatusOne(String resistStatusOne)
-	{
-		if(isResistStatusValid(resistStatusOne) == true)
-		{
-			this.resistStatusOne = resistStatusOne;
-		}
-	}
-	
-	// get first status that accessory resists  
-	public String getResistStatusOne()
-	{
-		return resistStatusOne;
-	}
-	
-	// set second status that armor resists 
-	public void setResistStatusTwo(String resistStatusTwo)
-	{
-		if(isResistStatusValid(resistStatusTwo) == true)
-		{
-			this.resistStatusTwo = resistStatusTwo;
-		}
-	}
-	
-	// get second status that armor resists  
-	public String getResistStatusTwo()
-	{
-		return resistStatusTwo;
-	}
-	
-	// set third status that armor resists 
-	public void setResistStatusThree(String resistStatusThree)
-	{
-		if(isResistStatusValid(resistStatusThree) == true)
-		{
-			this.resistStatusThree = resistStatusThree;
-		}
-	}
-	
-	// get third status that armor resists  
-	public String getResistStatusThree()
-	{
-		return resistStatusThree;
-	}
 	
 	/*
 		8 options
@@ -455,14 +281,19 @@ public class accessories extends itemAttributesDefined
 			13	5	Any Core Type 
 	*/
 	
+	
+	
+	// START: ACCESSORY SLOT TYPES AND SLOT CORES
+	/*******************************************************************************/
+
 	// returns a String that was selected randomly
 	public String determineSlotType()
 	{
 		// create random object to call random methods 
-		Random rand = new Random();
+		SecureRandom secureRand = new SecureRandom();
 		
 		// int variable will hold a random number form 1 to 100
-		int holdInt = rand.nextInt(100 + 1);
+		int holdInt = secureRand.nextInt(100 + 1);
 		
 		// initialize holdSlotType meant to be assigned a String for slot type 
 		String holdSlotType = null;
@@ -542,11 +373,11 @@ public class accessories extends itemAttributesDefined
 		
 		if(slotType !=null)
 		{
-			// for loop compares string against elements in array 
-			for(int i = 0; i < validSlotTypes.length; i++)
+			// enhanced for loop compares supplied string against array elements
+			for(String element : validSlotTypes)
 			{
 				// if supplied string matches element in the array, assign boolean with true 
-				if(slotType.equals(validSlotTypes[i]))
+				if(slotType.equals(element))
 				{
 					validArgument = true;
 				}
@@ -561,18 +392,18 @@ public class accessories extends itemAttributesDefined
 	}
 	
 	// determine whether the supplied accessory core is valid 
-	public boolean isCoreTypeValid(core core)
+	public boolean isCoreTypeValid(cores core)
 	{
 		// variable will be set to true is argument is valid 
 		boolean validArgument = false;
 		
 		if(core != null)
 		{
-			// for loop compares core type against elements in array 
-			for(int i = 0; i < validSlotTypes.length; i++)
+			// for loop compares supplied core core type against array elements
+			for(String element : validSlotTypes)
 			{
 				// if supplied string matches element in the array, assign boolean with true 
-				if(core.getCoreType().equals(validSlotTypes[i]))
+				if(core.getCoreType().equals(element))
 				{
 					validArgument = true;
 				}
@@ -602,7 +433,7 @@ public class accessories extends itemAttributesDefined
 	}
 	
 	// set core into accessory slot if it is the same type as the slot 
-	public void setSlotOneCore(core slotOneCore)
+	public void setSlotOneCore(cores slotOneCore)
 	{
 		if(getSlotOneType() != null)
 		{
@@ -623,8 +454,228 @@ public class accessories extends itemAttributesDefined
 	}
 	
 	// get the core set in slot one 
-	public core getSlotOneCore()
+	public cores getSlotOneCore()
 	{
 		return slotOneCore;
 	}
+	
+	// consider adding more cores to accessories...
+	// return an array containing all possible cores an accessory can have 
+	public cores[] getAccessoryCores()
+	{
+		cores[] accessoryCores = {getSlotOneCore()};
+			return accessoryCores;
+	}
+	
+	// END: ACCESSORY SLOT TYPES AND SLOT CORES
+	/*******************************************************************************/
+	
+	
+	
+	
+	
+	
+	// START: STATUS ACCESSORY NEGATES OR RESISTS
+	/*******************************************************************************/
+
+	// create an array list that can hold up to six elements from an array 
+	public void varArgsToArrayList(String[] array)
+	{
+		// pass array to varArgsToLinkedHashSet() to cause it to return a linked hash
+		// set which will have its contents passed to the array list instance variable 
+		setStatusesAccessoryResists(varArgsToLinkedHashSet(array));
+	}
+	
+	// check whether the status supplied as an argument is valid 
+	public boolean isResistStatusValid(String resistStatus)
+	{
+		boolean validArgument = false;
+		
+		if(resistStatus != null)
+		{
+			for(String[] array : removeStatusEffects.getNegativeStatusEffects())
+			{
+				for(String element : array)
+				{
+					if(resistStatus.equals(element))
+					{
+						validArgument = true;
+					}
+				}
+			}
+			return validArgument;
+		}
+		else
+		{
+			return validArgument;
+		}
+	}
+	
+	// method stores array elements from var args in constructor to a linked hash set 
+	// and returns it based on number of elements that exist in the array 
+	public LinkedHashSet<String> varArgsToLinkedHashSet(String[] array)
+	{
+		// create linked hash set object of type String that will only store unique values  
+		LinkedHashSet<String> linkedHashSet = new LinkedHashSet<String>();
+		
+		// iterate through array contents differently depending on length of array 
+		if(array.length < 6)
+		{
+			// enhanced for loop adds elements to linkedHashSet if it is not null and 
+			// if it is valid 
+			for(String element : array)
+			{
+				if(element != null)
+				{
+					if(isResistStatusValid(element) == true)
+					{
+						linkedHashSet.add(element);
+					}
+				}
+			}
+		}
+		else
+		{
+			// enhanced for loop adds elements to linkedHashSet if it is not null and 
+			// if it is valid and break loop in case linkedHashSet has six elements 
+			for(String element : array)
+			{
+				if(element != null)
+				{
+					if(linkedHashSet.size() == 6)
+					{
+						break;
+					}
+					else if(isResistStatusValid(element) == true)
+					{
+						linkedHashSet.add(element);
+					}
+				}
+			}
+		}
+		
+		// return linked hash set 
+		return linkedHashSet;
+	}
+	
+	// set contents of array list instance variable by passing contents of linked hash set 
+	public void setStatusesAccessoryResists(LinkedHashSet<String> set)
+	{
+		// enhanced for loop iterates through linked hash set and places elements in 
+		// it into the instance variable array list 
+		for(String element : set)
+		{
+			statusAccessoryResists.add(element);
+		}
+	}
+	
+	// get the contents of the array list (need to iterate through it like an array)
+	public ArrayList<String> getStatusesAccessoryResists()
+	{
+		return statusAccessoryResists;
+	}
+	
+	// END: STATUS ACCESSORY NEGATES OR RESISTS
+	/*******************************************************************************/
+
+	
+	
+	
+	
+	
+	// START: TOTAL ACCESSORY ATTRIBUTES WITH CORES SUPPLIED
+	/*******************************************************************************/
+
+	// NEED remove methods for: weapons, armors, accessories... 
+	// assign null for now since need access to inventory for proper removal 
+	
+	// add points of cores if cores have same type as that specified by argument type 
+	public int addSumOfCores(String type)
+	{
+		// enhanced for loop iterates through all cores object can have 
+		for(cores element : getAccessoryCores())
+		{
+			// if element is not null, compare core types against argument type and if 
+			// they match then add the value (as an integer) to coreSum
+			if(element != null)
+			{
+				if(element.getCoreType().equals(type))
+				{
+					// casting is okay here since only int values are needed
+					coreSum += (int) element.getCurrentCorePoints();
+				}
+			}
+		}
+		
+		// return value held in value
+		return coreSum;
+	}
+	
+	/*
+		Note on "getTotal" methods below: 
+			methods get total value for a object (like attack, nano, ect.) by adding 
+			object's power and core points together only if the cores are the same 
+			type as the String supplied as argument (if "Attack" is supplied then 
+			add the current core points of the cores with core type "Attack") 
+	*/
+	
+							// attribute "getTotal" methods 
+	
+	public int getTotalMaxHp()
+	{
+		return totalMaxHp = getMaxHp() + addSumOfCores("Max Hp");
+	}
+	
+	public int getTotalCurrentHp()
+	{
+		return totalCurrentHp = getCurrentHp() + addSumOfCores("Current Hp");
+	}
+	
+	public int getTotalAttack()
+	{
+		return totalAttack = getAttack() + addSumOfCores("Attack");
+	}
+	
+	public int getTotalDefense()
+	{
+		return totalDefense = getDefense() + addSumOfCores("Defense");
+	}
+	
+	public int getTotalNano()
+	{
+		return totalNano = getNano() + addSumOfCores("Nano");
+	}
+	
+	public int getTotalStamina()
+	{
+		return totalStamina = getStamina() + addSumOfCores("Stamina");
+	}
+	
+	public int getTotalDexterity()
+	{
+		return totalDexterity = getDexterity() + addSumOfCores("Dexterity");
+	}
+	
+	public int getTotalCritical()
+	{
+		return totalCritical = getCritical() + addSumOfCores("Critical");
+	}
+	
+	public int getTotalAccuracy()
+	{
+		return totalAccuracy = getAccuracy() + addSumOfCores("Accuracy");
+	}
+	
+	public int getTotalNanoAttack()
+	{
+		return totalNanoAttack = getNanoAttack() + addSumOfCores("Nano Attack");
+	}
+	
+	public int getTotalNanoDefense()
+	{
+		return totalNanoDefense = getNanoDefense() + addSumOfCores("Nano Defense");
+	}
+	
+	// END: TOTAL ACCESSORY ATTRIBUTES WITH CORES SUPPLIED
+	/*******************************************************************************/
 }

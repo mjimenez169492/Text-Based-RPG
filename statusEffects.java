@@ -1,153 +1,174 @@
 /*
 	public class statusEffects contains code relating to the construction of status
-	effect objects which can affect the behavior or "status" of certain attributes
-	of a character attributes 
+	effect objects which can affect poistively or negatively effect the behavior of
+	a character in battle or the attributes/resistances of the character.
 */
 
 public class statusEffects
 {
-	private String statusName;				// name of status effect 
-	private double statusPercent;			// percent status affects attribute/resistance of character
-	private boolean statusPermanence;		// determine if status is permanent
-	private int statusTurns; 				// how many turns a status effect lasts 
-	private String statusCure;				// what cures a status effect 
-	private boolean statusCureAfterBattle;	// determine whether a status is cured immediately after battle 
+	private String name;					// name of status effect 
+	private int turns; 						// how many turns a status effect lasts 
+	private boolean permanence;				// determine if status is permanent
+	private boolean removeAfterKo;			// determines if status effect should be removed upon character knock out ("Ko")
+	private boolean removeAfterBattle;		// determine whether a status is cured immediately after battle 
 	
-	private String statusAttributeOne;		// first attribute status affects 
-	private String statusAttributeTwo;		// second attribute status affects 
-	private String statusAttributeThree;	// third attribute status affects 
-	private String statusResistanceOne;		// first resistance status affects 
-	private String statusResistanceTwo;		// second resistance status affects 
-	private String statusResistanceThree;	// third resistance status affects 
+	private String attributeOne;			// first attribute status affects 
+	private double attributeOnePercent;		// percent added/removed from first attribute 
 	
-	// hold attributes that a character has 
-	private String[] validAttributes = {"Max Hp", "Current Hp", "Attack", "Defense", 
-		"Nano", "Stamina", "Dexterity", "Critical", "Accuracy", "Nano Attack", 
-		"Nano Defense"};
+	private String attributeTwo;			// second attribute status affects 
+	private double attributeTwoPercent;		// percent added/removed from second attribute 
 	
-	// hold resistances that a character has 
-	private String[] validResistances = {"Fire Resistance", "Water Resistance", "Ice Resistance",
-		"Electricity Resistance", "Poison Resistance", "Sonic Resistance", "Plasma Resistance",
-		"Wind Resistance"};
+	private String attributeThree;			// third attribute status affects 
+	private double attributeThreePercent;	// percent added/removed from third attribute 
 	
-	public statusEffects(String statusName, double statusPercent, boolean statusPermanence,
-		int statusTurns, String statusCure, boolean statusCureAfterBattle, 
-		String statusAttributeOne, String statusAttributeTwo, String statusAttributeThree,
-		String statusResistanceOne, String statusResistanceTwo, String statusResistanceThree)
+	private String resistanceOne;			// first resistance status affects 
+	private int resistanceOneEffect;		// integer value added/removed from first resistance 
+	
+	private String resistanceTwo;			// second resistance status affects 
+	private int resistanceTwoEffect; 		// integer value added/removed from second resistance 
+	
+	private String resistanceThree;			// third resistance status affects 
+	private int resistanceThreeEffect; 		// integer value added/removed from third resistance 
+	
+	// hold attributes that a character/enemy has 
+	private String[] validAttributes = {"Current Hp", "Attack", "Defense", "Nano", "Stamina", 
+		"Dexterity", "Critical", "Accuracy", "Nano Attack", "Nano Defense", "All_Attributes"};
+	
+	// hold resistances that a character/enemy has 
+	private String[] validResistances = {"Fire Resistance", "Water Resistance", "Ice Resistance", 
+		"Electricity Resistance", "Poison Resistance", "Sonic Resistance", "Plasma Resistance", 
+		"Wind Resistance", "All_Resistances"};	
+	
+	// constructor allows for the creation of status effect object 
+	public statusEffects()
 	{
-		// Error: this.statusName = statusName;
-		// issue is if get method is called after object creation, value is called 
-		// without being appropriately checked with code found in the set methods 
-		
-		setStatusName(statusName);
-		setStatusPercent(statusPercent);
-		setStatusPermanence(statusPermanence);
-		setStatusTurns(statusTurns);
-		setStatusCure(statusCure);
-		setStatusCureAfterBattle(statusCureAfterBattle);
-		
-		setStatusAttributeOne(statusAttributeOne);
-		setStatusAttributeTwo(statusAttributeTwo);
-		setStatusAttributeThree(statusAttributeThree);
-		setStatusResistanceOne(statusResistanceOne);
-		setStatusResistanceTwo(statusResistanceTwo);
-		setStatusResistanceThree(statusResistanceThree);
+		// empty constructor 
 	}
 	
-	public void setStatusName(String statusName)
+	
+	
+	
+	
+	
+	// START: STATUS EFFECT OBJECT ATTRIBUTES
+	/********************************************************************************/
+
+	// set the name for a status effect (trim name if it is too long)
+	public void setName(String name)
 	{
-		if(statusName.length() > 12)
+		if(name != null)
 		{
-			this.statusName = statusName.substring(0, 12);
+			if(name.length() > 16)
+			{
+				this.name = name.substring(0, 16);
+			}
+			else
+			{
+				this.name = name;
+			}
 		}
-		else
+	}
+
+	// get the name of a status effect 
+	public String getName()
+	{
+		return name;
+	}
+	
+	// set whether or not status can be removed 
+	public void setPermanence(boolean permanence)
+	{
+		this.permanence = permanence;
+	}
+	
+	// get state of status permanence
+	public boolean getPermanence()
+	{
+		return permanence;
+	}
+
+	// set how many turns a status effect lasts 
+	public void setTurns(int turns)
+	{
+		if(turns < 0)
 		{
-			this.statusName = statusName;
+			turns = 0;
 		}
-	}
-	
-	public String getStatusName()
-	{
-		return statusName;
-	}
-	
-	public void setStatusPercent(double statusPercent)
-	{
-		if(statusPercent < 0)
+		else if(turns > 8)
 		{
-			statusPercent = 0;
-		}
-		else if(statusPercent > 1.00)
-		{
-			statusPercent = 1.00;
-		}
-		
-		this.statusPercent = statusPercent;
-	}
-	
-	public double getStatusPercent()
-	{
-		return statusPercent;
-	}
-	
-	public void setStatusPermanence(boolean state)
-	{
-		this.statusPermanence = statusPermanence;
-	}
-	
-	public boolean getStatusPermanence()
-	{
-		return statusPermanence;
-	}
-	
-	public void setStatusTurns(int statusTurns)
-	{
-		if(statusTurns < 1)
-		{
-			statusTurns = 1;
-		}
-		else if(statusTurns > 6)
-		{
-			statusTurns = 6;
+			turns = 8;
 		}
 		
-		this.statusTurns = statusTurns;
+		this.turns = turns;
 	}
 	
-	public int getStatusTurns()
+	// get how many turns a status effect lasts 
+	public int getTurns()
 	{
-		return statusTurns;
+		return turns;
 	}
 	
-	public void setStatusCure(String statusCure)
+	// set whether status effect is removed after character is knocked out
+	public void setRemoveAfterKo(boolean removeAfterKo)
 	{
-		this.statusCure = statusCure;
+		this.removeAfterKo = removeAfterKo;
 	}
 	
-	public String getStatusCure()
+	// get whether status effect is removed after character is knocked out
+	public boolean getRemoveAfterKo()
 	{
-		return statusCure;
+		return removeAfterKo;
 	}
 	
-	public void setStatusCureAfterBattle(boolean statusCureAfterBattle)
+	// set whether status effect is removed after battle or not 
+	public void setRemoveAfterBattle(boolean removeAfterBattle)
 	{
-		this.statusCureAfterBattle = statusCureAfterBattle;
+		this.removeAfterBattle = removeAfterBattle;
 	}
 	
-	public boolean getStatusCureAfterBattle()
+	// get whether status effect is removed after battle or not 
+	public boolean getRemoveAfterBattle()
 	{
-		return statusCureAfterBattle;
+		return removeAfterBattle;
 	}
 	
+	// END: STATUS EFFECT OBJECT ATTRIBUTES
+	/********************************************************************************/
+	
+	
+	
+	
+	
+	
+	// START: STATUS EFFECT OBJECT EFFECT ON ATTRIBUTES 
+	/********************************************************************************/
+	
+	// alter the double supplied as argument if it is outside the bounds specified 
+	// within method validDouble and return the double after the if-else statement 
+	public double validDouble(double value)
+	{
+		if(value < -1.00)
+		{
+			value = -1.00;
+		}
+		else if(value > 1.00)
+		{
+			value = 1.00;
+		}
+		
+		return value;
+	}
+	
+	// determine whether the supplied attribute name is valid 
 	public boolean isAttributeValid(String attribute)
 	{
 		boolean validArgument = false;
 		
 		if(attribute != null)
 		{
-			for(int i = 0; i < validAttributes.length; i++)
+			for(String element : validAttributes)
 			{
-				if(attribute.equals(validAttributes[i]))
+				if(attribute.equals(element))
 				{
 					validArgument = true;
 				}
@@ -160,54 +181,108 @@ public class statusEffects
 		}
 	}
 	
-	public void setStatusAttributeOne(String statusAttributeOne)
+	// set the first attribute affected by the status effect 
+	public void setAttributeOne(String attributeOne)
 	{
-		if(isAttributeValid(statusAttributeOne) == true)
+		if(isAttributeValid(attributeOne) == true)
 		{
-			this.statusAttributeOne = statusAttributeOne;
+			this.attributeOne = attributeOne;
 		}
 	}
 	
-	public String getStatusAttributeOne()
+	// get the first attribute affected by the status effect 
+	public String getAttributeOne()
 	{
-		return statusAttributeOne;
+		return attributeOne;
 	}
 	
-	public void setStatusAttributeTwo(String statusAttributeTwo)
+	// set percent that the first attribute is affected by due to the status effect 
+	public void setAttributeOnePercent(double attributeOnePercent)
 	{
-		if(isAttributeValid(statusAttributeTwo) == true)
+		this.attributeOnePercent = validDouble(attributeOnePercent);
+	}
+	
+	// get percent that the first attribute is affected by due to the status effect 
+	public double getAttributeOnePercent()
+	{
+		return attributeOnePercent;
+	}
+	
+	// set the second attribute affected by the status effect 
+	public void setAttributeTwo(String attributeTwo)
+	{
+		if(isAttributeValid(attributeTwo) == true)
 		{
-			this.statusAttributeTwo = statusAttributeTwo;
+			this.attributeTwo = attributeTwo;
 		}
 	}
 	
-	public String getStatusAttributeTwo()
+	// get the second attribute affected by the status effect 
+	public String getAttributeTwo()
 	{
-		return statusAttributeTwo;
+		return attributeTwo;
 	}
 	
-	public void setStatusAttributeThree(String statusAttributeThree)
+	// set percent that the second attribute is affected by due to the status effect 
+	public void setAttributeTwoPercent(double attributeTwoPercent)
 	{
-		if(isAttributeValid(statusAttributeThree) == true)
+		this.attributeTwoPercent = validDouble(attributeTwoPercent);
+	}
+	
+	// get percent that the second attribute is affected by due to the status effect 
+	public double getAttributeTwoPercent()
+	{
+		return attributeTwoPercent;
+	}
+	
+	// set the third attribute affected by the status effect 
+	public void setAttributeThree(String attributeThree)
+	{
+		if(isAttributeValid(attributeThree) == true)
 		{
-			this.statusAttributeThree = statusAttributeThree;
+			this.attributeThree = attributeThree;
 		}
 	}
 	
-	public String getStatusAttributeThree()
+	// get the third resistance affected by the status effect 
+	public String getAttributeThree()
 	{
-		return statusAttributeThree;
+		return attributeThree;
 	}
 	
+	// set percent that the third attribute is affected by due to the status effect 
+	public void setAttributeThreePercent(double attributeThreePercent)
+	{
+		this.attributeThreePercent = validDouble(attributeThreePercent);
+	}
+	
+	// get percent that the third attribute is affected by due to the status effect 
+	public double getAttributeThreePercent()
+	{
+		return attributeThreePercent;
+	}
+	
+	// END: STATUS EFFECT OBJECT EFFECT ON ATTRIBUTES 
+	/********************************************************************************/
+	
+	
+	
+	
+	
+	
+	// START: STATUS EFFECT OBJECT EFFECT ON RESISTANCE 
+	/********************************************************************************/
+	
+	// determine whether the resistance supplied as an argument is valid or not
 	public boolean isResistanceValid(String resistance)
 	{
 		boolean validArgument = false;
 		
 		if(resistance != null)
 		{
-			for(int i = 0; i < validResistances.length; i++)
+			for(String element : validResistances)
 			{
-				if(resistance.equals(validResistances[i]))
+				if(resistance.equals(element))
 				{
 					validArgument = true;
 				}
@@ -220,54 +295,104 @@ public class statusEffects
 		}
 	}
 	
-	public void setStatusResistanceOne(String statusResistanceOne)
+	// alter the integer supplied as argument if it is outside the bounds specified 
+	// within method validInteger and return the int after the if-else statement 
+	public int validInteger(int value)
 	{
-		if(isResistanceValid(statusResistanceOne) == true)
+		if(value < -100)
 		{
-			this.statusResistanceOne = statusResistanceOne;
+			value = -100;
+		}
+		else if(value > 100)
+		{
+			value = 100;
+		}
+		
+		return value;
+	}
+	
+	
+	// set the first resistance affected by the status effect 
+	public void setResistanceOne(String resistanceOne)
+	{
+		if(isResistanceValid(resistanceOne) == true)
+		{
+			this.resistanceOne = resistanceOne;
 		}
 	}
 	
-	public String getStatusResistanceOne()
+	// get the first resistance affected by the status effect 
+	public String getResistanceOne()
 	{
-		return statusResistanceOne;
+		return resistanceOne;
 	}
 	
-	public void setStatusResistanceTwo(String statusResistanceTwo)
+	// set integer value that the first resistance is affected by due to status effect 
+	public void setResistanceOneEffect(int resistanceOneEffect)
 	{
-		if(isResistanceValid(statusResistanceTwo) == true)
+		this.resistanceOneEffect = validInteger(resistanceOneEffect);
+	}
+	
+	// get integer value that the first resistance is affected by due to status effect 
+	public int getResistanceOneEffect()
+	{
+		return resistanceOneEffect;
+	}
+	
+	// set the second resistance affected by the status effect 
+	public void setResistanceTwo(String resistanceTwo)
+	{
+		if(isResistanceValid(resistanceTwo) == true)
 		{
-			this.statusResistanceTwo = statusResistanceTwo;
+			this.resistanceTwo = resistanceTwo;
 		}
 	}
 	
-	public String getStatusResistanceTwo()
+	// set the second resistance affected by the status effect 
+	public String getResistanceTwo()
 	{
-		return statusResistanceTwo;
+		return resistanceTwo;
 	}
 	
-	public void setStatusResistanceThree(String statusResistanceThree)
+	// set integer value that the second resistance is affected by due to status effect 
+	public void setResistanceTwoEffect(int resistanceTwoEffect)
 	{
-		if(isResistanceValid(statusResistanceThree) == true)
+		this.resistanceTwoEffect = validInteger(resistanceTwoEffect);
+	}
+	
+	// set integer value that the second resistance is affected by due to status effect 
+	public int getResistanceTwoEffect()
+	{
+		return resistanceTwoEffect;
+	}
+	
+	// set the third resistance affected by the status effect 
+	public void setResistanceThree(String resistanceThree)
+	{
+		if(isResistanceValid(resistanceThree) == true)
 		{
-			this.statusResistanceThree = statusResistanceThree;
+			this.resistanceThree = resistanceThree;
 		}
 	}
 	
-	public String getStatusResistanceThree()
+	// get the third resistance affected by the status effect 
+	public String getResistanceThree()
 	{
-		return statusResistanceThree;
+		return resistanceThree;
 	}
 	
-	/*
-		public void setAttributesAffected(String status...array)
-		{
-			for(int i = 0; i < array.length; i++)
-			{
-				statusAttribute[i] = array[i];
-			}
-		}
-	*/
+	// set integer value that the third resistance is affected by due to status effect 
+	public void setResistanceThreeEffect(int resistanceThreeEffect)
+	{
+		this.resistanceThreeEffect = validInteger(resistanceThreeEffect);
+	}
 	
+	// get integer value that the third resistance is affected by due to status effect 
+	public int getResistanceThreeEffect()
+	{
+		return resistanceThreeEffect;
+	}
 	
+	// END: STATUS EFFECT OBJECT EFFECT ON ATTRIBUTES 
+	/********************************************************************************/
 }
