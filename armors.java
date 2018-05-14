@@ -1,412 +1,291 @@
 /*
-	public class armor extends public class genericItem & defines methods 
-	regarding equipable armor primarily used to increase defense & endure 
-	more attacks before falling
-	
-	armor
-		body
-		legs
-		feet
+	public class armors extends public class genericObject and defines methods related 
+	to creating armors that can be used to increase defenses/resistances of the wearer
 */
-import java.util.Random;
+import java.security.SecureRandom;
 
-public class armors extends itemAttributesDefined
+public class armors extends genericObject
 {
-	private int armorMaxHp;					// armor effect on character's max HP 
-	private int armorDefense;				// armor effect on character's defense stat 
-	private int armorNano;					// armor effect on character's nano stat 
-	private int armorStamina;				// armor effect on character's stamina stat 
-	private int armorDexterity;				// armor effect on character's dexterity stat 
-	private int armorNanoDefense;			// armor effect on character's magic attack stat 
+	private int maxHp;							// armor effect on character's max HP 
+	private int defense;						// armor effect on character's defense stat 
+	private int nano;							// armor effect on character's nano stat 
+	private int stamina;						// armor effect on character's stamina stat 
+	private int dexterity;						// armor effect on character's dexterity stat 
+	private int nanoDefense;					// armor effect on character's magic attack stat 
 	
-	private int armorFireResistance;		// armor resistance to fire attacks
-	private int armorWaterResistance;		// armor resistance to water attacks
-	private int armorIceResistance;			// armor resistance to ice attacks
-	private int armorElectricityResistance;	// armor resistance to electricity attacks
-	private int armorPoisonResistance;		// armor resistance to poison attacks
-	private int armorSonicResistance;		// armor resistance to sonic (sound-based) attacks
-	private int armorPlasmaResistance;		// armor resistance to plasma (laser-based) attacks
-	private int armorWindResistance;		// armor resistance to wind (wind-based) attacks
-	private String statusArmorResisted; 	// status effect armor resists
-	
-	// hold status that armor resists
-	private String[] resistHpStatus = {"Ablaze", "Bleed", "Poison"};
+	private int fireResistance;					// armor resistance to fire attacks
+	private int waterResistance;				// armor resistance to water attacks
+	private int iceResistance;					// armor resistance to ice attacks
+	private int electricityResistance;			// armor resistance to electricity attacks
+	private int poisonResistance;				// armor resistance to poison attacks
+	private int sonicResistance;				// armor resistance to sonic (sound-based) attacks
+	private int plasmaResistance;				// armor resistance to plasma (laser-based) attacks
+	private int windResistance;					// armor resistance to wind (wind-based) attacks
 	
 	// hold valid types for a armor slot 
-	private String[] validSlotTypes = {null, "Max Hp", "Defense", "Nano", "Stamina", 
-		"Dexterity", "Nano Defense", "Any Armor Core"};
+	private String[] validSlotTypes = {"Max Hp", "Defense", "Nano", "Stamina", 
+		"Dexterity", "Nano Defense", "Fire Resistance", "Water Resistance", 
+		"Ice Resistance", "Electricity Resistance", "Poison Resistance", 
+		"Sonic Resistance", "Plasma Resistance", "Wind Resistance", 
+		"Any Armor Core"};
 	
 	// slot types can be altered for a large price if desired 
 	// cores can be transferred across armor 
 	// cores run out over time with use and they are replaceable 
 	
-	private boolean randomSlots;	// determines whether all slot types should be randomized 
-	private String slotOneType;		// store what type of slot that slot one is 
-	private core slotOneCore;		// stores core in the specified armor slot 
-	private String slotTwoType;		// store what type of slot that slot two is 
-	private core slotTwoCore;		// stores core in the specified armor slot 
+	private String slotOneType;					// store what type of slot that slot one is 
+	private cores slotOneCore;					// stores core in the specified armor slot 
+	private String slotTwoType;					// store what type of slot that slot two is 
+	private cores slotTwoCore;					// stores core in the specified armor slot 
 	
-	public armors(int itemId, String itemName, String itemCategory, String itemSuperType, 
-		String itemSubType, int itemBuyPrice, int itemSellPrice, int armorMaxHp, int armorDefense, 
-		int armorNano, int armorStamina, int armorDexterity, int armorNanoDefense, int armorFireResistance, 
-		int armorWaterResistance, int armorIceResistance, int armorElectricityResistance, 
-		int armorPoisonResistance, int armorSonicResistance, int armorPlasmaResistance, 
-		int armorWindResistance, Boolean randomSlots)
+	// armor power with cores supplied 
+	private int coreSum;						// stores sum of core points in sumOfCores()
+	private int totalMaxHp;						// armor max hp with Max Hp core supplied
+	private int totalDefense;					// armor defense with Defense core supplied
+	private int totalNano;						// armor nano with Nano core supplied
+	private int totalStamina;					// armor stamina with Stamina core supplied
+	private int totalDexterity;					// armor dexterity with Dexterity core supplied
+	private int totalNanoDefense;				// armor nano defense with Nano Defense core supplied
+	
+	// armor resistance with cores supplied 
+	private int totalFireResistance;			// armor resistance with core supplied
+	private int totalWaterResistance;			// armor resistance with core supplied
+	private int totalIceResistance;				// armor resistance with core supplied
+	private int totalElectricityResistance;		// armor resistance with core supplied
+	private int totalPoisonResistance;			// armor resistance with core supplied
+	private int totalSonicResistance;			// armor resistance with core supplied
+	private int totalPlasmaResistance;			// armor resistance with core supplied
+	private int totalWindResistance;			// armor resistance with core supplied	
+	
+	// create armors with nothing supplied to super constructor due to too many parameters
+	// objects created through this constructor can be customized further by calling set 
+	// methods within this class
+	public armors()
 	{
-		// supply arguments to superclass constructor 
-		super(itemId, itemName, itemCategory, itemSuperType, itemSubType, itemBuyPrice, itemSellPrice);
+		// empty constructor 
+	}
+	
+	
+	
+	
+	
+	
+	// START: ARMOR ATTRIBUTES
+	/*******************************************************************************/
+
+	// returns an int that is within the range specified in validAttribute
+	public int validAttribute(int attribute)
+	{
+		if(attribute < -500)
+		{
+			attribute = -500;
+		}
+		else if(attribute > 500)
+		{
+			attribute = 500;
+		}
 		
-		setArmorMaxHp(armorMaxHp);
-		setArmorDefense(armorDefense);
-		setArmorNano(armorNano);
-		setArmorStamina(armorStamina);
-		setArmorDexterity(armorDexterity);
-		setArmorNanoDefense(armorNanoDefense);
-		setArmorFireResistance(armorFireResistance);
-		setArmorWaterResistance(armorWaterResistance);
-		setArmorIceResistance(armorIceResistance);
-		setArmorElectricityResistance(armorElectricityResistance);
-		setArmorPoisonResistance(armorPoisonResistance);
-		setArmorSonicResistance(armorSonicResistance);
-		setArmorPlamsaResistance(armorPlasmaResistance);
-		setArmorWindResistance(armorWindResistance);
-		setRandomSlots(randomSlots);
-		randomizeSlotTypes(getRandomSlots());
+		return attribute;
 	}
 	
 	// set max Hp value armor takes/adds to character 
-	public void setArmorMaxHp(int armorMaxHp)
+	public void setMaxHp(int maxHp)
 	{
-		if(armorMaxHp < -500)
-		{
-			armorMaxHp = -500;
-		}
-		else if(armorMaxHp > 500)
-		{
-			armorMaxHp = 500;
-		}
-		
-		this.armorMaxHp = armorMaxHp;
+		this.maxHp = validAttribute(maxHp);
 	}
 	
 	// get max Hp value armor takes/adds to character 
-	public int getArmorMaxHP()
+	public int getMaxHp()
 	{
-		return armorMaxHp;
+		return maxHp;
 	}
 	
 	// set defense value armor takes/adds to character 
-	public void setArmorDefense(int armorDefense)
+	public void setDefense(int defense)
 	{
-		if(armorDefense < -500)
-		{
-			armorDefense = -500;
-		}
-		else if(armorDefense > 500)
-		{
-			armorDefense = 500;
-		}
-		
-		this.armorDefense = armorDefense;
+		this.defense = validAttribute(defense);
 	}
 	
 	// get defense value armor takes/adds to character 
-	public int getArmorDefense()
+	public int getDefense()
 	{
-		return armorDefense;
+		return defense;
 	}
 	
 	// set nano value armor takes/adds to character 
-	public void setArmorNano(int armorNano)
+	public void setNano(int nano)
 	{
-		if(armorNano < -500)
-		{
-			armorNano = -500;
-		}
-		else if(armorNano > 500)
-		{
-			armorNano = 500;
-		}
-		
-		this.armorNano = armorNano;
+		this.nano = validAttribute(nano);
 	}
 	
 	// get nano value armor takes/adds to character 
-	public int getArmorNano()
+	public int getNano()
 	{
-		return armorNano;
+		return nano;
 	}
 	
 	// set stamina value armor takes/adds to character 
-	public void setArmorStamina(int armorStamina)
+	public void setStamina(int stamina)
 	{
-		if(armorStamina < -500)
-		{
-			armorStamina = -500;
-		}
-		else if(armorStamina > 500)
-		{
-			armorStamina = 500;
-		}
-		
-		this.armorStamina = armorStamina;
+		this.stamina = validAttribute(stamina);
 	}
 	
 	// get stamina value armor takes/adds to character 
-	public int getArmorStamina()
+	public int getStamina()
 	{
-		return armorStamina;
+		return stamina;
 	}
 	
 	// set dexterity value armor takes/adds to character 
-	public void setArmorDexterity(int armorDexterity)
+	public void setDexterity(int dexterity)
 	{
-		if(armorDexterity < -500)
-		{
-			armorDexterity = -500;
-		}
-		else if(armorDexterity > 500)
-		{
-			armorDexterity = 500;
-		}
-		
-		this.armorDexterity = armorDexterity;
+		this.dexterity = validAttribute(dexterity);
 	}
 	
 	// get dexterity value armor takes/adds to character 
-	public int getArmorDexterity()
+	public int getDexterity()
 	{
-		return armorDexterity;
+		return dexterity;
 	}
 	
 	// set nano defense value armor takes/adds to character 
-	public void setArmorNanoDefense(int armorNanoDefense)
+	public void setNanoDefense(int nanoDefense)
 	{
-		if(armorNanoDefense < -500)
-		{
-			armorNanoDefense = -500;
-		}
-		else if(armorNanoDefense > 500)
-		{
-			armorNanoDefense = 500;
-		}
-		
-		this.armorNanoDefense = armorNanoDefense;
+		this.nanoDefense = validAttribute(nanoDefense);
 	}
 	
 	// get nano defense value armor takes/adds to character 
-	public int getArmorNanoDefense()
+	public int getNanoDefense()
 	{
-		return armorNanoDefense;
+		return nanoDefense;
+	}
+	
+	// END: ARMOR ATTRIBUTES
+	/*******************************************************************************/
+	
+	
+	
+	
+	
+	
+	// START: ARMOR RESISTANCES
+	/*******************************************************************************/
+	
+	// returns an int that is within the range specified in validResistance
+	public int validResistance(int resistance)
+	{
+		if(resistance < -100)
+		{
+			resistance = -100;
+		}
+		else if(resistance > 100)
+		{
+			resistance = 100;
+		}
+		
+		return resistance;
 	}
 	
 	// set fire resistance value armor takes/adds to character 
-	public void setArmorFireResistance(int armorFireResistance)
+	public void setFireResistance(int fireResistance)
 	{
-		if(armorFireResistance < -100)
-		{
-			armorFireResistance = -100;
-		}
-		else if(armorFireResistance > 100)
-		{
-			armorFireResistance = 100;
-		}
-		
-		this.armorFireResistance = armorFireResistance;
+		this.fireResistance = validResistance(fireResistance);
 	}
 	
 	// get fire resistance value armor takes/adds to character 
-	public int getArmorFireResistance()
+	public int getFireResistance()
 	{
-		return armorFireResistance;
+		return fireResistance;
 	}
 	
 	// set water resistance value armor takes/adds to character 
-	public void setArmorWaterResistance(int armorWaterResistance)
+	public void setWaterResistance(int waterResistance)
 	{
-		if(armorWaterResistance < -100)
-		{
-			armorWaterResistance = -100;
-		}
-		else if(armorWaterResistance > 100)
-		{
-			armorWaterResistance = 100;
-		}
-		
-		this.armorWaterResistance = armorWaterResistance;
+		this.waterResistance = validResistance(waterResistance);
 	}
 	
 	// set water resistance value armor takes/adds to character 
-	public int getArmorWaterResistance()
+	public int getWaterResistance()
 	{
-		return armorWaterResistance;
+		return waterResistance;
 	}
 	
 	// set ice resistance value armor takes/adds to character 
-	public void setArmorIceResistance(int armorIceResistance)
+	public void setIceResistance(int iceResistance)
 	{
-		if(armorIceResistance < -100)
-		{
-			armorIceResistance = -100;
-		}
-		else if(armorIceResistance > 100)
-		{
-			armorIceResistance = 100;
-		}
-		
-		this.armorIceResistance = armorIceResistance;
+		this.iceResistance = validResistance(iceResistance);
 	}
 	
 	// get ice resistance value armor takes/adds to character 
-	public int getArmorIceResistance()
+	public int getIceResistance()
 	{
-		return armorIceResistance;
+		return iceResistance;
 	}
 	
 	// set electricity resistance value armor takes/adds to character 
-	public void setArmorElectricityResistance(int armorElectricityResistance)
+	public void setElectricityResistance(int electricityResistance)
 	{
-		if(armorElectricityResistance < -100)
-		{
-			armorElectricityResistance = -100;
-		}
-		else if(armorElectricityResistance > 100)
-		{
-			armorElectricityResistance = 100;
-		}
-		
-		this.armorElectricityResistance = armorElectricityResistance;
+		this.electricityResistance = validResistance(electricityResistance);
 	}
 	
 	// get electricity resistance value armor takes/adds to character 
-	public int getArmorElectrictyResistance()
+	public int getElectricityResistance()
 	{
-		return armorElectricityResistance;
+		return electricityResistance;
 	}
 	
 	// set poison resistance value armor takes/adds to character 
-	public void setArmorPoisonResistance(int armorPoisonResistance)
+	public void setPoisonResistance(int poisonResistance)
 	{
-		if(armorPoisonResistance < -100)
-		{
-			armorPoisonResistance = -100;
-		}
-		else if(armorPoisonResistance > 100)
-		{
-			armorPoisonResistance = 100;
-		}
-		
-		this.armorPoisonResistance = armorPoisonResistance;
+		this.poisonResistance = validResistance(poisonResistance);
 	}
 	
 	// get poison resistance value armor takes/adds to character 
-	public int getArmorPoisonResistance()
+	public int getPoisonResistance()
 	{
-		return armorPoisonResistance;
+		return poisonResistance;
 	}
 	
 	// set sonic resistance value armor takes/adds to character 
-	public void setArmorSonicResistance(int armorSonicResistance)
+	public void setSonicResistance(int sonicResistance)
 	{
-		if(armorSonicResistance < -100)
-		{
-			armorSonicResistance = -100;
-		}
-		else if(armorSonicResistance > 100)
-		{
-			armorSonicResistance = 100;
-		}
-		
-		this.armorSonicResistance = armorSonicResistance;
+		this.sonicResistance = validResistance(sonicResistance);
 	}
 	
 	// get sonic resistance value armor takes/adds to character 
 	public int getSonicResistance()
 	{
-		return armorSonicResistance;
+		return sonicResistance;
 	}
 	
 	// set plasma resistance value armor takes/adds to character 
-	public void setArmorPlamsaResistance(int armorPlasmaResistance)
+	public void setPlamsaResistance(int plasmaResistance)
 	{
-		if(armorPlasmaResistance < -100)
-		{
-			armorPlasmaResistance = -100;
-		}
-		else if(armorPlasmaResistance > 100)
-		{
-			armorPlasmaResistance = 100;
-		}
-		
-		this.armorPlasmaResistance = armorPlasmaResistance;
+		this.plasmaResistance = validResistance(plasmaResistance);
 	}
 	
 	// get plasma resistance value armor takes/adds to character 
-	public int getArmorPlasmaResistance()
+	public int getPlasmaResistance()
 	{
-		return armorPlasmaResistance;
+		return plasmaResistance;
 	}
 	
 	// set wind resistance value armor takes/adds to character 
-	public void setArmorWindResistance(int armorWindResistance)
+	public void setWindResistance(int windResistance)
 	{
-		if(armorWindResistance < -100)
-		{
-			armorWindResistance = -100;
-		}
-		else if(armorWindResistance > 100)
-		{
-			armorWindResistance = 100;
-		}
-		
-		this.armorWindResistance = armorWindResistance;
+		this.windResistance = validResistance(windResistance);
 	}
 	
 	// get wind resistance value armor takes/adds to character 
-	public int getArmorWindResistance()
+	public int getWindResistance()
 	{
-		return armorWindResistance;
+		return windResistance;
 	}
 	
-	// set whether random slots are generated for armor
-	public void setRandomSlots(boolean randomSlots)
-	{
-		this.randomSlots = randomSlots;
-	}
+	// END: ARMOR RESISTANCES
+	/*******************************************************************************/
 	
-	// return random slots option for armor 
-	public boolean getRandomSlots()
-	{
-		return randomSlots;
-	}
 	
-	// set status that armor resists 
-	public void setStatusArmorResists(String statusArmorResisted)
-	{
-		if(statusArmorResisted != null)
-		{
-			boolean validArgument = false;
-			
-			for(int i = 0; i < resistHpStatus.length; i++)
-			{
-				if(statusArmorResisted.equals(resistHpStatus[i]))
-				{
-					validArgument = true;
-				}
-			}
-			
-			if(validArgument == true)
-			{
-				this.statusArmorResisted = statusArmorResisted;
-			}
-		}
-	}
-	
-	// get status that armor resists  
-	public String getStatusArmorResists()
-	{
-		return statusArmorResisted;
-	}
 	
 	/*
 		8 options
@@ -424,22 +303,59 @@ public class armors extends itemAttributesDefined
 			
 	*/
 	
+	
+	
+	// START: ARMOR SLOT TYPES AND SLOT CORES
+	/*******************************************************************************/
+
 	// returns a String that was selected randomly
 	public String determineSlotType()
 	{
 		// create random object to call random methods 
-		Random rand = new Random();
+		SecureRandom secureRand = new SecureRandom();
 		
 		// int variable will hold a random number form 1 to 100
-		int holdInt = rand.nextInt(100 + 1);
+		int holdInt = secureRand.nextInt(100 + 1);
 		
 		// initialize holdSlotType meant to be assigned a String for slot type 
 		String holdSlotType = null;
 		
 		// portion of if else statement executes depending on value of variable 
-		if(holdInt <= 50)
+		if(holdInt <= 18)
 		{
-			holdSlotType = "None";
+			holdSlotType = null;
+		}
+		else if(holdInt <= 22)
+		{
+			holdSlotType = "Fire Resistance";
+		}
+		else if(holdInt <= 26)
+		{
+			holdSlotType = "Water Resistance";
+		}
+		else if(holdInt <= 30)
+		{
+			holdSlotType = "Ice Resistance";
+		}
+		else if(holdInt <= 34)
+		{
+			holdSlotType = "Electricity Resistance";
+		}
+		else if(holdInt <= 38)
+		{
+			holdSlotType = "Poison Resistance";
+		}
+		else if(holdInt <= 42)
+		{
+			holdSlotType = "Sonic Resistance";
+		}
+		else if(holdInt <= 46)
+		{
+			holdSlotType = "Plasma Resistance";
+		}
+		else if(holdInt <= 50)
+		{
+			holdSlotType = "Wind Resistance";
 		}
 		else if(holdInt <= 56)
 		{
@@ -493,12 +409,13 @@ public class armors extends itemAttributesDefined
 		if(slotType != null)
 		{
 			// for loop compares string against elements in array 
-			for(int i = 0; i < validSlotTypes.length; i++)
+			for(String element : validSlotTypes)
 			{
 				// if supplied string matches element in the array, assign boolean with true 
-				if(slotType.equals(validSlotTypes[i]))
+				if(slotType.equals(element))
 				{
 					validArgument = true;
+						break;
 				}
 			}
 			// return value held in boolean
@@ -511,7 +428,7 @@ public class armors extends itemAttributesDefined
 	}
 	
 	// determine whether the supplied armor core is valid 
-	public boolean isCoreTypeValid(core core)
+	public boolean isCoreTypeValid(cores core)
 	{
 		// variable will be set to true is argument is valid 
 		boolean validArgument = false;
@@ -519,10 +436,10 @@ public class armors extends itemAttributesDefined
 		if(core != null)
 		{
 			// for loop compares core type against elements in array 
-			for(int i = 0; i < validSlotTypes.length; i++)
+			for(String element : validSlotTypes)
 			{
 				// if supplied string matches element in the array, assign boolean with true 
-				if(core.getCoreType().equals(validSlotTypes[i]))
+				if(core.getCoreType().equals(element))
 				{
 					validArgument = true;
 				}
@@ -552,7 +469,7 @@ public class armors extends itemAttributesDefined
 	}
 	
 	// set core into armor slot if it is the same type as the slot 
-	public void setSlotOneCore(core slotOneCore)
+	public void setSlotOneCore(cores slotOneCore)
 	{
 		if(getSlotOneType() != null)
 		{
@@ -571,9 +488,15 @@ public class armors extends itemAttributesDefined
 	}
 	
 	// get the core set in slot one 
-	public core getSlotOneCore()
+	public cores getSlotOneCore()
 	{
 		return slotOneCore;
+	}
+	
+	// remove core one from armor
+	public void removeArmorCoreOne()
+	{
+		slotOneCore = null;
 	}
 	
 	// set the type for armor slot two
@@ -592,7 +515,7 @@ public class armors extends itemAttributesDefined
 	}
 	
 	// set core into armor slot if it is the same type as the slot 
-	public void setSlotTwoCore(core slotTwoCore)
+	public void setSlotTwoCore(cores slotTwoCore)
 	{
 		if(getSlotTwoType() != null)
 		{
@@ -608,13 +531,145 @@ public class armors extends itemAttributesDefined
 				}
 			}
 		}
-		
-		
 	}
 	
 	// set the type for armor slot two 
-	public core getSlotTwoCore()
+	public cores getSlotTwoCore()
 	{
 		return slotTwoCore;
 	}
+	
+	// remove core two from armor
+	public void removeArmorCoreTwo()
+	{
+		slotTwoCore = null;
+	}
+	
+	// return an array containing all possible cores a piece of armor can have 
+	public cores[] getArmorCores()
+	{
+		cores[] armorCores = {getSlotOneCore(), getSlotTwoCore()};
+			return armorCores;
+	}
+	
+	// END: ARMOR SLOT TYPES AND SLOT CORES
+	/*******************************************************************************/
+
+	
+	
+	
+	
+	
+	// START: TOTAL ARMOR ATTRIBUTES AND RESISTANCES WITH CORES SUPPLIED
+	/*******************************************************************************/
+
+	// NEED remove methods for: weapons, armors, accessories... 
+	// assign null for now since need access to inventory for proper removal 
+	
+	// add points of cores if cores have same type as that specified by argument type 
+	public int addSumOfCores(String type)
+	{
+		// enhanced for loop iterates through all cores object can have 
+		for(cores element : getArmorCores())
+		{
+			// if element is not null, compare core types against argument type and if 
+			// they match then add the value (as an integer) to coreSum
+			if(element != null)
+			{
+				if(element.getCoreType().equals(type))
+				{
+					// casting is okay here since only int values are needed
+					coreSum += (int) element.getCurrentCorePoints();
+				}
+			}
+		}
+		
+		// return value held in value
+		return coreSum;
+	}
+	
+	/*
+		Note on "getTotal" methods below: 
+			methods get total value for a object (like attack, nano, ect.) by adding 
+			object's power and core points together only if the cores are the same 
+			type as the String supplied as argument (if "Attack" is supplied then 
+			add the current core points of the cores with core type "Attack") 
+	*/
+	
+							// attribute "getTotal" methods 
+	
+	public int getTotalMaxHp()
+	{
+		return totalMaxHp = getMaxHp() + addSumOfCores("Max Hp");
+	}
+	
+	public int getTotalDefense()
+	{
+		return totalDefense = getDefense() + addSumOfCores("Defense");
+	}
+	
+	public int getTotalNano()
+	{
+		return totalNano = getNano() + addSumOfCores("Nano");
+	}
+	
+	public int getTotalStamina()
+	{
+		return totalStamina = getStamina() + addSumOfCores("Stamina");
+	}
+	
+	public int getTotalDexterity()
+	{
+		return totalDexterity = getDexterity() + addSumOfCores("Dexterity");
+	}
+	
+	public int getTotalNanoDefense()
+	{
+		return totalNanoDefense = getNanoDefense() + addSumOfCores("Nano Defense");
+	}
+	
+							// resistance "getTotal" methods 
+	
+	public int getTotalFireResistance()
+	{
+		return totalFireResistance = getFireResistance() + addSumOfCores("Fire Resistance");
+	}
+	
+	public int getTotalWaterResistance()
+	{
+		return totalWaterResistance = getWaterResistance() + addSumOfCores("Water Resistance");
+	}
+	
+	public int getTotalIceResistance()
+	{
+		return totalIceResistance = getIceResistance() + addSumOfCores("Ice Resistance");
+	}
+	
+	public int getTotalElectricityResistance()
+	{
+		return totalElectricityResistance = getElectricityResistance() + addSumOfCores("Electricity Resistance");
+	}
+	
+	public int getTotalPoisonResistance()
+	{
+		return totalPoisonResistance = getPoisonResistance() + addSumOfCores("Poison Resistance");
+	}
+	
+	public int getTotalSonicResistance()
+	{
+		return totalSonicResistance = getSonicResistance() + addSumOfCores("Sonic Resistance");
+	}
+	
+	public int getTotalPlasmaResistance()
+	{
+		return totalPlasmaResistance = getPlasmaResistance() + addSumOfCores("Plasma Resistance");
+	}
+	
+	public int getTotalWindResistance()
+	{
+		return totalWindResistance = getWindResistance() + addSumOfCores("Wind Resistance");
+	}
+	
+	// END: TOTAL ARMOR ATTRIBUTES AND RESISTANCES WITH CORES SUPPLIED
+	/*******************************************************************************/
 }
