@@ -1,310 +1,199 @@
 /*
-	public class weapons extends public class genericItem & defines methods 
-	related to equipable weapons that primarily increase attack and to 
-	attack enemies
+	public class weapons extends public class genericObject and defines methods related 
+	to creating weapons that can be used to primarily increase the attack of the wielder
+	
+	Note: java library SecureRandom ensures that numbers selected are more random 
+ 		  than java.util.Random() at the cost of taking more time to select random 
+ 		  numbers (ideal for games reliant on RNG) 
 */
-import java.util.Random;
 
-public class weapons extends itemAttributesDefined
+import java.security.SecureRandom;
+
+public class weapons extends genericObject
 {
-	private int weaponHp;			// weapon effect on character's current HP per attack
-	private int weaponAttack;		// weapon effect on character's attack stat 
-	private int weaponNano;			// weapon effect on character's nano stat 
-	private int weaponStamina;		// weapon effect on character's stamina stat 
-	private int weaponDexterity;	// weapon effect on character's dexterity stat 
-	private int weaponCritical;		// weapon effect on character's critical stat 
-	private int weaponAccuracy;		// weapon effect on character's accuracy stat 
-	private int weaponNanoAttack;	// weapon effect on character's nano attack stat 
-	private String inflictStatus; 	// status effect weapon inflicts on the enemy 
+	private int currentHp;					// weapon effect on character's current HP per attack
+	private int attack;						// weapon effect on character's attack stat 
+	private int nano;						// weapon effect on character's nano stat 
+	private int dexterity;					// weapon effect on character's dexterity stat 
+	private int critical;					// weapon effect on character's critical stat 
+	private int accuracy;					// weapon effect on character's accuracy stat 
+	private int nanoAttack;					// weapon effect on character's nano attack stat 
+	private statusEffects inflictStatus;	// status effect weapon inflicts on the enemy 
 	
-	// hold weapon status that inflicts KO on the enemy
-	private String[] inflictKO = {"KO", "Freeze"};
-	
-	// hold weapon status that inflicts damage to enemy hp 
-	private String[] inflictHpStatus = {"Ablaze", "Bleed", "Poison"};
-	
-	// hold status that weapon can inflict on an enemy
-	private String[] inflictAttributeStatus = {"Attack Down", "Defense Down", "Nano Down", 
-		"Stamina Down", "Dexterity Down", "Critical Down", "Accuracy Down", "Nano Attack Down",
-		"Nano Defense Down"}; 
-	
-	// hold weapon status that inflicts affects enemy attributes 
-	private String[] inflictResistanceStatus = {"Dry", "Wet", "Cold", "Conductive", 
-		"Sickness", "Hypersensitive", "Coated", "Lightweight"};
-	
-	// hold weapon status that affects enemy behavior 
-	private String[] inflictBehavior = {"Enamore", "Infatuate"};
-	
-	// hold weapon status that affects enemy turn status 
-	private String[] inflictNegativeTurnStatus = {"Stun", "Sleep", "Shock", "Slow",
-		"Stop", "Slime"};	
-	
-	// flatten arrays that inflict status on an enemy into one array 
-	private String[] holdInflictStatus [] = {inflictKO, inflictHpStatus, inflictAttributeStatus, 
-		inflictResistanceStatus, inflictBehavior, inflictNegativeTurnStatus};
-
 	// hold valid types for a weapon slot 
-	private String[] validSlotTypes = {null, "Current Hp", "Attack", "Nano", "Stamina", 
+	private String[] validSlotTypes = {"Current Hp", "Attack", "Nano", "Stamina", 
 		"Dexterity", "Critical", "Accuracy", "Nano Attack", "Any Weapon Core"};
 	
 	// slot types can be altered for a large price if desired 
 	// cores can be transferred across weapons 
 	// cores run out over time with use and they are replaceable 
 	
-	private boolean randomSlots;	// determines whether all slot types should be randomized 
-	private String slotOneType;		// store what type of slot that slot one is 
-	private core slotOneCore;		// stores core in the specified weapon slot 
-	private String slotTwoType;		// store what type of slot that slot two is 
-	private core slotTwoCore;		// stores core in the specified weapon slot 
-	private String slotThreeType;	// store what type of slot that slot three is 
-	private core slotThreeCore;		// stores core in the specified weapon slot 
-	private String slotFourType;	// store what type of slot that slot four is 
-	private core slotFourCore;		// stores core in the specified weapon slot 
-	private String slotFiveType;	// store what type of slot that slot five is 
-	private core slotFiveCore;		// stores core in the specified weapon slot 
+	//private boolean randomSlots;			// determines whether all slot types should be randomized 
+	private String slotOneType;				// store what type of slot that slot one is 
+	private cores slotOneCore;				// stores core in the specified weapon slot 
+	private String slotTwoType;				// store what type of slot that slot two is 
+	private cores slotTwoCore;				// stores core in the specified weapon slot 
+	private String slotThreeType;			// store what type of slot that slot three is 
+	private cores slotThreeCore;			// stores core in the specified weapon slot 
+	private String slotFourType;			// store what type of slot that slot four is 
+	private cores slotFourCore;				// stores core in the specified weapon slot 
+	private String slotFiveType;			// store what type of slot that slot five is 
+	private cores slotFiveCore;				// stores core in the specified weapon slot 
 	
-	// constructor allows for the creation of a weapon 
-	public weapons(int itemId, String itemName, String itemCategory, String itemSuperType, 
-		String itemSubType, int itemBuyPrice, int itemSellPrice, int weaponHp, int weaponAttack, 
-		int weaponNano, int weaponStamina, int weaponDexterity, int weaponCritical, 
-		int weaponAccuracy, int weaponNanoAttack, String inflictStatus, Boolean randomSlots)
+	// weapon power with cores supplied 
+	private int coreSum;					// stores sum of core points in sumOfCores()
+	private int totalAttack;				// weapon attack with Attack cores supplied
+	private int totalNano;					// weapon nano with Nano cores supplied
+	private int totalDexterity;				// weapon dexterity with Dexterity cores supplied
+	private int totalCritical;				// weapon critical with Critical cores supplied
+	private int totalAccuracy;				// weapon accuracy with Accuracy cores supplied
+	private int totalNanoAttack;			// weapon nano attack with Nano Attack cores supplied
+	
+	// create weapons with nothing supplied to super constructor due to too many parameters
+	// objects created through this constructor can be customized further by calling set 
+	// methods within this class
+	public weapons()
 	{
-		// supply arguments to superclass constructor 
-		super(itemId, itemName, itemCategory, itemSuperType, itemSubType, itemBuyPrice, itemSellPrice);
+		// empty constructor 
+	}
+	
+	
+	
+	
+	
+	
+	// START: WEAPON ATTRIBUTES
+	/*******************************************************************************/
+	
+	// returns an int that is within the range specified in validAttribute
+	public int validAttribute(int value)
+	{
+		if(value < -500)
+		{
+			value = -500;
+		}
+		else if(value > 500)
+		{
+			value = 500;
+		}
 		
-		setWeaponHp(weaponHp);
-		setWeaponAttack(weaponAttack);
-		setWeaponNano(weaponNano);
-		setWeaponStamina(weaponStamina);
-		setWeaponDexterity(weaponDexterity);
-		setWeaponCritical(weaponCritical);
-		setWeaponAccuracy(weaponAccuracy);
-		setWeaponNanoAttack(weaponNanoAttack);
-		setInflictStatus(inflictStatus);
-		setRandomSlots(randomSlots);	
-		randomizeSlotTypes(getRandomSlots());
+		return value;
 	}
 	
 	// set Hp value weapon takes/adds to character 
-	public void setWeaponHp(int weaponHp)
+	public void setCurrentHp(int currentHp)
 	{
-		if(weaponHp < -500)
-		{
-			weaponHp = -500;
-		}
-		else if(weaponHp > 500)
-		{
-			weaponHp = 500;
-		}
-		
-		this.weaponHp = weaponHp;
+		this.currentHp = validAttribute(currentHp);
 	}
 	
 	// get Hp value weapon takes/adds to character 
-	public int getWeaponHp()
+	public int getcurrentHp()
 	{
-		return weaponHp;
+		return currentHp;
 	}
 	
 	// set attack value weapon takes/adds to character 
-	public void setWeaponAttack(int weaponAttack)
-	{
-		if(weaponAttack < -500)
-		{
-			weaponAttack = -500;
-		}
-		else if(weaponAttack > 500)
-		{
-			weaponAttack = 500;
-		}
-		
-		this.weaponAttack = weaponAttack;
-
+	public void setAttack(int attack)
+	{		
+		this.attack = validAttribute(attack);
 	}
 	
 	// get attack value weapon takes/adds to character 
-	public int getWeaponAttack()
+	public int getAttack()
 	{
-		return weaponAttack;
+		return attack;
 	}
 	
 	// set nano value weapon takes/adds to character 
-	public void setWeaponNano(int weaponNano)
+	public void setNano(int nano)
 	{
-		if(weaponNano < -500)
-		{
-			weaponNano = -500;
-		}
-		else if(weaponNano > 500)
-		{
-			weaponNano = 500;
-		}
-		
-		this.weaponNano = weaponNano;
+		this.nano = validAttribute(nano);
 	}
 	
 	// get nano value weapon takes/adds to character 
-	public int getWeaponNano()
+	public int getNano()
 	{
-		return weaponNano;
-	}
-	
-	// set stamina value weapon takes/adds to character 
-	public void setWeaponStamina(int weaponStamina)
-	{
-		if(weaponStamina < -500)
-		{
-			weaponStamina = -500;
-		}
-		else if(weaponStamina > 500)
-		{
-			weaponStamina = 500;
-		}
-		
-		this.weaponStamina = weaponStamina;
-	}
-	
-	// get stamina value weapon takes/adds to character 
-	public int getWeaponStamina()
-	{
-		return weaponStamina;
+		return nano;
 	}
 	
 	// set dexterity value weapon takes/adds to character 
-	public void setWeaponDexterity(int weaponDexterity)
+	public void setDexterity(int dexterity)
 	{
-		if(weaponDexterity < -500)
-		{
-			weaponDexterity = -500;
-		}
-		else if(weaponDexterity > 500)
-		{
-			weaponDexterity = 500;
-		}
-		
-		this.weaponDexterity = weaponDexterity;
+		this.dexterity = validAttribute(dexterity);
 	}
 	
 	// get dexterity value weapon takes/adds to character 
-	public int getWeaponDexterity()
+	public int getDexterity()
 	{
-		return weaponDexterity;
+		return dexterity;
 	}
 	
 	// set critical value weapon takes/adds to character 
-	public void setWeaponCritical(int weaponCritical)
+	public void setCritical(int critical)
 	{
-		if(weaponCritical < -500)
-		{
-			weaponCritical = -500;
-		}
-		else if(weaponCritical > 500)
-		{
-			weaponCritical = 500;
-		}
-		
-		this.weaponCritical = weaponCritical;
+		this.critical = validAttribute(critical);
 	}
 	
 	// get critical value weapon takes/adds to character 
-	public int getWeaponCritical()
+	public int getCritical()
 	{
-		return weaponCritical;
+		return critical;
 	}
 	
 	// set accuracy value weapon takes/adds to character 
-	public void setWeaponAccuracy(int weaponAccuracy)
+	public void setAccuracy(int accuracy)
 	{
-		if(weaponAccuracy < -500)
-		{
-			weaponAccuracy = -500;
-		}
-		else if(weaponAccuracy > 500)
-		{
-			weaponAccuracy = 500;
-		}
-		
-		this.weaponAccuracy = weaponAccuracy;
+		this.accuracy = validAttribute(accuracy);
 	}
 	
 	// get hit chance value weapon takes/adds to character 
-	public int getWeaponAccuracy()
+	public int getAccuracy()
 	{
-		return weaponAccuracy;
+		return accuracy;
 	}
 	
 	// set magic attack value weapon takes/adds to character 
-	public void setWeaponNanoAttack(int weaponNanoAttack)
+	public void setNanoAttack(int nanoAttack)
 	{
-		if(weaponNanoAttack < -500)
-		{
-			weaponNanoAttack = -500;
-		}
-		else if(weaponNanoAttack > 500)
-		{
-			weaponNanoAttack = 500;
-		}
-		
-		this.weaponNanoAttack = weaponNanoAttack;
+		this.nanoAttack = validAttribute(nanoAttack);
 	}
 	
 	// get magic attack value weapon takes/adds to character 
-	public int getWeaponNanoAttack()
+	public int getNanoAttack()
 	{
-		return weaponNanoAttack;
+		return nanoAttack;
 	}
 	
-	public boolean isStatusValid(String status)
-	{
-		boolean validArgument = false;
-		
-		if(status != null)
-		{
-			for(String[] array : holdInflictStatus)
-			{
-				if(inflictStatus != null && inflictStatus.equals(array))
-				{
-					validArgument = true;
-				}
-			}
-			return validArgument;
-		}
-		else
-		{
-			return validArgument;
-		}
-	}
+	// END: WEAPON ATTRIBUTES
+	/*******************************************************************************/
+
 	
+	
+	
+	
+	
+	// START: STATUS WEAPON INFLICTS
+	/*******************************************************************************/
+
 	// set status that weapon inflicts on enemy 
-	public void setInflictStatus(String inflictStatus)
+	public void setInflictStatus(statusEffects inflictStatus)
 	{
-		if(isStatusValid(inflictStatus) == true)
+		if(inflictStatus != null)
 		{
 			this.inflictStatus = inflictStatus;
-		}
-		else
-		{
-			this.inflictStatus = null;
 		}
 	}
 	
 	// get status that weapon inflicts on enemy  
-	public String getInflictStatus()
+	public statusEffects getInflictStatus()
 	{
 		return inflictStatus;
 	}
 	
-	// set whether random slots are generated for a weapon
-	public void setRandomSlots(boolean randomSlots)
-	{
-		this.randomSlots = randomSlots;
-	}
+	// END: STATUS WEAPON INFLICTS
+	/*******************************************************************************/
 	
-	// return random slots option for weapons 
-	public boolean getRandomSlots()
-	{
-		return randomSlots;
-	}
+	
 	
 	/*
 		10 options
@@ -318,27 +207,21 @@ public class weapons extends itemAttributesDefined
 			8	5	Accuracy 	86-90
 			9	6	Nano Attack 91-96
 			10	4	Any 		97-100
-			
-		8 options
-			1	50% Null (no slot)
-			2	6	Current Hp	51-56
-			3	10	defense	 	57-66
-			4	6	Nano 		67-72
-			5	7	Stamina 	73-79
-			6	8	Dexterity 	80-87
-			7	9	Nano Def 	88-96
-			8	4	Any 		97-100	
-			
 	*/
 	
+	
+	
+	// START: WEAPON SLOT TYPES AND SLOT CORES
+	/*******************************************************************************/
+
 	// returns a String that was selected randomly
 	public String determineSlotType()
 	{
 		// create random object to call random methods 
-		Random rand = new Random();
+		SecureRandom secureRand = new SecureRandom();
 		
 		// int variable will hold a random number form 1 to 100
-		int holdInt = rand.nextInt(100 + 1);
+		int holdInt = secureRand.nextInt(100 + 1);
 		
 		// initialize holdSlotType meant to be assigned a String for slot type 
 		String holdSlotType = null;
@@ -388,7 +271,7 @@ public class weapons extends itemAttributesDefined
 		return holdSlotType;
 	}
 	
-	// randomize slot types for a weapon 
+	// randomize slot types for a weapon if true is supplied 
 	public void randomizeSlotTypes(Boolean randomSlots)
 	{
 		// if boolean variable is true, set slot types for all five slots randomly 
@@ -408,13 +291,14 @@ public class weapons extends itemAttributesDefined
 		// variable will be set to true is argument is valid 
 		boolean validArgument = false;
 		
+		// enter if statement if String supplied is not null 
 		if(slotType != null)
 		{
-			// for loop compares string against elements in array 
-			for(int i = 0; i < validSlotTypes.length; i++)
+			// enhanced for loop compares string against elements in array 
+			for(String element : validSlotTypes)
 			{
 				// if supplied string matches element in the array, assign boolean with true 
-				if(slotType.equals(validSlotTypes[i]))
+				if(slotType.equals(element))
 				{
 					validArgument = true;
 				}
@@ -429,18 +313,19 @@ public class weapons extends itemAttributesDefined
 	}
 	
 	// determine whether the supplied weapon core is valid 
-	public boolean isCoreTypeValid(core core)
+	public boolean isCoreTypeValid(cores core)
 	{
 		// variable will be set to true is argument is valid 
 		boolean validArgument = false;
 		
+		// enter if statement if core supplied is not null 
 		if(core != null)
 		{
-			// for loop compares core type against elements in array 
-			for(int i = 0; i < validSlotTypes.length; i++)
+			// enhanced for loop compares core type against elements in array 
+			for(String element : validSlotTypes)
 			{
 				// if supplied string matches element in the array, assign boolean with true 
-				if(core.getCoreType().equals(validSlotTypes[i]))
+				if(core.getCoreType().equals(element))
 				{
 					validArgument = true;
 				}
@@ -470,7 +355,7 @@ public class weapons extends itemAttributesDefined
 	}
 	
 	// set core into weapon slot if it is the same type as the slot 
-	public void setSlotOneCore(core slotOneCore)
+	public void setSlotOneCore(cores slotOneCore)
 	{
 		if(getSlotOneType() != null)
 		{
@@ -491,9 +376,15 @@ public class weapons extends itemAttributesDefined
 	}
 	
 	// get the core set in slot one 
-	public core getSlotOneCore()
+	public cores getSlotOneCore()
 	{
 		return slotOneCore;
+	}
+	
+	// remove core one from weapon
+	public void removeWeaponCoreOne()
+	{
+		slotOneCore = null;
 	}
 	
 	// set the type for weapon slot two
@@ -512,7 +403,7 @@ public class weapons extends itemAttributesDefined
 	}
 	
 	// set core into weapon slot if it is the same type as the slot 
-	public void setSlotTwoCore(core slotTwoCore)
+	public void setSlotTwoCore(cores slotTwoCore)
 	{
 		if(getSlotTwoType() != null)
 		{
@@ -532,10 +423,16 @@ public class weapons extends itemAttributesDefined
 		}
 	}
 	
-	// set the type for weapon slot two 
-	public core getSlotTwoCore()
+	// get the core set in slot two 
+	public cores getSlotTwoCore()
 	{
 		return slotTwoCore;
+	}
+	
+	// remove core two from weapon
+	public void removeWeaponCoreTwo()
+	{
+		slotTwoCore = null;
 	}
 	
 	// set the type for weapon slot three
@@ -554,7 +451,7 @@ public class weapons extends itemAttributesDefined
 	}
 	
 	// set core into weapon slot if it is the same type as the slot 
-	public void setSlotThreeCore(core slotThreeCore)
+	public void setSlotThreeCore(cores slotThreeCore)
 	{
 		if(getSlotThreeType() != null)
 		{
@@ -574,10 +471,16 @@ public class weapons extends itemAttributesDefined
 		}
 	}
 	
-	// set the type for weapon slot three 
-	public core getSlotThreeCore()
+	// get the core set in slot three 
+	public cores getSlotThreeCore()
 	{
 		return slotThreeCore;
+	}
+	
+	// remove core three from weapon
+	public void removeWeaponCoreThree()
+	{
+		slotThreeCore = null;
 	}
 	
 	// set the type for weapon slot four
@@ -596,7 +499,7 @@ public class weapons extends itemAttributesDefined
 	}
 	
 	// set core into weapon slot if it is the same type as the slot 
-	public void setSlotFourCore(core slotFourCore)
+	public void setSlotFourCore(cores slotFourCore)
 	{
 		if(getSlotFourType() != null)
 		{
@@ -616,10 +519,16 @@ public class weapons extends itemAttributesDefined
 		}
 	}
 	
-	// set the type for weapon slot four 
-	public core getSlotFourCore()
+	// get the core set in slot four 
+	public cores getSlotFourCore()
 	{
 		return slotFourCore;
+	}
+	
+	// remove core four from weapon
+	public void removeWeaponFourOne()
+	{
+		slotFourCore = null;
 	}
 	
 	// set the type for weapon slot five
@@ -638,7 +547,7 @@ public class weapons extends itemAttributesDefined
 	}
 	
 	// set core into weapon slot if it is the same type as the slot 
-	public void setSlotFiveCore(core slotFiveCore)
+	public void setSlotFiveCore(cores slotFiveCore)
 	{
 		if(getSlotFiveType() != null)
 		{
@@ -658,9 +567,100 @@ public class weapons extends itemAttributesDefined
 		}
 	}
 	
-	// set the type for weapon slot five 
-	public core getSlotFiveCore()
+	// get the core set in slot five 
+	public cores getSlotFiveCore()
 	{
 		return slotFiveCore;
 	}
+	
+	// remove core five from weapon
+	public void removeWeaponCoreFive()
+	{
+		slotFiveCore = null;
+	}
+	
+	// return an array containing all possible cores a weapon can have 
+	public cores[] getWeaponCores()
+	{
+		cores[] weaponCores = {getSlotOneCore(), getSlotTwoCore(), 
+			getSlotThreeCore(), getSlotFourCore(), getSlotFiveCore()};
+				return weaponCores;
+	}
+	
+	// END: WEAPON SLOT TYPES AND SLOT CORES
+	/*******************************************************************************/
+	
+	
+	
+	
+	
+	
+	// START: TOTAL WEAPON ATTRIBUTES WITH CORES SUPPLIED
+	/*******************************************************************************/
+	
+	// NEED remove methods for: weapons, armors, accessories... 
+	// assign null for now since need access to inventory for proper removal 
+	
+	// add points of cores if cores have same type as that specified by argument type 
+	public int addSumOfCores(String type)
+	{
+		// enhanced for loop iterates through all cores object can have 
+		for(cores element : getWeaponCores())
+		{
+			// if element is not null, compare core types against argument type and if 
+			// they match then add the value (as an integer) to coreSum
+			if(element != null)
+			{
+				if(element.getCoreType().equals(type))
+				{
+					// casting is okay here since only int values are needed
+					coreSum += (int) element.getCurrentCorePoints();
+				}
+			}
+		}
+		
+		// return value held in value
+		return coreSum;
+	}
+	
+	/*  Note on "getTotal" methods below: 
+			methods get total value for a object (like attack, nano, ect.) by adding 
+			object's power and core points together only if the cores are the same 
+			type as the String supplied as argument (if "Attack" is supplied then 
+			add the current core points of the cores with core type "Attack") */
+	
+							// attribute "getTotal" methods 
+	
+	public int getTotalAttack()
+	{
+		return totalAttack = getAttack() + addSumOfCores("Attack");
+	}
+	
+	public int getTotalNano()
+	{
+		return totalNano = getNano() + addSumOfCores("Nano");
+	}
+	
+	public int getTotalDexterity()
+	{
+		return totalDexterity = getDexterity() +  addSumOfCores("Dexterity");
+	}
+	
+	public int getTotalCritical()
+	{
+		return totalCritical = getCritical() + addSumOfCores("Critical");
+	}
+	
+	public int getTotalAccuracy()
+	{
+		return totalAccuracy = getAccuracy() + addSumOfCores("Accuracy");
+	}
+	
+	public int getTotalNanoAttack()
+	{
+		return totalNanoAttack = getNanoAttack() + addSumOfCores("Nano Attack");
+	}
+	
+	// END: TOTAL WEAPON ATTRIBUTES WITH CORES SUPPLIED
+	/*******************************************************************************/
 }
