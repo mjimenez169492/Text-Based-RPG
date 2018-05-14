@@ -1,243 +1,181 @@
 /*
-	public class items extends public class genericItem & defines methods 
-	related to using items designed to function differently
+	public class items extends public class genericObject and defines methods related 
+	to creating items with unique effects on aspects of the user as well as how to use 
+	such items 
 */
 
-public class items extends itemAttributesDefined
+public class items extends genericObject
 {
-	private String itemUsage;				// how item is used by character (consumable, throwable, ect.)
-	private String itemTarget;				// who/what an item targets (user, party, enemy, enemies)
-	private String gaugeItemAffects;		// which gauge item affects 
-	private int itemPoints; 				// points needed for calculations using item
-	private statusEffects statusItemAdds;	// status effect that item adds to character 
-	private String statusItemRemoves; 		// status effect that item removes from character
+	private String usage;				// how item is used by character (consumable, throwable, ect.)
+	private String target;				// who/what an item targets (user, party, enemy, enemies)
+	private String gaugeAffected;		// which gauge item affects (hp, np, sp)
+	private int points; 				// points needed for calculations using item
+	private statusEffects statusAdded;	// status effect that item adds to character 
+	private String statusRemoved; 		// status effect that item removes from character
+	
+	/*	Usage Types: 
+			Consumable:	items can be used by party members 
+			Throwable:	items can be thrown by party members 
+			Field: 		items exclusively meant to be used outside of battle
+			Unusable:	items that cannot be used in any way */
 	
 	// details how items can be used in the game 
-	private String[] usage = {"Consumable", "Throwable", "Field", "Key Item", "Unusable", null};
+	private String[] validUsageTypes = {"Consumable", "Throwable", "Field", "Unusable"};
 	
 	// details the target for an item being used 
-	private String[] target = {"Self", "Ally", "Party", "Enemy", "Enemies", "Any", "Any Group", null};
+	private String[] validTargetTypes = {"Self", "Any", "Any Group"};
 	
-	// details which gauge or gauges are recovered when an item is used 
-	private String[] gaugeRecovery = {"Hp", "Sp", "Np", "HpSp", "HpNp", "SpNp", "RAG", null};
+	/* Long form of: gauges 
+		  private String[] gauges = {"Current Hp", "Stamina", "Nano", "Current Hp & Stamina", 
+			  "Current Hp & Nano", "Stamina & Nano", "Recover All Gauges"}; */
 	
-		/* Long form of: gaugeRecovery 
-			
-			private String[] gaugeRecovery = {"Current Hp", "Stamina", "Nano", "Current Hp & Stamina", 
-				"Current Hp & Nano", "Stamina & Nano", "Recover All Gauges"};
-		*/
+	// details which gauge/gauges are recovered when an item is used 
+	private String[] validGaugeTypes = {"Hp", "Sp", "Np", "HpSp", "HpNp", "SpNp", "RAG"};
 	
-	// Note: Status should be removed through String comparison NOT object comparison 
-	// 		 since objects may not be identical. Status object should be held within 
-	// 		 an item object instead of being a String so that status effect methods 
-	// 		 can be called as necessary 
+	// create items objects with nothing supplied to them; objects created using this 
+	// constructor can be customized further by calling set methods within this class 
+	public items() 
+	{
+		// empty constructor 
+	}
 	
-	// status that affects Current Hp which item can remove 
-	private String[] hpStatus = {"KO", "Ablaze", "Bleed", "Poison"};
 	
-	// status that affects character behavior in battle which item can remove 
-	private String[] behavior = {"Confuse", "Enamor", "Infatuate", "Berserk"};
 	
-	// status that affects turn behavior negatively which item can remove 
-	private String[] turnBehavior = {"Stun", "Sleep", "Shock", "Slow",
-		"Stop", "Slime"};	
 	
-	// status that affects one or many resistances negatively which item can remove 
-	// status effect 'Nullify Negative Status Effects' removes all negative status  
-	// effects that hinders the player in some way 
-	private String[] specialStatus = {"Dry", "Wet",	"Cold", "Conductive", "Sickness",
-		"Hypersensitive", "Coated", "Lightweight", "Nullify Negative Status Effects"}; 	
 	
-	// status that affects an attributes negatively which item can remove 
-	private String[] attributeDown = {"Attack Down", "Defense Down", "Nano Down", 
-		"Stamina Down", "Dexterity Down", "Critical Down", "Accuracy Down", "Nano Attack Down",
-		"Nano Defense Down"}; 
 	
-	// status that affects a resistance negatively which item can remove 
-	private String[] resistanceDown = {"Fire Resistance Down", "Water Resistance Down", 
-		"Ice Resistance Down", "Electricity Resistance Down", "Poison Resistance Down", 
-		"Sonic Resistance Down", "Plasma Resistance Down", "Wind Resistance Down", "None"};
-	
-	private String[] holdStatusItemRemoves [] = {hpStatus, behavior, turnBehavior, 
-		specialStatus, attributeDown, resistanceDown};
-	
-	public items(int itemId, String itemName, String itemCategory, String itemSuperType, 
-		String itemSubType, int itemBuyPrice, int itemSellPrice, String itemUsage, 
-		String itemTarget, String gaugeItemAffects, int itemPoints, statusEffects statusItemAdds,
-		String statusItemRemoves) 
-		{
-			super(itemId, itemName, itemCategory, itemSuperType, itemSubType, itemBuyPrice, itemSellPrice);
-		
-			setItemUsage(itemUsage);
-			setItemTarget(itemTarget);
-			setGaugeItemAffects(gaugeItemAffects);
-			setItemPoints(itemPoints);
-			setStatusItemAdds(statusItemAdds);	
-			setStatusItemRemoves(statusItemRemoves);
-		}
+	// START: USAGE, TARGET, GAUGE AFFECTED, AND POINTS
+	/*******************************************************************************/
 	
 	// set how item is used by character (Consumable, Throwable, ect.)
-	public void setItemUsage(String itemUsage)
+	public void setUsage(String usage)
 	{
-		boolean validArgument = false;
-		
-		if(itemUsage != null)
+		if(usage != null)
 		{
-			for(int i = 0; i < usage.length; i++)
+			for(String element : validUsageTypes)
 			{
-				if(itemUsage.equals(usage[i]))
+				if(usage.equals(element))
 				{
-					validArgument = true;
+					this.usage = usage;
+						return;
 				}
-			}
-			
-			if(validArgument == true)
-			{
-				this.itemUsage = itemUsage;
-			}
-		}
-		else
-		{
-			this.itemUsage = null;
+			} 
 		}
 	}
 	
 	// get how item is used by character 
-	public String getItemUsage()
+	public String getUsage()
 	{
-		return itemUsage;
+		return usage;
 	}
 	
 	// set who/what an item targets (Self, Party, ect.)
-	public void setItemTarget(String itemTarget)
+	public void setTarget(String target)
 	{
-		boolean validArgument = false;
-		
-		if(itemTarget != null)
+		if(target != null)
 		{
-			for(int i = 0; i < target.length; i++)
+			for(String element : validTargetTypes)
 			{
-				if(itemTarget.equals(target[i]))
+				if(target.equals(element))
 				{
-					validArgument = true;
+					this.target = target;
+						return;
 				}
-			}
-			
-			if(validArgument == true)
-			{
-				this.itemTarget = itemTarget;
-			}
-		}
-		else
-		{
-			this.itemTarget = null;
+			} 
 		}
 	}
 	
 	// get who/what an item targets 
-	public String getItemTarget()
+	public String getTarget()
 	{
-		return itemTarget;
+		return target;
 	}
 	
 	// set gauge item affects (Hp, Sp, ect.)
-	public void setGaugeItemAffects(String gaugeItemAffects)
+	public void setGaugeAffected(String gaugeAffected)
 	{
-		boolean validArgument = false;
-		
-		if(gaugeItemAffects != null)
+		if(gaugeAffected != null)
 		{
-			for(int i = 0; i < gaugeRecovery.length; i++)
+			for(String element : validGaugeTypes)
 			{
-				if(gaugeItemAffects.equals(gaugeRecovery[i]))
+				if(gaugeAffected.equals(element))
 				{
-					validArgument = true;
+					this.gaugeAffected = gaugeAffected;
+						return;
 				}
-			}
-			
-			if(validArgument == true)
-			{
-				this.gaugeItemAffects = gaugeItemAffects;
-			}
-		}
-		else
-		{
-			this.gaugeItemAffects = null;
+			} 
 		}
 	}
 	
-	// get gauge item affects
-	public String getGaugeItemAffects()
+	// get gauge that item affects
+	public String getGaugeAffected()
 	{
-		return gaugeItemAffects;
+		return gaugeAffected;
 	}
 	
-	// set points for an item 
-	public void setItemPoints(int itemPoints)
+	// set points that an item affects gauges by 
+	public void setPoints(int points)
 	{
-		if(itemPoints < 0)
-		{
-			itemPoints = 0;
-		}
-		else if(itemPoints > 1000)
-		{
-			itemPoints = 1000;
-		}
-		
-		this.itemPoints = itemPoints;
+		this.points = checkBounds(points, 0, 1000);
 	}
 	
 	// gets points for the item  
-	public int getItemPoints()
+	public int getPoints()
 	{
-		return itemPoints;
+		return points;
 	}
 	
+	// END: USAGE, TARGET, GAUGE AFFECTED, AND POINTS
+	/*******************************************************************************/
+	
+	
+	
+	
+	
+	
+	// START: ITEMS ADDING AND REMOVING STATUS
+	/*******************************************************************************/
+	
 	// set status effect item adds 
-	public void setStatusItemAdds(statusEffects statusItemAdds)
+	public void setStatusItemAdds(statusEffects statusAdded)
 	{
-		if(statusItemAdds != null)
+		if(statusAdded != null)
 		{
-			this.statusItemAdds = statusItemAdds;
+			this.statusAdded = statusAdded;
 		}
 	}
 	
 	// get status effect item adds 
 	public statusEffects getStatusItemAdds()
 	{
-		return statusItemAdds;
+		return statusAdded;
 	}
 	
 	// set property (status) that item removes 
-	public void setStatusItemRemoves(String statusItemRemoves)
+	public void setStatusItemRemoves(String statusRemoved)
 	{
-		boolean validArgument = false;
-		
-		if(statusItemRemoves != null)
+		if(statusRemoved != null)
 		{
-			for(String[] array : holdStatusItemRemoves)
+			for(String[] array : removeStatusEffects.getNegativeStatusEffects())
 			{
-				if(statusItemAdds.equals(array))
+				for(String element : array)
 				{
-					validArgument = true;
+					if(statusRemoved.equals(element))
+					{
+						this.statusRemoved = statusRemoved;
+							return;
+					}
 				}
 			}
-			
-			if(validArgument == true)
-			{
-				this.statusItemAdds = statusItemAdds;
-			}
-		}
-		else
-		{
-			this.statusItemAdds = null;
 		}
 	}
 
 	// get property (status) that item removes 
 	public String getStatusItemRemoves()
 	{
-		return statusItemRemoves;
+		return statusRemoved;
 	}	
 	
+	// END: ITEMS ADDING AND REMOVING STATUS
+	/*******************************************************************************/
 }
