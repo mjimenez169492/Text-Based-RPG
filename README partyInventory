@@ -1,3 +1,0 @@
-Class partyInventory is meant to hold items that the player character collects as they progress through the game. Since there are four
-subclasses for genericItem, namely items, weapons, armors, and accessories, the code in this class should be able to manage holding 
-items from all these subclasses. For the sake of sorting, I believe that there should be four separate inventories for each item type.
