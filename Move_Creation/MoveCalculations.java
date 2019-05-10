@@ -1305,14 +1305,14 @@ public class MoveCalculations
         switch(move.getApproachEnum())
         {
             case STAMINA: 
-                output = staminaOutputByWeaponWielded(user, target);
                 accuracy = staminaAccuracyByWeaponWielded(user, target, move);
+                output = staminaOutputByWeaponWielded(user, target);
                 critical = staminaCriticalByWeaponWielded(user, target, move);
                     staminaNanoMove(user, target, move, accuracy, output, critical);
                             break;
             case NANO: 
-                output = nanoOutputByWeaponWielded(user, target);
                 accuracy = nanoAccuracyByWeaponWielded(user, target, move);
+                output = nanoOutputByWeaponWielded(user, target);
                 critical = nanoCriticalByWeaponWielded(user, target, move);
                     staminaNanoMove(user, target, move, accuracy, output, critical);
                             break;
@@ -1320,9 +1320,9 @@ public class MoveCalculations
                 // custom GUI shenanigans here!!!
                 break;
             case ITEM: 
+                accuracy = move.getCustomAccuracy();
                 output = move.getCustomOutput();
-                accuracy = move.getAccuracyModifier();
-                critical = move.getCriticalModifier();
+                critical = move.getCustomCritical();
                     itemMove(user, target, move, accuracy, output, critical);
                         break;
         }
