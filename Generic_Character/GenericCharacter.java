@@ -45,7 +45,7 @@ public class GenericCharacter
     
     
     
-    // START: GETTING OBJECTS FROM OTHER CLASSES 
+    // START: GETTING OBJECTS CREATED USING OTHER CLASSES 
     /*******************************************************************************/
 
     public Stress getStress()
@@ -108,6 +108,6 @@ public class GenericCharacter
         return generalFeatures;
     }
     
-    // END: GETTING OBJECTS FROM OTHER CLASSES 
+    // END: GETTING OBJECTS CREATED USING OTHER CLASSES 
     /*******************************************************************************/
 }
