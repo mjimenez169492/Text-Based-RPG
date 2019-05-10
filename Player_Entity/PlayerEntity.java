@@ -1,14 +1,66 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package Player_Entity;
 
-/**
- *
- * @author Miguel
- */
-public class PlayerEntity {
+/*
+    PlayerEntity is used to create objects that players have to manage in order 
+    to progress through the game. PlayerEntity, like GenericCharacter, utilizes
+    composition over inheritance to create objects that are easier to maintain.
+*/
+
+
+public class PlayerEntity 
+{
+    CurrentLocation currentLocation = new CurrentLocation();
     
+    FormerPartyMemberTracker formerPartyMemberTracker = new FormerPartyMemberTracker();
+    
+    PlayerChoices playerChoices = new PlayerChoices();
+    
+    Party party = new Party();
+    
+    Inventory inventory = new Inventory();
+    
+    PartyWallet partyWallet = new PartyWallet();
+    
+    public PlayerEntity()
+    {
+        // empty constructor 
+    }
+    
+    
+    
+    // START: GETTING OBJECTS CREATED USING OTHER CLASSES 
+    /*******************************************************************************/
+
+    public CurrentLocation getCurrentLocation()
+    {
+        return currentLocation;
+    }
+    
+    public FormerPartyMemberTracker getFormerPartyMemberTracker()
+    {
+        return formerPartyMemberTracker;
+    }
+    
+    public PlayerChoices getPlayerChoices()
+    {
+        return playerChoices;
+    }
+    
+    public Party getParty()
+    {
+        return party;
+    }
+    
+    public Inventory getInventory()
+    {
+        return inventory;
+    }
+    
+    public PartyWallet getPartyWallet()
+    {
+        return partyWallet;
+    }
+    
+    // END: GETTING OBJECTS CREATED USING OTHER CLASSES 
+    /*******************************************************************************/
 }
