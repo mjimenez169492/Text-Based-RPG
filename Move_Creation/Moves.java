@@ -68,8 +68,11 @@ public class Moves
     // Note: used for leveling up move since it indicates how move is "Mastered" 
     private String classification; 
     
+    // custom values meant to be used for item moves ONLY 
+    private double customAccuracy, customOutput, customCritical;
+    
     // contains values altering certain values used in move calculations 
-    private double stressEffect, customOutput, moveCost, outputVariance, accuracyModifier, 
+    private double stressEffect, moveCost, outputVariance, accuracyModifier, 
         outputModifier, criticalModifier, moveSpeed;
     
     // determines when a move is mastered ("Mastered" moves can be used in combinations)
@@ -795,6 +798,44 @@ public class Moves
 
     
     
+    // START: CUSTOM VALUES FOR ITEM MOVES 
+    /*******************************************************************************/
+
+    public void setCustomAccuracy(double customAccuracy)
+    {
+        this.customAccuracy = lowerUpperBounds(-100, 100, customAccuracy);
+    }
+    
+    public double getCustomAccuracy()
+    {
+        return customAccuracy;
+    }
+    
+    public void setCustomOutput(double customOutput)
+    {
+        this.customOutput = lowerUpperBounds(-15000, 15000, customOutput);
+    }
+    
+    public double getCustomOutput()
+    {
+        return customOutput;
+    }
+    
+    public void setCustomCritical(double customCritical)
+    {
+        this.customCritical = lowerUpperBounds(-100, 100, customCritical);
+    }
+    
+    public double getCustomCritical()
+    {
+        return customCritical;
+    }
+    
+    // END: CUSTOM VALUES FOR ITEM MOVES 
+    /*******************************************************************************/
+
+    
+    
     // START: DOUBLE VALUES RELATING TO MOVE USAGE (must pass moves object)
     /*******************************************************************************/
     
@@ -810,16 +851,6 @@ public class Moves
         }
         
         return argument;
-    }
-    
-    public void setCustomOutput(double customOutput)
-    {
-        this.customOutput = lowerUpperBounds(-15000, 15000, customOutput);
-    }
-    
-    public double getCustomOutput()
-    {
-        return customOutput;
     }
     
     public void setMoveCost(double moveCost)

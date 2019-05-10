@@ -32,6 +32,11 @@ public class Inventory
         LinkedHashMap<GenericObject, ArrayList<GenericObject>> inventory = new 
             LinkedHashMap<GenericObject, ArrayList<GenericObject>>();         */
 
+    public Inventory()
+    {
+        // empty constructor 
+    }
+    
     
     
     // START: LIMITING ASPECTS OF OBJECT GROUPS INVENTORY
@@ -139,8 +144,6 @@ public class Inventory
         return objectGroupsLimit;
     }
 
-    // END: LIMITING NUMBER OF OBJECT GROUPS 
-    
     // END: LIMITING ASPECTS OF OBJECT GROUPS INVENTORY
     /*******************************************************************************/
 
@@ -155,11 +158,7 @@ public class Inventory
     {        
         int groupSizeLimit = 0;
         
-        if(object.getClass() == GenericObject.class)
-        {
-            groupSizeLimit = genericObjectGroupMaxSize;
-        }
-        else if(object.getClass() == Item.class)
+        if(object.getClass() == Item.class)
         {
             groupSizeLimit = itemGroupMaxSize;
         }
@@ -715,7 +714,7 @@ public class Inventory
     // enum class containing classes whose objects can be stored in inventory 
     public enum ValidClassesForSorting
     {
-        GENERIC_OBJECT, ITEMS, CORES, WEAPONS, ARMORS, ACCESSORIES;
+        ITEM, CORE, WEAPON, ARMOR, ACCESSORY;
     }
     
     // class belonging to GenericObject hierarchy MUST be supplied in order to 
@@ -740,22 +739,19 @@ public class Inventory
         // switch statement determines what class objects are stored/sorted 
         switch(choice)
         {
-            case GENERIC_OBJECT: 
-                specificSortLogic(sortObjectsBy, unsortedObjects, GenericObject.class);
-                    break;
-            case ITEMS: 
+            case ITEM: 
                 specificSortLogic(sortObjectsBy, unsortedObjects, Item.class);
                     break;
-            case CORES: 
+            case CORE: 
                 specificSortLogic(sortObjectsBy, unsortedObjects, Core.class);
                     break;
-            case WEAPONS: 
+            case WEAPON: 
                 specificSortLogic(sortObjectsBy, unsortedObjects, Weapon.class);
                     break;
-            case ARMORS: 
+            case ARMOR: 
                 specificSortLogic(sortObjectsBy, unsortedObjects, Armor.class);
                     break;
-            case ACCESSORIES: 
+            case ACCESSORY: 
                 specificSortLogic(sortObjectsBy, unsortedObjects, Accessory.class);
                     break;
         }

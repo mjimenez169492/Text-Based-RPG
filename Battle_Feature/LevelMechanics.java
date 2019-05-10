@@ -1,4 +1,4 @@
-package Battle_And_Battle_Results;
+package Battle_Feature;
 
 /* 
     public class levelUp contains information regarding 'level up' or increase in 
@@ -10,62 +10,13 @@ package Battle_And_Battle_Results;
     regarding character level up. 
 */ 
 
+import Generic_Character.GenericCharacter;
 import java.security.SecureRandom;
 
 public class LevelMechanics
 {
-    private int holdNextLevel;	// hold next level for a character based on their exp total
-    private int toNextLevel;	// hold experience needed for the next level
-    private int exp; 			// holds exp scale and is used in exp calculations 
-    private int nextLevelExp;	// hold exp needed for the next level 
-    private int expTotal;		// used in exp calculations
-    private int rightLevel;		// holds the "right level" for a character based on exp
-    private int randNumber;		// random number influences method randomAttributesUp()
-
-    // method determines whether a character can "level up" or increase in power
-    public void levelUp(characters character)
-    {
-            // get and hold the next level of the character 
-            holdNextLevel = correctLevel(character);
-
-            // if holdNextLevel is greater than current character level (meaning character
-            // has enough exp to gain a level), enter the if statement else print out how 
-            // exp is needed for the next level 
-            if(holdNextLevel > character.getLevel())
-            {
-                    // print out that character has leveled up 
-                    System.out.println("\nLevel up!"); 
-
-                    // add levels to a character until level is equal to level held in holdNextLevel
-                    while(holdNextLevel != character.getLevel())
-                    {
-                            character.setLevel(character.getLevel() + 1);
-                    }
-
-                    // print the name and exp of the character using method showNameAndExp()
-                    System.out.println("New stats:\n"); 
-                            showNameAndExp(character);
-
-                    // randomly increase the character's attributes 
-                    levelAttributesRandomly(character);
-            }
-            else
-            {
-                    // show character name, level, and exp details 
-                    showNameAndExp(character);
-            }
-    }
-
-    // show total experience and experience needed for next level 
-    // to be changed at GUI building phase
-    public void showNameAndExp(characters character)
-    {
-            // toNextLevel assigned difference between expNeeded() and character's current experience 
-            nextLevelExp = expNeeded(character) - character.getExperience();
-            String totalEXP = String.format("%d/%d", character.getExperience(), expNeeded(character));
-            System.out.format("%-11s%-22s%s%d\n", "Character:", character.getName(), "Level: ", character.getLevel());
-            System.out.format("%-11s%-22s%s%d\n", "Total EXP:", totalEXP, "Next Level: ", nextLevelExp);
-    }
+    // START: EXP CALCULATION PER LEVEL 
+    /*******************************************************************************/
 
     // method returns experience total for current level based off character's exp scale
     public int expCalculation(int experience, int expScale)
@@ -122,7 +73,57 @@ public class LevelMechanics
             // return value held in rightLevel
             return rightLevel;
     }
+    
+    // method determines whether a character can "level up" or increase in power
+    public void levelUp(GenericCharacter character)
+    {
+            // get and hold the next level of the character 
+            holdNextLevel = correctLevel(character);
 
+            // if holdNextLevel is greater than current character level (meaning character
+            // has enough exp to gain a level), enter the if statement else print out how 
+            // exp is needed for the next level 
+            if(holdNextLevel > character.getLevel())
+            {
+                    // print out that character has leveled up 
+                    System.out.println("\nLevel up!"); 
+
+                    // add levels to a character until level is equal to level held in holdNextLevel
+                    while(holdNextLevel != character.getLevel())
+                    {
+                            character.setLevel(character.getLevel() + 1);
+                    }
+
+                    // print the name and exp of the character using method showNameAndExp()
+                    System.out.println("New stats:\n"); 
+                            showNameAndExp(character);
+
+                    // randomly increase the character's attributes 
+                    levelAttributesRandomly(character);
+            }
+            else
+            {
+                    // show character name, level, and exp details 
+                    showNameAndExp(character);
+            }
+    }
+
+    /*
+    // show total experience and experience needed for next level 
+    // to be changed at GUI building phase
+    public void showNameAndExp(characters character)
+    {
+            // toNextLevel assigned difference between expNeeded() and character's current experience 
+            nextLevelExp = expNeeded(character) - character.getExperience();
+            String totalEXP = String.format("%d/%d", character.getExperience(), expNeeded(character));
+            System.out.format("%-11s%-22s%s%d\n", "Character:", character.getName(), "Level: ", character.getLevel());
+            System.out.format("%-11s%-22s%s%d\n", "Total EXP:", totalEXP, "Next Level: ", nextLevelExp);
+    }
+    */
+
+    
+
+    /*
     // method levels attributes randomly and prints a table of attributes showing increases
     public void levelAttributesRandomly(characters character)
     {
@@ -202,4 +203,5 @@ public class LevelMechanics
                     character.setLuck(character.getLuck() + secureRand.nextInt(2));
             }
     }
+    */
 }

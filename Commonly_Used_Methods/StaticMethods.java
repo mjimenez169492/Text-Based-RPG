@@ -488,8 +488,59 @@ public class StaticMethods
         STOPPED("Stopped"),
 		
         // nullify
-        NULLIFY_STATUS_EFFECTS("Nullify Status Effects");
-		
+        NULLIFY_STATUS_EFFECTS("Nullify Status Effects"),
+        
+        // stamina style move omission
+        OMIT_UNIVERSAL_STAMINA_MOVES("Omit Universal Stamina Moves"), 
+        OMIT_HAND_TO_HAND_STAMINA_MOVES("Omit Hand To Hand Stamina Moves"), 
+        OMIT_ONE_HANDED_STAMINA_MOVES("Omit One Handed Stamina Moves"), 
+        OMIT_TWO_HANDED_STAMINA_MOVES("Omit Two Handed Stamina Moves"), 
+        OMIT_DUAL_WIELDED_STAMINA_MOVES("Omit Dual Wielded Stamina Moves"), 
+        
+        // nano style move omission
+        OMIT_UNIVERSAL_NANO_MOVES("Omit Universal Nano Moves"), 
+        OMIT_HAND_TO_HAND_NANO_MOVES("Omit Hand To Hand Nano Moves"), 
+        OMIT_ONE_HANDED_NANO_MOVES("Omit One Handed Nano Moves"), 
+        OMIT_TWO_HANDED_NANO_MOVES("Omit Two Handed Nano Moves"), 
+        OMIT_DUAL_WIELDED_NANO_MOVES("Omit Dual Wielded Nano Moves"), 
+        
+        // special style move omission
+        OMIT_TECHNIQUES_MOVES("Omit Techniques Moves"), 
+        OMIT_OTHER_MOVES("Omit Other Moves"), 
+        
+        // stamina technique move omission
+        OMIT_UNIVERSAL_HAND_TO_HAND_STAMINA_MOVES("Omit Universal Hand To Hand Stamina Moves"), 
+        OMIT_CLOSE_QUARTERS_COMBAT_STAMINA_MOVES("Omit Close Quarters Combat Stamina Moves"), 
+        OMIT_UNIVERSAL_ONE_HANDED_STAMINA_MOVES("Omit Universal One Handed Stamina Moves"), 
+        OMIT_SWORD_STAMINA_MOVES("Omit Sword Stamina Moves"), 
+        OMIT_KNIFE_STAMINA_MOVES("Omit Knife Stamina Moves"), 
+        OMIT_OTHER_ONE_HANDED_STAMINA_MOVES("Omit Other One Handed Stamina Moves"), 
+        OMIT_UNIVERSAL_TWO_HANDED_STAMINA_MOVES("Omit Universal Two Handed Stamina Moves"), 
+        OMIT_GREAT_SWORD_STAMINA_MOVES("Omit Great Sword Stamina Moves"), 
+        OMIT_SPEAR_STAMINA_MOVES("Omit Spear Stamina Moves"), 
+        OMIT_OTHER_TWO_HANDED_STAMINA_MOVES("Omit Other Two Handed Stamina Moves"), 
+        OMIT_UNIVERSAL_DUAL_WIELDED_STAMINA_MOVES("Omit Universal Dual Wielded Stamina Moves"), 
+        OMIT_BLADES_STAMINA_MOVES("Omit Blades Stamina Moves"), 
+        OMIT_OTHER_DUAL_WIELDED_STAMINA_MOVES("Omit Other Dual Wielded Stamina Moves"), 
+
+        // nano technique move omission
+        OMIT_UNIVERSAL_HAND_TO_HAND_NANO_MOVES("Omit Universal Hand To Hand Nano Moves"), 
+        OMIT_CLOSE_QUARTERS_COMBAT_NANO_MOVES("Omit Close Quarters Combat Nano Moves"), 
+        OMIT_UNIVERSAL_ONE_HANDED_NANO_MOVES("Omit Universal One Handed Nano Moves"), 
+        OMIT_SWORD_NANO_MOVES("Omit Sword Nano Moves"), 
+        OMIT_KNIFE_NANO_MOVES("Omit Knife Nano Moves"), 
+        OMIT_OTHER_ONE_HANDED_NANO_MOVES("Omit Other One Handed Nano Moves"), 
+        OMIT_UNIVERSAL_TWO_HANDED_NANO_MOVES("Omit Universal Two Handed Nano Moves"), 
+        OMIT_GREAT_SWORD_NANO_MOVES("Omit Great Sword Nano Moves"), 
+        OMIT_SPEAR_NANO_MOVES("Omit Spear Nano Moves"), 
+        OTHER_TWO_HANDED_NANO_MOVES("Omit Other Two Handed Nano Moves"), 
+        OMIT_UNIVERSAL_DUAL_WIELDED_NANO_MOVES("Omit Universal Dual Wielded Nano Moves"), 
+        OMIT_BLADES_NANO_MOVES("Omit Blades Nano Moves"), 
+        OMIT_OTHER_DUAL_WIELDED_NANO_MOVES("Omit Other Dual Wielded Nano Moves"),
+
+        // special technique move omission
+        OMIT_GENERAL_PURPOSE_MOVES("Omit General Purpose Moves"); 
+
         private String allStatusEffects;
         
         AllStatusEffects(String allStatusEffects)
@@ -553,8 +604,59 @@ public class StaticMethods
         STOPPED("Stopped"),
 		
         // nullify
-        NULLIFY_STATUS_EFFECTS("Nullify Status Effects");
-		
+        NULLIFY_STATUS_EFFECTS("Nullify Status Effects"),
+        
+        // stamina style move omission
+        OMIT_UNIVERSAL_STAMINA_MOVES("Omit Universal Stamina Moves"), 
+        OMIT_HAND_TO_HAND_STAMINA_MOVES("Omit Hand To Hand Stamina Moves"), 
+        OMIT_ONE_HANDED_STAMINA_MOVES("Omit One Handed Stamina Moves"), 
+        OMIT_TWO_HANDED_STAMINA_MOVES("Omit Two Handed Stamina Moves"), 
+        OMIT_DUAL_WIELDED_STAMINA_MOVES("Omit Dual Wielded Stamina Moves"), 
+        
+        // nano style move omission
+        OMIT_UNIVERSAL_NANO_MOVES("Omit Universal Nano Moves"), 
+        OMIT_HAND_TO_HAND_NANO_MOVES("Omit Hand To Hand Nano Moves"), 
+        OMIT_ONE_HANDED_NANO_MOVES("Omit One Handed Nano Moves"), 
+        OMIT_TWO_HANDED_NANO_MOVES("Omit Two Handed Nano Moves"), 
+        OMIT_DUAL_WIELDED_NANO_MOVES("Omit Dual Wielded Nano Moves"), 
+        
+        // special style move omission
+        OMIT_TECHNIQUES_MOVES("Omit Techniques Moves"), 
+        OMIT_OTHER_MOVES("Omit Other Moves"), 
+        
+        // stamina technique move omission
+        OMIT_UNIVERSAL_HAND_TO_HAND_STAMINA_MOVES("Omit Universal Hand To Hand Stamina Moves"), 
+        OMIT_CLOSE_QUARTERS_COMBAT_STAMINA_MOVES("Omit Close Quarters Combat Stamina Moves"), 
+        OMIT_UNIVERSAL_ONE_HANDED_STAMINA_MOVES("Omit Universal One Handed Stamina Moves"), 
+        OMIT_SWORD_STAMINA_MOVES("Omit Sword Stamina Moves"), 
+        OMIT_KNIFE_STAMINA_MOVES("Omit Knife Stamina Moves"), 
+        OMIT_OTHER_ONE_HANDED_STAMINA_MOVES("Omit Other One Handed Stamina Moves"), 
+        OMIT_UNIVERSAL_TWO_HANDED_STAMINA_MOVES("Omit Universal Two Handed Stamina Moves"), 
+        OMIT_GREAT_SWORD_STAMINA_MOVES("Omit Great Sword Stamina Moves"), 
+        OMIT_SPEAR_STAMINA_MOVES("Omit Spear Stamina Moves"), 
+        OMIT_OTHER_TWO_HANDED_STAMINA_MOVES("Omit Other Two Handed Stamina Moves"), 
+        OMIT_UNIVERSAL_DUAL_WIELDED_STAMINA_MOVES("Omit Universal Dual Wielded Stamina Moves"), 
+        OMIT_BLADES_STAMINA_MOVES("Omit Blades Stamina Moves"), 
+        OMIT_OTHER_DUAL_WIELDED_STAMINA_MOVES("Omit Other Dual Wielded Stamina Moves"), 
+
+        // nano technique move omission
+        OMIT_UNIVERSAL_HAND_TO_HAND_NANO_MOVES("Omit Universal Hand To Hand Nano Moves"), 
+        OMIT_CLOSE_QUARTERS_COMBAT_NANO_MOVES("Omit Close Quarters Combat Nano Moves"), 
+        OMIT_UNIVERSAL_ONE_HANDED_NANO_MOVES("Omit Universal One Handed Nano Moves"), 
+        OMIT_SWORD_NANO_MOVES("Omit Sword Nano Moves"), 
+        OMIT_KNIFE_NANO_MOVES("Omit Knife Nano Moves"), 
+        OMIT_OTHER_ONE_HANDED_NANO_MOVES("Omit Other One Handed Nano Moves"), 
+        OMIT_UNIVERSAL_TWO_HANDED_NANO_MOVES("Omit Universal Two Handed Nano Moves"), 
+        OMIT_GREAT_SWORD_NANO_MOVES("Omit Great Sword Nano Moves"), 
+        OMIT_SPEAR_NANO_MOVES("Omit Spear Nano Moves"), 
+        OTHER_TWO_HANDED_NANO_MOVES("Omit Other Two Handed Nano Moves"), 
+        OMIT_UNIVERSAL_DUAL_WIELDED_NANO_MOVES("Omit Universal Dual Wielded Nano Moves"), 
+        OMIT_BLADES_NANO_MOVES("Omit Blades Nano Moves"), 
+        OMIT_OTHER_DUAL_WIELDED_NANO_MOVES("Omit Other Dual Wielded Nano Moves"),
+
+        // special technique move omission
+        OMIT_GENERAL_PURPOSE_MOVES("Omit General Purpose Moves"); 
+        
         private String allStats;
         
         AllStats(String allStats)

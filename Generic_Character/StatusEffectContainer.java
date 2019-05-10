@@ -110,7 +110,7 @@ public class StatusEffectContainer
     
     public boolean statusExists(String argument)
     {
-        boolean holdBoolean = false;
+        boolean result = false;
 
         if(argument != null)
         {
@@ -118,13 +118,49 @@ public class StatusEffectContainer
             {
                 if(StaticMethods.sameStatusEffectName(argument, element))
                 {
-                    holdBoolean = true;
+                    result = true;
                         break;
                 }
             }
         }
 
-        return holdBoolean;
+        return result;
+    }
+    
+    public boolean specificStatusExists(String[] array)
+    {
+        boolean result = false;
+
+        for(StatusEffect status : statusEffectContainer)
+        {
+            if(!result)
+            {
+                for(String behavior : array)
+                {
+                    if(StaticMethods.sameStatusEffectName(behavior, status))
+                    {
+                        result = true;
+                            break;
+                    }
+                }
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        return result;
+    }
+    
+    public boolean behaviorStatusExists()
+    {
+        return specificStatusExists(StaticMethods.behaviorStatusEffectValueStrings());
+    }
+    
+    public boolean turnBehaviorStatusExists()
+    {
+        return specificStatusExists(StaticMethods.turnBehaviorStatusEffectValueStrings());
     }
     
     // print the contents of statusEffectContainer (must decide style upon GUI creation)
