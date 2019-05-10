@@ -1,3 +1,0 @@
-Item hierarchy consists of interface itemAttributes, public class genericItem which implements itemAttributes and at least
-four subclasses that will extend genericItem. These subclasses are: 1) items (consumable, throwable, unusable, key items), 
-2) weapons, 3) armors, and 4) accessories.
