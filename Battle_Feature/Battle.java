@@ -20,6 +20,9 @@ public class Battle
     // keeps track of the number of rounds that have passed in battle 
     private double round;
     
+    // denotes whether battle is winnable or not from the start
+    private boolean unwinnableBattle;
+    
     // variables denoting conditions for party win/loss/escape/ending battle early 
     private boolean playerGameOver, endBattleEarlyTrigger, partiesTied, partyTwoEscape, 
         partyOneEscape, playerPartyEscape, partyTwoLoss, partyOneLoss, 
@@ -93,6 +96,24 @@ public class Battle
     }
     
     // END: END BATTLE CONDITIONS
+    /*******************************************************************************/
+
+    
+    
+    // START: UNWINNABLE BATTLE BOOLEANS 
+    /*******************************************************************************/
+
+    public void unwinnableBattle(boolean unwinnableBattle)
+    {
+        this.unwinnableBattle = unwinnableBattle;
+    }
+    
+    public boolean unwinnableBattle()
+    {
+        return unwinnableBattle;
+    }
+    
+    // START: UNWINNABLE BATTLE BOOLEANS 
     /*******************************************************************************/
 
     
@@ -289,7 +310,8 @@ public class Battle
     }
     
     // allows characters from two different parties to battle one another 
-    public void standardBattle(Party partyOne, Party partyTwo)
+    // Note: Battle object is passed to get access to boolean conditions
+    public void standardBattle(Battle battle, Party partyOne, Party partyTwo)
     {
         // proceed only if both parties supplied are considered valid 
         if(validParty(partyOne) && validParty(partyTwo))
@@ -307,7 +329,7 @@ public class Battle
             
             // after battle, perform appropriate action based on boolean priority 
             // and whether a party under player control is involved in the battle 
-                // battleResults(partyOne, partyTwo);
+                // battleResults(battle, partyOne, partyTwo);
         }
     }
     
@@ -350,6 +372,8 @@ public class Battle
     
     public void resetBattleLoopConditions()
     {
+        unwinnableBattle = false;
+        
         for(boolean element: endBattleConditions)
         {
             element = false;
@@ -595,7 +619,7 @@ public class Battle
         {
             // if character is not under player control then execute AI script 
                 // currentRound.peek().getAiScript().executeAiPattern() 
-            s
+//            s
         }
         else // object is under player control
         {
@@ -933,46 +957,5 @@ public class Battle
     }
     
     // END: END BATTLE LOOP BOOLEAN MANAGEMENT 
-    /*******************************************************************************/
-
-    
-    
-    // START: GETTING OPPOSING CHARACTERS DEFEATED IN BATTLE 
-    /*******************************************************************************/
-
-    remove characters in own party
-    public ArrayList<GenericCharacter> getDefeatedCharacters(PriorityQueue<GenericCharacter> 
-        allPqContents, Party playerParty)
-    {
-        for(GenericCharacter element : allPqContents)
-        {
-            if(!playerParty.getPartyMembers().contains(element))
-            {
-                if(element.getGeneralFeatures().knockedOut())
-                {
-                    defeatedCharacters.add(element);
-                }
-                else if(element.getStatusEffectContainer().statusExists("Surrender") || 
-                    element.getStatusEffectContainer().statusExists("Death"))
-                {
-                    defeatedCharacters.add(element);
-                }
-            }
-        }
-        
-        return defeatedCharacters;
-    }
-        
-    // END: GETTING OPPOSING CHARACTERS DEFEATED IN BATTLE 
-    /*******************************************************************************/
-
-    
-    
-    // START: BATTLE LOOPS 
-    /*******************************************************************************/
-    
-    
-    
-    // END: BATTLE LOOPS 
     /*******************************************************************************/
 }

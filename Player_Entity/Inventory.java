@@ -19,8 +19,8 @@ public class Inventory
 {
     // max amount of objects that can be "stacked" for object group in inventory 
     // Ex: maxWeaponGroupSize = 5 so weapon group "Sword" can only have 5 swords 
-    public int genericObjectGroupMaxSize, itemGroupMaxSize, coreGroupMaxSize,
-        weaponGroupMaxSize, armorGroupMaxSize, accessoryGroupMaxSize;
+    public int itemGroupMaxSize, coreGroupMaxSize, weaponGroupMaxSize, armorGroupMaxSize, 
+        accessoryGroupMaxSize;
     
     // limits number of different object groups that can exist at any one time 
     private int objectGroupsLimit; 
@@ -58,16 +58,6 @@ public class Inventory
         return groupSizeLimit;
     }
 
-    public void setGenericObjectGroupMaxSize(int genericObjectGroupMaxSize)
-    {
-        this.genericObjectGroupMaxSize = validateGroupSizeLimit(genericObjectGroupMaxSize);
-    }
-    
-    public int getGenericObjectGroupMaxSize()
-    {
-        return genericObjectGroupMaxSize;
-    }
-    
     public void setItemGroupMaxSize(int itemGroupMaxSize)
     {
         this.itemGroupMaxSize = validateGroupSizeLimit(itemGroupMaxSize);

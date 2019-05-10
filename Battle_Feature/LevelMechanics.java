@@ -18,94 +18,124 @@ public class LevelMechanics
     // START: EXP CALCULATION PER LEVEL 
     /*******************************************************************************/
 
-    // method returns experience total for current level based off character's exp scale
-    public int expCalculation(int experience, int expScale)
+    public double nextLevelExpCalculation(double experience, double expScale)
     {
-            // result of experience calculation stored in expTotal is returned
-            return expTotal = (int)(experience * 1.63) - (int)(experience/1.86) + (expScale + 16);
+        double expTotal = (experience * 1.17) + (expScale + (expScale * 0.94));
+            return expTotal;
     }
 
-    // determine the experience needed for character's next level 
-    public int expNeeded(characters character)
+    public double nextLevelExp(GenericCharacter character)
     {
-            // assign instance variable exp with 0 each time method is called 
-            exp = 0;
+        double exp = 0;
 
-            // loop until exp value exceeds character's current experience points 
-            // exp value will be the value that must be exceeded to gain a level 
-            while(exp <= character.getExperience())
-            {
-                    // exp assigned value of method expCalculation()
-                    exp = expCalculation(exp, character.getExpScale());			
-            }
+        // exp signifies value that must be exceeded in order to gain a level
+        while(exp <= character.getGeneralFeatures().getExperience())
+        {
+            exp = nextLevelExpCalculation(exp, character.getGeneralFeatures().getExpScale());
+        }
 
-            // return value stored in exp 
-            return exp;
+        return exp;
     }
 
-    // method finds the correct level for character based on experience points gained
-    public int correctLevel(characters character)
+    public double correctLevel(GenericCharacter character)
     {
-            // assign instance variable exp with 0 each time method is called 
-            exp = 0;
+        double exp = 0;
 
-            // assign instance variable rightLevel with 0 each time method is called 
-            rightLevel = 0;
+        // lowest level possible is 1 so start counting at 1 
+        double correctLevel = 1;
 
-            // loop breaks only when exp exceeds character experience
-            while(exp < character.getExperience())
+        // loop forever until loop is broken by custom break condition 
+        while(true)
+        {
+            // exp signifies value that must be exceeded in order to gain a level
+            exp = nextLevelExpCalculation(exp, character.getGeneralFeatures().getExpScale());
+
+            // break loop if exp for next level has not been met 
+            if(exp > character.getGeneralFeatures().getExperience())
             {
-                    // exp assigned value of method expCalculation()
-                    exp = expCalculation(exp, character.getExpScale());
-
-                    // need if statement to prevent rightLevel from incrementing by 1 when it 
-                    // should not do so if exp exceeds character experience since it would 
-                    // return a value that is 1 more than it should be 
-                    if(exp > character.getExperience())
-                    {
-                            break;
-                    }
-
-                    // increment rightLevel by 1 oer iteration 
-                    rightLevel++;
-            }
-
-            // return value held in rightLevel
-            return rightLevel;
-    }
-    
-    // method determines whether a character can "level up" or increase in power
-    public void levelUp(GenericCharacter character)
-    {
-            // get and hold the next level of the character 
-            holdNextLevel = correctLevel(character);
-
-            // if holdNextLevel is greater than current character level (meaning character
-            // has enough exp to gain a level), enter the if statement else print out how 
-            // exp is needed for the next level 
-            if(holdNextLevel > character.getLevel())
-            {
-                    // print out that character has leveled up 
-                    System.out.println("\nLevel up!"); 
-
-                    // add levels to a character until level is equal to level held in holdNextLevel
-                    while(holdNextLevel != character.getLevel())
-                    {
-                            character.setLevel(character.getLevel() + 1);
-                    }
-
-                    // print the name and exp of the character using method showNameAndExp()
-                    System.out.println("New stats:\n"); 
-                            showNameAndExp(character);
-
-                    // randomly increase the character's attributes 
-                    levelAttributesRandomly(character);
+                break;
             }
             else
             {
-                    // show character name, level, and exp details 
-                    showNameAndExp(character);
+                correctLevel++;
             }
+        }
+
+        return correctLevel;
+    }
+    
+    public void randomlyIncreaseAttributes(GenericCharacter character)
+    {
+        SecureRandom secureRand = new SecureRandom();
+        
+        switch((secureRand.nextInt(7) + 1))
+        {
+            case 7:
+                character.getStats().setLuck(character.getStats().getLuck() 
+                    + secureRand.nextInt(2));
+            case 6: 
+                character.getStats().setMaxHealth(character.getStats().getMaxHealth() 
+                    + secureRand.nextInt(2));
+                character.getStats().setMaxStamina(character.getStats().getMaxStamina() 
+                    + secureRand.nextInt(2));
+                character.getStats().setMaxNano(character.getStats().getMaxNano() 
+                    + secureRand.nextInt(2));
+                character.getStats().setAttack(character.getStats().getAttack() 
+                    + secureRand.nextInt(2));
+                character.getStats().setDefense(character.getStats().getDefense() 
+                    + secureRand.nextInt(2));
+                character.getStats().setDexterity(character.getStats().getDexterity() 
+                    + secureRand.nextInt(2));
+                character.getStats().setAccuracy(character.getStats().getAccuracy() 
+                    + secureRand.nextInt(2)); 
+                character.getStats().setNanoAttack(character.getStats().getNanoAttack() 
+                    + secureRand.nextInt(2));
+                character.getStats().setNanoDefense(character.getStats().getNanoDefense() 
+                    + secureRand.nextInt(2));
+                character.getStats().setCritical(character.getStats().getCritical() 
+                    + secureRand.nextInt(2));
+            case 5:
+                character.getStats().setNanoAttack(character.getStats().getNanoAttack() 
+                    + secureRand.nextInt(3) + 2);
+                character.getStats().setNanoDefense(character.getStats().getNanoDefense() 
+                    + secureRand.nextInt(2) + 2);
+            case 4: 
+                character.getStats().setDexterity(character.getStats().getDexterity() 
+                    + secureRand.nextInt(3) + 1);
+                character.getStats().setAccuracy(character.getStats().getAccuracy() 
+                    + secureRand.nextInt(2) + 2); 
+            case 3: 
+                character.getStats().setMaxStamina(character.getStats().getMaxStamina() 
+                    + secureRand.nextInt(4) + 3);
+                character.getStats().setMaxNano(character.getStats().getMaxNano() 
+                    + secureRand.nextInt(3) + 3);
+            case 2:
+                character.getStats().setAttack(character.getStats().getAttack() 
+                    + secureRand.nextInt(2) + 1);
+                character.getStats().setDefense(character.getStats().getDefense() 
+                    + secureRand.nextInt(2) + 1);
+            case 1: 
+                character.getStats().setMaxHealth(character.getStats().getMaxHealth() 
+                    + (secureRand.nextInt(4) + 5));
+                        break;
+            default:
+                break;
+        }
+    }
+    
+    public void levelUp(GenericCharacter character)
+    {
+        // store correct level for characters based on their experience
+        double nextLevel = correctLevel(character);
+
+        if(nextLevel > character.getGeneralFeatures().getLevel())
+        {
+            while(nextLevel != character.getGeneralFeatures().getLevel())
+            {
+                character.getGeneralFeatures().incrementLevel();
+                    randomlyIncreaseAttributes(character);
+            }
+        }
     }
 
     /*
@@ -113,95 +143,11 @@ public class LevelMechanics
     // to be changed at GUI building phase
     public void showNameAndExp(characters character)
     {
-            // toNextLevel assigned difference between expNeeded() and character's current experience 
-            nextLevelExp = expNeeded(character) - character.getExperience();
-            String totalEXP = String.format("%d/%d", character.getExperience(), expNeeded(character));
-            System.out.format("%-11s%-22s%s%d\n", "Character:", character.getName(), "Level: ", character.getLevel());
-            System.out.format("%-11s%-22s%s%d\n", "Total EXP:", totalEXP, "Next Level: ", nextLevelExp);
+        // toNextLevel assigned difference between expNeeded() and character's current experience 
+        nextLevelExp = expNeeded(character) - character.getExperience();
+        String totalEXP = String.format("%d/%d", character.getExperience(), expNeeded(character));
+        System.out.format("%-11s%-22s%s%d\n", "Character:", character.getName(), "Level: ", character.getLevel());
+        System.out.format("%-11s%-22s%s%d\n", "Total EXP:", totalEXP, "Next Level: ", nextLevelExp);
     }
-    */
-
-    
-
-    /*
-    // method levels attributes randomly and prints a table of attributes showing increases
-    public void levelAttributesRandomly(characters character)
-    {
-            randomAttributesUp(character);
-            increasableAttributesTable(character);
-    }
-
-    // show increasable attributes as a table
-    public void increasableAttributesTable(characters character)
-    {
-            System.out.format("%-17s%d\t\t%-18s%d\n", "1. Max HP:", character.getMaxHp(), " 6. Dexterity:", character.getDexterity());
-            System.out.format("%-17s%d\t\t%-18s%d\n", "2. Attack:", character.getAttack(), " 7. Critical:", character.getCritical());
-            System.out.format("%-17s%d\t\t%-18s%d\n", "3. Defense:", character.getDefense(), " 8. Accuracy:", character.getAccuracy());
-            System.out.format("%-17s%d\t\t%-18s%d\n", "4. Nano:", character.getMaxNano(), " 9. Nano Attack:", character.getNanoAttack());
-            System.out.format("%-17s%d\t\t%-18s%d\n", "5. Stamina:", character.getMaxStamina(), "10. Nano Defense:", character.getNanoDefense());
-    }
-
-    // method uses random number generator from SecureRandom to increase attributes
-    public void randomAttributesUp(characters character)
-    {
-            // create object of SecureRandom class to call random methods 
-            SecureRandom secureRand = new SecureRandom();
-
-            // assign instance variable randNumber with value ranging from 1 to 7
-            // if statements increase attributes depending on value of randNumber
-            randNumber = secureRand.nextInt(7) + 1;
-
-            if(randNumber >= 1)
-            {
-                    character.setMaxHp(character.getMaxHp() + (secureRand.nextInt(4) + 5));
-            }
-
-            if(randNumber >= 2)
-            {
-                    character.setAttack(character.getAttack() + secureRand.nextInt(2) + 1);
-                    character.setDefense(character.getDefense() + secureRand.nextInt(2) + 1);
-            }
-
-            if(randNumber >= 3)
-            {
-                    character.setMaxNano(character.getMaxNano() + secureRand.nextInt(3) + 3);
-                    character.setMaxStamina(character.getMaxStamina() + secureRand.nextInt(4) + 3);
-            }
-
-            if(randNumber >= 4)
-            {
-                    character.setDexterity(character.getDexterity() + secureRand.nextInt(3) + 1);
-                    character.setAccuracy(character.getAccuracy() + secureRand.nextInt(2) + 2); 
-            }
-
-            if(randNumber >= 5)
-            {
-                    character.setNanoAttack(character.getNanoAttack() + secureRand.nextInt(3) + 2);
-                    character.setNanoDefense(character.getNanoDefense() + secureRand.nextInt(2) + 2);
-            }
-
-            if(randNumber >= 6)
-            {
-                    character.setMaxHp(character.getMaxHp() + secureRand.nextInt(2));
-                    character.setAttack(character.getAttack() + secureRand.nextInt(2));
-                    character.setDefense(character.getDefense() + secureRand.nextInt(2));
-                    character.setMaxNano(character.getMaxNano() + secureRand.nextInt(2));
-                    character.setMaxStamina(character.getMaxStamina() + secureRand.nextInt(2));
-                    character.setDexterity(character.getDexterity() + secureRand.nextInt(2));
-                    character.setAccuracy(character.getAccuracy() + secureRand.nextInt(2)); 
-                    character.setNanoAttack(character.getNanoAttack() + secureRand.nextInt(2));
-                    character.setNanoDefense(character.getNanoDefense() + secureRand.nextInt(2));
-            }
-
-            if(randNumber == 6)
-            {
-                    character.setCritical(character.getCritical() + secureRand.nextInt(2));
-            }
-
-            if(randNumber == 7)
-            {
-                    character.setLuck(character.getLuck() + secureRand.nextInt(2));
-            }
-    }
-    */
+    */ 
 }

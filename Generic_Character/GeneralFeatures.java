@@ -146,6 +146,11 @@ public class GeneralFeatures
     {
         return level; 
     } 
+    
+    public void incrementLevel()
+    {
+        level += 1;
+    }
 
     public void setExperience(double experience)
     {
@@ -166,28 +171,23 @@ public class GeneralFeatures
         return experience; 
     } 
 
-    // Note: METHOD MUST BE MODIFIED IN TANDEM WITH LEVLE UP FILE!!!
-    /*
+    // Note: base expScale should be 33 
     public void setExpScale(double expScale)
     {
-        if(expScale < 0)
+        if((int)expScale % 11 == 0)
         {
-                expScale = 0;
+            this.expScale = expScale;
         }
-        else if(expScale > 264)
+        else
         {
-                expScale = 264;
+            this.expScale = 1;
         }
-
-        this.expScale = expScale; 
     }
 
-    // Note: METHOD MUST BE MODIFIED IN TANDEM WITH LEVLE UP FILE!!!
     public double getExpScale()
     {
         return expScale; 
     } 
-    */
 
     // END: LEVELING AND EXPERIENCE 
     /*******************************************************************************/
