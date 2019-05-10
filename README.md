@@ -1,4 +1,3 @@
 # A-Sample-RPG
-Personal Project
 
-Project is an RPG-like program for command line. As development progresses, it is expected that the project will involve some form of GUI which would vastly improve the gameplay experience. For now, the project is structured to suit command line only. 
+The project A-Sample-RPG is my attempt at creating a turn-based role playing game (RPG) that is presented using graphical user interfaces (GUIs) created esclusively using the Java programming language. This project marks the first time I have ever created GUIs on my own. 
