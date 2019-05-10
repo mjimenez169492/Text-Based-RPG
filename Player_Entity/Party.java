@@ -17,9 +17,7 @@ import Generic_Character.GenericCharacter;
 import Commonly_Used_Methods.StaticMethods;
 import java.util.Comparator;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.TreeSet;
-import java.util.Map;
 
 public class Party  
 {
@@ -239,12 +237,21 @@ public class Party
         return result;
     }
     
-    // resets all end battle triggers for all party members 
+    // reset all end battle triggers for all party members 
     public void resetEndBattle()
     {
         for(GenericCharacter element : party)
         {
             element.getGeneralFeatures().endBattle(false);
+        }
+    }
+    
+    // set battle dexterity for all party members 
+    public void setBattleDexterity()
+    {
+        for(GenericCharacter element : party)
+        {
+            element.getGeneralFeatures().setBattleDexterity(element);
         }
     }
     
