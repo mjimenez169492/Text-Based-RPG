@@ -1,22 +1,36 @@
 package Generic_Character;
 
+import Commonly_Used_Methods.StaticMethods;
+
+import java.util.HashMap;
+
 /*
-    Immunities determines what a character is immune to both in and outside 
-    of battle. Immunities range vastly for some immunities relate to a move
+    MoveImmunity determines what a character is immune to in and outside of
+    battle. Immunities range vastly for some immunities relating to a move
     style (meaning attacks from move style fails) to the ever dreaded knock 
     out ("KO") state (not being KO'ed once current hp is reduced to 0).
 */
 
-import Universally_Used_Methods.StaticMethods;
-import java.util.HashMap;
-
-public class Immunities extends RetrievingEnchantmentAndStatusResistances
+public class MoveImmunity 
 {
+    // special immunities used in determining the outcomes of unique scenarios
+    private boolean immortal, fragile, parry, counter;
+
+
+    // immunityTypesAndImmunityStates HashMap holding immunities and their states 
+    private final HashMap<Immunities, Boolean> immunityTypesAndImmunityStates = new HashMap<>();
+
+    public MoveImmunity()
+    {
+        initializeImmunities();
+    }
+    
+    
+    
     // START: IMMUNITIES LOGIC 
     /*******************************************************************************/
     
-    // contains skills that are considered valid 
-    public enum ImmunityTypes 
+    public enum Immunities 
     { 
         // UNUSED FOR NOW...
         
@@ -81,58 +95,104 @@ public class Immunities extends RetrievingEnchantmentAndStatusResistances
             ENCHANTMENT("Enchantment"), 
 
             // location: at gauge application step (positive output negated)
-            HEAL("Heal"), 
+            RECOVERY("Recovery"), 
 
             // location: at gauge application step (negative output negated)
-            DAMAGE("Damage"), 
+            DAMAGE("Damage");
 
-            // location: involved in battle class for determining fail states 
-            IMMORTAL_STATE("Immortal State"), FRAGILE_STATE("Fragile State"), 
-
-            // location: at parry/counter screen (UNUSED FOR NOW...)
-            PARRY("Parry"), COUNTER("Counter"); 
-
-        private String immunityType;
+        private String immunity;
         
-        ImmunityTypes(String immunityType)
+        Immunities(String immunity)
         {
-            this.immunityType = immunityType;
+            this.immunity = immunity;
         }
         
         public String getEnumAsString()
         {
-            return immunityType;
+            return immunity;
         }
     } 
     
-    // immunityTypesImmunityStates HashMap creation and population through static means 
-    private static final HashMap<ImmunityTypes, Boolean> immunityTypesImmunityStates = new HashMap<>();
-        static 
-        {
-            for(ImmunityTypes immunityType : ImmunityTypes.values()) 
-            {
-                immunityTypesImmunityStates.put(immunityType, false);
-            }
-        }
-    
-    // get ImmunityTypes enum based on String argument passed 
-    public ImmunityTypes getImmunityTypeEnum(String argument)
+    public void initializeImmunities()
     {
-        return ImmunityTypes.valueOf(StaticMethods.stringToEnum(argument));
+        for(Immunities immunityType : Immunities.values()) 
+        {
+            immunityTypesAndImmunityStates.put(immunityType, false);
+        }
+    }
+    
+    public Immunities getImmunityEnum(String argument)
+    {
+        return Immunities.valueOf(StaticMethods.stringToEnum(argument));
     }
         
-    // get boolean tied to immunity type specified by argument 
-    public boolean getImmunityTypeState(String argument)
+    public boolean immuneTo(String argument)
     {
-        return immunityTypesImmunityStates.get(getImmunityTypeEnum(argument));
+        return immunityTypesAndImmunityStates.get(getImmunityEnum(argument));
     }
     
-    // update value for desired key of HashMap immunityTypesImmunityStates
-    public void updateImmunityTypeStateForKey(String argument, boolean state)
+    public void updateStateForImmunity(String argument, boolean state)
     {
-        immunityTypesImmunityStates.put(getImmunityTypeEnum(argument), state);
+        immunityTypesAndImmunityStates.put(getImmunityEnum(argument), state);
     }
     
     // END: IMMUNITIES LOGIC 
+    /*******************************************************************************/
+
+            
+    
+    // START: SPECIAL IMMUNTITES
+    /*******************************************************************************/
+
+    // location: involved in determining fail states 
+    
+    public void immoral(boolean immortal)
+    {
+        this.immortal = immortal;
+    }
+    
+    public boolean immortal()
+    {
+        return immortal;
+    }
+    
+    public void fragile(boolean fragile)
+    {
+        this.fragile = fragile;
+    }
+    
+    public boolean fragile()
+    {
+        return fragile;
+    }
+    
+    // location: involved in determining fail states 
+    
+    
+    // location: at parry/counter screen (UNUSED FOR NOW...)
+    
+    public void parry(boolean parry)
+    {
+        this.parry = parry;
+    }
+    
+    public boolean parry()
+    {
+        return parry;
+    }
+    
+    public void counter(boolean counter)
+    {
+        this.counter = counter;
+    }
+    
+    public boolean counter()
+    {
+        return counter;
+    }
+    
+    // location: at parry/counter screen (UNUSED FOR NOW...)
+    
+    // END: SPECIAL IMMUNTITES
     /*******************************************************************************/
 }

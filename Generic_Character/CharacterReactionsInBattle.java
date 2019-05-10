@@ -6,7 +6,7 @@ package Generic_Character;
     with in hopes that players will be more involved with the game as a whole. 
 */
 
-public class CharacterReactionsInBattle extends ExtraFeatures
+public class CharacterReactionsInBattle 
 {
     // empty for now!
 }

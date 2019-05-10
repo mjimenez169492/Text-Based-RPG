@@ -14,6 +14,16 @@ public class CurrentLocation
         "Intra Location" concerns specific location within minor location (like: Factory Hidden Room) */
     private String storyPart, centralHub, majorLocation, minorLocation, intraLocation;
     
+    public CurrentLocation()
+    {
+        // empty constructor 
+    }
+    
+    
+    
+    // START: SETTING AND GETTING MOVE LOCATIONS BY PLAYER LOCATIION
+    /*******************************************************************************/
+
     public void setStoryPart(String storyPart)
     {
         this.storyPart = storyPart;
@@ -63,4 +73,7 @@ public class CurrentLocation
     {
         return intraLocation;
     }
+    
+    // END: SETTING AND GETTING MOVE LOCATIONS BY PLAYER LOCATIION
+    /*******************************************************************************/
 }

@@ -1,7 +1,8 @@
 package Generic_Character;
 
-import Universally_Used_Methods.StaticMethods;
-import java.util.LinkedHashMap;
+import Commonly_Used_Methods.StaticMethods;
+
+import java.util.HashMap;
 
 /*
     SkillsForSkillPoints contains skills that allow players to perform certain 
@@ -14,15 +15,8 @@ import java.util.LinkedHashMap;
     way with content that might not be seen otherwise via skill checks. Skills
     can be boosted temporarily by equipping certain accessories resulting in a
     change in how "getTotal_" methods, where "_" is any skill, are calculated.
-*/
 
-public class SkillsForSkillPoints extends Immunities
-{
-    // holds number of skill points accrued by character
-    int skillPoints;
-    
-    /* 
-        IO (I.O., "Input/Output"/"Inside"/"Outside" System) Outside of combat skills 
+    IO (I.O., "Input/Output"/"Inside"/"Outside" System) Outside of combat skills 
         (skill checks) range from 0 - 100 (pt 1), 100-150 (pt 2), 150-200 (pt 3)]
             Intelligence  // requires an exceptional degree of understanding to perform correctly 
                 General     // skills that everyone is capable of doing but seldom well enough 
@@ -147,177 +141,77 @@ public class SkillsForSkillPoints extends Immunities
                         2. sneaking through an environment undetected becomes a viable strategy 
                         3. possible to combine sneak scenarios with pilfer and steal for maximum shenanigans 
                         4. possible to have situations where character is virtually invisible resulting in unique scenarios 
-                        5. possible to cleverly use objects and the enviornment to distract the opposition out in the field     */
+                        5. possible to cleverly use objects and the enviornment to distract the opposition out in the field     
+*/
+
+public class SkillsForSkillPoints 
+{
+    // holds number of skill points accrued by character
+    int skillPoints;
     
+    // immunityTypesImmunityStates HashMap holding immunities and their states 
+    private static final HashMap<Skills, Double> skillsAndSkillValues = new HashMap<>();
+
+    public SkillsForSkillPoints()
+    {
+        initializeSkills();
+    }
+    
+    
+            
     // START: OUTSIDE OF COMBAT SKILLS MANAGEMENT USING HASHMAP
     /*******************************************************************************/
     
-    // sets number of skill points available to character 
     public void setSkillPoints(int skillPoints)
     {
         this.skillPoints = skillPoints;
     }
     
-    // gets number of skill points available to character 
     public int getSkillPoints()
     {
         return skillPoints;
     }
     
-    // contains skills that are considered valid 
-    public enum ValidSkills
+    public enum Skills
     {
-        LOCKPICK, LOOT, PILFER, REPAIR, SERVICE, STEAL, CRAFT, HACK, FIREARMS, 
-        MELEE, MEDICINE, NANO_TECH, BARTER, CUNNING, HAGGLE, SPEECH, ATHLETICS, 
-        ANALYZE, CAUTION, SNEAK;
+        LOCKPICK("Lockpick"), LOOT("Loot"), PILFER("Pilfer"), REPAIR("Repair"), 
+        SERVICE("Service"), STEAL("Steal"), CRAFT("Craft"), HACK("Hack"), FIREARMS
+        ("Firearms"), MELEE("Melee"), MEDICINE("Medicine"), NANO_TECH("Nano Tach"), 
+        BARTER("Barter"), CUNNING("Cunning"), HAGGLE("Haggle"), SPEECH("Speech"), 
+        ATHLETICS("Athletics"), ANALYSIS("Analysis"), CAUTION("Caution"), SNEAK("Sneak");
+        
+        private String skills;
+        
+        Skills(String skills)
+        {
+            this.skills = skills;
+        }
+        
+        public String getEnumAsString()
+        {
+            return skills;
+        }
     }
     
-    // get String representing ValidSkills enum based on ValidSkills enum passed 
-    public static String getValidSkillAsStringUsingEnum(ValidSkills skills)
+    public void initializeSkills()
     {
-        String result = null; 
-        
-        switch(skills)
+        for(Skills skill : Skills.values()) 
         {
-            case LOCKPICK:
-                result = "Lockpick";
-                    break;
-            case LOOT:
-                result = "Loot";
-                    break;
-            case PILFER:
-                result = "Pilfer";
-                    break;
-            case REPAIR:
-                result = "Repair";
-                    break;
-            case SERVICE:
-                result = "Service";
-                    break;
-            case STEAL:
-                result = "Steal";
-                    break;
-            case CRAFT:
-                result = "Craft";
-                    break;
-            case HACK:
-                result = "Hack";
-                    break;
-            case FIREARMS:
-                result = "Firearms";
-                    break;
-            case MELEE:
-                result = "Melee";
-                    break;
-            case MEDICINE:
-                result = "Medicine";
-                    break;
-            case NANO_TECH:
-                result = "Nano Tech";
-                    break;
-            case BARTER:
-                result = "Barter";
-                    break;
-            case CUNNING:
-                result = "Cunning";
-                    break;
-            case HAGGLE:
-                result = "Haggle";
-                    break;
-            case SPEECH:
-                result = "Speech";
-                    break;   
-            case ATHLETICS:
-                result = "Athletics";
-                    break;
-            case CAUTION:
-                result = "Caution";
-                    break;     
-            case SNEAK:
-                result = "Sneak";
-                    break;
+            skillsAndSkillValues.put(skill, 0.0);
         }
-        
-        return result; 
     }
     
-    // returns array of enum values for ValidSkills as array of Strings 
-    public static String[] validSkillsAsStrings()
+    public String getSkillString(String argument)
     {
-        String[] array = new String[StaticMethods.getNumberOfEnumElements(ValidSkills.values())];
-        
-        for(int i = 0; i < ValidSkills.values().length; i++)
-        {
-            array[i] =  getValidSkillAsStringUsingEnum(ValidSkills.values()[i]);
-        }
-
-        return array;
+        return Skills.valueOf(StaticMethods.stringToEnum(argument)).getEnumAsString();
     }
     
-    // returns ValidSkills enum form of String passed so long as String is valid 
-    public ValidSkills getValidSkillEnumUsingString(String argument)
+    public Skills getSkillEnum(String argument)
     {
-        ValidSkills result = null;
-        
-        if(StaticMethods.isStringValid(validSkillsAsStrings(), argument))
-        {
-            result = ValidSkills.valueOf(StaticMethods.stringToEnum(argument));
-        }
-        
-        return result;
+        return Skills.valueOf(StaticMethods.stringToEnum(argument));
     }
     
-    // skillsAndValues HashMap creation and population through static means 
-    private static final LinkedHashMap<ValidSkills, Integer> skillsAndValues =
-        new LinkedHashMap<ValidSkills, Integer>();
-        static 
-        {
-            for (ValidSkills skill : ValidSkills.values()) 
-            {
-                skillsAndValues.put(skill, 0);
-            }
-        }
-    
-    // return HashMap key representing skill name as String based on String passed 
-    public String getSkillAsString(String argument) 
-    {
-        String result = null;
-        
-        for(ValidSkills key : skillsAndValues.keySet())
-        {
-            if(key == getValidSkillEnumUsingString(argument))
-            {
-                result = getValidSkillAsStringUsingEnum(key);
-            }
-        }
-        
-        return result;
-    } 
-    
-    // return HashMap key representing skill name as ValidSkills enum based on String passed 
-    public ValidSkills getSkillAsEnum(String argument) 
-    {
-        ValidSkills result = null;
-        
-        for(ValidSkills key : skillsAndValues.keySet())
-        {
-            if(key == getValidSkillEnumUsingString(argument))
-            {
-                result = key;
-            }
-        }
-        
-        return result;
-    } 
-    
-    // return value associated with skill based on String passed 
-    public int getSkillValue(String argument) 
-    {
-        return skillsAndValues.get(getValidSkillEnumUsingString(argument));
-    }
-    
-    // ensure that skill provided by accessory to appropriate skill 
-    public int validateSkillValues(int argument)
+    public double validateSkillValues(double argument)
     {
         if(argument < 0)
         {
@@ -331,26 +225,20 @@ public class SkillsForSkillPoints extends Immunities
         return argument;
     }
     
-    // update value for desired skill of HashMap skillsAndValues
-    public void updateValueForKey(String argument, int value)
+    // Note: account for accessory effects on skill later on...
+    public double getValueForSkill(String argument) 
     {
-        if(getValidSkillEnumUsingString(argument) != null)
-        {
-            skillsAndValues.put(getValidSkillEnumUsingString(argument),
-                (Integer)validateSkillValues(value));
-        }
+        return skillsAndSkillValues.get(getSkillEnum(argument));
     }
     
-    // return sum of values for skill using character's skill and accessory modifier 
-    public int getValueForSkill(String argument)
+    public void updateValueForSkill(String argument, Double value)
     {
-        return getSkillValue(argument) + getAccessoryEffectOnSkillName(argument);
+        skillsAndSkillValues.put(getSkillEnum(argument), (Double)validateSkillValues(value));
     }
     
-    // return HashMap containing skills and skill values 
-    public LinkedHashMap<ValidSkills, Integer> getSkillNamesAndValuesHashMap()
+    public HashMap<Skills, Double> getSkillNamesAndValuesHashMap()
     {
-        return skillsAndValues;
+        return skillsAndSkillValues;
     }
     
     // END: OUTSIDE OF COMBAT SKILLS MANAGEMENT USING HASHMAP

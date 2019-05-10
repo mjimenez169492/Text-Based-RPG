@@ -6,15 +6,12 @@ package Generic_Object;
 */
 
 import Generic_Object.OutfitMethods;
-import Universally_Used_Methods.StaticMethods;
+import Commonly_Used_Methods.StaticMethods;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Armors extends OutfitMethods
+public class Armor extends OutfitMethods
 {
-    // attributes which armor can affect once it is equipped
-    private double maxHealth, maxStamina, maxNano, defense, dexterity, nanoDefense;					
-
     // enchantment related resistances (as in they reduce damage received from attacks of that resistance type)
     private double fireResistance, waterResistance, iceResistance, electricityResistance, 
         poisonResistance, sonicResistance, plasmaResistance, windResistance;
@@ -38,102 +35,120 @@ public class Armors extends OutfitMethods
     
     // HashMap containing all attributes and resistances tied to Armors object 
     private final HashMap<String, Double> attributesAndResistancesHashMap = 
-        new HashMap<String, Double>();
+        new HashMap<>();
     
     // holds armor rating assigned to a piece of armor
     private String armorPiercingResistance;
     
     // subclass constructor with method(s) invoked upon object creation 
-    public Armors()
+    public Armor()
     {
         // need to set subclass name to enable slot/core equip feature for object 
         setSubclassName("Armors");
+        
+        // set up hashmap for easy value retrieval 
+        initializeAttributesAndResistancesHashMap();
     }
 
 
 
-    // START: ARMOR ATTRIBUTES
+    // START: ARMOR CATEGORY, SUPERTYPE, AND SUBTYPE
     /*******************************************************************************/
 
-    public double validateAttribute(double attribute)
-    {
-        if(attribute < -125)
+    public enum ArmorCategory
+    { 
+        BODY_ARMOR("Body Armor"), LEG_ARMOR("Leg Armor"), FOOT_ARMOR("Foot Armor");
+        
+        private String armorCategory;
+        
+        ArmorCategory(String armorCategory)
         {
-            attribute = -125;
+            this.armorCategory = armorCategory;
         }
-        else if(attribute > 125)
+        
+        public String getEnumAsString()
         {
-            attribute = 125;
+            return armorCategory;
         }
-
-        return attribute;
-    }
-
-    public void setMaxHealth(double maxHealth)
+    } 
+    
+    public void setArmorCategory(String argument)
     {
-        this.maxHealth = validateAttribute(maxHealth);
-    }
-
-    public double getMaxHealth()
-    {
-        return maxHealth;
-    }
-
-    public void setMaxStamina(double maxStamina)
-    {
-        this.maxStamina = validateAttribute(maxStamina);
-    }
-
-    public double getMaxStamina()
-    {
-        return maxStamina;
+        super.setCategory(ArmorCategory.valueOf(StaticMethods.stringToEnum(argument)).
+            getEnumAsString());
     }
     
-    public void setMaxNano(double maxNano)
+    public ArmorCategory getArmorCategoryEnum()
     {
-        this.maxNano = validateAttribute(maxNano);
-    }
-
-    public double getMaxNano()
-    {
-        return maxNano;
+        return ArmorCategory.valueOf(StaticMethods.stringToEnum(super.getCategory()));
     }
     
-    public void setDefense(double defense)
+    public enum ArmorSuperTypes 
     {
-        this.defense = validateAttribute(defense);
-    }
-
-    public double getDefense()
+        CLOSE_QUARTERS_COMBAT("Close Quarters Combat"), SWORD("Sword"), KNIFE("Knife"), 
+        OTHER_ONE_HANDED("Other One Handed"), GREAT_SWORD("Great Sword"), SPEAR("Spear"), 
+        OTHER_TWO_HANDED("Other Two Handed"), BLADES("Blades"), OTHER_DUAL_WIELDED
+        ("Other Dual Wielded");
+        
+        private String amorSuperType;
+        
+        ArmorSuperTypes(String amorSuperType)
+        {
+            this.amorSuperType = amorSuperType;
+        }
+        
+        public String getEnumAsString()
+        {
+            return amorSuperType;
+        }
+    } 
+    
+    public void setArmorSuperType(String argument)
     {
-        return defense;
+        super.setSuperType(ArmorSuperTypes.valueOf(StaticMethods.stringToEnum(argument)).
+            getEnumAsString());
     }
-
-    public void setDexterity(double dexterity)
+    
+    public ArmorSuperTypes getArmorSuperTypeEnum()
     {
-        this.dexterity = validateAttribute(dexterity);
+        return ArmorSuperTypes.valueOf(StaticMethods.stringToEnum(super.getSuperType()));
     }
-
-    public double getDexterity()
+    
+    public enum ArmorSubTypes 
     {
-        return dexterity;
-    }
-
-    public void setNanoDefense(double nanoDefense)
+        MAKESHIFT("Makeshift"), JUNKER("Junker"), NUMIN("Numin"), Z_SERIES("Z Series"), 
+        ESCALADE("Escalade"), TERRA_NOVA("Terra Nova"), ETERNAL("Eternal"), NIM("Nim"),	
+        PROTOTYPE("Prototype"), UNKNOWN("Uknown"), LOST("Lost"), LEGENDARY("Legendary");
+        
+        private String armorSubType;
+        
+        ArmorSubTypes(String armorSubType)
+        {
+            this.armorSubType = armorSubType;
+        }
+        
+        public String getEnumAsString()
+        {
+            return armorSubType;
+        }
+    } 
+    
+    public void setArmorSubType(String argument)
     {
-        this.nanoDefense = validateAttribute(nanoDefense);
+        super.setSubType(ArmorSubTypes.valueOf(StaticMethods.stringToEnum(argument)).
+            getEnumAsString());
     }
-
-    public double getNanoDefense()
+    
+    public ArmorSubTypes getWeaponSubTypeEnum()
     {
-        return nanoDefense;
+        return ArmorSubTypes.valueOf(StaticMethods.stringToEnum(super.getSubType()));
     }
-
-    // END: ARMOR ATTRIBUTES
+    
+    // END: ARMOR CATEGORY, SUPERTYPE, AND SUBTYPE
     /*******************************************************************************/
 
-
-
+    
+    
     // START: ARMOR RESISTANTCES 
     /*******************************************************************************/
 
@@ -618,59 +633,6 @@ public class Armors extends OutfitMethods
     // END: CHARACTER RESISTANTCES: STATUS EFFECT RELATED
     /*******************************************************************************/
 
-    /*
-        Note on "getTotal" methods below: 
-            methods get total value for a object (like attack, nano, ect.) by adding 
-            object's power and core points together only if the cores are the same 
-            type as the String supplied as argument (if "Attack" is supplied then 
-            add the current core points of the cores with core type "Attack") 
-    */
-    
-    // START: TOTAL ARMOR ATTRIBUTES WITH CORES AND DURABILITY SUPPLIED
-    /*******************************************************************************/
-
-    public double getTotalMaxHealth()
-    {
-        return getTotalOutfitValue(getMaxHealth(), "Max Health");
-    }
-    
-    public double getTotalMaxStamina()
-    {
-        return getTotalOutfitValue(getMaxStamina(), "Stamina");
-    }
-    
-    public double getTotalMaxNano()
-    {
-        return getTotalOutfitValue(getMaxNano(), "Nano");
-    }
-
-    public double getTotalDefense()
-    {
-        return getTotalOutfitValue(getDefense(), "Defense");
-    }
-
-    public double getTotalDexterity()
-    {
-        return getTotalOutfitValue(getDexterity(), "Dexterity");
-    }
-
-    public double getTotalNanoDefense()
-    {
-        return getTotalOutfitValue(getNanoDefense(), "Nano Defense");
-    }
-
-    public Object[] getAllTotalAttributesWithNames()
-    {
-        Object[] array = {"Max Health", getTotalMaxHealth(), "Max Stamina", 
-            getTotalMaxStamina(), "Max Nano", getTotalMaxNano(), "Defense", 
-            getTotalDefense(), "Dexterity", getTotalDexterity(), "Nano Defense",
-            getTotalNanoDefense()};
-                return array;
-    }
-    
-    // END: TOTAL ARMOR ATTRIBUTES WITH CORES AND DURABILITY SUPPLIED
-    /*******************************************************************************/
-
 
     
     // START: TOTAL ARMOR RESISTANCES WITH CORES AND DURABILITY SUPPLIED
@@ -680,42 +642,42 @@ public class Armors extends OutfitMethods
 
     public double getTotalFireResistance()
     {
-        return getTotalOutfitValue(getFireResistance(), "Fire");
+        return totalOutfitValue(getFireResistance(), "Fire");
     }
 
     public double getTotalWaterResistance()
     {
-        return getTotalOutfitValue(getWaterResistance(), "Water");
+        return totalOutfitValue(getWaterResistance(), "Water");
     }
 
     public double getTotalIceResistance()
     {
-        return getTotalOutfitValue(getIceResistance(), "Ice");
+        return totalOutfitValue(getIceResistance(), "Ice");
     }
 
     public double getTotalElectricityResistance()
     {
-        return getTotalOutfitValue(getElectricityResistance(), "Electricity");
+        return totalOutfitValue(getElectricityResistance(), "Electricity");
     }
 
     public double getTotalPoisonResistance()
     {
-        return getTotalOutfitValue(getPoisonResistance(), "Poison");
+        return totalOutfitValue(getPoisonResistance(), "Poison");
     }
 
     public double getTotalSonicResistance()
     {
-        return getTotalOutfitValue(getSonicResistance(), "Sonic");
+        return totalOutfitValue(getSonicResistance(), "Sonic");
     }
 
     public double getTotalPlasmaResistance()
     {
-        return getTotalOutfitValue(getPlasmaResistance(), "Plasma");
+        return totalOutfitValue(getPlasmaResistance(), "Plasma");
     }
 
     public double getTotalWindResistance()
     {
-        return getTotalOutfitValue(getWindResistance(), "Wind");
+        return totalOutfitValue(getWindResistance(), "Wind");
     }
 
     public Object[] getAllTotalEnchantmentResistancesWithNames()
@@ -737,47 +699,47 @@ public class Armors extends OutfitMethods
 
     public double getTotalDryResistance()
     {
-        return getTotalOutfitValue(getDryResistance(), "Dry");
+        return totalOutfitValue(getDryResistance(), "Dry");
     }
 
     public double getTotalWetResistance() 
     {
-        return getTotalOutfitValue(getWetResistance(), "Wet");
+        return totalOutfitValue(getWetResistance(), "Wet");
     }
 
     public double getTotalColdResistance()
     {
-        return getTotalOutfitValue(getColdResistance(), "Cold ");
+        return totalOutfitValue(getColdResistance(), "Cold ");
     }
 
     public double getTotalConductiveResistance()
     {
-        return getTotalOutfitValue(getConductiveResistance(), "Conductive");
+        return totalOutfitValue(getConductiveResistance(), "Conductive");
     }
 
     public double getTotalSicknessResistance()
     {
-        return getTotalOutfitValue(getSicknessResistance(), "Sickness");
+        return totalOutfitValue(getSicknessResistance(), "Sickness");
     }
 
     public double getTotalHypersensitiveResistance()
     {
-        return getTotalOutfitValue(getHypersensitiveResistance(), "Hypersensitive");
+        return totalOutfitValue(getHypersensitiveResistance(), "Hypersensitive");
     }
 
     public double getTotalCoatedResistance()
     {
-        return getTotalOutfitValue(getCoatedResistance(), "Coated");
+        return totalOutfitValue(getCoatedResistance(), "Coated");
     }
 
     public double getTotalLightweightResistance()
     {
-        return getTotalOutfitValue(getLightweightResistance(), "Lightweight");
+        return totalOutfitValue(getLightweightResistance(), "Lightweight");
     }
 
     public double getTotalIrradiatedResistance()
     {
-        return getTotalOutfitValue(getIrradiatedResistance(), "Irradiated");
+        return totalOutfitValue(getIrradiatedResistance(), "Irradiated");
     }
     
     public Object[] getAllTotalUniqueStatusEffectResistancesWithNames()
@@ -797,17 +759,17 @@ public class Armors extends OutfitMethods
 
     public double getTotalAblazeResistance()
     {
-        return getTotalOutfitValue(getAblazeResistance(), "Ablaze");
+        return totalOutfitValue(getAblazeResistance(), "Ablaze");
     }
 
     public double getTotalBleedResistance()
     {
-        return getTotalOutfitValue(getBleedResistance(), "Bleed");
+        return totalOutfitValue(getBleedResistance(), "Bleed");
     }
 
     public double getTotalToxicResistance()
     {
-        return getTotalOutfitValue(getToxicResistance(), "Toxic");
+        return totalOutfitValue(getToxicResistance(), "Toxic");
     }
 
     public Object[] getAllTotalCurrentHealthStatusEffectResistancesWithNames()
@@ -824,52 +786,52 @@ public class Armors extends OutfitMethods
 
     public double getTotalAttackDownResistance()
     {
-        return getTotalOutfitValue(getAttackDownResistance(), "Attack Down");
+        return totalOutfitValue(getAttackDownResistance(), "Attack Down");
     }
 
     public double getTotalDefenseDownResistance()
     {
-        return getTotalOutfitValue(getDefenseDownResistance(), "Defense Down");
+        return totalOutfitValue(getDefenseDownResistance(), "Defense Down");
     }
 
     public double getTotalShutdownResistance()
     {
-        return getTotalOutfitValue(getShutdownResistance(), "Shutdown");
+        return totalOutfitValue(getShutdownResistance(), "Shutdown");
     }
 
     public double getTotalDexterityDownResistance()
     {
-        return getTotalOutfitValue(getDexterityDownResistance(), "Dexterity Down");
+        return totalOutfitValue(getDexterityDownResistance(), "Dexterity Down");
     }
 
     public double getTotalCriticalDownResistance()
     {
-        return getTotalOutfitValue(getCriticalDownResistance(), "Critical Down");
+        return totalOutfitValue(getCriticalDownResistance(), "Critical Down");
     }
 
     public double getTotalAccuracyDownResistance()
     {
-        return getTotalOutfitValue(getAccuracyDownResistance(), "Accuracy Down");
+        return totalOutfitValue(getAccuracyDownResistance(), "Accuracy Down");
     }
 
     public double getTotalBlindResistance()
     {
-        return getTotalOutfitValue(getBleedResistance(), "Bleed");
+        return totalOutfitValue(getBleedResistance(), "Bleed");
     }
 
     public double getTotalDarknessResistance()
     {
-        return getTotalOutfitValue(getDarknessResistance(), "Darkness");
+        return totalOutfitValue(getDarknessResistance(), "Darkness");
     }
 
     public double getTotalNanoAttackDownResistance()
     {
-        return getTotalOutfitValue(getNanoAttackDownResistance(), "Nano Attack Down");
+        return totalOutfitValue(getNanoAttackDownResistance(), "Nano Attack Down");
     }
 
     public double getTotalNanoDefenseDownResistance()
     {
-        return getTotalOutfitValue(getNanoDefenseDownResistance(), "Nano Defense Down");
+        return totalOutfitValue(getNanoDefenseDownResistance(), "Nano Defense Down");
     }
     
     public Object[] getAllTotalAttributeStatusEffectResistancesWithNames()
@@ -889,17 +851,17 @@ public class Armors extends OutfitMethods
 
     public double getTotalConfusedResistance()
     {
-        return getTotalOutfitValue(getConfusedResistance(), "Confused");
+        return totalOutfitValue(getConfusedResistance(), "Confused");
     }
 
     public double getTotalEnamoredResistance()
     {
-        return getTotalOutfitValue(getEnamoredResistance(), "Enamored");
+        return totalOutfitValue(getEnamoredResistance(), "Enamored");
     }
 
     public double getTotalBerserkResistance()
     {
-        return getTotalOutfitValue(getBerserkResistance(), "Berserk");
+        return totalOutfitValue(getBerserkResistance(), "Berserk");
     }
 
     public Object[] getAllTotalBehaviorStatusEffectResistancesWithNames()
@@ -916,47 +878,47 @@ public class Armors extends OutfitMethods
 
     public double getTotalFlinchedResistance()
     {
-        return getTotalOutfitValue(getFlinchedResistance(), "Flinched");
+        return totalOutfitValue(getFlinchedResistance(), "Flinched");
     }
 
     public double getTotalStunnedResistance()
     {
-        return getTotalOutfitValue(getStunnedResistance(), "Stunned");
+        return totalOutfitValue(getStunnedResistance(), "Stunned");
     }
 
     public double getTotalScaredResistance()
     {
-        return getTotalOutfitValue(getScaredResistance(), "Scared");
+        return totalOutfitValue(getScaredResistance(), "Scared");
     }
 
     public double getTotalBoundResistance()
     {
-        return getTotalOutfitValue(getBoundResistance(), "Bound");
+        return totalOutfitValue(getBoundResistance(), "Bound");
     }
 
     public double getTotalSleepResistance()
     {
-        return getTotalOutfitValue(getSleepResistance(), "Sleep");
+        return totalOutfitValue(getSleepResistance(), "Sleep");
     }
 
     public double getTotalTrancedResistance()
     {
-        return getTotalOutfitValue(getTrancedResistance(), "Tranced");
+        return totalOutfitValue(getTrancedResistance(), "Tranced");
     }
 
     public double getTotalShockedResistance()
     {
-        return getTotalOutfitValue(getShockedResistance(), "Shocked");
+        return totalOutfitValue(getShockedResistance(), "Shocked");
     }
 
     public double getTotalSlowedResistance()
     {
-        return getTotalOutfitValue(getSlowedResistance(), "Slowed");
+        return totalOutfitValue(getSlowedResistance(), "Slowed");
     }
 
     public double getTotalStoppedResistance()
     {
-        return getTotalOutfitValue(getStoppedResistance(), "Stopped");
+        return totalOutfitValue(getStoppedResistance(), "Stopped");
     }
 
     public Object[] getAllTotalTurnBehaviorStatusEffectResistancesWithNames()
@@ -976,7 +938,7 @@ public class Armors extends OutfitMethods
     
     public double getTotalNullifyPositiveEffectsResistance()
     {
-        return getTotalOutfitValue(getNullifyStatusEffectsResistance(), "Nullify Status Effects");
+        return totalOutfitValue(getNullifyStatusEffectsResistance(), "Nullify Status Effects");
     }
     
     public Object[] getAllTotalNullifyStatusEffectResistancesWithNames()
@@ -997,10 +959,9 @@ public class Armors extends OutfitMethods
     // START: STORING AND RETRIEVING OUTFIT ATTRIBUTES AND RESISTANCES 
     /*******************************************************************************/
     
-    public Object[][] getArrayCotainingResistances()
+    public Object[][] getArrayContainingResistances()
     {
         Object[] arrayOfArrays [] = {getAllTotalEnchantmentResistancesWithNames(), 
-            getAllTotalUniqueStatusEffectResistancesWithNames(),
             getAllTotalUniqueStatusEffectResistancesWithNames(),
             getAllTotalAttributeStatusEffectResistancesWithNames(),
             getAllTotalBehaviorStatusEffectResistancesWithNames(),
@@ -1011,9 +972,9 @@ public class Armors extends OutfitMethods
     
     public ArrayList<Object> getAttributesAndResistancesArrayList()
     {
-        ArrayList<Object> arrayList = new ArrayList<Object>();
+        ArrayList<Object> arrayList = new ArrayList<>();
 
-        for(Object[] arrayWithinArray : getArrayCotainingResistances())
+        for(Object[] arrayWithinArray : getArrayContainingResistances())
         {
             for(Object element : arrayWithinArray)
             {
@@ -1024,8 +985,10 @@ public class Armors extends OutfitMethods
         return arrayList;
     }
     
-    public void addArrayListElementsToHashMap(ArrayList<Object> arrayList)
+    public final void initializeAttributesAndResistancesHashMap()
     {
+        ArrayList<Object> arrayList = getAttributesAndResistancesArrayList();
+        
         for(int i = 0; i < arrayList.size(); i+=2)
         {
             attributesAndResistancesHashMap.put((String)arrayList.get(i), 
@@ -1033,14 +996,23 @@ public class Armors extends OutfitMethods
         }
     }
     
-    public void alterValueForKey(String key, Double value)
+    public double validateResistanceValues(double argument)
     {
-        attributesAndResistancesHashMap.put(key, value);
+        if(argument < 0)
+        {
+            argument = 0;
+        } 
+        else if(argument > 100)
+        {
+            argument = 100;
+        }
+        
+        return argument;
     }
     
-    public void updateOutfitValues()
+    public void alterValueForKey(String key, Double value)
     {
-        addArrayListElementsToHashMap(getAttributesAndResistancesArrayList());
+        attributesAndResistancesHashMap.put(key, validateResistanceValues(value));
     }
     
     public HashMap<String, Double> getHashMap()
@@ -1048,16 +1020,9 @@ public class Armors extends OutfitMethods
         return attributesAndResistancesHashMap;
     }
     
-    public double getOutfitValueForKey(String resistance)
+    public double getResistanceValueForKey(String resistance)
     {
-        double holdDouble = 0.0;
-        
-        if(StaticMethods.getResistancesForArmorsClassAsValidString(resistance) != null)
-        {
-            holdDouble = (double)attributesAndResistancesHashMap.get(resistance);
-        }
-        
-        return holdDouble;
+        return (double)attributesAndResistancesHashMap.get(resistance);
     }
     
     // END: STORING AND RETRIEVING OUTFIT ATTRIBUTES AND RESISTANCES 
@@ -1068,117 +1033,38 @@ public class Armors extends OutfitMethods
     // START: ARMOR RATING
     /*******************************************************************************/
 
-    public enum ArmorPiercingResistanceScale
+    public enum ArmorPiercingResistances
     {
-        NONE, LOWEST, VERY_LOW, LOW, MEDIUM, HIGH, VERY_HIGH, HIGHEST, IMPENETRABLE;
-    }
-    
-    public static String getArmorPiercingResisanceStringUsingEnum(
-        ArmorPiercingResistanceScale argument)
-    {
-        String result = null;
+        NONE("None"), LOWEST("Lowest"), VERY_LOW("Very Low"), LOW("Low"), MEDIUM("Medium"), 
+        HIGH("High"), VERY_HIGH("Very High"), HIGHEST("Highest"), IMPENETRABLE("Impenetrable");
         
-        switch(argument)
+        private String armorPiercingResistances;
+        
+        ArmorPiercingResistances(String armorPiercingResistances)
         {
-            case NONE:
-               result = "None"; 
-                    break;
-            case LOWEST:
-               result = "Lowest"; 
-                    break; 
-            case VERY_LOW:
-                result = "Very Low"; 
-                    break;
-            case LOW:
-                result = "Low"; 
-                    break;
-            case MEDIUM:
-                result = "Medium"; 
-                    break;
-            case HIGH:
-                result = "High"; 
-                    break;
-            case VERY_HIGH:
-                result = "Very High"; 
-                    break;
-            case HIGHEST:
-                result = "Highest"; 
-                    break;
-            case IMPENETRABLE:
-                result = "Impenetrable"; 
-                    break;
+            this.armorPiercingResistances = armorPiercingResistances;
         }
         
-        return result;
-    }
-        
-    public static String[] validAccessorySlotCoreTypesValuesAsStrings()
-    {
-        String[] array = new String[StaticMethods.getNumberOfEnumElements(ArmorPiercingResistanceScale.values())];
-        
-        for(int i = 0; i < ArmorPiercingResistanceScale.values().length; i++)
+        public String getEnumAsString()
         {
-            array[i] = getArmorPiercingResisanceStringUsingEnum(ArmorPiercingResistanceScale.values()[i]);
+            return armorPiercingResistances;
         }
-
-        return array;
     }
-
-    // gets enum form of String passed so long as it is considered valid 
-    public static ArmorPiercingResistanceScale getArmorPiercingResistanceEnumUsingString(String argument)
-    {
-        ArmorPiercingResistanceScale result = null;
-        
-        if(StaticMethods.isStringValid(validAccessorySlotCoreTypesValuesAsStrings(), argument))
-        {
-            result = ArmorPiercingResistanceScale.valueOf(StaticMethods.stringToEnum(argument));
-        }
-        
-        return result;
-    }
-    
-    // HashMap creation and population through static means 
-    private static final HashMap<ArmorPiercingResistanceScale, String> armorPiercingResistanceHashMap =
-        new HashMap<ArmorPiercingResistanceScale, String>();
-        static 
-        {
-            for (ArmorPiercingResistanceScale armorPiercingResistance : ArmorPiercingResistanceScale.values()) 
-            {
-                armorPiercingResistanceHashMap.put(armorPiercingResistance, 
-                    getArmorPiercingResisanceStringUsingEnum(armorPiercingResistance));
-            }
-        }
-    
-    // return valid armor piercing resistance String based on String passed 
-    public static String getArmorPiercingResistanceAsString(String argument) 
-    {
-        return armorPiercingResistanceHashMap.get(getArmorPiercingResistanceEnumUsingString(argument));
-    }
-    
-    // return valid armor piercing resistance ArmorPiercingResistanceScale enum based on String passed 
-    public static ArmorPiercingResistanceScale getArmorPiercingResistanceAsEnum(String argument) 
-    {
-        ArmorPiercingResistanceScale result = null;
-        
-        for(ArmorPiercingResistanceScale key : armorPiercingResistanceHashMap.keySet())
-        {
-            if(key == getArmorPiercingResistanceEnumUsingString(argument))
-            {
-                result = key;
-            }
-        }
-        
-        return result;
-    } 
     
     public void setArmorPiercingResistance(String armorPiercingResistance)
     {
-        this.armorPiercingResistance = getArmorPiercingResistanceAsString(armorPiercingResistance);
+        this.armorPiercingResistance = ArmorPiercingResistances.valueOf(StaticMethods.
+            stringToEnum(armorPiercingResistance)).getEnumAsString();
     }
     
-    public String getArmorPiercingResistance()
+    public String getArmorPiercingResistanceString()
     {
         return armorPiercingResistance;
+    }
+    
+    public ArmorPiercingResistances getArmorPiercingResistanceEnum()
+    {
+        return ArmorPiercingResistances.valueOf(StaticMethods.stringToEnum(armorPiercingResistance));
     }
     
     // END: ARMOR RATING

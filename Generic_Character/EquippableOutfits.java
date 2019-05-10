@@ -1,34 +1,58 @@
 package Generic_Character;
 
+import Move_Creation.StatusEffect;
+import Generic_Object.OutfitMethods;
+import Generic_Object.Accessory;
+import Generic_Object.Armor;
+import Generic_Object.Weapon;
+
 /*
     EquippableOutfits allows characters to equip outfits ranging from weapons,
     armors, to accessories. The effect provided by outfits upon being equipped 
     must be added to the current values of the wearer's attributes/resistances 
     in order to calculate "getOutfit_" methods where "_" is a stand-in for all
     attributes/resistances that exist. 
+
+    Note: asterisk (*) can be used with package Generic_Object to make imports 
+          look cleaner by importing all classes (import Generic_Object.*;)
 */
 
-import Generic_Object.Accessories;
-import Generic_Object.Armors;
-import Generic_Object.Weapons;
-import Move_Creation.StatusEffect;
- 
-public class EquippableOutfits extends AttributesAndResistances
+public class EquippableOutfits
 {
-    // determines whether weapons/armors/accessories can be equipped or 
-    // unequipped from wearer at current time 
+    // holding objects from other classes 
+    private Stats stats;
+    
+    // determines whether outfit can be equipped/unequipped from wearer at current time 
     private boolean weaponChangeState, bodyArmorChangeState, legArmorChangeState, 
         footArmorChangeState, accessoryOneChangeState, accessoryTwoChangeState;
 
     // weapon that a character wields mid-battle 
-    private Weapons weapon;
+    private Weapon weapon;
     
     // armors that cover the body, legs, and feet of the wearer 
-    private Armors bodyArmor, legArmor, footArmor;   
+    private Armor bodyArmor, legArmor, footArmor;   
     
     // accessory slots that can provide a number of effects once equipped 
-    private Accessories accessoryOne, accessoryTwo;
+    private Accessory accessoryOne, accessoryTwo;
     
+    public EquippableOutfits(Stats stats)
+    {
+        this.stats = stats;
+    }
+    
+    
+    
+    // START: HOLDING OBJECTS SUPPLIED FROM OTHER CLASSES 
+    /*******************************************************************************/
+    
+    public Stats getStats()
+    {
+        return stats;
+    }
+    
+    // END: HOLDING OBJECTS SUPPLIED FROM OTHER CLASSES 
+    /*******************************************************************************/
+
     
     
     // START: DETERMINING WHETHER OUTFITS CAN BE CHANGED 
@@ -122,103 +146,57 @@ public class EquippableOutfits extends AttributesAndResistances
     // START: SETTING CHARACTER OUTFITS
     /*******************************************************************************/
 
-    public void setWeapon(Weapons weapon)
+    public void setWeapon(Weapon weapon)
     {
-        if(this.weapon == null)
-        {
-            this.weapon = weapon; 
-        }
+        this.weapon = weapon; 
     }
     
-    public void setBodyArmor(Armors bodyArmor)
+    public void setBodyArmor(Armor bodyArmor)
     {
-        if(this.bodyArmor == null)
-        {
-            this.bodyArmor = bodyArmor; 
-        }        
+        this.bodyArmor = bodyArmor; 
     }
 
-    public Armors getBodyArmor()
+    public Armor getBodyArmor()
     {
         return bodyArmor; 
     } 
 
-    public void setLegArmor(Armors legArmor)
+    public void setLegArmor(Armor legArmor)
     {
-        if(this.legArmor == null)
-        {
-            this.legArmor = legArmor; 
-        }
+        this.legArmor = legArmor; 
     }
 
-    public Armors getLegArmor()
+    public Armor getLegArmor()
     {
         return legArmor; 
     } 
 
-    public void setFootArmor(Armors footArmor)
+    public void setFootArmor(Armor footArmor)
     {
-        if(this.footArmor == null)
-        {
-            this.footArmor = footArmor; 
-        }
+        this.footArmor = footArmor; 
     }
 
-    public Armors getFootArmor()
+    public Armor getFootArmor()
     {
         return footArmor; 
     } 
-
-    public enum SetArmorByCategory
+    
+    public void setAccessoryOne(Accessory accessoryOne)
     {
-        BODY_ARMOR, LEG_ARMOR, FOOT_ARMOR, UNEQUIPPABLE;
+        this.accessoryOne = accessoryOne;
     }
     
-    // Note: ONLY use method in inventory screen (Or something...IDK)
-    /*
-    public void equipArmor(Armors armor)
-    {
-        if(armor != null && SetArmorByCategory.valueOf(armor.getCategory()) 
-            != SetArmorByCategory.UNEQUIPPABLE)
-        {
-            switch(SetArmorByCategory.valueOf(armor.getCategory()))
-            {
-                case BODY_ARMOR: 
-                    setBodyArmor(armor);
-                        break; 
-                case LEG_ARMOR: 
-                    setLegArmor(armor);
-                        break; 
-                case FOOT_ARMOR: 
-                    setFootArmor(armor);
-                        break; 
-            }
-        }
-    }
-    */
-    
-    public void setAccessoryOne(Accessories accessoryOne)
-    {
-        if(this.accessoryOne == null)
-        {
-            this.accessoryOne = accessoryOne; 
-        }
-    }
-    
-    public Accessories getAccessoryOne()
+    public Accessory getAccessoryOne()
     {
         return accessoryOne; 
     } 
     
-    public void setAccessoryTwo(Accessories accessoryTwo)
+    public void setAccessoryTwo(Accessory accessoryTwo)
     {
-        if(this.accessoryTwo == null)
-        {
-            this.accessoryTwo = accessoryTwo; 
-        }
+        this.accessoryTwo = accessoryTwo; 
     }
 
-    public Accessories getAccessoryTwo()
+    public Accessory getAccessoryTwo()
     {
         return accessoryTwo; 
     } 
@@ -231,20 +209,20 @@ public class EquippableOutfits extends AttributesAndResistances
     // START: GETTING CHARACTER OUTFITS
     /*******************************************************************************/
 
-    public Weapons getWeapon()
+    public Weapon getWeapon()
     {
         return weapon; 
     } 
     
-    public Armors[] getCharacterArmors()
+    public Armor[] getCharacterArmors()
     {
-        Armors[] characterArmors = {bodyArmor, legArmor, footArmor};
+        Armor[] characterArmors = {bodyArmor, legArmor, footArmor};
             return characterArmors;
     }
-
-    public Accessories[] getCharacterAccessories()
+    
+    public Accessory[] getCharacterAccessories()
     {
-        Accessories[] characterAccessories = {accessoryOne, accessoryTwo};
+        Accessory[] characterAccessories = {accessoryOne, accessoryTwo};
             return characterAccessories;
     }
     
@@ -256,301 +234,86 @@ public class EquippableOutfits extends AttributesAndResistances
     // START: CALCULATING IMPACT OF CHARACTER OUTFITS ON CHARACTER
     /*******************************************************************************/
     
-    // returns effect armors and accessories have on attributes of wearer 
-    public double armorAccessoryEffect(ArmorAccessorySwitches choice, double gauge)
+    public enum AllOutfitSwitches
     {
-        for(Armors element : getCharacterArmors())
-        {
-            if(element != null)
-            {
-                gauge += armorAccessorySwitch(choice, element);
-            }
-        }
-
-        for(Accessories element : getCharacterAccessories())
-        {
-            if(element != null)
-            {
-                gauge += armorAccessorySwitch(choice, element);
-            }
-        }
-
-       return gauge;
+        GET_TOTAL_MAX_HEALTH, GET_TOTAL_MAX_STAMINA, GET_TOTAL_MAX_NANO, GET_TOTAL_ATTACK, 
+        GET_TOTAL_DEFENSE, GET_TOTAL_DEXTERITY, GET_TOTAL_CRITICAL, GET_TOTAL_ACCURACY, 
+        GET_TOTAL_NANO_ATTACK, GET_TOTAL_NANO_DEFENSE;
     }
     
-    // enum class denoting switch conditions to return desired attribute 
-    public enum ArmorAccessorySwitches
+    public double allOutfitsEffectSwitch(AllOutfitSwitches choice, OutfitMethods object)
     {
-        GET_MAX_HEALTH, GET_MAX_STAMINA, GET_MAX_NANO, GET_DEFENSE, GET_DEXTERITY, 
-        GET_NANO_DEFENSE;
-    }
-    
-    // overloaded method returns desired value from equipped armors 
-    public double armorAccessorySwitch(ArmorAccessorySwitches choice, Armors object)
-    {
-        double holdEquipValue = 0;
+        double result = 0;
         
         switch(choice)
         {
-            case GET_MAX_HEALTH:
-                holdEquipValue = object.getTotalMaxHealth();
+            case GET_TOTAL_MAX_HEALTH:
+                result = object.getTotalMaxHealth();
                     break;
-            case GET_MAX_STAMINA:
-                holdEquipValue = object.getTotalMaxStamina();
+            case GET_TOTAL_MAX_STAMINA:
+                result = object.getTotalMaxStamina();
                     break;
-            case GET_MAX_NANO:
-                holdEquipValue = object.getTotalMaxNano();
+            case GET_TOTAL_MAX_NANO:
+                result = object.getTotalMaxNano();
                     break;
-            case GET_DEFENSE:
-                holdEquipValue = object.getTotalDefense();
+            case GET_TOTAL_ATTACK:
+                result = object.getTotalAttack();
                     break;
-            case GET_DEXTERITY:
-                holdEquipValue = object.getTotalDexterity();
+            case GET_TOTAL_DEFENSE:
+                result = object.getTotalDefense();
                     break;
-            case GET_NANO_DEFENSE:
-                holdEquipValue = object.getTotalNanoDefense();
+            case GET_TOTAL_DEXTERITY:
+                result = object.getTotalDexterity();
                     break;
-        }
-
-        return holdEquipValue;
-    }
-
-    // overloaded method return desired value from equipped accessories 
-    public double armorAccessorySwitch(ArmorAccessorySwitches choice, Accessories object)
-    {		
-        double holdEquipValue = 0;
-        
-        switch(choice)
-        {
-            case GET_MAX_HEALTH:
-                holdEquipValue = object.getTotalMaxHealth();
+            case GET_TOTAL_CRITICAL: 
+                result = object.getTotalCritical();
                     break;
-            case GET_MAX_STAMINA:
-                holdEquipValue = object.getTotalMaxStamina();
+            case GET_TOTAL_ACCURACY:
+                result = object.getTotalAccuracy();
                     break;
-            case GET_MAX_NANO:
-                holdEquipValue = object.getTotalMaxNano();
+            case GET_TOTAL_NANO_ATTACK: 
+                result = object.getTotalNanoAttack();
                     break;
-            case GET_DEFENSE:
-                holdEquipValue = object.getTotalDefense();
-                    break;
-            case GET_DEXTERITY:
-                holdEquipValue = object.getTotalDexterity();
-                    break;
-            case GET_NANO_DEFENSE:
-                holdEquipValue = object.getTotalNanoDefense();
+            case GET_TOTAL_NANO_DEFENSE:
+                result = object.getTotalNanoDefense();
                     break;
         }
 
-        return holdEquipValue;
+        return result;
     }
-    
-    //  returns effect weapons and accessories have on an attribute 
-    public double weaponAccessoryEffect(WeaponAccessorySwitches choice, double attribute)
+
+    public double allOutfitsEffect(AllOutfitSwitches choice, double argument)
     {
         if(weapon != null)
         {
-            attribute += weaponAccessorySwitch(choice, weapon);
+            argument += allOutfitsEffectSwitch(choice, weapon);
         }
 
-        for(Accessories element : getCharacterAccessories())
+        for(Armor element : getCharacterArmors())
         {
             if(element != null)
             {
-                attribute += weaponAccessorySwitch(choice, element);
+                argument += allOutfitsEffectSwitch(choice, element);
             }
         }
-        
-        return attribute;
-    }
 
-    // enum class denoting switch conditions to return desired attribute 
-    public enum WeaponAccessorySwitches
-    {
-        GET_ATTACK, GET_CRITICAL, GET_ACCURACY, GET_NANO_ATTACK;
-    }
-    
-    // overloaded method returns desired value from equipped weapon 
-    public double weaponAccessorySwitch(WeaponAccessorySwitches choice, Weapons object)
-    {		
-        double holdEquipValue = 0;
-
-        switch(choice)
-        {
-            case GET_ATTACK:
-                holdEquipValue = object.getTotalAttack();
-                    break;
-            case GET_CRITICAL:
-                holdEquipValue = object.getTotalCritical();
-                    break;
-            case GET_ACCURACY:
-                holdEquipValue = object.getTotalAccuracy();
-                    break;
-            case GET_NANO_ATTACK:
-                holdEquipValue = object.getTotalNanoAttack();
-                    break;
-        }
-
-        return holdEquipValue;
-    }
-
-    // overloaded method returns desired value from equipped accessories 
-    public double weaponAccessorySwitch(WeaponAccessorySwitches choice, Accessories object)
-    {		
-        double holdEquipValue = 0;
-
-        switch(choice)
-        {
-            case GET_ATTACK:
-                holdEquipValue = object.getTotalAttack();
-                    break;
-            case GET_CRITICAL:
-                holdEquipValue = object.getTotalCritical();
-                    break;
-            case GET_ACCURACY:
-                holdEquipValue = object.getTotalAccuracy();
-                    break;
-            case GET_NANO_ATTACK:
-                holdEquipValue = object.getTotalNanoAttack();
-                    break;
-        }
-
-        return holdEquipValue;
-    }	
-    
-    // returns effect that all outfits have on specific attributes
-    public double allOutfitsEffect(AllOutfitsSwitches choice, double attribute)
-    {
-        if(weapon != null)
-        {
-            attribute += allOutfitsSwitch(choice, weapon);
-        }
-
-        for(Armors element : getCharacterArmors())
+        for(Accessory element : getCharacterAccessories())
         {
             if(element != null)
             {
-                attribute += allOutfitsSwitch(choice, element);
+                argument += allOutfitsEffectSwitch(choice, element);
             }
         }
 
-        for(Accessories element : getCharacterAccessories())
-        {
-            if(element != null)
-            {
-                attribute += allOutfitsSwitch(choice, element);
-            }
-        }
-
-        return attribute;
+        return argument;
     }
-
-    // enum class denoting switch conditions to return desired attribute 
-    public enum AllOutfitsSwitches
-    {
-        GET_MAX_NANO, GET_DEXTERITY; 
-    }
-    
-    // overloaded method returns desired value from equipped weapon 
-    public double allOutfitsSwitch(AllOutfitsSwitches choice, Weapons object)
-    {	
-        double holdEquipValue = 0;
-        
-        switch(choice)
-        {
-            case GET_MAX_NANO:
-                holdEquipValue = object.getTotalMaxNano();
-                    break;
-            case GET_DEXTERITY:
-                holdEquipValue = object.getTotalDexterity();
-                    break;
-        }
-
-        return holdEquipValue;
-    }
-
-    // overloaded method returns desired value from equipped Armors 
-    public double allOutfitsSwitch(AllOutfitsSwitches choice, Armors object)
-    {		
-        double holdEquipValue = 0;
-        
-        switch(choice)
-        {
-            case GET_MAX_NANO:
-                holdEquipValue = object.getTotalMaxNano();
-                    break;
-            case GET_DEXTERITY:
-                holdEquipValue = object.getTotalDexterity();
-                    break;
-        }
-
-        return holdEquipValue;
-    }
-
-    // overloaded method returns desired value from equipped Accessories 
-    public double allOutfitsSwitch(AllOutfitsSwitches choice, Accessories object)
-    {		
-        double holdEquipValue = 0;
-        
-        switch(choice)
-        {
-            case GET_MAX_NANO:
-                holdEquipValue = object.getTotalMaxNano();
-                    break;
-            case GET_DEXTERITY:
-                holdEquipValue = object.getTotalDexterity();
-                    break;
-        }
-
-        return holdEquipValue;
-    }	
 
     // END: CALCULATING IMPACT OF CHARACTER OUTFITS ON CHARACTER
     /*******************************************************************************/
     
     
-    
-    // START: ADDITIONAL EFFECTS PROVIDED BY ACCESSORIES
-    /*******************************************************************************/
 
-    // returns sum of all values for the desired skills using accessories 
-    public int getAccessoryEffectOnSkillName(String skillName)
-    {
-        int sumOfEffectsOnSkill = 0;
-        
-        for(Accessories element : getCharacterAccessories())
-        {
-            if(element != null)
-            {
-                sumOfEffectsOnSkill += element.getSkillValue(skillName);
-            }
-        }
-        
-        return sumOfEffectsOnSkill;
-    }
-    
-    public boolean accessoryNegatesStatus(StatusEffect status)
-    {
-        boolean result = false;
-        
-        for(Accessories element : getCharacterAccessories())
-        {
-            if(element != null && element.statusEffectNegated(status))
-            {
-                result = true;
-                    break;
-            }
-        }
-        
-        return result;
-    }
-    
-    // END: ADDITIONAL EFFECTS PROVIDED BY ACCESSORIES
-    /*******************************************************************************/
-
-    
-    
-    // START: ACCOUNTING FOR CHARACTER MAX GAUGES WITH OUTFITS
+    // START: ACCOUNT FOR CHARACTER ATTRIBUTES WITH OUTFITS 
     /*******************************************************************************/
     
     public double validateWithOutfits(double attribute)
@@ -567,72 +330,64 @@ public class EquippableOutfits extends AttributesAndResistances
         return attribute;
     }	
 
-        public double getMaxHealthWithOutfits()
+    public double getMaxHealthWithOutfits()
     {
-        return validateWithOutfits(armorAccessoryEffect(ArmorAccessorySwitches.
-            GET_MAX_HEALTH, getMaxHealth()));
+        return validateWithOutfits(allOutfitsEffect(AllOutfitSwitches.
+            GET_TOTAL_MAX_HEALTH, getStats().getMaxHealth()));
     }
 
     public double getMaxStaminaWithOutfits()
     {
-        return validateWithOutfits(armorAccessoryEffect(ArmorAccessorySwitches.
-            GET_MAX_STAMINA, getMaxStamina()));
+        return validateWithOutfits(allOutfitsEffect(AllOutfitSwitches.
+            GET_TOTAL_MAX_STAMINA, getStats().getMaxStamina()));
     }
 
     public double getMaxNanoWithOutfits()
     {
-        return validateWithOutfits(allOutfitsEffect(AllOutfitsSwitches.
-            GET_MAX_NANO, getMaxNano()));
+        return validateWithOutfits(allOutfitsEffect(AllOutfitSwitches.
+            GET_TOTAL_MAX_NANO, getStats().getMaxNano()));
     }
-    
-    // END: ACCOUNTING FOR CHARACTER MAX GAUGES WITH OUTFITS
-    /*******************************************************************************/
-
-
-
-    // START: ACCOUNT FOR CHARACTER ATTRIBUTES WITH OUTFITS 
-    /*******************************************************************************/
     
     public double getAttackWithOutfits()
     {
-        return validateWithOutfits(weaponAccessoryEffect(WeaponAccessorySwitches.
-            GET_ATTACK, getAttack()));
+        return validateWithOutfits(allOutfitsEffect(AllOutfitSwitches.
+            GET_TOTAL_ATTACK, getStats().getAttack()));
     }
 
     public double getDefenseWithOutfits()
     {
-        return validateWithOutfits(armorAccessoryEffect(ArmorAccessorySwitches.
-            GET_DEFENSE, getDefense()));
+        return validateWithOutfits(allOutfitsEffect(AllOutfitSwitches.
+            GET_TOTAL_DEFENSE, getStats().getDefense()));
     }
 
     public double getDexterityWithOutfits()
     {
-        return validateWithOutfits(allOutfitsEffect(AllOutfitsSwitches.
-            GET_DEXTERITY, getDexterity()));
+        return validateWithOutfits(allOutfitsEffect(AllOutfitSwitches.
+            GET_TOTAL_DEXTERITY, getStats().getDexterity()));
     }
 
     public double getCriticalWithOutfits()
     {
-        return validateWithOutfits(weaponAccessoryEffect(WeaponAccessorySwitches.
-            GET_CRITICAL, getCritical()));
+        return validateWithOutfits(allOutfitsEffect(AllOutfitSwitches.
+            GET_TOTAL_CRITICAL, getStats().getCritical()));
     }
 
     public double getAccuracyWithOutfits()
     {
-        return validateWithOutfits(weaponAccessoryEffect(WeaponAccessorySwitches.
-            GET_ACCURACY, getAccuracy()));
+        return validateWithOutfits(allOutfitsEffect(AllOutfitSwitches.
+            GET_TOTAL_ACCURACY, getStats().getAccuracy()));
     }
 
     public double getNanoAttackWithOutfits()
     {
-        return validateWithOutfits(weaponAccessoryEffect(WeaponAccessorySwitches.
-            GET_NANO_ATTACK, getNanoAttack()));
+        return validateWithOutfits(allOutfitsEffect(AllOutfitSwitches.
+            GET_TOTAL_NANO_ATTACK, getStats().getNanoAttack()));
     }
 
     public double getNanoDefenseWithOutfits()
     {
-        return validateWithOutfits(armorAccessoryEffect(ArmorAccessorySwitches.
-            GET_NANO_DEFENSE, getNanoDefense()));
+        return validateWithOutfits(allOutfitsEffect(AllOutfitSwitches.
+            GET_TOTAL_NANO_DEFENSE, getStats().getNanoDefense()));
     }
     
     // END: ACCOUNT FOR CHARACTER ATTRIBUTES WITH OUTFITS 
@@ -643,278 +398,312 @@ public class EquippableOutfits extends AttributesAndResistances
     // START: ACCOUNT FOR CHARACTER RESISTANCES WITH OUTFITS 
     /*******************************************************************************/
 
-    // adds outfit value to double value supplied based on the resistance name  
     public double resistanceWithOutfitResistance(double resistanceValue, String resistanceName)
     {
-        for(Armors element : getCharacterArmors())
+        for(Armor element : getCharacterArmors())
         {
             if(element != null)
             {
-                resistanceValue += element.getOutfitValueForKey(resistanceName);
+                resistanceValue += element.getResistanceValueForKey(resistanceName);
             }
         }
 
-        return validateResistance(resistanceValue);
+        return getStats().validateResistance(resistanceValue);
     }
     
-    // START: DAMAGE RELATED
-    /*----------------------------------------------------------------------------*/
-    
+    // ENCHANTMENT RESISTANCES
+
     public double getFireResistanceWithOutfits()
     {
-        return resistanceWithOutfitResistance(getFireResistance(), "Fire");
+        return resistanceWithOutfitResistance(getStats().getFireResistance(), "Fire");
     }
 
     public double getWaterResistanceWithOutfits()
     {
-        return resistanceWithOutfitResistance(getWaterResistance(), "Water");
+        return resistanceWithOutfitResistance(getStats().getWaterResistance(), "Water");
     }
 
     public double getIceResistanceWithOutfits()
     {
-        return resistanceWithOutfitResistance(getIceResistance(), "Ice");
+        return resistanceWithOutfitResistance(getStats().getIceResistance(), "Ice");
     }
 
     public double getElectricityResistanceWithOutfits()
     {
-        return resistanceWithOutfitResistance(getElectricityResistance(), "Electricity");
+        return resistanceWithOutfitResistance(getStats().getElectricityResistance(), "Electricity");
     }
 
     public double getPoisonResistanceWithOutfits()
     {
-        return resistanceWithOutfitResistance(getPoisonResistance(), "Poison");
+        return resistanceWithOutfitResistance(getStats().getPoisonResistance(), "Poison");
     }
 
     public double getSonicResistanceWithOutfits()
     {
-        return resistanceWithOutfitResistance(getSonicResistance(), "Sonic");
+        return resistanceWithOutfitResistance(getStats().getSonicResistance(), "Sonic");
     }
 
     public double getPlasmaResistanceWithOutfits()
     {
-        return resistanceWithOutfitResistance(getPlasmaResistance(), "Plasma");
+        return resistanceWithOutfitResistance(getStats().getPlasmaResistance(), "Plasma");
     }
 
     public double getWindResistanceWithOutfits()
     {
-        return resistanceWithOutfitResistance(getWindResistance(), "Wind");
+        return resistanceWithOutfitResistance(getStats().getWindResistance(), "Wind");
     }
     
-    // END: DAMAGE RELATED
-    /*----------------------------------------------------------------------------*/
+    // ENCHANTMENT RESISTANCES
 
 
-    // START: STATUS EFFECT RELATED
-    /*----------------------------------------------------------------------------*/
+    // STATUS EFFECT REISTANCES
 
-    // START: UNIQUE 
+    // UNIQUE STATUS EFFECTS 
     
     public double getDryResistanceWithOutfits()
     {
-        return resistanceWithOutfitResistance(getDryResistance(), "Dry");
+        return resistanceWithOutfitResistance(getStats().getDryResistance(), "Dry");
     }
 
     public double getWetResistanceWithOutfits()
     {
-        return resistanceWithOutfitResistance(getWetResistance(), "Wet");
+        return resistanceWithOutfitResistance(getStats().getWetResistance(), "Wet");
     }
 
     public double getColdResistanceWithOutfits()
     {
-        return resistanceWithOutfitResistance(getColdResistance(), "Cold");
+        return resistanceWithOutfitResistance(getStats().getColdResistance(), "Cold");
     }
 
     public double getConductiveResistanceWithOutfits()
     {
-        return resistanceWithOutfitResistance(getConductiveResistance(), "Conductive");
+        return resistanceWithOutfitResistance(getStats().getConductiveResistance(), "Conductive");
     }
 
     public double getSicknessResistanceWithOutfits()
     {
-        return resistanceWithOutfitResistance(getSicknessResistance(), "Sickness");
+        return resistanceWithOutfitResistance(getStats().getSicknessResistance(), "Sickness");
     }
 
     public double getHypersensitiveResistanceWithOutfits()
     {
-        return resistanceWithOutfitResistance(getHypersensitiveResistance(), "Hypersensitive");
+        return resistanceWithOutfitResistance(getStats().getHypersensitiveResistance(), "Hypersensitive");
     }
 
     public double getCoatedResistanceWithOutfits()
     {
-        return resistanceWithOutfitResistance(getCoatedResistance(), "Coated");
+        return resistanceWithOutfitResistance(getStats().getCoatedResistance(), "Coated");
     }
 
     public double getLightweightResistanceWithOutfits()
     {
-        return resistanceWithOutfitResistance(getLightweightResistance(), "Lightweight");
+        return resistanceWithOutfitResistance(getStats().getLightweightResistance(), "Lightweight");
     }
 
     public double getIrradiatedResistanceWithOutfits()
     {
-        return resistanceWithOutfitResistance(getIrradiatedResistance(), "Irradiated");
+        return resistanceWithOutfitResistance(getStats().getIrradiatedResistance(), "Irradiated");
     }
     
-    // END: UNIQUE 
+    // UNIQUE STATUS EFFECTS 
 
 
-    // START: CURRENT HEALTH BASED 
+    // CURRENT HEALTH STATUS EFFECTS  
     
     public double getAblazeResistanceWithOutfits()
     {
-        return resistanceWithOutfitResistance(getAblazeResistance(), "Ablaze");
+        return resistanceWithOutfitResistance(getStats().getAblazeResistance(), "Ablaze");
     }
 
     public double getBleedResistanceWithOutfits()
     {
-        return resistanceWithOutfitResistance(getBleedResistance(), "Bleed");
+        return resistanceWithOutfitResistance(getStats().getBleedResistance(), "Bleed");
     }
 
     public double getToxicResistanceWithOutfits()
     {
-        return resistanceWithOutfitResistance(getToxicResistance(), "Toxic");
+        return resistanceWithOutfitResistance(getStats().getToxicResistance(), "Toxic");
     }
     
-    // END: CURRENT HEALTH BASED 
+    // CURRENT HEALTH STATUS EFFECTS 
 
 
-    // START: ATTRIBUTE BASED 
+    // ATTRIBUTE STATUS EFFECTS 
     
     public double getAttackDownResistanceWithOutfits()
     {
-        return resistanceWithOutfitResistance(getAttackDownResistance(), "Attack Down");
+        return resistanceWithOutfitResistance(getStats().getAttackDownResistance(), "Attack Down");
     }
 
     public double getDefenseDownResistanceWithOutfits()
     {
-        return resistanceWithOutfitResistance(getDefenseDownResistance(), "Defense Down");
+        return resistanceWithOutfitResistance(getStats().getDefenseDownResistance(), "Defense Down");
     }
 
     public double getShutdownResistanceWithOutfits()
     {
-        return resistanceWithOutfitResistance(getShutdownResistance(), "Shutdown");
+        return resistanceWithOutfitResistance(getStats().getShutdownResistance(), "Shutdown");
     }
 
     public double getDexterityDownResistanceWithOutfits()
     {
-        return resistanceWithOutfitResistance(getDexterityDownResistance(), "Dexterity Down");
+        return resistanceWithOutfitResistance(getStats().getDexterityDownResistance(), "Dexterity Down");
     }
 
     public double getCriticalDownResistanceWithOutfits()
     {
-        return resistanceWithOutfitResistance(getCriticalDownResistance(), "Critical Down");
+        return resistanceWithOutfitResistance(getStats().getCriticalDownResistance(), "Critical Down");
     }
 
     public double getAccuracyDownResistanceWithOutfits()
     {
-        return resistanceWithOutfitResistance(getAccuracyDownResistance(), "Accuracy Down");
+        return resistanceWithOutfitResistance(getStats().getAccuracyDownResistance(), "Accuracy Down");
     }
 
     public double getBlindResistanceWithOutfits()
     {
-        return resistanceWithOutfitResistance(getBlindResistance(), "Blind");
+        return resistanceWithOutfitResistance(getStats().getBlindResistance(), "Blind");
     }
 
     public double getDarknessResistanceWithOutfits()
 {
-        return resistanceWithOutfitResistance(getDarknessResistance(), "Darkness");
+        return resistanceWithOutfitResistance(getStats().getDarknessResistance(), "Darkness");
     }
 
     public double getNanoAttackDownResistanceWithOutfits()
     {
-        return resistanceWithOutfitResistance(getNanoAttackDownResistance(), "Nano Attack Down");
+        return resistanceWithOutfitResistance(getStats().getNanoAttackDownResistance(), "Nano Attack Down");
     }
 
     public double getNanoDefenseDownResistanceWithOutfits()
     {
-        return resistanceWithOutfitResistance(getNanoDefenseDownResistance(), "Nano Defense Down");
+        return resistanceWithOutfitResistance(getStats().getNanoDefenseDownResistance(), "Nano Defense Down");
     }
     
-    // END: ATTRIBUTE BASED 
+    // ATTRIBUTE STATUS EFFECTS 
 
 
-    // START: BEHAVIOR BASED 
+    // BEHAVIOR STATUS EFFECTS  
     
     public double getConfusedResistanceWithOutfits()
     {
-        return resistanceWithOutfitResistance(getConfusedResistance(), "Confused");
+        return resistanceWithOutfitResistance(getStats().getConfusedResistance(), "Confused");
     }
 
     public double getEnamoredResistanceWithOutfits()
     {
-        return resistanceWithOutfitResistance(getEnamoredResistance(), "Enamored");
+        return resistanceWithOutfitResistance(getStats().getEnamoredResistance(), "Enamored");
     }
 
     public double getBerserkResistanceWithOutfits()
     {
-        return resistanceWithOutfitResistance(getBerserkResistance(), "Berserk");
+        return resistanceWithOutfitResistance(getStats().getBerserkResistance(), "Berserk");
     }
     
-    // END: BEHAVIOR BASED 
+    // BEHAVIOR STATUS EFFECTS  
 
 
-    // START: TURN BEHAVIOR BASED 
+    // TURN BEHAVIOR STATUS EFFECTS 
     
     public double getFlinchedResistanceWithOutfits()
     {
-        return resistanceWithOutfitResistance(getFlinchedResistance(), "Flinched");
+        return resistanceWithOutfitResistance(getStats().getFlinchedResistance(), "Flinched");
     }
 
     public double getStunnedResistanceWithOutfits()
     {
-        return resistanceWithOutfitResistance(getStunnedResistance(), "Stunned");
+        return resistanceWithOutfitResistance(getStats().getStunnedResistance(), "Stunned");
     }
 
     public double getScaredResistanceWithOutfits()
     {
-        return resistanceWithOutfitResistance(getScaredResistance(), "Scared");
+        return resistanceWithOutfitResistance(getStats().getScaredResistance(), "Scared");
     }
 
     public double getBoundResistanceWithOutfits()
     {
-        return resistanceWithOutfitResistance(getBoundResistance(), "Bound");
+        return resistanceWithOutfitResistance(getStats().getBoundResistance(), "Bound");
     }
 
     public double getSleepResistanceWithOutfits()
     {
-        return resistanceWithOutfitResistance(getSleepResistance(), "Sleep");
+        return resistanceWithOutfitResistance(getStats().getSleepResistance(), "Sleep");
     }
 
     public double getTrancedResistanceWithOutfits()
     {
-        return resistanceWithOutfitResistance(getTrancedResistance(), "Tranced");
+        return resistanceWithOutfitResistance(getStats().getTrancedResistance(), "Tranced");
     }
 
     public double getShockedResistanceWithOutfits()
     {
-        return resistanceWithOutfitResistance(getShockedResistance(), "Shocked");
+        return resistanceWithOutfitResistance(getStats().getShockedResistance(), "Shocked");
     }
 
     public double getSlowedResistanceWithOutfits()
     {
-        return resistanceWithOutfitResistance(getSlowedResistance(), "Slowed");
+        return resistanceWithOutfitResistance(getStats().getSlowedResistance(), "Slowed");
     }
 
     public double getStoppedResistanceWithOutfits()
     {
-        return resistanceWithOutfitResistance(getStoppedResistance(), "Stopped");
+        return resistanceWithOutfitResistance(getStats().getStoppedResistance(), "Stopped");
     }
 
     public double getNullifyPositiveEffectsResistanceWithOutfits()
     {
-        return resistanceWithOutfitResistance(getNullifyPositiveEffectsResistance(), "Nullify Positive Effects");
+        return resistanceWithOutfitResistance(getStats().getNullifyPositiveEffectsResistance(), "Nullify Positive Effects");
     }
     
-    // END: TURN BEHAVIOR BASED 
+    // TURN BEHAVIOR STATUS EFFECTS 
 
-    // END: STATUS EFFECT RELATED
-    /*----------------------------------------------------------------------------*/
+    // STATUS EFFECT REISTANCES
 
     // END: ACCOUNT FOR CHARACTER RESISTANCES WITH OUTFITS
     /*******************************************************************************/
     
     
     
-    // START: APPLY CORE PENALTY ON ALL OUTFITS
+    // START: ADDITIONAL EFFECTS PROVIDED BY ACCESSORIES
+    /*******************************************************************************/
+    
+    public int getAccessoryEffectOnSkillName(String skillName)
+    {
+        int sumOfEffectsOnSkill = 0;
+        
+        for(Accessory element : getCharacterAccessories())
+        {
+            if(element != null)
+            {
+                sumOfEffectsOnSkill += element.getSkillValueForKey(skillName);
+            }
+        }
+        
+        return sumOfEffectsOnSkill;
+    }
+    
+    public boolean accessoryNegatesStatusEffect(StatusEffect status)
+    {
+        boolean result = false;
+        
+        for(Accessory element : getCharacterAccessories())
+        {
+            if(element != null && element.statusEffectNegated(status))
+            {
+                result = true;
+                    break;
+            }
+        }
+        
+        return result;
+    }
+    
+    // END: ADDITIONAL EFFECTS PROVIDED BY ACCESSORIES
+    /*******************************************************************************/
+
+    
+    
+    // START: APPLY CORE PENALTY TO ALL OUTFITS
     /*******************************************************************************/
 
     public void applyCorePenaltyToEquippedOutfits()
@@ -924,7 +713,7 @@ public class EquippableOutfits extends AttributesAndResistances
             weapon.applyCorePenalty();
         }
 
-        for(Armors element : getCharacterArmors())
+        for(Armor element : getCharacterArmors())
         {
             if(element != null)
             {
@@ -932,7 +721,7 @@ public class EquippableOutfits extends AttributesAndResistances
             }
         }
         
-        for(Accessories element : getCharacterAccessories())
+        for(Accessory element : getCharacterAccessories())
         {
             if(element != null)
             {
@@ -941,6 +730,6 @@ public class EquippableOutfits extends AttributesAndResistances
         }
     }
     
-    // END: APPLY CORE PENALTY ON ALL OUTFITS
+    // END: APPLY CORE PENALTY TO ALL OUTFITS
     /*******************************************************************************/
 }

@@ -8,23 +8,20 @@ package Player_Entity;
 
 import java.util.HashMap;
 
-public class ChoicesMade extends CurrentLocation
+public class PlayerChoices
 {
-    // START: HASHMAPS USED FOR CHOICE MANAGEMENT 
-    /*******************************************************************************/
-    
     // Note: an event is an interactive scenario a party can partake in 
     // stores event name as key and eventLine (parts of event) HashMap as value 
-    private static HashMap<String, HashMap<String, Boolean>> 
-        events = new HashMap<>();
+    private final HashMap<String, HashMap<String, Boolean>> events = new HashMap<>();
     
     // Note: an event line is a series of an events/choices that occur in an event 
     // stores choice that can be made as key and boolean signifying result of choice 
-    private static HashMap<String, Boolean> 
-        eventLine = new HashMap<>();
+    private final HashMap<String, Boolean> eventLine = new HashMap<>();
     
-    // END: HASHMAPS USED FOR CHOICE MANAGEMENT 
-    /*******************************************************************************/
+    public PlayerChoices()
+    {
+        // empty constructor 
+    }
     
     
     

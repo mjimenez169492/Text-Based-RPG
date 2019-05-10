@@ -1,12 +1,12 @@
 package Generic_Character;
 
 /*
-    AttributesAndResistances contains attributes or features commonly found in 
-    games which serve the purpose of representing some means of interaction between a
-    character and another particularly in battle.
+    Stats contains information relating to the attributes and resistances of 
+    a GenericCharacter object which are used represent characteristics which
+    may be used in/out of battle.
 */
 
-public class AttributesAndResistances extends StatusEffectContainer
+public class Stats
 {
     // variables concerning max gauges 
     private double maxHealth, maxNano, maxStamina;
@@ -20,28 +20,40 @@ public class AttributesAndResistances extends StatusEffectContainer
         electricityResistance, poisonResistance, sonicResistance, 
         plasmaResistance, windResistance;						
 
-    // status effect related resistances (as in ability to resist/negate status effects)
+    // unique status effect resistances 
     private double dryResistance, wetResistance, coldResistance, 
         conductiveResistance, sicknessResistance, hypersensitiveResistance, 
         coatedResistance, lightweightResistance, irradiatedResistance;				
 
+    // current health status effect resistances 
     private double ablazeResistance, bleedResistance, toxicResistance;						
 
+    // attribute status effect resistances 
     private double attackDownResistance, defenseDownResistance, shutdownResistance, 
         dexterityDownResistance, criticalDownResistance, accuracyDownResistance, 
         blindResistance, darknessResistance, nanoAttackDownResistance, 
         nanoDefenseDownResistance;			
 
+    // behavior status effect resistances 
     private double confusedResistance, enamoredResistance, berserkResistance;					
 
+    // turn behavior status effect resistances 
     private double flinchedResistance, stunnedResistance, scaredResistance, 
         boundResistance, sleepResistance, trancedResistance, shockedResistance, 
         slowedResistance, stoppedResistance, nullifyPositiveEffectsResistance;
 
-    // START: CHARACTER MAX GAUGES
+    public Stats()
+    {
+        // empty constructor
+    }
+    
+    
+    
+    // START: CHARACTER ATTRIBUTES
     /*******************************************************************************/
 
-    // validates value supplied as the max value for a gauge (cap at 999)
+    // GAUGES
+    
     public double validateMaxGauges(double maxGauge)
     {
         if(maxGauge < 0) 
@@ -85,14 +97,11 @@ public class AttributesAndResistances extends StatusEffectContainer
     {
         return maxStamina; 
     } 
-
-    // END: CHARACTER MAX GAUGES
-    /*******************************************************************************/
-
-
     
-    // START: CHARACTER ATTRIBUTES
-    /*******************************************************************************/
+    // GAUGES
+    
+    
+    // NON-GAUGES
 
     public double validateAttribute(double attribute)
     {
@@ -188,6 +197,8 @@ public class AttributesAndResistances extends StatusEffectContainer
         return luck; 
     } 
 
+    // NON-GAUGES
+    
     // END: CHARACTER ATTRIBUTES
     /*******************************************************************************/
 
@@ -209,8 +220,7 @@ public class AttributesAndResistances extends StatusEffectContainer
         return resistance;
     }
 
-    // START: ENCHANTMENT DAMAGE RESISTANCES 
-    /*----------------------------------------------------------------------------*/
+    // ENCHANTMENT DAMAGE RESISTANCES 
 
     public void setFireResistance(double fireResistance)
     {
@@ -292,14 +302,12 @@ public class AttributesAndResistances extends StatusEffectContainer
         return windResistance;
     }
 
-    // END: ENCHANTMENT DAMAGE RESISTANCE 
-    /*----------------------------------------------------------------------------*/
+    // ENCHANTMENT DAMAGE RESISTANCE 
 
 
-    // START: STATUS EFFECT RELATED
-    /*----------------------------------------------------------------------------*/
+    // STATUS EFFECT RELATED
 
-    // START: UNIQUE
+    // UNIQUE STATUS EFFECTS 
 
     public void setDryResistance(double dryResistance)
     {
@@ -363,7 +371,7 @@ public class AttributesAndResistances extends StatusEffectContainer
 
     public void setCoatedResistance(double coatedResistance)
     {
-            this.coatedResistance = validateResistance(coatedResistance);
+        this.coatedResistance = validateResistance(coatedResistance);
     }
 
     public double getCoatedResistance()
@@ -391,10 +399,10 @@ public class AttributesAndResistances extends StatusEffectContainer
         return irradiatedResistance;
     }
 
-    // END: UNIQUE 
+    // UNIQUE STATUS EFFECTS 
 
 
-    // START: CURRENT HEALTH BASED 
+    // CURRENT HEALTH BASED 
 
     public void setAblazeResistance(double ablazeResistance)
     {
@@ -426,10 +434,10 @@ public class AttributesAndResistances extends StatusEffectContainer
         return toxicResistance;
     }
 
-    // END: CURRENT HEALTH BASED 
+    // CURRENT HEALTH BASED 
 
 
-    // START: ATTRIBUTE BASED 
+    // ATTRIBUTE BASED 
 
     public void setAttackDownResistance(double attackDownResistance)
     {
@@ -531,10 +539,10 @@ public class AttributesAndResistances extends StatusEffectContainer
         return nanoDefenseDownResistance;
     }
 
-    // END: ATTRIBUTE BASED
+    // ATTRIBUTE BASED
 
 
-    // START: BEHAVIOR BASED
+    // BEHAVIOR BASED
 
     public void setConfusedResistance(double confusedResistance)
     {
@@ -566,10 +574,10 @@ public class AttributesAndResistances extends StatusEffectContainer
         return berserkResistance;
     }
 
-    // END: BEHAVIOR BASED 
+    // BEHAVIOR BASED 
 
 
-    // START: TURN BEHAVIOR BASED
+    // TURN BEHAVIOR BASED
 
     public void setFlinchedResistance(double flinchedResistance)
     {
@@ -671,10 +679,9 @@ public class AttributesAndResistances extends StatusEffectContainer
         return nullifyPositiveEffectsResistance;
     }
 
-    // END: TURN BEHAVIOR BASED 
+    // TURN BEHAVIOR BASED 
 
-    // END: STATUS EFFECT RELATED
-    /*----------------------------------------------------------------------------*/
+    // STATUS EFFECT RELATED
 
     // END: CHARACTER RESISTANTCES: STATUS EFFECT RELATED
     /*******************************************************************************/	

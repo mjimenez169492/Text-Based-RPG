@@ -1,28 +1,23 @@
 package Generic_Character;
 
-/*
-    ExtraFeatures contains features currently being tested to see if they are 
-    worthy of being part of the GenericCharacter class hierarchy. Many of the 
-    features are intended to be used for creating objects meant to be fought.
-*/
-
 import Generic_Object.GenericObject;
+
 import java.security.SecureRandom;
 import java.util.ArrayList;
 
-public class ExtraFeatures extends Moveset
-{
-    // variables concerning features useful for creation of enemy combatants 
-    private int defeatExp;                      // exp received for beating object  
-    private int defeatMoney;            	// money dropped upon defeating object 
+/*
+    OppositionMethods contains features intended to be used for the creation 
+    of GenericCharacter objects meant to be faced on battle. 
+*/
 
-    // trigger meant for ending a battle early once certain conditions are met 
-    private boolean endBattleTrigger;		
+public class OppositionMethods 
+{
+    // exp received for beating object and money dropped upon defeating object 
+    private double defeatExp, defeatMoney;
 
     // variables holds max amount of money characters can hold on their person 
     // personal wallet funds cannot be accessed directly (must steak from self)
-    private int personalWalletMaxSize;
-    private int personalWallet;
+    private double personalWalletMaxSize, personalWallet;
     
     // variables holding the maximum size for each inventory-like ArrayList  
     private int stealableObjectsMaxCapacity, pilferableObjectsMaxCapacity, 
@@ -31,10 +26,15 @@ public class ExtraFeatures extends Moveset
     // ArrayLists hold objects that can be stolen, pilfered, or dropped 
     // objects in stealableObjects and pilferableObjects cannot be accessed 
     // directly (must use steal or pilfer depending on ArrayList) 
-    private final ArrayList<GenericObject> stealableObjects = new ArrayList<GenericObject>();
-    private final ArrayList<GenericObject> pilferableObjects = new ArrayList<GenericObject>();
-    private final ArrayList<GenericObject> droppableObjects = new ArrayList<GenericObject>();
+    private final ArrayList<GenericObject> stealableObjects = new ArrayList<>();
+    private final ArrayList<GenericObject> pilferableObjects = new ArrayList<>();
+    private final ArrayList<GenericObject> droppableObjects = new ArrayList<>();
 
+    public OppositionMethods()
+    {
+        // empty constructor
+    }
+    
     
     
     // START: USEFUL ENEMY-RELATED METHODS 
@@ -54,26 +54,26 @@ public class ExtraFeatures extends Moveset
         this.defeatExp = defeatExp;
     }
 
-    public int getDefeatExp()
+    public double getDefeatExp()
     {
         return defeatExp;
     }
 
-    public void setDefeatMoney(int defeatMoney)
+    public void setDefeatMoney(double defeatMoney)
     {
         if(defeatMoney < 0)
         {
-                defeatMoney = 0;
+            defeatMoney = 0;
         }
         else if(defeatMoney < 150000)
         {
-                defeatMoney = 150000;
+            defeatMoney = 150000;
         }
 
         this.defeatMoney = defeatMoney; 
     }
 
-    public int getDefeatMoney()
+    public double getDefeatMoney()
     {
         return defeatMoney; 
     } 
@@ -83,38 +83,20 @@ public class ExtraFeatures extends Moveset
 
     
     
-    // START: TRACKING UNIQUE CONDITIONS 
-    /*******************************************************************************/
-
-    public void setEndBattleTrigger(boolean endBattleTrigger)
-    {
-        this.endBattleTrigger = endBattleTrigger;
-    }
-
-    public boolean getEndBattleTrigger()
-    {
-        return endBattleTrigger;
-    }
-    
-    // END: TRACKING UNIQUE CONDITIONS 
-    /*******************************************************************************/
-
-    
-    
     // START: PERSONAL WALLET (CAN ONLY BE ACCESSED BY STEALING FROM SELF)
     /*******************************************************************************/
 
-    public void setPersonalWalletMaxSize(int personalWalletMaxSize)
+    public void setPersonalWalletMaxSize(double personalWalletMaxSize)
     {
         this.personalWalletMaxSize = personalWalletMaxSize;
     }
     
-    public int getPersonalWalletMaxSize()
+    public double getPersonalWalletMaxSize()
     {
         return personalWalletMaxSize;
     }
     
-    public void setPersonalWallet(int personalWallet)
+    public void setPersonalWallet(double personalWallet)
     {
         if(personalWallet < 0)
         {
@@ -128,7 +110,7 @@ public class ExtraFeatures extends Moveset
         this.personalWallet = personalWallet;
     }
     
-    public int getPersonalWallet()
+    public double getPersonalWallet()
     {
         return personalWallet;
     }

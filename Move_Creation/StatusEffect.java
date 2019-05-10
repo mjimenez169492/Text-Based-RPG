@@ -6,7 +6,7 @@ package Move_Creation;
     of battle.
 */
 
-import Universally_Used_Methods.StaticMethods;
+import Commonly_Used_Methods.StaticMethods;
 import java.util.HashMap;
 
 public class StatusEffect
@@ -14,7 +14,7 @@ public class StatusEffect
     private String name;                    // name of the status effect 
     private int inflictRate;                // chance status has at inflicting target  
     private int turns;                      // how long a status effect lasts in battle 
-    private boolean permanenceState;        // determine if status is permanent or not 
+    private boolean permanent;              // determine if status is permanent or not 
     private boolean decrementAtStartOfTurn; // determines if turn count is decremented at start of turn 
     private boolean removeAfterKo;          // determines if status effect is removed upon character knock out ("KO")
     private boolean removeAfterBattle;      // determine whether status effect is removed immediately after battle 
@@ -22,8 +22,8 @@ public class StatusEffect
     // hashmap keeps track of attributes/resistances targeted as well as their effects 
     // Note: Double is used instead of double since primitive types cannot be used 
     //       in diamond (<>) meaning that a wrapper must be used (int  -> Integer)
-    HashMap<String, Double> effectsOfStatusEffect = new HashMap<String, Double>();
-
+    HashMap<String, Double> effectsOfStatusEffect = new HashMap<>();
+    
     // constructor allows for creation of status effect object 
     public StatusEffect()
     {
@@ -35,7 +35,6 @@ public class StatusEffect
     // START: STATUS EFFECT ATTRIBUTES
     /********************************************************************************/
 
-    // set name for status effect (trim name if it is too long)
     public void setName(String name)
     {
         if(name != null)
@@ -51,13 +50,11 @@ public class StatusEffect
         }
     }
 
-    // get name of status effect 
     public String getName()
     {
         return name;
     }
 
-    // set how many turns a status effect lasts 
     public void setTurns(int turns)
     {
         if(turns < 0)
@@ -72,26 +69,22 @@ public class StatusEffect
         this.turns = turns;
     }
 
-    // get how many turns a status effect lasts 
     public int getTurns()
     {
         return turns;
     }
 
-    // set whether or not status can be removed 
-    public void setPermanenceState(boolean permanenceState)
+    public void permanent(boolean permanent)
     {
-        this.permanenceState = permanenceState;
+        this.permanent = permanent;
     }
 
-    // get state of status permanence
-    public boolean getPermanenceState()
+    public boolean permanent()
     {
-        return permanenceState;
+        return permanent;
     }
 
-    // sets chance that status can be inflicted on target  
-    public void setInflictRate(int inflictRate)
+    public void setInflictionRate(int inflictRate)
     {
         if(inflictRate < 0)
         {
@@ -105,54 +98,46 @@ public class StatusEffect
         this.inflictRate = inflictRate;
     }
 
-    // gets chance that status can be inflicted on target  
-    public int getInflictRate()
+    public int getInflictionRate()
     {
         return inflictRate;
     }
 
-    // sets whether status effect is decremented at start of turn 
-    public void setDecrementAtStartOfTurn(boolean decrementAtStartOfTurn)
+    public void decrementAtStartOfTurn(boolean decrementAtStartOfTurn)
     {
         this.decrementAtStartOfTurn = decrementAtStartOfTurn;
     }
 
-    // gets whether status effect is decremented at start of turn 
-    public boolean getDecrementAtStartOfTurn()
+    public boolean decrementAtStartOfTurn()
     {
         return decrementAtStartOfTurn;
     }
 
-    // decrement turn count by 1 
     public void decrementTurns()
     {
         setTurns(getTurns() - 1);
     }
 
-    // sets whether status effect is removed after character is knocked out ("KO")
-    public void setRemoveAfterKnockOut(boolean removeAfterKo)
+    public void removeAfterKnockOut(boolean removeAfterKo)
     {
         this.removeAfterKo = removeAfterKo;
     }
 
-    // gets whether status effect is removed after character is knocked out ("KO")
-    public boolean getRemoveAfterKnockOut()
+    public boolean removeAfterKnockOut()
     {
         return removeAfterKo;
     }
 
-    // set whether status effect is removed after battle or not 
-    public void setRemoveAfterBattle(boolean removeAfterBattle)
+    public void removeAfterBattle(boolean removeAfterBattle)
     {
         this.removeAfterBattle = removeAfterBattle;
     }
 
-    // get whether status effect is removed after battle or not 
-    public boolean getRemoveAfterBattle()
+    public boolean removeAfterBattle()
     {
         return removeAfterBattle;
     }
-
+    
     // END: STATUS EFFECT OBJECT ATTRIBUTES
     /********************************************************************************/
 
@@ -161,7 +146,6 @@ public class StatusEffect
     // START: STATUS EFFECT OBJECT EFFECTS
     /********************************************************************************/
     
-    // ensure that double supplied is within a valid bounds 
     public double validateDouble(double value)
     {
         if(value < -1.00)
@@ -172,24 +156,23 @@ public class StatusEffect
         {
             value = 1.00;
         }
-
+        
         return value;
     }
     
-    // adds stat name as key and Double values as value for effectsOfStatusEffect 
+    // adds stat (attribute/resistance) name as key and Double value as effect
     public void addStatAndDoubleEffect(String stat, Double effect)
     {
-        if(StaticMethods.getStatusNameAsValidEnum(stat) != null)
+        if(StaticMethods.getStatString(stat) != null)
         {
             effectsOfStatusEffect.put(stat, validateDouble(effect));
         }
     }
     
-    // removes stat name resulting in removal of effect simultaneously 
-    // Note: removal of key (in this case stat name) results in removal of value 
+    // removes stat name (key) resulting in removal of stat's effect (value)
     public void removeStat(String stat, Double effect)
     {
-        if(StaticMethods.getStatusNameAsValidEnum(stat) != null)
+        if(StaticMethods.getStatString(stat) != null)
         {
             effectsOfStatusEffect.put(stat, effect);
         }

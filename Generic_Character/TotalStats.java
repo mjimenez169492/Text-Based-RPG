@@ -1,19 +1,55 @@
 package Generic_Character;
 
 /*
-    TotalAttributesAndResistances concerns "getTotal_" methods where "_" is 
-    a stand-in for almost every attribute/resistence tied to a character. A
-    "getTotal_" calculates the total value of a stat (where stat is defined
-    as a part of a collective known as stats (which itself is comprised of 
-    attributes/resistances)) with equipped outfits, their cores, stress and
-    status effects involving the particular stat taken into account. 
+    TotalStats concerns "getTotal_" methods where "_" stands for almost every 
+    attribute/resistence tied to a GenericCharacter object. 
 */
 
-public class TotalAttributesAndResistances extends EquippableOutfits
+public class TotalStats
 {   
+    // holding objects from other classes 
+    private Stress stress;
+    private StatusEffectContainer statusEffectContainer;
+    private EquippableOutfits equippableOutfits;
+    
+    public TotalStats(Stress stress, StatusEffectContainer statusEffectContainer, 
+        EquippableOutfits equippableOutfits)
+    {
+        this.stress = stress;
+        this.statusEffectContainer = statusEffectContainer;
+        this.equippableOutfits = equippableOutfits;
+    }
+    
+    
+    
+    // START: HOLDING OBJECTS SUPPLIED FROM OTHER CLASSES 
+    /*******************************************************************************/
+
+    public Stress getStress()
+    {
+        return stress;
+    }
+    
+    public StatusEffectContainer getStatusEffectContainer()
+    {
+        return statusEffectContainer;
+    }
+    
+    public EquippableOutfits getEquippableOutfits()
+    {
+        return equippableOutfits;
+    }
+    
+    // END: HOLDING OBJECTS SUPPLIED FROM OTHER CLASSES 
+    /*******************************************************************************/
+
+    
+    
     // START: RETURN TOTAL ATTRIBUTES 
     /*******************************************************************************/
 
+    // MAX GAUGES
+    
     public double validateTotalAttribute(double attribute)
     {
         if(attribute < 0) 
@@ -28,63 +64,82 @@ public class TotalAttributesAndResistances extends EquippableOutfits
         return attribute;
     }
 
-    public double getTotalAttribute(double attributeValueWithOutfits, String attributeName)
+    public double getTotalMaxGauge(double attributeWithOutfits, String attributeName)
     {
         // validation must be performed before stress penalty can be applied to ensure 
         // that a value meant to be retrieved has stress penalty applied to it correctly
-        return getStressPenalty(validateTotalAttribute(attributeValueWithOutfits + 
-            (attributeValueWithOutfits * getEffectOfStatusEffects(attributeName))));	
+        double attribute = validateTotalAttribute(attributeWithOutfits + (attributeWithOutfits 
+            * getStatusEffectContainer().sumOfEffects(attributeName)));
+        
+        return attribute;	
     }
     
     public double getTotalMaxHealth()
     {
-        return getTotalAttribute(getMaxHealthWithOutfits(), "Max Health");
+        return getTotalMaxGauge(getEquippableOutfits().getMaxHealthWithOutfits(), "Max Health");
     }
     
     public double getTotalMaxStamina()
     {
-        return getTotalAttribute(getMaxStaminaWithOutfits(), "Max Stamina");
+        return getTotalMaxGauge(getEquippableOutfits().getMaxStaminaWithOutfits(), "Max Stamina");
     }
     
     public double getTotalMaxNano()
     {
-        return getTotalAttribute(getMaxNanoWithOutfits(), "Max Nano");
+        return getTotalMaxGauge(getEquippableOutfits().getMaxNanoWithOutfits(), "Max Nano");
+    }
+    
+    // MAX GAUGES
+    
+    
+    // ATTRIBUTES
+    
+    public double getTotalAttribute(double attributeWithOutfits, String attributeName)
+    {
+        // validation must be performed before stress penalty can be applied to ensure 
+        // that a value meant to be retrieved has stress penalty applied to it correctly
+        double attribute = validateTotalAttribute(attributeWithOutfits + (attributeWithOutfits 
+            * getStatusEffectContainer().sumOfEffects(attributeName)));
+        
+        return getStress().getStressPenalty(attribute);	
     }
     
     public double getTotalAttack()
     {
-        return getTotalAttribute(getAttackWithOutfits(), "Attack");
+        return getTotalAttribute(getEquippableOutfits().getAttackWithOutfits(), "Attack");
     }
 
     public double getTotalDefense()
     {
-        return getTotalAttribute(getDefenseWithOutfits(), "Defense");
+        return getTotalAttribute(getEquippableOutfits().getDefenseWithOutfits(), "Defense");
     }
 
     public double getTotalDexterity()
     {
-        return getTotalAttribute(getDexterityWithOutfits(), "Dexterity");
+        return getTotalAttribute(getEquippableOutfits().getDexterityWithOutfits(), "Dexterity");
     }
 
     public double getTotalCritical()
     {
-        return getTotalAttribute(getCriticalWithOutfits(), "Critical");
+        return getTotalAttribute(getEquippableOutfits().getCriticalWithOutfits(), "Critical");
     }
 
     public double getTotalAccuracy()
     {
-        return getTotalAttribute(getAccuracyWithOutfits(), "Accuracy");
+        return getTotalAttribute(getEquippableOutfits().getAccuracyWithOutfits(), "Accuracy");
     }
 
     public double getTotalNanoAttack()
     {
-        return getTotalAttribute(getNanoAttackWithOutfits(), "Nano Attack");
+        return getTotalAttribute(getEquippableOutfits().getNanoAttackWithOutfits(), "Nano Attack");
     }
 
     public double getTotalNanoDefense()
     {
-        return getTotalAttribute(getNanoDefenseWithOutfits(), "Nano Defense");
+        return getTotalAttribute(getEquippableOutfits().getNanoDefenseWithOutfits(), "Nano Defense");
     }
+    
+    // ATTRIBUTES
     
     public Object[] getAllTotalAttributesWithNames()
     {
@@ -103,12 +158,27 @@ public class TotalAttributesAndResistances extends EquippableOutfits
     // START: RETURN TOTAL RESISTANCES
     /*******************************************************************************/
 
-    public double getTotalResistance(double resistanceValueWithOutfits, String resistanceName)
+    public double validateResistance(double resistance)
+    {
+        if(resistance < -100) 
+        {
+            resistance = -100; 
+        }
+        else if(resistance > 100)
+        {
+            resistance = 100;
+        }
+
+        return resistance;
+    }
+    
+    public double getTotalResistance(double resistanceWithOutfits, String resistanceName)
     {
         // validation must be performed before stress penalty can be applied to ensure 
         // that a value meant to be retrieved has stress penalty applied to it correctly
-        return getStressPenalty(validateResistance(resistanceValueWithOutfits + 
-            getEffectOfStatusEffects(resistanceName)));	
+        double resistance = validateResistance(resistanceWithOutfits + getStatusEffectContainer().sumOfEffects(resistanceName));
+        
+        return getStress().getStressPenalty(resistance);	
     }
 
     // START: ENCHANTMENT RELATED
@@ -116,42 +186,42 @@ public class TotalAttributesAndResistances extends EquippableOutfits
 
     public double getTotalFireResistance()
     {
-        return getTotalResistance(getFireResistanceWithOutfits(), "Fire");
+        return getTotalResistance(getEquippableOutfits().getFireResistanceWithOutfits(), "Fire");
     }
 
     public double getTotalWaterResistance()
     {
-        return getTotalResistance(getWaterResistanceWithOutfits(), "Water");	
+        return getTotalResistance(getEquippableOutfits().getWaterResistanceWithOutfits(), "Water");	
     }
 
     public double getTotalIceResistance()
     {
-        return getTotalResistance(getIceResistanceWithOutfits(), "Ice");	
+        return getTotalResistance(getEquippableOutfits().getIceResistanceWithOutfits(), "Ice");	
     }
 
     public double getTotalElectricityResistance()
     {
-        return getTotalResistance(getElectricityResistanceWithOutfits(), "Electricity");	
+        return getTotalResistance(getEquippableOutfits().getElectricityResistanceWithOutfits(), "Electricity");	
     }
 
     public double getTotalPoisonResistance()
     {
-        return getTotalResistance(getPoisonResistanceWithOutfits(), "Poison");	
+        return getTotalResistance(getEquippableOutfits().getPoisonResistanceWithOutfits(), "Poison");	
     }
 
     public double getTotalSonicResistance()
     {
-        return getTotalResistance(getSonicResistanceWithOutfits(), "Sonic");	
+        return getTotalResistance(getEquippableOutfits().getSonicResistanceWithOutfits(), "Sonic");	
     }
 
     public double getTotalPlasmaResistance()
     {
-        return getTotalResistance(getPlasmaResistanceWithOutfits(), "Plasma");	
+        return getTotalResistance(getEquippableOutfits().getPlasmaResistanceWithOutfits(), "Plasma");	
     }
 
     public double getTotalWindResistance()
     {
-        return getTotalResistance(getWindResistanceWithOutfits(), "Wind");	
+        return getTotalResistance(getEquippableOutfits().getWindResistanceWithOutfits(), "Wind");	
     }
     
     public Object[] getAllTotalEnchantmentResistancesWithNames()
@@ -174,47 +244,47 @@ public class TotalAttributesAndResistances extends EquippableOutfits
 
     public double getTotalDryResistance()
     {
-        return getTotalResistance(getDryResistanceWithOutfits(), "Dry");	
+        return getTotalResistance(getEquippableOutfits().getDryResistanceWithOutfits(), "Dry");	
     }
 
     public double getTotalWetResistance()
     {
-        return getTotalResistance(getWetResistanceWithOutfits(), "Wet");	
+        return getTotalResistance(getEquippableOutfits().getWetResistanceWithOutfits(), "Wet");	
     }
 
     public double getTotalColdResistance()
     {
-        return getTotalResistance(getColdResistanceWithOutfits(), "Cold");	
+        return getTotalResistance(getEquippableOutfits().getColdResistanceWithOutfits(), "Cold");	
     }
 
     public double getTotalConductiveResistance()
     {
-        return getTotalResistance(getConductiveResistanceWithOutfits(), "Conductive");	
+        return getTotalResistance(getEquippableOutfits().getConductiveResistanceWithOutfits(), "Conductive");	
     }
 
     public double getTotalSicknessResistance()
     {
-        return getTotalResistance(getSicknessResistanceWithOutfits(), "Sickness");	
+        return getTotalResistance(getEquippableOutfits().getSicknessResistanceWithOutfits(), "Sickness");	
     }
 
     public double getTotalHypersensitiveResistance()
     {
-        return getTotalResistance(getHypersensitiveResistanceWithOutfits(), "Hypersensitive");	
+        return getTotalResistance(getEquippableOutfits().getHypersensitiveResistanceWithOutfits(), "Hypersensitive");	
     }
 
     public double getTotalCoatedResistance()
     {
-        return getTotalResistance(getCoatedResistanceWithOutfits(), "Coated");	
+        return getTotalResistance(getEquippableOutfits().getCoatedResistanceWithOutfits(), "Coated");	
     }
 
     public double getTotalLightweightResistance()
     {
-        return getTotalResistance(getLightweightResistanceWithOutfits(), "Lightweight");	
+        return getTotalResistance(getEquippableOutfits().getLightweightResistanceWithOutfits(), "Lightweight");	
     }
 
     public double getTotalIrradiatedResistance()
     {
-        return getTotalResistance(getIrradiatedResistanceWithOutfits(), "Irradiated");	
+        return getTotalResistance(getEquippableOutfits().getIrradiatedResistanceWithOutfits(), "Irradiated");	
     }
 
     public Object[] getAllTotalUniqueStatusEffectResistancesWithNames()
@@ -234,17 +304,17 @@ public class TotalAttributesAndResistances extends EquippableOutfits
 
     public double getTotalAblazeResistance()
     {
-        return getTotalResistance(getAblazeResistanceWithOutfits(), "Ablaze");	
+        return getTotalResistance(getEquippableOutfits().getAblazeResistanceWithOutfits(), "Ablaze");	
     }
 
     public double getTotalBleedResistance()
     {
-        return getTotalResistance(getBleedResistanceWithOutfits(), "Bleed");	
+        return getTotalResistance(getEquippableOutfits().getBleedResistanceWithOutfits(), "Bleed");	
     }
 
     public double getTotalToxicResistance()
     {
-        return getTotalResistance(getToxicResistanceWithOutfits(), "Toxic");	
+        return getTotalResistance(getEquippableOutfits().getToxicResistanceWithOutfits(), "Toxic");	
     }
     
     public Object[] getAllTotalCurrentHealthStatusEffectResistancesWithNames()
@@ -261,52 +331,52 @@ public class TotalAttributesAndResistances extends EquippableOutfits
 
     public double getTotalAttackDownResistance()
     {
-        return getTotalResistance(getAttackDownResistanceWithOutfits(), "Attack Down");	
+        return getTotalResistance(getEquippableOutfits().getAttackDownResistanceWithOutfits(), "Attack Down");	
     }
 
     public double getTotalDefenseDownResistance()
     {
-        return getTotalResistance(getDefenseDownResistanceWithOutfits(), "Defense Down");	
+        return getTotalResistance(getEquippableOutfits().getDefenseDownResistanceWithOutfits(), "Defense Down");	
     }
 
     public double getTotalShutdownResistance()
     {
-        return getTotalResistance(getShutdownResistanceWithOutfits(), "Shutdown");	
+        return getTotalResistance(getEquippableOutfits().getShutdownResistanceWithOutfits(), "Shutdown");	
     }
 
     public double getTotalDexterityDownResistance()
     {
-        return getTotalResistance(getDexterityDownResistanceWithOutfits(), "Dexterity Down");	
+        return getTotalResistance(getEquippableOutfits().getDexterityDownResistanceWithOutfits(), "Dexterity Down");	
     }
 
     public double getTotalCriticalDownResistance()
     {
-        return getTotalResistance(getCriticalDownResistanceWithOutfits(), "Critical Down");	
+        return getTotalResistance(getEquippableOutfits().getCriticalDownResistanceWithOutfits(), "Critical Down");	
     }
 
     public double getTotalAccuracyDownResistance()
     {
-        return getTotalResistance(getAccuracyDownResistanceWithOutfits(), "Accuracy Down");	
+        return getTotalResistance(getEquippableOutfits().getAccuracyDownResistanceWithOutfits(), "Accuracy Down");	
     }
 
     public double getTotalBlindResistance()
     {
-        return getTotalResistance(getBlindResistanceWithOutfits(), "Blind");	
+        return getTotalResistance(getEquippableOutfits().getBlindResistanceWithOutfits(), "Blind");	
     }
 
     public double getTotalDarknessResistance()
     {
-        return getTotalResistance(getDarknessResistanceWithOutfits(), "Darkness");	
+        return getTotalResistance(getEquippableOutfits().getDarknessResistanceWithOutfits(), "Darkness");	
     }
 
     public double getTotalNanoAttackDownResistance()
     {
-        return getTotalResistance(getNanoAttackDownResistanceWithOutfits(), "Nano Attack Down");	
+        return getTotalResistance(getEquippableOutfits().getNanoAttackDownResistanceWithOutfits(), "Nano Attack Down");	
     }
 
     public double getTotalNanoDefenseDownResistance()
     {
-        return getTotalResistance(getNanoDefenseDownResistanceWithOutfits(), "Nano Defense Dow");	
+        return getTotalResistance(getEquippableOutfits().getNanoDefenseDownResistanceWithOutfits(), "Nano Defense Dow");	
     }
     
     public Object[] getAllTotalAttributeStatusEffectResistancesWithNames()
@@ -326,17 +396,17 @@ public class TotalAttributesAndResistances extends EquippableOutfits
 
     public double getTotalConfusedResistance()
     {
-        return getTotalResistance(getConfusedResistanceWithOutfits(), "Confused");	
+        return getTotalResistance(getEquippableOutfits().getConfusedResistanceWithOutfits(), "Confused");	
     }
 
     public double getTotalEnamoredResistance()
     {
-        return getTotalResistance(getEnamoredResistanceWithOutfits(), "Enamored");	
+        return getTotalResistance(getEquippableOutfits().getEnamoredResistanceWithOutfits(), "Enamored");	
     }
 
     public double getTotalBerserkResistance()
     {
-        return getTotalResistance(getBerserkResistanceWithOutfits(), "Berserk");	
+        return getTotalResistance(getEquippableOutfits().getBerserkResistanceWithOutfits(), "Berserk");	
     }
     
     public Object[] getAllTotalBehaviorStatusEffectResistancesWithNames()
@@ -353,52 +423,52 @@ public class TotalAttributesAndResistances extends EquippableOutfits
 
     public double getTotalFlinchedResistance()
     {
-        return getTotalResistance(getFlinchedResistanceWithOutfits(), "Flinched");	
+        return getTotalResistance(getEquippableOutfits().getFlinchedResistanceWithOutfits(), "Flinched");	
     }
 
     public double getTotalStunnedResistance()
     {
-        return getTotalResistance(getStunnedResistanceWithOutfits(), "Stunned");	
+        return getTotalResistance(getEquippableOutfits().getStunnedResistanceWithOutfits(), "Stunned");	
     }
 
     public double getTotalScaredResistance()
     {
-        return getTotalResistance(getScaredResistanceWithOutfits(), "Scared");	
+        return getTotalResistance(getEquippableOutfits().getScaredResistanceWithOutfits(), "Scared");	
     }
 
     public double getTotalBoundResistance()
     {
-        return getTotalResistance(getBoundResistanceWithOutfits(), "Bound");	
+        return getTotalResistance(getEquippableOutfits().getBoundResistanceWithOutfits(), "Bound");	
     }
 
     public double getTotalSleepResistance()
     {
-        return getTotalResistance(getSleepResistanceWithOutfits(), "Sleep");	
+        return getTotalResistance(getEquippableOutfits().getSleepResistanceWithOutfits(), "Sleep");	
     }
 
     public double getTotalTrancedResistance()
     {
-        return getTotalResistance(getTrancedResistanceWithOutfits(), "Tranced");	
+        return getTotalResistance(getEquippableOutfits().getTrancedResistanceWithOutfits(), "Tranced");	
     }
 
     public double getTotalShockedResistance()
     {
-        return getTotalResistance(getShockedResistanceWithOutfits(), "Shocked");	
+        return getTotalResistance(getEquippableOutfits().getShockedResistanceWithOutfits(), "Shocked");	
     }
 
     public double getTotalSlowedResistance()
     {
-        return getTotalResistance(getSlowedResistanceWithOutfits(), "Slowed");	
+        return getTotalResistance(getEquippableOutfits().getSlowedResistanceWithOutfits(), "Slowed");	
     }
 
     public double getTotalStoppedResistance()
     {
-        return getTotalResistance(getStoppedResistanceWithOutfits(), "Stopped");	
+        return getTotalResistance(getEquippableOutfits().getStoppedResistanceWithOutfits(), "Stopped");	
     }
 
     public double getTotalNullifyPositiveEffectsResistance()
     {
-        return getTotalResistance(getNullifyPositiveEffectsResistanceWithOutfits(), "Nullify Positive Effects");	
+        return getTotalResistance(getEquippableOutfits().getNullifyPositiveEffectsResistanceWithOutfits(), "Nullify Positive Effects");	
     }
     
     public Object[] getAllTotalTurnBehaviorStatusEffectResistancesWithNames()

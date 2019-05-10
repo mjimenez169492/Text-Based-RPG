@@ -12,169 +12,150 @@ package Generic_Object;
     accessories may come at a heavy price to the wearer. 
 */
 
-import Generic_Object.OutfitMethods;
-import Universally_Used_Methods.StaticMethods;
+import Commonly_Used_Methods.StaticMethods;
 import Move_Creation.StatusEffect;
 import java.util.ArrayList;  
 import java.util.HashMap;
 
-public class Accessories extends OutfitMethods
+public class Accessory extends OutfitMethods
 {
-    // accessory effect on attributes of the wearer 
-    private double maxHealth, maxStamina, maxNano, attack, defense, dexterity, 
-        critical, accuracy, nanoAttack, nanoDefense;
-
     // value denoting maximum number of status effects that accessory can negate 
     int maxNumberOfStatusEffectsThatCanBeNegated;
     
     // ArrayList contains names of status effect objects accessory can negate
     private final ArrayList<String> statusEffectsNegated = new ArrayList<String>();
     
-    // denotes regeneration/degeneration rates for following gauges on per turn basis 
-    private double currentHealthRegeneration, currentStaminaRegeneration, 
-        currentNanoRegeneration; 
-    
-    // level-up related variables which are directly multiplied with values and rounded down 
-    private double expMultiplier, expGrowthRateBonus, skillPointBonus;
+    // skillsAndValues HashMap creation and population through static means 
+    private static final HashMap<Skills, Integer> skillsAndValues =
+        new HashMap<Skills, Integer>();
     
     // subclass constructor with method(s) invoked upon object creation 
-    public Accessories()
+    public Accessory()
     {
         // need to set subclass name to enable slot/core equip feature for object 
         setSubclassName("Accessories");
+        
+        // set up hashmap for easy value retrieval 
+        initializeSkillsAndValuesHashMap();
     }
 
 
 
-    // START: ACCESSORY ATTRIBUTES
+    // START: ARMOR CATEGORY, SUPERTYPE, AND SUBTYPE
     /*******************************************************************************/
 
-    public double validateAttribute(double attribute)
-    {
-        if(attribute < -75)
+    public enum AccessoryCategory
+    { 
+        APPAREL("Apparel"), JEWELERY("Jewelery"), ATTACHMENTS("Attachments"), MISCELLEANOUS
+        ("Miscelleanous");
+        
+        private String accessoryCategory;
+        
+        AccessoryCategory(String accessoryCategory)
         {
-            attribute = -75;
+            this.accessoryCategory = accessoryCategory;
         }
-        else if(attribute > 75)
+        
+        public String getEnumAsString()
         {
-            attribute = 75;
+            return accessoryCategory;
         }
-
-        return attribute;
-    }
-
-    public void setMaxHealth(double maxHealth) 
-    {
-        this.maxHealth = validateAttribute(maxHealth); 
-    } 
-
-    public double getMaxHealth()
-    {
-        return maxHealth; 
-    } 
-
-    public void setMaxStamina(double maxStamina)
-    {
-        this.maxStamina = validateAttribute(maxStamina);
-    }
-
-    public double getMaxStamina()
-    {
-        return maxStamina; 
     } 
     
-    public void setMaxNano(double maxNano)
+    public void setAccessoryCategory(String argument)
     {
-        this.maxNano = validateAttribute(maxNano);
-    }
-
-    public double getMaxNano()
-    {
-        return maxNano; 
+        super.setCategory(AccessoryCategory.valueOf(StaticMethods.stringToEnum(argument)).
+            getEnumAsString());
     }
     
-    public void setAttack(double attack)
+    public AccessoryCategory getAccessoryCategoryEnum()
     {
-        this.attack = validateAttribute(attack);
+        return AccessoryCategory.valueOf(StaticMethods.stringToEnum(super.getCategory()));
     }
-
-    public double getAttack()
+    
+    public enum AccessorySuperTypes 
     {
-        return attack; 
+        COMBAT_ORIENTED("Combat Oriented"), SKILLS_ORIENTED("Skills Oriented");
+        
+        private String accessorySuperType;
+        
+        AccessorySuperTypes(String accessorySuperType)
+        {
+            this.accessorySuperType = accessorySuperType;
+        }
+        
+        public String getEnumAsString()
+        {
+            return accessorySuperType;
+        }
     } 
-
-    public void setDefense(double defense)
+    
+    public void setAccessorySuperType(String argument)
     {
-        this.defense = validateAttribute(defense);
+        super.setSuperType(AccessorySuperTypes.valueOf(StaticMethods.stringToEnum(argument)).
+            getEnumAsString());
     }
-
-    public double getDefense()
+    
+    public AccessorySuperTypes getAccessorySuperTypeEnum()
     {
-        return defense; 
-    } 
-
-    public void setDexterity(double dexterity)
-    {
-        this.dexterity = validateAttribute(dexterity);
+        return AccessorySuperTypes.valueOf(StaticMethods.stringToEnum(super.getSuperType()));
     }
-
-    public double getDexterity()
+    
+    public enum AccessorySubTypes 
     {
-        return dexterity; 
+        REGENERATORS("Regenerators"), STAT_BOOSTERS("Stat Boosters"), SKILL_BOOSTERS
+        ("Skill Boosters"), STATUS_NEGATION("Status Negation"), UNIQUE_EFFECTS("Unique effects");
+        
+        private String accessorySubType;
+        
+        AccessorySubTypes(String accessorySubType)
+        {
+            this.accessorySubType = accessorySubType;
+        }
+        
+        public String getEnumAsString()
+        {
+            return accessorySubType;
+        }
     } 
-
-    public void setCritical(double critical)
+    
+    public void setAccessorySubType(String argument)
     {
-        this.critical = validateAttribute(critical);
+        super.setSubType(AccessorySubTypes.valueOf(StaticMethods.stringToEnum(argument)).
+            getEnumAsString());
     }
-
-    public double getCritical()
+    
+    public AccessorySubTypes getAccessorySubTypeEnum()
     {
-        return critical; 
-    } 
-
-    public void setAccuracy(double accuracy)
-    {
-        this.accuracy = validateAttribute(accuracy);
+        return AccessorySubTypes.valueOf(StaticMethods.stringToEnum(super.getSubType()));
     }
-
-    public double getAccuracy()
-    {
-        return accuracy; 
-    } 
-
-    public void setNanoAttack(double nanoAttack)
-    {
-        this.nanoAttack = validateAttribute(nanoAttack);
-    }
-
-    public double getNanoAttack()
-    {
-        return nanoAttack; 
-    } 
-
-    public void setNanoDefense(double nanoDefense)
-    {
-        this.nanoDefense = validateAttribute(nanoDefense);
-    }
-
-    public double getNanoDefense()
-    {
-        return nanoDefense; 
-    } 
-
-    // END: ACCESSORY ATTRIBUTES
+    
+    // END: ARMOR CATEGORY, SUPERTYPE, AND SUBTYPE
     /*******************************************************************************/
 
     
-
+    
     // START: STATUS EFFECTS ACCESSORY NEGATES 
     /*******************************************************************************/
+    
+    public int checkInteger(int argument)
+    {
+        if(argument < 0)
+        {
+            argument = 0;
+        }
+        else if(argument > 6)
+        {
+            argument = 6;
+        }
+        
+        return argument;
+    }
     
     public void setMaxNumberOfStatusEffectsThatCanBeNegated(int 
         maxNumberOfStatusEffectsThatCanBeNegated)
     {
-        this.maxNumberOfStatusEffectsThatCanBeNegated = lowerUpperBounds(0, 7, 
+        this.maxNumberOfStatusEffectsThatCanBeNegated = checkInteger(
             maxNumberOfStatusEffectsThatCanBeNegated);
     }
 
@@ -183,11 +164,11 @@ public class Accessories extends OutfitMethods
         return maxNumberOfStatusEffectsThatCanBeNegated;
     }
     
-    public void addStatusEffectNegated(String statusName)
+    public void addStatusEffectNegatedByName(String statusName)
     {
         if(statusName != null && statusEffectsNegated.size() != maxNumberOfStatusEffectsThatCanBeNegated)
         {
-            if(StaticMethods.getStatAsValidString(statusName) != null)
+            if(StaticMethods.getStatString(statusName) != null)
             {
                 statusEffectsNegated.add(statusName);
             }
@@ -206,175 +187,21 @@ public class Accessories extends OutfitMethods
     
     public boolean statusEffectNegated(StatusEffect status)
     {
-        boolean isNegated = false;
+        boolean result = false;
         
         for(String element : statusEffectsNegated)
         {
-            if(StaticMethods.getStatAsValidEnum(element) == StaticMethods.
-                getStatAsValidEnum(status.getName()))
+            if(StaticMethods.getStatusEffectEnum(element) == StaticMethods.
+                getStatusEffectEnum(status.getName()))
             {
-                isNegated = true;
+                result = true;
             }
         }
         
-        return isNegated;        
+        return result;        
     }
     
     // END: STATUS EFFECTS ACCESSORY NEGATES 
-    /*******************************************************************************/
-
-    /*
-        Note on "getTotal" methods below: 
-            methods get total value for a object (like attack, nano, ect.) by adding 
-            object's power and core podoubles together only if the cores are the same 
-            type as the String supplied as argument (if "Attack" is supplied then 
-            add the current core podoubles of the cores with core type "Attack") 
-    */
-
-    // START: TOTAL ACCESSORY ATTRIBUTES WITH CORES SUPPLIED
-    /*******************************************************************************/
-
-    public double getTotalMaxHealth()
-    {
-        return getTotalOutfitValue(getMaxHealth(), "Max Health"); 
-    }
-    
-    public double getTotalMaxStamina()
-    {
-        return getTotalOutfitValue(getMaxStamina(), "Stamina"); 
-    }
-    
-    public double getTotalMaxNano()
-    {
-        return getTotalOutfitValue(getMaxNano(), "Nano"); 
-    }
-    
-    public double getTotalAttack()
-    {
-        return getTotalOutfitValue(getAttack(), "Attack"); 
-    }
-
-    public double getTotalDefense()
-    {
-        return getTotalOutfitValue(getDefense(), "Defense"); 
-    }
-    
-    public double getTotalDexterity()
-    {
-        return getTotalOutfitValue(getDexterity(), "Dexterity"); 
-    }
-
-    public double getTotalCritical()
-    {
-        return getTotalOutfitValue(getCritical(), "Critical"); 
-    }
-
-    public double getTotalAccuracy()
-    {
-        return getTotalOutfitValue(getAccuracy(), "Accuracy"); 
-    }
-
-    public double getTotalNanoAttack()
-    {
-        return getTotalOutfitValue(getNanoAttack(), "Nano Attack"); 
-    }
-
-    public double getTotalNanoDefense()
-    {
-        return getTotalOutfitValue(getNanoDefense(), "Nano Defense"); 
-    }
-
-    // END: TOTAL ACCESSORY ATTRIBUTES WITH CORES SUPPLIED
-    /*******************************************************************************/
-    
-    
-    
-    // START: ACCESSORY REGENERATION (CURRENT GAUGE = CURRENT GAUGE + (MAX GAUGE * REGENERATION))
-    /*******************************************************************************/
-    
-    public double accessoryGaugeEffect(double effect)
-    {
-        if(effect < -1.0)
-        {
-            effect = 1.0;
-        }
-        else if (effect > 1.0)
-        {
-            effect = 1.0;
-        }
-        
-        return effect;
-    }
-    
-    public void setCurrentHealthRegeneration(double currentHealthRegeneration)
-    {
-        this.currentHealthRegeneration = accessoryGaugeEffect(currentHealthRegeneration);
-    }
-    
-    public double getCurrentHealthRegeneration()
-    {
-        return currentHealthRegeneration;
-    }
-    
-    public void setCurrentStaminaRegeneration(double currentStaminaRegeneration)
-    {
-        this.currentStaminaRegeneration = accessoryGaugeEffect(currentStaminaRegeneration);
-    }
-    
-    public double getCurrentStaminaRegeneration()
-    {
-        return currentStaminaRegeneration;
-    }
-    
-    public void setCurrentNanoRegeneration(double currentNanoRegeneration)
-    {
-        this.currentNanoRegeneration = accessoryGaugeEffect(currentNanoRegeneration);
-    }
-    
-    public double getCurrentNanoRegeneration()
-    {
-        return currentNanoRegeneration;
-    }
-    
-    // END: ACCESSORY REGENERATION (CURRENT GAUGE = CURRENT GAUGE + (MAX GAUGE * REGENERATION))
-    /*******************************************************************************/
-
-    
-    
-    // START: LEVELING RELATED EFFECTS (Ex: exp *= expMultiplier)
-    /*******************************************************************************/
-    
-    public void setExpMultiplier(double expMultiplier)
-    {
-        this.expMultiplier = lowerUpperBounds(0.0, 3.0, expMultiplier);
-    }
-    
-    public double getExpMultiplier()
-    {
-        return expMultiplier;
-    }
-    
-    public void setExpGrowthRateBonus(double expGrowthRateBonus)
-    {
-        this.expGrowthRateBonus = lowerUpperBounds(0.0, 2.5, expGrowthRateBonus);
-    }
-    
-    public double getGrowthExpRateBonus()
-    {
-        return expGrowthRateBonus;
-    }
-    
-    public void setSkillPointBonus(double skillPointBonus)
-    {
-        this.skillPointBonus = lowerUpperBounds(0.0, 1.75, skillPointBonus);
-    }
-    
-    public double getSkillPointBonus()
-    {
-        return skillPointBonus;
-    }
-    
-    // END: LEVELING RELATED EFFECTS 
     /*******************************************************************************/
     
     /* 
@@ -508,159 +335,45 @@ public class Accessories extends OutfitMethods
     // START: OUTSIDE OF COMBAT SKILLS MANAGEMENT USING HASHMAP
     /*******************************************************************************/
     
-    // contains skills that are considered valid 
-    public enum ValidSkills
+    public enum Skills
     {
-        LOCKPICK, LOOT, PILFER, REPAIR, SERVICE, STEAL, CRAFT, HACK, FIREARMS, 
-        MELEE, MEDICINE, NANO_TECH, BARTER, CUNNING, HAGGLE, SPEECH, ATHLETICS, 
-        ANALYZE, CAUTION, SNEAK;
+        LOCKPICK("Lockpick"), LOOT("Loot"), PILFER("Pilfer"), REPAIR("Repair"), 
+        SERVICE("Service"), STEAL("Steal"), CRAFT("Craft"), HACK("Hack"), FIREARMS
+        ("Firearms"), MELEE("Melee"), MEDICINE("Medicine"), NANO_TECH("Nano Tech"), 
+        BARTER("Barter"), CUNNING("Cunning"), HAGGLE("Haggle"), SPEECH("Speech"), 
+        ATHLETICS("Athletics"), ANALYSIS("AnalSIS"), CAUTION("Caution"), SNEAK("Sneak");
+        
+        private String skills;
+        
+        Skills(String skills)
+        {
+            this.skills = skills;
+        }
+        
+        public String getEnumAsString()
+        {
+            return skills;
+        }
     }
     
-    // get String representing ValidSkills enum based on ValidSkills enum passed 
-    public static String getValidSkillAsStringUsingEnum(ValidSkills skills)
+    public String getSkillString(String argument)
     {
-        String result = null; 
-        
-        switch(skills)
-        {
-            case LOCKPICK:
-                result = "Lockpick";
-                    break;
-            case LOOT:
-                result = "Loot";
-                    break;
-            case PILFER:
-                result = "Pilfer";
-                    break;
-            case REPAIR:
-                result = "Repair";
-                    break;
-            case SERVICE:
-                result = "Service";
-                    break;
-            case STEAL:
-                result = "Steal";
-                    break;
-            case CRAFT:
-                result = "Craft";
-                    break;
-            case HACK:
-                result = "Hack";
-                    break;
-            case FIREARMS:
-                result = "Firearms";
-                    break;
-            case MELEE:
-                result = "Melee";
-                    break;
-            case MEDICINE:
-                result = "Medicine";
-                    break;
-            case NANO_TECH:
-                result = "Nano Tech";
-                    break;
-            case BARTER:
-                result = "Barter";
-                    break;
-            case CUNNING:
-                result = "Cunning";
-                    break;
-            case HAGGLE:
-                result = "Haggle";
-                    break;
-            case SPEECH:
-                result = "Speech";
-                    break;   
-            case ATHLETICS:
-                result = "Athletics";
-                    break;
-            case CAUTION:
-                result = "Caution";
-                    break;     
-            case SNEAK:
-                result = "Sneak";
-                    break;
-        }
-        
-        return result; 
+        return Skills.valueOf(StaticMethods.stringToEnum(argument)).getEnumAsString();
     }
     
-    // returns array of enum values for ValidSkills as array of Strings 
-    public static String[] validSkillsAsStrings()
+    public Skills getSkillEnum(String argument)
     {
-        String[] array = new String[StaticMethods.getNumberOfEnumElements(ValidSkills.values())];
-        
-        for(int i = 0; i < ValidSkills.values().length; i++)
-        {
-            array[i] =  getValidSkillAsStringUsingEnum(ValidSkills.values()[i]);
-        }
-
-        return array;
+        return Skills.valueOf(StaticMethods.stringToEnum(argument));
     }
     
-    // returns ValidSkills enum form of String passed so long as String is valid 
-    public ValidSkills getValidSkillEnumUsingString(String argument)
+    public final void initializeSkillsAndValuesHashMap()
     {
-        ValidSkills result = null;
-        
-        if(StaticMethods.isStringValid(validSkillsAsStrings(), argument))
+        for(Skills skill : Skills.values())
         {
-            result = ValidSkills.valueOf(StaticMethods.stringToEnum(argument));
+            skillsAndValues.put(skill, 0);
         }
-        
-        return result;
     }
     
-    // skillsAndValues HashMap creation and population through static means 
-    private static final HashMap<ValidSkills, Integer> skillsAndValues =
-        new HashMap<ValidSkills, Integer>();
-        static 
-        {
-            for (ValidSkills skill : ValidSkills.values()) 
-            {
-                skillsAndValues.put(skill, 0);
-            }
-        }
-    
-    // return HashMap key representing skill name as String based on String passed 
-    public String getSkillAsString(String argument) 
-    {
-        String result = null;
-        
-        for(ValidSkills key : skillsAndValues.keySet())
-        {
-            if(key == getValidSkillEnumUsingString(argument))
-            {
-                result = getValidSkillAsStringUsingEnum(key);
-            }
-        }
-        
-        return result;
-    } 
-    
-    // return HashMap key representing skill name as ValidSkills enum based on String passed 
-    public ValidSkills getSkillAsEnum(String argument) 
-    {
-        ValidSkills result = null;
-        
-        for(ValidSkills key : skillsAndValues.keySet())
-        {
-            if(key == getValidSkillEnumUsingString(argument))
-            {
-                result = key;
-            }
-        }
-        
-        return result;
-    } 
-    
-    // return value associated with skill based on String passed 
-    public int getSkillValue(String argument) 
-    {
-        return skillsAndValues.get(getValidSkillEnumUsingString(argument));
-    }
-    
-    // ensure that skill provided by accessory to appropriate skill 
     public int validateSkillValues(int argument)
     {
         if(argument < 0)
@@ -675,20 +388,19 @@ public class Accessories extends OutfitMethods
         return argument;
     }
     
-    // update value for desired skill of HashMap skillsAndValues
-    public void updateValueForDesiredKey(String argument, int value)
+    public void alterValueForKey(String key, Integer value)
     {
-        if(getValidSkillEnumUsingString(argument) != null)
-        {
-            skillsAndValues.put(getValidSkillEnumUsingString(argument),
-                (Integer)validateSkillValues(value));
-        }
+        skillsAndValues.put(getSkillEnum(key), validateSkillValues(value));
     }
     
-    // return HashMap containing skills and skill values 
-    public HashMap<ValidSkills, Integer> getAccessorySkillsHashMap()
+    public HashMap<Skills, Integer> getHashMap()
     {
         return skillsAndValues;
+    }
+    
+    public int getSkillValueForKey(String argument)
+    {
+        return (int)skillsAndValues.get(getSkillEnum(argument));
     }
     
     // END: OUTSIDE OF COMBAT SKILLS MANAGEMENT USING HASHMAP

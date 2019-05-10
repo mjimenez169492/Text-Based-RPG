@@ -11,14 +11,12 @@ package Move_Creation;
 
 import Generic_Character.GenericCharacter;
 import Player_Entity.Party;
-import java.util.Scanner;
-import Move_Creation.Moves;
-import Move_Creation.StatusEffect;
 
 import java.security.SecureRandom;
 import java.util.PriorityQueue;	
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Scanner;
 
 public class MoveCalculations 
 {
@@ -82,22 +80,22 @@ public class MoveCalculations
     
     public double staminaOutput(GenericCharacter user, GenericCharacter target)
     {
-        double userOutput = outputCalculator((user.getTotalAttack() * 1.04), 
-            (user.getTotalDexterity() * 1.06), (user.getLevel() * 1.25));
+        double userOutput = outputCalculator((user.getTotalStats().getTotalAttack() * 1.04), 
+            (user.getTotalStats().getTotalDexterity() * 1.06), (user.getGeneralFeatures().getLevel() * 1.25));
         
-        double targetDefense = outputCalculator((target.getTotalDefense() * 0.98), 
-            (target.getTotalDexterity() * 0.96), (target.getLevel() * 1.20));
+        double targetDefense = outputCalculator((target.getTotalStats().getTotalDefense() * 0.98), 
+            (target.getTotalStats().getTotalDexterity() * 0.96), (target.getGeneralFeatures().getLevel() * 1.20));
 
         return trueOutputValue(userOutput, targetDefense);
     }
     
     public double nanoOutput(GenericCharacter user, GenericCharacter target)
     {
-        double userOutput = outputCalculator((user.getTotalNanoAttack() * 1.12), 
-            (user.getTotalDexterity() * 1.08), (user.getLevel() * 1.40));
+        double userOutput = outputCalculator((user.getTotalStats().getTotalNanoAttack() * 1.12), 
+            (user.getTotalStats().getTotalDexterity() * 1.08), (user.getGeneralFeatures().getLevel() * 1.40));
         
-        double targetDefense = outputCalculator((target.getTotalNanoDefense() * 0.94), 
-            (target.getTotalDexterity() * 0.98), (target.getLevel() * 1.25));
+        double targetDefense = outputCalculator((target.getTotalStats().getTotalNanoDefense() * 0.94), 
+            (target.getTotalStats().getTotalDexterity() * 0.98), (target.getGeneralFeatures().getLevel() * 1.25));
 
         return trueOutputValue(userOutput, targetDefense);
     }
@@ -116,9 +114,9 @@ public class MoveCalculations
     {
         double output = staminaOutput(user, target);
         
-        if(user.getWeapon() != null)
+        if(user.getEquippableOutfits().getWeapon() != null)
         {
-            switch(user.getWeapon().getSuperTypeEnum())
+            switch(user.getEquippableOutfits().getWeapon().getWeaponSuperTypeEnum())
             {
                 case CLOSE_QUARTERS_COMBAT:
                     output = (output * 0.81) + 2;
@@ -134,7 +132,7 @@ public class MoveCalculations
                         break; 
                 case GREAT_SWORD:
                     output = (output * 1.13) + 7;
-                        break
+                        break;
                 case SPEAR:
                     output = (output * 1.07) + 6;
                         break;
@@ -168,9 +166,9 @@ public class MoveCalculations
     {
         double output = nanoOutput(user, target);
         
-        if(user.getWeapon() != null)
+        if(user.getEquippableOutfits().getWeapon() != null)
         {
-            switch(user.getWeapon().getSuperTypeEnum())
+            switch(user.getEquippableOutfits().getWeapon().getWeaponSuperTypeEnum())
             {
                 case CLOSE_QUARTERS_COMBAT:
                     output = (output * 1.07) + 6;
@@ -186,7 +184,7 @@ public class MoveCalculations
                         break; 
                 case GREAT_SWORD:
                     output = (output * 0.75) + 1;
-                        break
+                        break;
                 case SPEAR:
                     output = (output * 0.89) + 2;
                         break;
@@ -250,11 +248,11 @@ public class MoveCalculations
     
     public double staminaAccuracy(GenericCharacter user, GenericCharacter target)
     {
-        double userAccuracy = accuracyEvasionCalculator((user.getTotalAttack() 
-            * 1.04), (user.getTotalAccuracy() * 1.08), user.getLevel());
+        double userAccuracy = accuracyEvasionCalculator((user.getTotalStats().getTotalAttack() 
+            * 1.04), (user.getTotalStats().getTotalAccuracy() * 1.08), user.getGeneralFeatures().getLevel());
                 
-        double targetEvasion = accuracyEvasionCalculator(target.getTotalDefense(), 
-            target.getTotalDexterity(), target.getLevel());
+        double targetEvasion = accuracyEvasionCalculator(target.getTotalStats().getTotalDefense(), 
+            target.getTotalStats().getTotalDexterity(), target.getGeneralFeatures().getLevel());
 
         return trueAccuracyValue(userAccuracy, targetEvasion);
     }
@@ -262,11 +260,11 @@ public class MoveCalculations
     // Note: for status moves as well 
     public double nanoAccuracy(GenericCharacter user, GenericCharacter target)
     {
-        double userAccuracy = accuracyEvasionCalculator((user.getTotalNanoAttack()
-            * 1.12), (user.getTotalAccuracy() * 1.06), user.getLevel());
+        double userAccuracy = accuracyEvasionCalculator((user.getTotalStats().getTotalNanoAttack()
+            * 1.12), (user.getTotalStats().getTotalAccuracy() * 1.06), user.getGeneralFeatures().getLevel());
                 
-        double targetEvasion = accuracyEvasionCalculator((target.getTotalNanoDefense()
-            * 0.96), (target.getTotalDexterity() * 0.94), target.getLevel());
+        double targetEvasion = accuracyEvasionCalculator((target.getTotalStats().getTotalNanoDefense()
+            * 0.96), (target.getTotalStats().getTotalDexterity() * 0.94), target.getGeneralFeatures().getLevel());
         
         return trueAccuracyValue(userAccuracy, targetEvasion);
     }
@@ -286,9 +284,9 @@ public class MoveCalculations
     {
         double accuracy = staminaAccuracy(user, target);
         
-        if(user.getWeapon() != null)
+        if(user.getEquippableOutfits().getWeapon() != null)
         {
-            switch(user.getWeapon().getSuperTypeEnum())
+            switch(user.getEquippableOutfits().getWeapon().getWeaponSuperTypeEnum())
             {
                 case CLOSE_QUARTERS_COMBAT:
                     accuracy *= 1.03;
@@ -303,7 +301,7 @@ public class MoveCalculations
                         break; 
                 case GREAT_SWORD:
                     accuracy *= 0.90;
-                        break
+                        break;
                 case SPEAR:
                     accuracy *= 0.96;
                         break;
@@ -338,9 +336,9 @@ public class MoveCalculations
     {
         double accuracy = staminaAccuracy(user, target);
         
-        if(user.getWeapon() != null)
+        if(user.getEquippableOutfits().getWeapon() != null)
         {
-            switch(user.getWeapon().getSuperTypeEnum())
+            switch(user.getEquippableOutfits().getWeapon().getWeaponSuperTypeEnum())
             {
                 case CLOSE_QUARTERS_COMBAT:
                     accuracy *= 1.08;
@@ -355,7 +353,7 @@ public class MoveCalculations
                         break; 
                 case GREAT_SWORD:
                     accuracy *= 1.06;
-                        break
+                        break;
                 case SPEAR:
                     accuracy *= 1.03;
                         break;
@@ -424,24 +422,24 @@ public class MoveCalculations
     
     public double staminaCritical(GenericCharacter user, GenericCharacter target)
     {
-        double userCritical = criticalCalculator((user.getTotalCritical() * 1.15), 
-            (user.getLuck() + 1));
+        double userCritical = criticalCalculator((user.getTotalStats().getTotalCritical() * 1.15), 
+            (user.getStats().getLuck() + 1));
         
         double targetCriticalResistance = criticalResistanceCalculator((target.
-            getTotalDefense() * 0.94), (target.getTotalNanoDefense() * 0.96), 
-            (target.getTotalDexterity() * 0.92));
+            getTotalStats().getTotalDefense() * 0.94), (target.getTotalStats().getTotalNanoDefense() * 0.96), 
+            (target.getTotalStats().getTotalDexterity() * 0.92));
         
         return trueCritical(userCritical, targetCriticalResistance);
     }
     
     public double nanoCritical(GenericCharacter user, GenericCharacter target)
     {
-        double userCritical = criticalCalculator((user.getTotalCritical() * 1.22), 
-            (user.getLuck() + 3));
+        double userCritical = criticalCalculator((user.getTotalStats().getTotalCritical() * 1.22), 
+            (user.getStats().getLuck() + 3));
         
         double targetCriticalResistance = criticalResistanceCalculator((target.
-            getTotalDefense() * 0.92), (target.getTotalNanoDefense() * 0.95), 
-            (target.getTotalDexterity() * 0.88));
+            getTotalStats().getTotalDefense() * 0.92), (target.getTotalStats().getTotalNanoDefense() * 0.95), 
+            (target.getTotalStats().getTotalDexterity() * 0.88));
         
         return trueCritical(userCritical, targetCriticalResistance);
     }
@@ -461,9 +459,9 @@ public class MoveCalculations
     {
         double critical = staminaCritical(user, target);
         
-        if(user.getWeapon() != null)
+        if(user.getEquippableOutfits().getWeapon() != null)
         {
-            switch(user.getWeapon().getSuperTypeEnum())
+            switch(user.getEquippableOutfits().getWeapon().getWeaponSuperTypeEnum())
             {
                 case CLOSE_QUARTERS_COMBAT:
                     critical *= 1.05;
@@ -478,7 +476,7 @@ public class MoveCalculations
                         break; 
                 case GREAT_SWORD:
                     critical *= 1.40;
-                        break
+                        break;
                 case SPEAR:
                     critical *= 1.31;
                         break;
@@ -511,11 +509,11 @@ public class MoveCalculations
     public double nanoCriticalByWeaponWielded(GenericCharacter user, GenericCharacter target,
         Moves move)
     {
-        double critical = nanoCritical(user, target, m);
+        double critical = nanoCritical(user, target);
         
-        if(user.getWeapon() != null)
+        if(user.getEquippableOutfits().getWeapon() != null)
         {
-            switch(user.getWeapon().getSuperTypeEnum())
+            switch(user.getEquippableOutfits().getWeapon().getWeaponSuperTypeEnum())
             {
                 case CLOSE_QUARTERS_COMBAT:
                     critical *= 1.08;
@@ -530,7 +528,7 @@ public class MoveCalculations
                         break; 
                 case GREAT_SWORD:
                     critical *= 1.24;
-                        break
+                        break;
                 case SPEAR:
                     critical *= 1.24;
                         break;
@@ -588,10 +586,11 @@ public class MoveCalculations
     {
         double result = 0.0;
 
-        if(user.getWeapon() != null)
+        if(user.getEquippableOutfits().getWeapon() != null)
         {
-            result += enchantmentCalculation((ouputValue * 0.36), target.
-                getEnchantmentResistanceValueForKey(user.getWeapon().getEnchantment()));
+            result += enchantmentCalculation((ouputValue * 0.36), target.getRetrieveResistances().
+                getEnchantmentResistanceValueForKey(user.getEquippableOutfits().
+                getWeapon().getEnchantment()));
         }
 
         return result;
@@ -600,7 +599,7 @@ public class MoveCalculations
     public double moveEnchantment(GenericCharacter target, String moveEnchantmentName, 
         double ouputValue)
     {
-        ouputValue += enchantmentCalculation((ouputValue * 0.45), target.
+        ouputValue += enchantmentCalculation((ouputValue * 0.45), target.getRetrieveResistances().
             getEnchantmentResistanceValueForKey(moveEnchantmentName));
                 return ouputValue;
     }
@@ -610,12 +609,12 @@ public class MoveCalculations
     {
         double result = 0.0;
         
-        if(!target.getImmunityTypeState("Enchantment"))
+        if(!target.getMoveImmunity().immuneTo("Enchantment"))
         {
             if(move.getClassificationEnum() == Moves.Classifications.DAMAGE)
             {
                 result += weaponEnchantment(user, target, ouputValue);
-                result += moveEnchantment(target, move.getEnchantment(), ouputValue);
+                result += moveEnchantment(target, move.getEnchantmentString(), ouputValue);
             }
         }
         
@@ -661,11 +660,11 @@ public class MoveCalculations
     // START: STATES AFFECTING TOTAL OUTPUT VALUES 
     /*******************************************************************************/
     
-    // Note: check for state AFTER total output is calculated 
+    // Note: check for immuneTo AFTER total output is calculated 
     public double defendEffect(GenericCharacter target, Moves.Gauges gaugeTargeted, 
         double output)
     {
-        if(target.statusExists("Defend"))
+        if(target.getStatusEffectContainer().statusExists("Defend"))
         {
             switch(gaugeTargeted)
             {
@@ -681,11 +680,11 @@ public class MoveCalculations
         return output;
     }
     
-    // Note: check for state AFTER total output is calculated 
+    // Note: check for immuneTo AFTER total output is calculated 
     public double nanoArmorEffect(GenericCharacter target, Moves.Gauges gaugeTargeted, 
         double output)
     {
-        if(target.statusExists("Nano Armor"))
+        if(target.getStatusEffectContainer().statusExists("Nano Armor"))
         {
             switch(gaugeTargeted)
             {
@@ -701,13 +700,25 @@ public class MoveCalculations
         return output;
     }
     
-    // Note: check for state AFTER total output is calculated 
-    public double statesReducingOutput(GenericCharacter target, Moves.Gauges gaugeTargeted, 
+    public double affectOutputByMoveClassifcation(GenericCharacter target, Moves move, 
         double output)
     {
-        output = defendEffect(target, gaugeTargeted, output);
-        output = nanoArmorEffect(target, gaugeTargeted, output);
+        for(Moves.Gauges element : move.getGaugesTargeted())
+        {
+            if(move.getClassificationEnum() == Moves.Classifications.DAMAGE)
+            {
+                output = defendEffect(target, element, output);
+                output = nanoArmorEffect(target, element, output);
+            }
+        }
+        
         return output;
+    }
+    
+    // Note: check for immuneTo AFTER total output is calculated 
+    public double immuneTosReducingOutput(GenericCharacter target, Moves move, double output)
+    {
+        return affectOutputByMoveClassifcation(target, move, output);
     }
     
     // END: STATES AFFECTING TOTAL OUTPUT VALUES 
@@ -769,15 +780,13 @@ public class MoveCalculations
     public double totalOutput(GenericCharacter user, GenericCharacter target, 
         Moves move, double output, double critical)
     {
-        output = moveEnchantment(user, move.getEnchantment(), output);
-
-        output = weaponEnchantment(user, target, output);
+        output = totalEnchantment(user, target, move, output);
 
         output = applyCritical(user, target, critical, output);
 
         output = applyOutputVariance(move.getOutputVariance(), output); 
         
-        output = statesReducingOutput(target, move.getGaugeTargetedEnum(), output);
+        output = immuneTosReducingOutput(target, move, output);
         
         output = positiveOrNegativeOutput(move, output);
         
@@ -800,13 +809,13 @@ public class MoveCalculations
             switch(choice)
             {
                 case CURRENT_HEALTH:
-                    character.setCurrentHealth(character.getCurrentHealth() + output);
+                    character.getGeneralFeatures().setCurrentHealth(character.getGeneralFeatures().getCurrentHealth() + output);
                         break;
                 case CURRENT_STAMINA:
-                    character.setCurrentStamina(character.getCurrentStamina() + output);
+                    character.getGeneralFeatures().setCurrentStamina(character.getGeneralFeatures().getCurrentStamina() + output);
                         break;
                 case CURRENT_NANO:
-                    character.setCurrentNano(character.getCurrentNano() + output);
+                    character.getGeneralFeatures().setCurrentNano(character.getGeneralFeatures().getCurrentNano() + output);
                         break;
             }
         }
@@ -818,22 +827,28 @@ public class MoveCalculations
         applyValueToGauge(user, move.getMoveCost(), move.getGaugeUsedEnum());
     }
     
+    public void accountForOutputImmunity(String immunityType, GenericCharacter target, 
+        Moves move, double output)
+    {
+        if(!target.getMoveImmunity().immuneTo(immunityType))
+        {
+            for(Moves.Gauges element : move.getGaugesTargeted())
+            {
+                applyValueToGauge(target, output, element);
+            }
+        }
+    }
+    
     // apply effects that using a move has on the user and on target 
     public void applyTotalOutputToTarget(GenericCharacter target, Moves move, double output)
     {
         if(output < 0)
         {
-            if(!target.getImmunityTypeState("Damage"))
-            {
-                applyValueToGauge(target, output, move.getGaugeTargetedEnum());
-            }
+            accountForOutputImmunity("Damage", target, move, output);
         }
         else if(output >= 0)
         {
-            if(!target.getImmunityTypeState("Heal"))
-            {
-                applyValueToGauge(target, output, move.getGaugeTargetedEnum());
-            }
+            accountForOutputImmunity("Recovery", target, move, output);
         }
     }
     
@@ -849,17 +864,17 @@ public class MoveCalculations
     {
         int result = 0;
 
-        if(!target.accessoryNegatesStatus(status))
+        if(!target.getEquippableOutfits().accessoryNegatesStatusEffect(status))
         {
-            if(target.getNanomachineState())
+            if(target.getGeneralFeatures().nanomachines())
             {
                 // store sum of target's resistance, immune and nano response 
-                result = (int)target.getOrganismWithNanoTotalResistance(status.getName());
+                result = (int)target.getRetrieveResistances().getNanoTotalResistance(status.getName());
             }
             else
             {
                 // store sum of target's resistance and immune response
-                result = (int)target.getOrganismTotalResistance(status.getName());
+                result = (int)target.getRetrieveResistances().getNonNanoTotalResistance(status.getName());
             }
         }
         else
@@ -878,22 +893,22 @@ public class MoveCalculations
         {
             SecureRandom rand = new SecureRandom();
             
-            int randStatusInflictRate = (rand.nextInt(status.getInflictRate()) + 1);
+            int randStatusInflictRate = (rand.nextInt(status.getInflictionRate()) + 1);
 
             int randStatusResistance = (rand.nextInt(statusResistance) + 1);
 
             if(randStatusInflictRate > randStatusResistance)
             {
-                target.addStatus(status);
+                target.getStatusEffectContainer().addStatusEffect(status);
 
-                target.updateImmuneResponseValueForKey(status.getName(), target.
+                target.getRetrieveResistances().updateImmuneResponseValueForKey(status.getName(), target.getRetrieveResistances().
                     getStatusImmuneResponseForKey(status.getName()) + (rand.
                     nextInt(3)) + 1);
 
-                if(target.getNanomachineState())
+                if(target.getGeneralFeatures().nanomachines())
                 {
-                    target.updateNanoResponseValueForKey(status.getName(), target.
-                        getStatusNanoResponseForKey(status.getName()) + (rand.
+                    target.getRetrieveResistances().updateNanoResponseValueForKey(status.getName(), target.
+                        getRetrieveResistances().getStatusNanoResponseForKey(status.getName()) + (rand.
                         nextInt(5)) + 3);
                 }
             }
@@ -911,9 +926,11 @@ public class MoveCalculations
     
     public void addWeaponStatuses(GenericCharacter user, GenericCharacter target)
     {
-        if(user.getWeapon() != null && !user.getWeapon().getWeaponStatuses().isEmpty())
+        if(user.getEquippableOutfits().getWeapon() != null && !user.getEquippableOutfits().
+            getWeapon().getWeaponStatuses().isEmpty())
         {
-            addArrayListOfStatusesToTarget(target, user.getWeapon().getWeaponStatuses());
+            addArrayListOfStatusesToTarget(target, user.getEquippableOutfits().getWeapon().
+                getWeaponStatuses());
         }
     }
     
@@ -927,10 +944,10 @@ public class MoveCalculations
     
     public void applyStatuses(GenericCharacter user, GenericCharacter target, Moves move)
     {
-        if(!target.getImmunityTypeState("Status"))
+        if(!target.getMoveImmunity().immuneTo("Status"))
         {
-            addWeaponStatuses(user, target);
             addMoveStatuses(target, move);
+            addWeaponStatuses(user, target);
         }
     }
     
@@ -946,9 +963,9 @@ public class MoveCalculations
     {
         double totalStressEffect = 0;
         
-        if(character.getWeapon() != null)
+        if(character.getEquippableOutfits().getWeapon() != null)
         {
-            totalStressEffect = character.getWeapon().getStressEffectUponAttack();
+            totalStressEffect = character.getEquippableOutfits().getWeapon().getStressEffectUponAttack();
         }
         
         return (totalStressEffect + moveStressEffect);
@@ -964,48 +981,48 @@ public class MoveCalculations
 
     public void applyUserWeaponDurabilityEffect(GenericCharacter user, Moves move)
     {
-        if(user.getWeapon() != null)
+        if(user.getEquippableOutfits().getWeapon() != null)
         {
-            user.getWeapon().setCurrentDurability(user.getWeapon().getMaxDurability() 
+            user.getEquippableOutfits().getWeapon().setCurrentDurability(user.getEquippableOutfits().getWeapon().getMaxDurability() 
                 + move.getUserWeaponDurabilityEffect());
         }
     }
     
     public void applyMoveDurabilityEffectsOnTarget(GenericCharacter target, Moves move)
     {
-        if(target.getWeapon() != null)
+        if(target.getEquippableOutfits().getWeapon() != null)
         {
-            target.getWeapon().setCurrentDurability(target.getWeapon().getMaxDurability() 
+            target.getEquippableOutfits().getWeapon().setCurrentDurability(target.getEquippableOutfits().getWeapon().getMaxDurability() 
                 + move.getWeaponDurabilityEffect());
         }
         
-        if(target.getBodyArmor() != null)
+        if(target.getEquippableOutfits().getBodyArmor() != null)
         {
-            target.getBodyArmor().setCurrentDurability(target.getBodyArmor().getMaxDurability() 
+            target.getEquippableOutfits().getBodyArmor().setCurrentDurability(target.getEquippableOutfits().getBodyArmor().getMaxDurability() 
                 + move.getBodyArmorDurabilityEffect());
         }
         
-        if(target.getLegArmor() != null)
+        if(target.getEquippableOutfits().getLegArmor() != null)
         {
-            target.getLegArmor().setCurrentDurability(target.getLegArmor().getMaxDurability() 
+            target.getEquippableOutfits().getLegArmor().setCurrentDurability(target.getEquippableOutfits().getLegArmor().getMaxDurability() 
                 + move.getLegArmorDurabilityEffect());
         }
         
-        if(target.getFootArmor() != null)
+        if(target.getEquippableOutfits().getFootArmor() != null)
         {
-            target.getFootArmor().setCurrentDurability(target.getFootArmor().getMaxDurability() 
+            target.getEquippableOutfits().getFootArmor().setCurrentDurability(target.getEquippableOutfits().getFootArmor().getMaxDurability() 
                 + move.getFootArmorDurabilityEffect());
         }
         
-        if(target.getAccessoryOne() != null)
+        if(target.getEquippableOutfits().getAccessoryOne() != null)
         {
-            target.getAccessoryOne().setCurrentDurability(target.getAccessoryOne().getMaxDurability() 
+            target.getEquippableOutfits().getAccessoryOne().setCurrentDurability(target.getEquippableOutfits().getAccessoryOne().getMaxDurability() 
                 + move.getAccessoryOneDurabilityEffect());
         }
         
-        if(target.getAccessoryTwo() != null)
+        if(target.getEquippableOutfits().getAccessoryTwo() != null)
         {
-            target.getAccessoryTwo().setCurrentDurability(target.getAccessoryTwo().getMaxDurability() 
+            target.getEquippableOutfits().getAccessoryTwo().setCurrentDurability(target.getEquippableOutfits().getAccessoryTwo().getMaxDurability() 
                 + move.getAccessoryTwoDurabilityEffect());
         }
     }
@@ -1047,7 +1064,7 @@ public class MoveCalculations
     {
         if(output < 0)
         {
-            target.setDamagedState(true);
+            target.getGeneralFeatures().damaged(true);
         }
     }
     
@@ -1057,7 +1074,7 @@ public class MoveCalculations
         // if output is not 0 (has NOT missed), then account for move effects 
         if(output != 0.0)
         {
-            // set damaged state to true if move hurts target (negative output)
+            // set damaged immuneTo to true if move hurts target (negative output)
             targetDamaged(user, output);
             
             // apply status effects to target using user weapon and move statuses 
@@ -1067,14 +1084,14 @@ public class MoveCalculations
             applyMoveDurabilityEffects(user, target, move);
             
             // apply stress move and user's weapon have on target's stress gauge 
-            target.setCurrentStress(target.getCurrentStress() + totalStressEffect(user,
+            target.getStress().setCurrentStress(target.getStress().getCurrentStress() + totalStressEffect(user,
                 move.getStressEffect()));
             
             // apply effect move has on on target
             applyTotalOutputToTarget(target, move, output);
             
             // set battle dexterity of user based off move speed 
-            user.setBattleDexterity(user, move.getMoveSpeed());
+            user.getGeneralFeatures().setBattleDexterity(user, move.getMoveSpeed());
         }
     }
     
@@ -1082,11 +1099,11 @@ public class MoveCalculations
     {
         boolean result = false;
         
-        if(!target.getImmunityTypeState(move.getApproachString()))
+        if(!target.getMoveImmunity().immuneTo(move.getApproachString()))
         {
-            if(!target.getImmunityTypeState(move.getStyleString()))
+            if(!target.getMoveImmunity().immuneTo(move.getStyleString()))
             {
-                if(!target.getImmunityTypeState(move.getTechniqueString()))
+                if(!target.getMoveImmunity().immuneTo(move.getTechniqueString()))
                 {
                     result = true;
                 }
@@ -1097,8 +1114,7 @@ public class MoveCalculations
     }
     
     public void staminaNanoMove(GenericCharacter user, GenericCharacter target, 
-        Moves move, double accuracy, double output, double critical, double 
-        outputModifier)
+        Moves move, double accuracy, double output, double critical)
     {
         applyMoveCost(user, move);
         
@@ -1107,7 +1123,7 @@ public class MoveCalculations
             for(int i = 0; i < move.getTimesMoveAffectsTarget(); i++)
             {
                 output = (outputBasedOnAccuracy(user, target, move, accuracy, 
-                    output, critical) * outputModifier);
+                    output, critical) * move.getOutputModifier());
 
                 postOutputTasks(user, target, move, output);
             }
@@ -1115,6 +1131,118 @@ public class MoveCalculations
     }
     
     // END: STAMINA/NANO MOVE OUTPUT/EFFECT ON DESIRED TARGET 
+    /*******************************************************************************/
+    
+    
+    
+    // START: ITEM MOVE METHODS 
+    /*******************************************************************************/
+    
+    public double addItemMoveEnchantment(GenericCharacter target, Moves move, double output)
+    {
+        if(!target.getMoveImmunity().immuneTo("Enchantment"))
+        {
+            output += moveEnchantment(target, move.getEnchantmentString(), output);
+	}
+        
+        return output;
+    }
+    
+    public double itemTotalOutput(GenericCharacter user, GenericCharacter target, 
+        Moves move, double output, double critical)
+    {
+        output = addItemMoveEnchantment(user, move, output);
+        
+        output = applyCritical(user, target, critical, output);
+
+        output = applyOutputVariance(move.getOutputVariance(), output); 
+        
+        output = positiveOrNegativeOutput(move, output);
+        
+        return output;
+    }
+    
+    // Note: 0 denotes move missed target
+    public double itemOutputBasedOnAccuracy(GenericCharacter user, GenericCharacter target, 
+        Moves move, double accuracy, double output, double critical)
+    {
+        SecureRandom rand = new SecureRandom();
+        
+        if(accuracy >= (rand.nextInt(100) + 1))
+        {
+            output = itemTotalOutput(user, target, move, output, critical);
+        }
+        else
+        {
+            output = 0.0;
+        }
+
+        return output;
+    }
+    
+    public void addItemMoveStatuses(GenericCharacter target, Moves move)
+    {
+        if(!target.getMoveImmunity().immuneTo("Status"))
+        {
+            addMoveStatuses(target, move);
+        }
+    }
+    
+    public void postItemOutputTasks(GenericCharacter user, GenericCharacter target, 
+        Moves move, double output)
+    {
+        // if output is not 0 (has NOT missed), then account for move effects 
+        if(output != 0.0)
+        {
+            // set damaged immuneTo to true if move hurts target (negative output)
+            targetDamaged(user, output);
+            
+            // apply status effects to target using move statuses 
+            addItemMoveStatuses(target, move);
+            
+            // apply effect move has on durability of equipped outfits 
+            applyMoveDurabilityEffects(user, target, move);
+            
+            // apply stress move and user's weapon have on target's stress gauge 
+            target.getStress().setCurrentStress(target.getStress().getCurrentStress() + totalStressEffect(user,
+                move.getStressEffect()));
+            
+            // apply effect move has on on target
+            applyTotalOutputToTarget(target, move, output);
+            
+            // set battle dexterity of user based off move speed 
+            user.getGeneralFeatures().setBattleDexterity(user, move.getMoveSpeed());
+        }
+    }
+    
+    public boolean itemMoveAffectsTarget(GenericCharacter target, Moves move)
+    {
+        boolean result = false;
+        
+        if(!target.getMoveImmunity().immuneTo(move.getClassificationString()))
+        {
+            result = true;
+        }
+        
+        return result;
+    }
+    
+    public void itemMove(GenericCharacter user, GenericCharacter target, 
+        Moves move, double accuracy, double output, double critical)
+    {
+        if(itemMoveAffectsTarget(target, move))
+        {
+            for(int i = 0; i < move.getTimesMoveAffectsTarget(); i++)
+            {
+                output = (itemOutputBasedOnAccuracy(user, target, move, accuracy, 
+                    output, critical) * move.getOutputModifier());
+
+                postItemOutputTasks(user, target, move, output);
+            }
+        }
+    }
+    
+    // END: ITEM MOVE METHODS 
     /*******************************************************************************/
     
     /* move selection and application
@@ -1166,6 +1294,54 @@ public class MoveCalculations
             move is executed a per character basis
     */
     
+    // START: MOVE LOGIC BY NUMBER OF TARGETS 
+    /*******************************************************************************/
+
+    public void singleTargetMoveLogic(GenericCharacter user, GenericCharacter target, 
+        Moves move)
+    {
+        double accuracy, output, critical;
+        
+        switch(move.getApproachEnum())
+        {
+            case STAMINA: 
+                output = staminaOutputByWeaponWielded(user, target);
+                accuracy = staminaAccuracyByWeaponWielded(user, target, move);
+                critical = staminaCriticalByWeaponWielded(user, target, move);
+                    staminaNanoMove(user, target, move, accuracy, output, critical);
+                            break;
+            case NANO: 
+                output = nanoOutputByWeaponWielded(user, target);
+                accuracy = nanoAccuracyByWeaponWielded(user, target, move);
+                critical = nanoCriticalByWeaponWielded(user, target, move);
+                    staminaNanoMove(user, target, move, accuracy, output, critical);
+                            break;
+            case SPECIAL: 
+                // custom GUI shenanigans here!!!
+                break;
+            case ITEM: 
+                output = move.getCustomOutput();
+                accuracy = move.getAccuracyModifier();
+                critical = move.getCriticalModifier();
+                    itemMove(user, target, move, accuracy, output, critical);
+                        break;
+        }
+    }
+    
+    public void singlePartyMoveLogic(GenericCharacter user, ArrayList<GenericCharacter> 
+        targetParty, Moves move)
+    {
+        for(GenericCharacter element : targetParty)
+        {
+            singleTargetMoveLogic(user, element, move);
+        }
+    }
+    
+    // END: MOVE LOGIC BY NUMBER OF TARGETS 
+    /*******************************************************************************/
+
+    
+    
     // START: COMPARATOR SORTING STRINGS
     /*******************************************************************************/
     
@@ -1187,8 +1363,8 @@ public class MoveCalculations
     }
     
     public Comparator<GenericCharacter> sortByName = (GenericCharacter characterOne, 
-        GenericCharacter characterTwo) -> compareStrings(characterOne.getName(), 
-        characterTwo.getName()); 
+        GenericCharacter characterTwo) -> compareStrings(characterOne.getGeneralFeatures().getName(), 
+        characterTwo.getGeneralFeatures().getName()); 
     
     // START: COMPARATOR SORTING STRINGS
     /*******************************************************************************/
@@ -1206,7 +1382,7 @@ public class MoveCalculations
         {
             if(move.getClassificationEnum() == Moves.Classifications.DAMAGE)
             {
-                if(!element.knockedOut())
+                if(!element.getGeneralFeatures().knockedOut())
                 {
                     if(userParty.partyMemberExists(element))
                     {
@@ -1304,69 +1480,6 @@ public class MoveCalculations
 
     
     
-    // START: PERFORM MOVE
-    /*******************************************************************************/
-    
-    public void performMoveSingleTarget(PriorityQueue<GenericCharacter> charactersInBattle, Party 
-        userParty, Party targetParty, GenericCharacter user, GenericCharacter target, 
-        Moves move)
-    {
-        double accuracy, output, critical;
-        
-        switch(Moves.getApproachEnumUsingString(move.getApproach()))
-        {
-            case STAMINA:
-                accuracy = staminaAccuracy(user, target) * move.getOutputModifier();
-                output = staminaOutput(user, target);
-                critical = staminaCriitical(user, target, move.getCriticalModifier());
-                
-                moveLogic(charactersInBattle, userParty. targetParty, user, target, 
-                    move, accuracy, output, critical);
-                
-            case NANO:
-                
-                
-            case SPECIAL:
-                
-                
-            case ITEM:
-                // item here?
-                
-        }
-    }
-    
-    public void performMovePartyTarget(PriorityQueue<GenericCharacter> charactersInBattle, Party 
-        userParty, Party targetParty, GenericCharacter user, Party target, Moves move)
-    {
-        double accuracy, output, critical;
-        
-        switch(Moves.getApproachEnumUsingString(move.getApproach()))
-        {
-            case STAMINA:
-                accuracy = staminaAccuracy(user, target) * move.getOutputModifier();
-                output = staminaOutput(user, target);
-                critical = staminaCriitical(user, target, move.getCriticalModifier());
-                
-                moveLogic(charactersInBattle, userParty. targetParty, user, target, 
-                    move, accuracy, output, critical);
-                
-            case NANO:
-                
-                
-            case SPECIAL:
-                
-                
-            case ITEM:
-                // item here?
-                
-        }
-    }
-    
-    // END: PERFORM MOVE
-    /*******************************************************************************/
-
-    
-    
     // START: SINGLE TARGET SELECTION FOR MOVE
     /*******************************************************************************/
 
@@ -1379,11 +1492,11 @@ public class MoveCalculations
             {
                 if((i % 2 == 0))
                 {
-                    System.out.printf("%-26s\t", activeCharacters.get(i).getName());
+                    System.out.printf("%-26s\t", activeCharacters.get(i).getGeneralFeatures().getName());
                 }
                 else if((i % 2 == 1))
                 {
-                    System.out.printf("%-26s\n", activeCharacters.get(i).getName());
+                    System.out.printf("%-26s\n", activeCharacters.get(i).getGeneralFeatures().getName());
                 }
             }
             else
@@ -1434,7 +1547,7 @@ public class MoveCalculations
         }
         else
         {
-            performMove(user, target, move);
+            singleTargetMoveLogic(user, target, move);
         }
     } 
         
@@ -1588,7 +1701,7 @@ public class MoveCalculations
             {
                 if(move.getClassificationEnum() == Moves.Classifications.DAMAGE)
                 {
-                    if(!element.knockedOut())
+                    if(!element.getGeneralFeatures().knockedOut())
                     {
                         arrayList.add(element);
                     }
@@ -1602,7 +1715,7 @@ public class MoveCalculations
     }
     
     // account for cancelMove!!! after move execution
-    public void postAnyPartyTargetChoiceBehavior(GenericCharacter user, ArrayList
+    public void postSinglePartyTargetChoiceBehavior(GenericCharacter user, ArrayList
         <GenericCharacter> activeTargetCharacters, Moves move)
     {
         if(activeTargetCharacters == null)
@@ -1612,7 +1725,7 @@ public class MoveCalculations
         }
         else
         {
-            performMove(user, activeTargetCharacters, move);
+            singlePartyMoveLogic(user, activeTargetCharacters, move);
         }
     }
     
@@ -1627,7 +1740,7 @@ public class MoveCalculations
         
         activePartyMembers(charactersInBattle, target, activeTargetCombatants, move);
         
-        postAnyPartyTargetChoiceBehavior(user, activeTargetCombatants, move);
+        postSinglePartyTargetChoiceBehavior(user, activeTargetCombatants, move);
     } 
     
     public void displayPartyOwnershipSelection(String partyOwnership)
@@ -1660,7 +1773,7 @@ public class MoveCalculations
         
         activePartyMembers(charactersInBattle, target, activeTargetCombatants, move);
         
-        postAnyPartyTargetChoiceBehavior(user, activeTargetCombatants, move);
+        postSinglePartyTargetChoiceBehavior(user, activeTargetCombatants, move);
     } 
 
     public void opposingPartySelection(PriorityQueue<GenericCharacter> charactersInBattle, 
@@ -1674,8 +1787,7 @@ public class MoveCalculations
         
         activePartyMembers(charactersInBattle, target, activeTargetCombatants, move);
         
-        postAnyPartyTargetChoiceBehavior(user, activeTargetCombatants, move);
-
+        postSinglePartyTargetChoiceBehavior(user, activeTargetCombatants, move);
     } 
     
     // END: SINGLE PARTY TARGET SELECTION FOR MOVE
@@ -1683,16 +1795,11 @@ public class MoveCalculations
     
     
     
-    
-    
-    left off here...
-    
-    
     // START: RANDOM SINGLE TARGET
     /*******************************************************************************/
 
     public GenericCharacter selectCharacterAtRandom(ArrayList<GenericCharacter> 
-        activeCombatants)
+        activeCombatants, Moves move)
     {
         SecureRandom rand = new SecureRandom();
         
@@ -1704,7 +1811,14 @@ public class MoveCalculations
         {
             if(result == i)
             {
-                if(!activeCombatants.get(i).knockedOut())
+                if(move.getClassificationEnum() == Moves.Classifications.DAMAGE)
+                {
+                    if(!activeCombatants.get(i).getGeneralFeatures().knockedOut())
+                    {
+                        character = activeCombatants.get(i);
+                    }
+                }
+                else
                 {
                     character = activeCombatants.get(i);
                 }
@@ -1713,57 +1827,57 @@ public class MoveCalculations
         
         if(character == null)
         {
-            selectCharacterAtRandom(activeCombatants);
+            selectCharacterAtRandom(activeCombatants, move);
         }
         
         return character;
     }
     
     public void randomAnyTarget(PriorityQueue<GenericCharacter> charactersInBattle, 
-        Party userParty, Party targetParty, GenericCharacter user, Moves move)
+        GenericCharacter user, Moves move)
     {
         ArrayList<GenericCharacter> activeCombatants = new ArrayList<>(charactersInBattle);
         
-        GenericCharacter target = selectCharacterAtRandom(activeCombatants);
+        GenericCharacter target = selectCharacterAtRandom(activeCombatants, move);
         
-        performMove(charactersInBattle, userParty, targetParty, user, target, move);
-    } // account for cancelMove!!! after move execution
+        singleTargetMoveLogic(user, target, move);
+    } 
     
     public void randomAnyExceptUserTarget(PriorityQueue<GenericCharacter> charactersInBattle, 
-        Party userParty, Party targetParty, GenericCharacter user, Moves move)
+        GenericCharacter user, Moves move)
     {
         ArrayList<GenericCharacter> activeCombatants = new ArrayList<>(charactersInBattle);
         
         activeCombatants.remove(user);
         
-        GenericCharacter target = selectCharacterAtRandom(activeCombatants);
+        GenericCharacter target = selectCharacterAtRandom(activeCombatants, move);
         
-        performMove(charactersInBattle, userParty, targetParty, user, target, move);
-    } // account for cancelMove!!! after move execution
+        singleTargetMoveLogic(user, target, move);
+    } 
     
     public void randomAnyPartyMemberTarget(PriorityQueue<GenericCharacter> charactersInBattle, 
-        Party userParty, Party targetParty, GenericCharacter user, Moves move)
+        Party opposingParty, GenericCharacter user, Moves move)
     {
         ArrayList<GenericCharacter> activeCombatants = new ArrayList<>(charactersInBattle);
         
-        removeDuplicates(activeCombatants, targetParty);
+        removeDuplicates(activeCombatants, opposingParty);
         
-        GenericCharacter target = selectCharacterAtRandom(activeCombatants);
+        GenericCharacter target = selectCharacterAtRandom(activeCombatants, move);
         
-        performMove(charactersInBattle, userParty, targetParty, user, target, move);
-    } // account for cancelMove!!! after move execution
+        singleTargetMoveLogic(user, target, move);
+    } 
 
     public void randomAnyOpposingPartyMemberTarget(PriorityQueue<GenericCharacter> charactersInBattle, 
-        Party userParty, Party targetParty, GenericCharacter user, Moves move)
+        Party userParty, GenericCharacter user, Moves move)
     {
         ArrayList<GenericCharacter> activeCombatants = new ArrayList<>(charactersInBattle);
         
         removeDuplicates(activeCombatants, userParty);
         
-        GenericCharacter target = selectCharacterAtRandom(activeCombatants);
+        GenericCharacter target = selectCharacterAtRandom(activeCombatants, move);
         
-        performMove(charactersInBattle, userParty, targetParty, user, target, move);
-    } // account for cancelMove!!! after move execution
+        singleTargetMoveLogic(user, target, move);
+    } 
     
     // END: RANDOM SINGLE TARGET
     /*******************************************************************************/
@@ -1792,40 +1906,63 @@ public class MoveCalculations
     }
     
     public void randomSingleParty(PriorityQueue<GenericCharacter> charactersInBattle, 
-        Party userParty, Party targetParty, GenericCharacter user, Moves move)
+        Party userParty, Party opposingParty, GenericCharacter user, Moves move)
     {
-        Party target = selectPartyAtRandom(userParty, targetParty);
+        Party target = selectPartyAtRandom(userParty, opposingParty);
         
-        performMove(charactersInBattle, userParty, targetParty, user, target, move);
-    } // account for cancelMove!!! after move execution
+        ArrayList<GenericCharacter> activeTargetCombatants = new ArrayList<>();
+        
+        activePartyMembers(charactersInBattle, target, activeTargetCombatants, move);
+        
+        singlePartyMoveLogic(user, activeTargetCombatants, move);
+    } 
     
-    // need to account for times struck in output portion... 
     public void randomAll(PriorityQueue<GenericCharacter> charactersInBattle, 
-        Party userParty, Party targetParty, GenericCharacter user, Moves move)
+        Party userParty, GenericCharacter user, Moves move)
     {
         SecureRandom rand = new SecureRandom();
         
         for(GenericCharacter element : charactersInBattle)
         {
-            if(!element.knockedOut())
+            if(move.getClassificationEnum() == Moves.Classifications.DAMAGE)
+            {
+                if(!element.getGeneralFeatures().knockedOut())
+                {
+                    if(userParty.partyMemberExists(element))
+                    {
+                        if((rand.nextInt(100) + 1) <= 45)
+                        {
+                            singleTargetMoveLogic(user, element, move);
+                        }
+                    }
+                    else
+                    {
+                        if((rand.nextInt(100) + 1) <= 75)
+                        {
+                            singleTargetMoveLogic(user, element, move);
+                        }
+                    }
+                }
+            }
+            else
             {
                 if(userParty.partyMemberExists(element))
                 {
-                    if((rand.nextInt(100) + 1) <= 45)
+                    if((rand.nextInt(100) + 1) <= 80)
                     {
-                        performMove(charactersInBattle, userParty, targetParty, user, element, move);
+                        singleTargetMoveLogic(user, element, move);
                     }
                 }
                 else
                 {
-                    if((rand.nextInt(100) + 1) <= 75)
+                    if((rand.nextInt(100) + 1) <= 40)
                     {
-                        performMove(charactersInBattle, userParty, targetParty, user, element, move);
+                        singleTargetMoveLogic(user, element, move);
                     }
                 }
             }
         }
-    } // account for cancelMove!!! after move execution
+    } 
     
     // END: RANDOM SINGLE PARTY AND RANDOM ALL
     /*******************************************************************************/
@@ -1836,66 +1973,117 @@ public class MoveCalculations
     /*******************************************************************************/
 
     public void allTargets(PriorityQueue<GenericCharacter> charactersInBattle, 
-        Party userParty, Party targetParty, GenericCharacter user, Moves move)
+        GenericCharacter user, Moves move)
     {
         for(GenericCharacter element : charactersInBattle)
         {
-            performMove(charactersInBattle, userParty, targetParty, user, element, move);
-        }
-    } // account for cancelMove!!! after move execution
-
-    public void allTargetsExceptUser(PriorityQueue<GenericCharacter> charactersInBattle, 
-        Party userParty, Party targetParty, GenericCharacter user, Moves move)
-    {
-        for(GenericCharacter element : charactersInBattle)
-        {
-            if(!element.equals(user))
+            if(move.getClassificationEnum() == Moves.Classifications.DAMAGE)
             {
-               performMove(charactersInBattle, userParty, targetParty, user, element, move);
+                if(!element.getGeneralFeatures().knockedOut())
+                {
+                    singleTargetMoveLogic(user, element, move);
+                }
+            }
+            else
+            {
+                singleTargetMoveLogic(user, element, move);
             }
         }
-    } // account for cancelMove!!! after move execution
+    } 
+
+    public void allTargetsExceptUser(PriorityQueue<GenericCharacter> charactersInBattle, 
+        GenericCharacter user, Moves move)
+    {
+        for(GenericCharacter element : charactersInBattle)
+        {
+            if(move.getClassificationEnum() == Moves.Classifications.DAMAGE)
+            {
+                if(!element.equals(user) && !element.getGeneralFeatures().knockedOut())
+                {
+                    singleTargetMoveLogic(user, element, move);
+                }
+            }
+            else
+            {
+                if(!element.equals(user))
+                {
+                    singleTargetMoveLogic(user, element, move);
+                }
+            }
+        }
+    } 
     
     // END: TARGET ALL VARIANTS
     /*******************************************************************************/
 
     
     
-    // START: 
+    // START: EXECUTE MOVE
     /*******************************************************************************/
     
-    // move this to command list for character in battle 
-    public void moveLogic(PriorityQueue<GenericCharacter> charactersInBattle, 
-        Party userParty, Party opposingParty, GenericCharacter user, Moves move)
+    public void executeMove(PriorityQueue<GenericCharacter> charactersInBattle, Party 
+        userParty, Party opposingParty, GenericCharacter user, Moves move)
     {
-        switch(move.getTargetAsEnum())
+        switch(move.getTargetEnum())
         {
             case USER: 
-                // logic for single move
+                userSelection(user, move);
+                    break;
             case ANY: 
+                anySelection(charactersInBattle, userParty, user, move);
+                    break;
             case ANY_EXCEPT_USER:
+                anyExceptUserSelection(charactersInBattle, userParty, user, move); 
+                    break;
             case ANY_PARTY_MEMBER:
+                anyPartyMemberSelection(charactersInBattle, userParty, opposingParty, 
+                    user, move);
+                        break;
             case ANY_OPPOSING_PARTY_MEMBER:
+                anyOpposingPartyMemberSelection(charactersInBattle, userParty, 
+                    opposingParty, user, move);
+                        break;
             case ANY_PARTY:
-
+                anyPartySelection(charactersInBattle, userParty, opposingParty, 
+                    user, move);
+                        break;
             case USER_PARTY:
+                userPartySelection(charactersInBattle, userParty, user, move);
+                    break;
             case OPPOSING_PARTY:
-
+                opposingPartySelection(charactersInBattle, opposingParty, user, 
+                    move);
+                        break;
             case RANDOM_ANY:
+                randomAnyTarget(charactersInBattle, user, move);
+                    break;
             case RANDOM_ANY_EXCEPT_USER:
+                randomAnyExceptUserTarget(charactersInBattle, user, move);
+                    break;
             case RANDOM_ANY_PARTY_MEMBER: 
+                randomAnyPartyMemberTarget(charactersInBattle, opposingParty, 
+                    user, move);
+                        break;
             case RANDOM_ANY_OPPOSING_PARTY_MEMBER: 
+                randomAnyOpposingPartyMemberTarget(charactersInBattle, userParty, 
+                    user, move); 
+                        break;
             case RANDOM_ANY_PARTY:
+                randomSingleParty(charactersInBattle, userParty, opposingParty, 
+                    user, move);
+                        break;
             case RANDOM_ALL: 
-
+                randomAll(charactersInBattle, userParty, user, move);
+                    break;
             case ALL: 
+                allTargets(charactersInBattle, user, move);
+                    break;
             case ALL_EXCEPT_USER: 
-                
-            
+                allTargetsExceptUser(charactersInBattle, user, move);
+                    break;
         }
     }
     
-    
-    // END: POST OUTPUT CALCULATION
+    // END: EXECUTE MOVE
     /*******************************************************************************/
 }

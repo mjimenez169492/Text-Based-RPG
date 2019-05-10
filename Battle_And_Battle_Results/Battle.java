@@ -1,4 +1,4 @@
-package Battles;
+package Battle_And_Battle_Results;
 
 /*
     Battle concerns creating objects/methods relating to the concept of battle 
@@ -21,13 +21,13 @@ public class Battle
     private double round;
     
     // variables denoting conditions for party win/loss/escape/ending battle early 
-    private boolean playerGameOver, endBattleEarly, partiesTied, partyTwoEscape, 
+    private boolean playerGameOver, endBattle, partiesTied, partyTwoEscape, 
         partyOneEscape, playerPartyEscape, partyTwoLoss, partyOneLoss, 
         playerPartyLoss, partyTwoWin, partyOneWin, playerPartyWin;
 
     // boolean array holds booleans that can end the battle if one of them is true 
     // Note: "final" array references cannot be changed but elements can be modified 
-    private final boolean[] endBattleConditions = {playerGameOver, endBattleEarly, 
+    private final boolean[] endBattleConditions = {playerGameOver, endBattle, 
         partiesTied, partyTwoEscape, partyOneEscape, playerPartyEscape, partyTwoLoss, 
         partyOneLoss, playerPartyLoss, partyTwoWin, partyOneWin, playerPartyWin};
     
@@ -218,8 +218,8 @@ public class Battle
         if(character != null && !character.knockedOut())
         {
             reduceStressIfNotDamaged(character);
-            character.decrementStartOfTurnStatuses();
-            character.removeStatusesIfZeroTurns();
+            character.decrementStartOfTurnStatusEffects();
+            character.removeStatusEffectIfZeroTurns();
         }
     }
 
@@ -235,8 +235,8 @@ public class Battle
         if(character != null && !character.knockedOut())
         {
             effectOfStatusEffectsOnCurrentGauges(character);
-            character.decrementEndOfTurnStatuses();
-            character.removeStatusesIfZeroTurns();
+            character.decrementEndOfTurnStatusEffects();
+            character.removeStatusEffectIfZeroTurns();
             character.applyCorePenaltyToEquippedOutfits();
         }	
     }
@@ -355,7 +355,7 @@ public class Battle
             executeCharacterTurn(allPqContents, currentRound, nextRound, roundCount, 
                 characterParty, opposingParty);
 	}else{
-            currentRound.peek().removeStatusesAfterKnockOut();
+            currentRound.peek().removeStatusEffectsAfterKnockOut();
             currentRound.peek().setBattleDexterity(currentRound.peek()); 
             nextRound.add(currentRound.poll());
 	}
@@ -438,7 +438,7 @@ public class Battle
         
         double escapeValue = 0.0;
         
-        if(!opposingParty.bossEntityPresent())
+        if(!opposingParty.boss())
         {
             escapeValue = opposingParty.getAverageActiveChanceToPreventEscape(escapedCharacters);
 
@@ -488,7 +488,7 @@ public class Battle
     {
         boolean result = false;
         
-        if(party.getPlayerPartyState())
+        if(party.playerParty())
         {
             result = true;
         }
@@ -558,11 +558,11 @@ public class Battle
 
     public void endBattleEarlyTrigger(Party partyOne, Party partyTwo, boolean condition)
     {
-        if(partyOne.endBattleEarlyTrigger())
+        if(partyOne.endBattle())
         {
             condition = true;
         }
-        else if(partyTwo.endBattleEarlyTrigger())
+        else if(partyTwo.endBattle())
         {
             condition = true;
         }
@@ -728,7 +728,7 @@ public class Battle
         Party partyOne, Party partyTwo)
     {
         playerGameOverUponDeath(partyOne, partyTwo, playerGameOver);
-        endBattleEarlyTrigger(partyOne, partyTwo, endBattleEarly);
+        endBattleEarlyTrigger(partyOne, partyTwo, endBattle);
         partiesTied(partyOne, partyTwo, partiesTied);
         partyEscape(allPqContents, partyOne, partyOneEscape);
         partyEscape(allPqContents, partyTwo, partyTwoEscape);
@@ -758,11 +758,29 @@ public class Battle
         
         return defeatedCharacters;
     }
-         
-        I// INCOMPLETE
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+        // INCOMPLETE
     public void uniqueAfterBattleConditions(Party partyOne, Party partyTwo)
     {
-        if(endBattleEarly)
+        if(endBattle)
         {
             /* Player Party Logic: 
                 end battle method
@@ -859,7 +877,7 @@ public class Battle
     
     public void postBattleLogic(Party partyOne, Party partyTwo)
     {
-        if(endBattleEarly || partiesTied)
+        if(endBattle || partiesTied)
         {
             uniqueAfterBattleConditions(partyOne, partyTwo);
         }

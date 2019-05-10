@@ -10,8 +10,11 @@ package Move_Creation;
 //       CLASSES (Items has itemMove example = move for item)
 // if using item call item move like item.getItemMove()
 
-import Universally_Used_Methods.StaticMethods;
+import Commonly_Used_Methods.StaticMethods;
+import Generic_Character.GenericCharacter;
+import Player_Entity.Party;
 import java.util.ArrayList;
+import java.util.PriorityQueue;
 
 public class Moves 
 {
@@ -21,8 +24,11 @@ public class Moves
     // defining move characteristics for move organization in movesets
     private String approach, style, technique;
     
-    // defining gauges and enchantment (for extra damage) tied to move
-    private String gaugeUsed, gaugeTargeted, enchantment;
+    // defining gauge powering move and enchantment (for extra damage) of move
+    private String gaugeUsed, enchantment;
+    
+    // defining gauges that move targets 
+    private ArrayList<Gauges> gaugesTargeted = new ArrayList<>();
     
     // allow/disallow certain moves based on character status 
     private String moveAvailabilityStatus;
@@ -63,7 +69,7 @@ public class Moves
     private String classification; 
     
     // contains values altering certain values used in move calculations 
-    private double stressEffect, moveCost, outputVariance, accuracyModifier, 
+    private double stressEffect, customOutput, moveCost, outputVariance, accuracyModifier, 
         outputModifier, criticalModifier, moveSpeed;
     
     // determines when a move is mastered ("Mastered" moves can be used in combinations)
@@ -300,19 +306,14 @@ public class Moves
     
     // GAUGE TARGETED 
     
-    public void setGaugeTargeted(String gaugeTargeted)
+    public void addGaugeTargeted(String gaugeTargeted)
     {
-        this.gaugeTargeted = Gauges.valueOf(StaticMethods.stringToEnum(gaugeTargeted)).getEnumAsString();
+        this.gaugesTargeted.add(Gauges.valueOf(StaticMethods.stringToEnum(gaugeTargeted)));
     }
     
-    public String getGaugeTargetedString()
+    public ArrayList<Gauges> getGaugesTargeted()
     {
-        return gaugeTargeted;
-    }
-    
-    public Gauges getGaugeTargetedEnum()
-    {
-        return Gauges.valueOf(StaticMethods.stringToEnum(gaugeTargeted));
+        return gaugesTargeted;
     }
     
     // GAUGE TARGETED
@@ -327,13 +328,10 @@ public class Moves
 
     public void setEnchantment(String enchantment)
     {
-        if(StaticMethods.getStatusNameAsValidEnum(enchantment) !=  null)
-        {
-            this.enchantment = enchantment;
-        }
+        this.enchantment = StaticMethods.getEnchantmentString(enchantment);
     }
     
-    public String getEnchantment()
+    public String getEnchantmentString()
     {
         return enchantment;
     }
@@ -348,6 +346,9 @@ public class Moves
     
     public enum MoveAvailabilityStatuses 
     { 
+        // use to NOT add moves that have status effect requirements 
+        VOID("Void"),
+        
         NONE("None"), SHEATHED("Sheathed"), NOT_SHEATHED("Not Sheathed");
         
         private String moveAvailabilityStatus;
@@ -619,7 +620,7 @@ public class Moves
 
     public void addStatusMoveAdds(StatusEffect status)
     {
-        if(StaticMethods.getStatusNameAsValidString(status.getName()) != null)
+        if(StaticMethods.getStatusEffectEnum(status.getName()) != null)
         {
             statusesMoveAdds.add(status);
         }
@@ -632,7 +633,7 @@ public class Moves
     
     public void addStatusNegatingMove(String argument)
     {
-        if(StaticMethods.getStatusNameAsValidString(argument) != null)
+        if(StaticMethods.getStatusEffectEnum(argument) != null)
         {
             statusesNegatingMove.add(argument);
         }
@@ -645,7 +646,7 @@ public class Moves
     
     public void addStatusesMoveRemoves(String statusName)
     {
-        if(StaticMethods.getStatusNameAsValidString(statusName) != null)
+        if(StaticMethods.getStatusEffectEnum(statusName) != null)
         {
             statusesMoveRemove.add(statusName);
         }
@@ -811,6 +812,16 @@ public class Moves
         return argument;
     }
     
+    public void setCustomOutput(double customOutput)
+    {
+        this.customOutput = lowerUpperBounds(-15000, 15000, customOutput);
+    }
+    
+    public double getCustomOutput()
+    {
+        return customOutput;
+    }
+    
     public void setMoveCost(double moveCost)
     {
         this.moveCost = lowerUpperBounds(0.0, 150.0, moveCost);
@@ -886,6 +897,24 @@ public class Moves
     
     
     
+    // START: DOUBLE VALUES RELATING TO MOVE USAGE 
+    /*******************************************************************************/
+
+    public void executeMove(PriorityQueue<GenericCharacter> charactersInBattle, Party 
+        userParty, Party opposingParty, GenericCharacter user, Moves move)
+    {
+        MoveCalculations moveCalculation = new MoveCalculations();
+        
+        moveCalculation.executeMove(charactersInBattle, userParty, opposingParty, user, move);
+    }
+    
+    
+    // START: DOUBLE VALUES RELATING TO MOVE USAGE 
+    /*******************************************************************************/
+
+    
+
+
     // START: MOVE MASTERY
     /*******************************************************************************/
 

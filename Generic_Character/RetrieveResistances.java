@@ -1,14 +1,23 @@
 package Generic_Character;
 
-/*
-    RetrievingEnchantmentAndStatusResistances concerns setting/maintaining a 
-    HashMap containing all "getTotal_" methods for every relevant resistance
-    acharacter has. For status resistances, the features immune response and
-    nano response are accounted for.
+import Commonly_Used_Methods.StaticMethods;
 
-    Non-Organism Calculation:            total resistance = getTotal_
-    Organism Calculation:                total resistance = getTotal_ + immune 
-    Organism Calculation (nanomachines): total resistance = getTotal_ + immune + nano.
+import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.HashMap;
+
+/*
+    RetrieveResistances concerns setting/maintaining a HashMap containing all 
+    "getTotal_" methods for every relevant resistance acharacter has. For all 
+    status resistances, immune response and nano response are accounted for.
+
+    No Nanomachines Calculation : total resistance = getTotal_ + immune 
+    Nanomachines Calculation    : total resistance = getTotal_ + immune + nano
+    
+
+                    PROPOSED UNIMPLEMENTED CODE LOGIC BELOW...
+
+
 
     Feature: Immune Response 
         How character reacts upon being afflicted with a status effect. Each 
@@ -17,7 +26,7 @@ package Generic_Character;
         immune response against future status effects will variably increase
         until either: 1) another status effect successfully lands, or 2) the
         immune response reaches the max value immune response can reach.
- 
+    
     Feature: Nano Response 
         How characters with nanomachines (characters that can use nano moves
         adeptly) reach upon being targeted and afflicted with status effects.
@@ -36,51 +45,70 @@ package Generic_Character;
                 4) turn count for status effects being reduced by 1-3
 */
 
-import Universally_Used_Methods.StaticMethods;
-import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.HashMap;
-
-public class RetrievingEnchantmentAndStatusResistances extends TotalAttributesAndResistances
+public class RetrieveResistances
 {
+    // holding objects from other classes 
+    private Stress stress;
+    private TotalStats totalStats;
+    
     // HashMap containing all enchantment resistances 
-    private final HashMap<String, Double> totalEnchantmentResistancesHashMap = 
-        new HashMap<String, Double>();
+    private final HashMap<String, Double> totalEnchantmentResistances = new HashMap<>();
     
     // HashMap containing all status resistances
-    private final HashMap<String, ArrayList<Double>> totalStatusResistancesHashMap = 
-        new HashMap<String, ArrayList<Double>>();
+    private final HashMap<String, ArrayList<Double>> totalStatusResistances = new HashMap<>();
     
+    public RetrieveResistances(Stress stress, TotalStats totalStats)
+    {
+        this.stress = stress;
+        this.totalStats = totalStats;
+        updateEnchantmentResistances();
+        initializeTotalStatusResistances();
+    }
+    
+    
+    
+    // START: HOLDING OBJECTS SUPPLIED FROM OTHER CLASSES 
+    /*******************************************************************************/
+    
+    public Stress getStress()
+    {
+        return stress;
+    }
+    
+    public TotalStats getTotalStats()
+    {
+        return totalStats;
+    }
+    
+    // END: HOLDING OBJECTS SUPPLIED FROM OTHER CLASSES 
+    /*******************************************************************************/
+
     
     
     // START: STORING AND RETRIEVING TOTAL ENCHANTMENTS 
     /*******************************************************************************/
     
-    public void updateEnchantMentResistancesHashMap()
+    // Note: perioducally update THIS
+    public void updateEnchantmentResistances()
     {
-        Object[] array = {getAllTotalEnchantmentResistancesWithNames()};
+        Object[] array = {getTotalStats().getAllTotalEnchantmentResistancesWithNames()};
         
-        for(int i = 0; i < array.length; i+=2)
+        for(int i = 0; i < array.length - 1; i++)
         {
-            totalEnchantmentResistancesHashMap.put((String)array[i], (Double)array[i+1]);
+            totalEnchantmentResistances.put(array[i].toString(), (Double)array[i+1]);
         }
     }
     
     public double getEnchantmentResistanceValueForKey(String key)
     {
-        double holdDouble = 0.0;
-        
-        if(StaticMethods.getEnchantmentAsString(key) != null)
-        {
-            holdDouble = (double)totalEnchantmentResistancesHashMap.get(key);
-        }
-        
-        return holdDouble;
+        return (double)totalEnchantmentResistances.get(StaticMethods.getEnchantmentString(key));
     }
     
     // END: STORING AND RETRIEVING TOTAL ENCHANTMENTS 
     /*******************************************************************************/
 
+    
+    
     /* Status Effect Resistances have layout: (resistance name, resistance total, immune response, nano response) 
        immune response refers to a natural resistance to a status effect and future application attempts 
        nano response refers to a stronger resistance to status effects and future application attempts 
@@ -92,18 +120,18 @@ public class RetrievingEnchantmentAndStatusResistances extends TotalAttributesAn
     public Object[][] getArrayCotainingResistances()
     {
         Object[] arrayOfArrays [] = {
-            getAllTotalUniqueStatusEffectResistancesWithNames(),
-            getAllTotalUniqueStatusEffectResistancesWithNames(),
-            getAllTotalAttributeStatusEffectResistancesWithNames(),
-            getAllTotalBehaviorStatusEffectResistancesWithNames(),
-            getAllTotalTurnBehaviorStatusEffectResistancesWithNames(), 
-            getAllTotalNullifyStatusEffectResistancesWithNames()};
+            getTotalStats().getAllTotalUniqueStatusEffectResistancesWithNames(),
+            getTotalStats().getAllTotalUniqueStatusEffectResistancesWithNames(),
+            getTotalStats().getAllTotalAttributeStatusEffectResistancesWithNames(),
+            getTotalStats().getAllTotalBehaviorStatusEffectResistancesWithNames(),
+            getTotalStats().getAllTotalTurnBehaviorStatusEffectResistancesWithNames(), 
+            getTotalStats().getAllTotalNullifyStatusEffectResistancesWithNames()};
                 return arrayOfArrays;
     }
     
     public ArrayList<Object> getResistancesArrayList()
     {
-        ArrayList<Object> arrayList = new ArrayList<Object>();
+        ArrayList<Object> arrayList = new ArrayList<>();
 
         for(Object[] arrayWithinArray : getArrayCotainingResistances())
         {
@@ -117,43 +145,44 @@ public class RetrievingEnchantmentAndStatusResistances extends TotalAttributesAn
     }
     
     // method includes an ArrayList<Double> which is used to store the total value
-    // for an attribute/resistance, 0.0 for the initial immune response, and 0.0 
-    // for the initial nano response 
-    public void updateTotalStatusResistancesHashMap(ArrayList<Object> suppliedArrayList)
+    // for attribute/resistance, 0.0 for immune response, and 0.0 for nano response 
+    public void initializeTotalStatusResistances()
     {
-        for(int i = 0; i < suppliedArrayList.size(); i += 2)
+        ArrayList<Object> arrayList = getResistancesArrayList();
+        
+        for(int i = 0; i < arrayList.size(); i += 2)
         {
-            ArrayList<Double> doublesArrayList = new ArrayList<Double>();
+            ArrayList<Double> doublesArrayList = new ArrayList<>();
             
-            doublesArrayList.add((double)suppliedArrayList.get(i+1));
+            doublesArrayList.add((double)arrayList.get(i+1));
             doublesArrayList.add(0.0);
             doublesArrayList.add(0.0);
             
-            totalStatusResistancesHashMap.put((String)suppliedArrayList.get(i), doublesArrayList);
+            totalStatusResistances.put((String)arrayList.get(i), doublesArrayList);
         }
     }
     
-    public enum ArrayListValues
+    public enum ResistanceValues
     {
         TOTAL_RESISTANCE, IMMUNE_RESPONSE, NANO_RESPONSE;
     }
     
-    public double getStatusResistanceValueForKey(String key, ArrayListValues choice)
+    public double getStatusResistanceValueForKey(ResistanceValues choice, String key)
     {
         double holdDouble = 0.0;
         
-        if(StaticMethods.getStatusNameAsValidString(key) != null)
+        if(StaticMethods.getStatusEffectEnum(key) != null)
         {
             switch(choice)
             {
                 case TOTAL_RESISTANCE:
-                    holdDouble = (double)totalStatusResistancesHashMap.get(key).get(0);
+                    holdDouble = (double)totalStatusResistances.get(key).get(0);
                         break;
                 case IMMUNE_RESPONSE:
-                    holdDouble = (double)totalStatusResistancesHashMap.get(key).get(1);
+                    holdDouble = (double)totalStatusResistances.get(key).get(1);
                         break;
                 case NANO_RESPONSE:
-                    holdDouble = (double)totalStatusResistancesHashMap.get(key).get(2);
+                    holdDouble = (double)totalStatusResistances.get(key).get(2);
                         break;
             }
         }
@@ -163,17 +192,35 @@ public class RetrievingEnchantmentAndStatusResistances extends TotalAttributesAn
     
     public double getTotalStatusResistanceForKey(String key)
     {
-        return getStatusResistanceValueForKey(key, ArrayListValues.TOTAL_RESISTANCE);
+        return getStatusResistanceValueForKey(ResistanceValues.TOTAL_RESISTANCE, key);
     }
     
     public double getStatusImmuneResponseForKey(String key)
     {
-        return getStatusResistanceValueForKey(key, ArrayListValues.IMMUNE_RESPONSE);
+        return getStatusResistanceValueForKey(ResistanceValues.IMMUNE_RESPONSE, key);
     }
     
     public double getStatusNanoResponseForKey(String key)
     {
-        return getStatusResistanceValueForKey(key, ArrayListValues.NANO_RESPONSE);
+        return getStatusResistanceValueForKey(ResistanceValues.NANO_RESPONSE, key);
+    }
+    
+    // Note: perioducally update THIS
+    public void updateTotalStatusResistances()
+    {
+        ArrayList<Object> arrayList = getResistancesArrayList();
+        
+        for(int i = 0; i < arrayList.size(); i += 2)
+        {
+            ArrayList<Double> doublesArrayList = new ArrayList<>();
+            String result = (String)arrayList.get(i);
+            
+            doublesArrayList.add((double)arrayList.get(i+1));
+            doublesArrayList.add(getStatusImmuneResponseForKey(result));
+            doublesArrayList.add(getStatusNanoResponseForKey(result));
+            
+            totalStatusResistances.put(result, doublesArrayList);
+        }
     }
     
     // END: STORING AND RETRIEVING TOTAL ATTRIBUTES AND RESISTANCES 
@@ -181,45 +228,36 @@ public class RetrievingEnchantmentAndStatusResistances extends TotalAttributesAn
     
     
     
-    // START: RETRIEVING TOTAL RESISTANCE BASED ON CHARACTER TYPE 
+    // START: RETRIEVING TOTAL RESISTANCE BASED ON NANOMACHINE PRESENCE
     /*******************************************************************************/
 
-    public double getNonOrganismTotalResistance(String key)
-    {
-        return getTotalStatusResistanceForKey(key);
-    }
-    
-    public double getOrganismTotalResistance(String key)
+    public double getNonNanoTotalResistance(String key)
     {
         return (getTotalStatusResistanceForKey(key) + getStatusImmuneResponseForKey(key));
     }
     
-    public double getOrganismWithNanoTotalResistance(String key)
+    public double getNanoTotalResistance(String key)
     {
         return (getTotalStatusResistanceForKey(key) + getStatusImmuneResponseForKey(key) +
             getStatusNanoResponseForKey(key));
     }
     
-    // END: RETRIEVING TOTAL RESISTANCE BASED ON CHARACTER TYPE 
+    // END: RETRIEVING TOTAL RESISTANCE BASED ON NANOMACHINE PRESENCE
     /*******************************************************************************/
 
     
         
     // START: UPDATING ARRAYLIST VALUES FOR RESISTANCES HASHMAP 
     /*******************************************************************************/
-
-    public void updateDesiredArrayListValueForKey(String key, ArrayListValues
-        choice, double value)
+    
+    public void updateArrayListValueForKey(ResistanceValues choice, String key, double value)
     {
-        if(StaticMethods.getStatusNameAsValidString(key) != null)
+        if(StaticMethods.getStatusEffectEnum(key) != null)
         {
-            ArrayList<Double> arrayList = totalStatusResistancesHashMap.get(key);
+            ArrayList<Double> arrayList = totalStatusResistances.get(key);
             
             switch(choice)
             {
-                case TOTAL_RESISTANCE:
-                    arrayList.set(0, value);
-                        break;
                 case IMMUNE_RESPONSE:
                     arrayList.set(1, value);
                         break;
@@ -228,23 +266,18 @@ public class RetrievingEnchantmentAndStatusResistances extends TotalAttributesAn
                         break;
             }
             
-            totalStatusResistancesHashMap.put(key, arrayList);
+            totalStatusResistances.put(key, arrayList);
         }
     }
     
-    public void updateTotalResistanceValueForKey(String key, double value)
-    {
-        updateDesiredArrayListValueForKey(key, ArrayListValues.TOTAL_RESISTANCE, value);
-    }
-
     public void updateImmuneResponseValueForKey(String key, double value)
     {
-        updateDesiredArrayListValueForKey(key, ArrayListValues.IMMUNE_RESPONSE, value);
+        updateArrayListValueForKey(ResistanceValues.IMMUNE_RESPONSE, key, value);
     }
 
     public void updateNanoResponseValueForKey(String key, double value)
     {
-        updateDesiredArrayListValueForKey(key, ArrayListValues.NANO_RESPONSE, value);
+        updateArrayListValueForKey(ResistanceValues.NANO_RESPONSE, key, value);
     }
     
     // END: UPDATING ARRAYLIST VALUES FOR RESISTANCES HASHMAP 
@@ -255,17 +288,19 @@ public class RetrievingEnchantmentAndStatusResistances extends TotalAttributesAn
     // START: RESETING IMMUNE AND NANO RESPONSES 
     /*******************************************************************************/	
 
-    public void resetDesiredResponseValues(ArrayListValues responseType)
+    public void resetDesiredResponseValues(ResistanceValues responseType)
     {
         switch(responseType)
         {
             case IMMUNE_RESPONSE:
-                for(HashMap.Entry<String, ArrayList<Double>> copy : totalStatusResistancesHashMap.entrySet()){
+                for(HashMap.Entry<String, ArrayList<Double>> copy : totalStatusResistances.entrySet())
+                {
                     updateImmuneResponseValueForKey(copy.getKey(), 0);
                 }
                     break;
             case NANO_RESPONSE:
-                for(HashMap.Entry<String, ArrayList<Double>> copy : totalStatusResistancesHashMap.entrySet()){
+                for(HashMap.Entry<String, ArrayList<Double>> copy : totalStatusResistances.entrySet())
+                {
                     updateNanoResponseValueForKey(copy.getKey(), 0);
                 }
                     break;
@@ -274,12 +309,12 @@ public class RetrievingEnchantmentAndStatusResistances extends TotalAttributesAn
 
     public void resetImmuneResponseValues()
     {
-        resetDesiredResponseValues(ArrayListValues.IMMUNE_RESPONSE);
+        resetDesiredResponseValues(ResistanceValues.IMMUNE_RESPONSE);
     }
 
     public void resetNanoResponseValues()
     {
-        resetDesiredResponseValues(ArrayListValues.NANO_RESPONSE);
+        resetDesiredResponseValues(ResistanceValues.NANO_RESPONSE);
     }
 
     // END: RESETING IMMUNE AND NANO RESPONSES 
@@ -306,7 +341,7 @@ public class RetrievingEnchantmentAndStatusResistances extends TotalAttributesAn
 
     public double checkImmuneResponseBounds(double value)
     {
-        return lowerUpperBounds(-15.0, 15.0, value);
+        return lowerUpperBounds(-12.5, 12.5, value);
     }
 
     public double checkNanoResponseBounds(double value)
@@ -318,12 +353,12 @@ public class RetrievingEnchantmentAndStatusResistances extends TotalAttributesAn
     {
         SecureRandom rand = new SecureRandom();
         
-        for(HashMap.Entry<String, ArrayList<Double>> copy : totalStatusResistancesHashMap.entrySet())
+        for(HashMap.Entry<String, ArrayList<Double>> copy : totalStatusResistances.entrySet())
         {
             if(getStatusImmuneResponseForKey(copy.getKey()) == 0.0)
             {
                 updateImmuneResponseValueForKey(copy.getKey(), getStatusImmuneResponseForKey(
-                    copy.getKey()) + 3);
+                    copy.getKey()) + 2);
             }
             else if(getStatusImmuneResponseForKey(copy.getKey()) < 0.0)
             {
@@ -333,7 +368,7 @@ public class RetrievingEnchantmentAndStatusResistances extends TotalAttributesAn
             else if(getStatusImmuneResponseForKey(copy.getKey()) > 0.0)
             {
                 updateImmuneResponseValueForKey(copy.getKey(), getStatusImmuneResponseForKey(
-                    copy.getKey()) - (rand.nextInt(5)));
+                    copy.getKey()) - (rand.nextInt(6)));
             }
         }
     }
@@ -342,12 +377,12 @@ public class RetrievingEnchantmentAndStatusResistances extends TotalAttributesAn
     {
         SecureRandom rand = new SecureRandom();
         
-        for(HashMap.Entry<String, ArrayList<Double>> copy : totalStatusResistancesHashMap.entrySet())
+        for(HashMap.Entry<String, ArrayList<Double>> copy : totalStatusResistances.entrySet())
         {
             if(getStatusNanoResponseForKey(copy.getKey()) == 0.0)
             {
                 updateNanoResponseValueForKey(copy.getKey(), getStatusNanoResponseForKey(
-                    copy.getKey()) + 7);
+                    copy.getKey()) + 4);
             }
             else if(getStatusNanoResponseForKey(copy.getKey()) < 0.0)
             {
@@ -364,7 +399,7 @@ public class RetrievingEnchantmentAndStatusResistances extends TotalAttributesAn
 
     public void autoImmuneResponse(int roundCount)
     {
-        if((roundCount % 2 == 0) && getStressValue() < 0.45)
+        if((roundCount % 2 == 0) && getStress().getStressValue() < 0.45)
         {
             updateAllImmuneResponses();
         }
@@ -401,22 +436,25 @@ public class RetrievingEnchantmentAndStatusResistances extends TotalAttributesAn
         switch(returnLargestIntegerBasedOnRoundOfBattle(roundCount))
         {
             case 6:
-                if(getStressValue() > 0.85){
+                if(getStress().getStressValue() > 0.85){
                     updateAllNanoResponses();
                 }
             case 4:
-                if(getStressValue() > 0.55){
+                if(getStress().getStressValue() > 0.55){
                     updateAllNanoResponses();
                 }
             case 3:
-                if(getStressValue() > 0.25){
+                if(getStress().getStressValue() > 0.25){
                     updateAllNanoResponses();
                 }
             default: 
-                if(getStressValue() < 0.15){
+                if(getStress().getStressValue() < 0.15){
                     updateAllNanoResponses();
                 }
                     break;
         }
     }
+    
+    // END: MANAGING IMMUNE AND NANO RESPONSE VALUES 
+    /*******************************************************************************/	
 }

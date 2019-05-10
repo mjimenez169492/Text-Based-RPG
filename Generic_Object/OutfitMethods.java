@@ -10,20 +10,32 @@ package Generic_Object;
         the player has enough funds or if certain conditions are met. 
 */
 
-import Generic_Object.Cores;
-import Generic_Object.GenericObject;
-import Universally_Used_Methods.StaticMethods;
-import java.util.HashMap;
+import Commonly_Used_Methods.StaticMethods;
 import java.util.HashSet;
+import java.util.Arrays;
 
 public class OutfitMethods extends GenericObject
 {
+    // variables concerning max gauges 
+    private double maxHealth, maxNano, maxStamina;
+    
+    // attributes tied to object 
+    private double attack, defense, dexterity, critical, accuracy, nanoAttack, 
+        nanoDefense, luck;
+    
+    // denotes regeneration/degeneration rates for following gauges on per turn basis 
+    private double currentHealthRegeneration, currentStaminaRegeneration, 
+        currentNanoRegeneration; 
+    
+    // level-up related variables which are directly multiplied with values and rounded down 
+    private double expMultiplier, expGrowthRateBonus, skillPointBonus;
+    
     // max durability denoting how much damage outfit can take before breaking 
     private double maxDurability;
     
     // current durability for outfit which lowers attributes the lower it is before outfit breaks at 0 
     private double currentDurability;
-
+    
     // stores name of subclass object belongs to 
     private String subclassName;
     
@@ -35,36 +47,276 @@ public class OutfitMethods extends GenericObject
         slotFiveType, slotSixType, slotSevenType;
 
     // variables store Cores object in specified slot 
-    private Cores slotOneCore, slotTwoCore, slotThreeCore, slotFourCore, 
+    private Core slotOneCore, slotTwoCore, slotThreeCore, slotFourCore, 
         slotFiveCore, slotSixCore, slotSevenCore;
 
     // denotes how many slots an outfit can have at any one time (can be expanded)
-    private int maxNumberOfSlots;
+    private int maxNumberOfOutfitSlots;
     
+    
+    
+    // START: OUTFIT MAX GAUGES
+    /*******************************************************************************/
 
+    public double validateMaxGauges(double maxGauge)
+    {
+        if(maxGauge < 0) 
+        {
+            maxGauge = 0;
+        }
+        else if(maxGauge > 9999)
+        {
+            maxGauge = 9999;
+        }
+
+        return maxGauge;
+    }
+
+    public void setMaxHealth(double maxHealth) 
+    {
+        this.maxHealth = validateMaxGauges(maxHealth); 
+    } 
+
+    public double getMaxHealth()
+    {
+        return maxHealth; 
+    } 
+
+    public void setMaxNano(double maxNano) 
+    {
+        this.maxNano = validateMaxGauges(maxNano); 
+    } 
+
+    public double getMaxNano()
+    {
+        return maxNano; 
+    } 
+
+    public void setMaxStamina(double maxStamina) 
+    {
+        this.maxStamina = validateMaxGauges(maxStamina); 
+    } 
+
+    public double getMaxStamina()
+    {
+        return maxStamina; 
+    } 
+
+    // END: OUTFIT MAX GAUGES
+    /*******************************************************************************/
+
+
+    
+    // START: OUTFIT ATTRIBUTES
+    /*******************************************************************************/
+
+    public double validateAttribute(double attribute)
+    {
+        if(attribute < 0) 
+        {
+            attribute = 0; 
+        }
+        else if(attribute > 999)
+        {
+            attribute = 999;
+        }
+
+        return attribute;
+    }
+
+    public void setAttack(double attack)
+    {
+        this.attack = validateAttribute(attack);
+    }
+
+    public double getAttack()
+    {
+        return attack; 
+    } 
+
+    public void setDefense(double defense)
+    {
+        this.defense = validateAttribute(defense);
+    }
+
+    public double getDefense()
+    {
+        return defense; 
+    } 
+
+    public void setDexterity(double dexterity)
+    {
+        this.dexterity = validateAttribute(dexterity);
+    }
+
+    public double getDexterity()
+    {
+        return dexterity; 
+    } 
+
+    public void setCritical(double critical)
+    {
+        this.critical = validateAttribute(critical);
+    }
+
+    public double getCritical()
+    {
+        return critical; 
+    } 
+
+    public void setAccuracy(double accuracy)
+    {
+        this.accuracy = validateAttribute(accuracy);
+    }
+
+    public double getAccuracy()
+    {
+        return accuracy; 
+    } 
+
+    public void setNanoAttack(double nanoAttack)
+    {
+        this.nanoAttack = validateAttribute(nanoAttack);
+    }
+
+    public double getNanoAttack()
+    {
+        return nanoAttack; 
+    } 
+
+    public void setNanoDefense(double nanoDefense)
+    {
+        this.nanoDefense = validateAttribute(nanoDefense);
+    }
+
+    public double getNanoDefense()
+    {
+        return nanoDefense; 
+    } 
+
+    public void setLuck(double luck)
+    {
+        this.luck = validateAttribute(luck);
+    }
+
+    public double getLuck()
+    {
+        return luck; 
+    } 
+
+    // END: OUTFIT ATTRIBUTES
+    /*******************************************************************************/
+
+    
+    
+    // START: OUTFIT REGENERATION (CURRENT GAUGE += (MAX GAUGE * REGENERATION))
+    /*******************************************************************************/
+    
+    public double accessoryGaugeEffect(double effect)
+    {
+        if(effect < -1.0)
+        {
+            effect = 1.0;
+        }
+        else if (effect > 1.0)
+        {
+            effect = 1.0;
+        }
+        
+        return effect;
+    }
+    
+    public void setCurrentHealthRegeneration(double currentHealthRegeneration)
+    {
+        this.currentHealthRegeneration = accessoryGaugeEffect(currentHealthRegeneration);
+    }
+    
+    public double getCurrentHealthRegeneration()
+    {
+        return currentHealthRegeneration;
+    }
+    
+    public void setCurrentStaminaRegeneration(double currentStaminaRegeneration)
+    {
+        this.currentStaminaRegeneration = accessoryGaugeEffect(currentStaminaRegeneration);
+    }
+    
+    public double getCurrentStaminaRegeneration()
+    {
+        return currentStaminaRegeneration;
+    }
+    
+    public void setCurrentNanoRegeneration(double currentNanoRegeneration)
+    {
+        this.currentNanoRegeneration = accessoryGaugeEffect(currentNanoRegeneration);
+    }
+    
+    public double getCurrentNanoRegeneration()
+    {
+        return currentNanoRegeneration;
+    }
+    
+    // END: OUTFIT REGENERATION (CURRENT GAUGE += (MAX GAUGE * REGENERATION))
+    /*******************************************************************************/
+
+    
+    
+    // START: EFFECTS ON LEVELING MECHANICS
+    /*******************************************************************************/
+    
+    public void setExpMultiplier(double expMultiplier)
+    {
+        this.expMultiplier = lowerUpperBounds(0.0, 3.0, expMultiplier);
+    }
+    
+    public double getExpMultiplier()
+    {
+        return expMultiplier;
+    }
+    
+    public void setExpGrowthRateBonus(double expGrowthRateBonus)
+    {
+        this.expGrowthRateBonus = lowerUpperBounds(0.0, 2.5, expGrowthRateBonus);
+    }
+    
+    public double getGrowthExpRateBonus()
+    {
+        return expGrowthRateBonus;
+    }
+    
+    public void setSkillPointBonus(double skillPointBonus)
+    {
+        this.skillPointBonus = lowerUpperBounds(0.0, 1.75, skillPointBonus);
+    }
+    
+    public double getSkillPointBonus()
+    {
+        return skillPointBonus;
+    }
+    
+    // END: EFFECTS ON LEVELING MECHANICS
+    /*******************************************************************************/
+    
+    
     
     // START: DURABILITY METHODS
     /*******************************************************************************/		
 
-    // sets max durability for outfit 
     public void setMaxDurability(double maxDurability)
     {
         this.maxDurability = lowerUpperBounds(0, 500, maxDurability);
     }
     
-    // gets max durability for outfit 
     public double getMaxDurability()
     {
         return maxDurability;
     }
 
-    // sets current durability for outfit 
     public void setCurrentDurability(double currentDurability)
     {
         this.currentDurability = lowerUpperBounds(0, getMaxDurability(), currentDurability);
     }
     
-    // gets current durability for outfit 
     public double getCurrentDurability()
     {
         return currentDurability;
@@ -80,66 +332,42 @@ public class OutfitMethods extends GenericObject
 
     
 
-    // START: SUBCLASS NAME AND ADDITTIONAL SUBCLASS METHODS 
+    // START: SUBCLASS NAME 
     /*******************************************************************************/
 
-    // enum class containing valid subclasses of GenericObject and OutfitMethods 
-    public enum ValidSubclassNames
+    public enum SubclassNames
     {
-        WEAPONS, ARMORS, ACCESSORIES;
-    }
-    
-    // determines whether String passed matches one of the valid subclass names 
-    // as specified within enum class ValidSubclassNames and returns the result 
-    // as a String 
-    public String getSubclassNameAsValidString(String argument)
-    {
-        /* Note: valueOf() throws Illegal Argument Exception if argument passed
-               does not exist within the enum class Exactly as it is in class
-           Ex: enum class Example, which is uppercase like class names are, has 
-               HATS as an enum. Supplying Example.valueOf() with String that do 
-               not exist in Example such as hats (like Example.valueOf("hats"))
-               is considered illegal since HATS and hats are different. However
-               if HATS is supplied (like Example.valueOf("HATS")) the valueOf()
-               method will execute as intended */
-        switch(ValidSubclassNames.valueOf(StaticMethods.stringToEnum(argument)))
+        WEAPONS("Weapons"), ARMORS("Armors"), ACCESSORIES("Accessories");
+        
+        private String subclassNames;
+        
+        SubclassNames(String subclassNames)
         {
-            case WEAPONS: 
-                argument = "Weapons";
-                    break; 
-            case ARMORS: 
-                argument = "Armors";
-                    break; 
-            case ACCESSORIES: 
-                argument = "Accessories";
-                    break;
+            this.subclassNames = subclassNames;
         }
         
-        return argument;
+        public String getEnumAsString()
+        {
+            return subclassNames;
+        }
     }
     
-    // determines whether String passed matches one of the valid subclass names 
-    // as specified within enum class ValidSubclassNames and returns the result 
-    // as an enum from ValidSubclassNames 
-    public ValidSubclassNames getSubclassNameAsEnumUsingString(String argument)
-    {
-        ValidSubclassNames type = ValidSubclassNames.valueOf(StaticMethods.stringToEnum(argument));        
-                return type;
-    }
-    
-    // sets name of subclass outfit belongs to (done within constructor of subclass)
     public void setSubclassName(String subclassName)
     {
-        this.subclassName = getSubclassNameAsValidString(subclassName);
+        this.subclassName = SubclassNames.valueOf(StaticMethods.stringToEnum(subclassName)).getEnumAsString();
     }
     
-    // gets name of subclass oufit belongs to 
-    public String getSubclassName()
+    public String getSubclassNameString()
     {
         return subclassName;
     }
+    
+    public SubclassNames getSubclassNameEnum()
+    {
+        return SubclassNames.valueOf(StaticMethods.stringToEnum(subclassName));
+    }
         
-    // END: SUBCLASS NAME AND ADDITTIONAL SUBCLASS METHODS 
+    // END: SUBCLASS NAME 
     /*******************************************************************************/
 
     
@@ -147,42 +375,23 @@ public class OutfitMethods extends GenericObject
     // START: ANY CORE TYPE FOR SLOTS OF OUTFIT
     /*******************************************************************************/
     
-    // enum class containing "Any _ Core" types for slot which can accept cores that
-    // subclass (based on subclass name) considers valid 
-    // Note: slots/cores can have "Any Core" albeit rarely (in either case accept core)
-    public enum ValidAnyCoreTypes
+    // get "Any _ Core" slot type as String based on subclass name passed 
+    public enum AnyCoreTypeBySubclassNames
     {
-        ANY_WEAPON_CORE, ANY_ARMOR_CORE, ANY_ACCESSORY_CORE, ANY_CORE;
-    }
-    
-    // returns String reprsenting "Any _ Core" for slot type based on subclass 
-    // outfit belongs to (use with getAnyCoreTypeAsStringBasedOnSubclassName())
-    public String getAnyCoreTypeString(String argument)
-    {
-        switch(ValidAnyCoreTypes.valueOf(StaticMethods.stringToEnum(argument)))
+        WEAPONS("Any Weapon Core"), ARMORS("Any Armor Core"), ACCESSORIES("Any Accessory Core"),
+        CORES("Any Core");
+        
+        private String anyCoreTypeBySubclassNames;
+        
+        AnyCoreTypeBySubclassNames(String anyCoreTypeBySubclassNames)
         {
-            case ANY_WEAPON_CORE: 
-                argument = "Any Weapon Core";
-                    break; 
-            case ANY_ARMOR_CORE: 
-                argument = "Any Armor Core";
-                    break; 
-            case ANY_ACCESSORY_CORE: 
-                argument = "Any Accessory Core";
-                    break;
-            case ANY_CORE: 
-                argument = "Any Core";
-                    break;
+            this.anyCoreTypeBySubclassNames = anyCoreTypeBySubclassNames;
         }
         
-        return argument;
-    }
-    
-    // return ValidAnyCoreSlotTypes enum of "Any _ Core" based on String passed 
-    public ValidAnyCoreTypes getAnyCoreTypeEnumUsingString(String argument)
-    {
-        ValidAnyCoreTypes type = ValidAnyCoreTypes.valueOf(StaticMethods.stringToEnum(argument));
-                return type;
+        public String getEnumAsString()
+        {
+            return anyCoreTypeBySubclassNames;
+        }
     }
     
     // setting "Any _ Core" slot type means slot can store any core the subclass 
@@ -190,53 +399,18 @@ public class OutfitMethods extends GenericObject
     // can ONLY equip a core that has the exact same type as the slot) 
     public void setAnyCoreSlotType()
     {
-        anyCoreType = getAnyCoreTypeString(getAnyCoreTypeAsStringBasedOnSubclassName(
-            subclassName));  
+        // Note: slots/cores can have "Any Core" (in either case accept the core)
+        anyCoreType = AnyCoreTypeBySubclassNames.valueOf(StaticMethods.stringToEnum(subclassName)).getEnumAsString();
     }
-
-    public String getAnyCoreSlotType()
+    
+    public String getAnyCoreSlotTypeString()
     {
         return anyCoreType;
     }
     
-    // get "Any _ Core" slot type as String based on subclass name passed 
-    public String getAnyCoreTypeAsStringBasedOnSubclassName(String argument)
+    public AnyCoreTypeBySubclassNames getAnyCoreSlotTypeEnum()
     {
-        switch(ValidSubclassNames.valueOf(StaticMethods.stringToEnum(argument)))
-        {
-            case WEAPONS: 
-                argument = "Any Weapon Core";
-                    break; 
-            case ARMORS: 
-                argument = "Any Armor Core";
-                    break; 
-            case ACCESSORIES: 
-                argument = "Any Accessory Core";
-                    break;
-        }
-        
-        return argument;
-    }
-    
-    // get "Any _ Core" slot type as enum of ValidAnyCoreSlotTypes based on subclass name passed 
-    public ValidAnyCoreTypes getAnyCoreTypeAsEnumBasedOnSubclassName(String argument)
-    {
-        ValidAnyCoreTypes result = null;
-        
-        switch(ValidSubclassNames.valueOf(StaticMethods.stringToEnum((argument))))
-        {
-            case WEAPONS: 
-                result = ValidAnyCoreTypes.ANY_WEAPON_CORE;
-                    break; 
-            case ARMORS: 
-                result = ValidAnyCoreTypes.ANY_ARMOR_CORE;
-                    break; 
-            case ACCESSORIES: 
-                result = ValidAnyCoreTypes.ANY_ACCESSORY_CORE;
-                    break;
-        }
-        
-        return result;
+        return AnyCoreTypeBySubclassNames.valueOf(StaticMethods.stringToEnum(anyCoreType));
     }
     
     // END: ANY CORE TYPE FOR SLOTS OF OUTFIT
@@ -244,370 +418,190 @@ public class OutfitMethods extends GenericObject
     
     
     
-    // START: GENERICOBJECT SUBCLASSES STRINGAND VALIDATION AND ENUM RETRIEVAL 
+    // START: GENERICOBJECT SUBCLASS STRING VALIDATION AND ENUM RETRIEVAL 
     /*******************************************************************************/
     
-    // START: WEAPONS SUBCLASS
+    // WEAPONS SUBCLASS
     
-    // enum class denoting valid slot types and core types for Weapons objects 
-    public enum ValidWeaponSlotCoreTypes
+    public enum WeaponSlotCoreTypes
     {
-        MAX_STAMINA, MAX_NANO, ATTACK, DEXTERITY, CRITICAL, ACCURACY, NANO_ATTACK, 
-            ANY_WEAPON_CORE;
-    }
-    
-    // returns String form of ValidWeaponSlotCoreTypes enum passed (if MAX_STAMINA 
-    // is passed as argument for parameter ValidWeaponSlotCoreTypes then result is 
-    // the String "Max Stamina") 
-    public static String getWeaponSlotCoreTypeStringUsingEnum(ValidWeaponSlotCoreTypes argument)
-    {
-        String result = null; 
+        MAX_STAMINA("Max Stamina"), MAX_NANO("Max Nano"), ATTACK("Attack"), DEXTERITY
+        ("Dexterity"), CRITICAL("Critical"), ACCURACY("Accuracy"), NANO_ATTACK("Nano Attack"), 
+        ANY_WEAPON_CORE("Any Weapon Core");
+            
+        private String weaponSlotCoreTypes;
         
-        switch(argument)
+        WeaponSlotCoreTypes(String weaponSlotCoreTypes)
         {
-            case MAX_STAMINA:
-                result = "Max Stamina";
-                    break;
-            case MAX_NANO: 
-                result = "Max Nano";
-                    break;
-            case ATTACK:
-                result = "Attack";
-                    break;
-            case DEXTERITY:
-                result = "Dexterity";
-                    break;
-            case CRITICAL:
-                result = "Critical";
-                    break;
-            case ACCURACY:
-                result = "Accuracy";
-                    break;
-            case ANY_WEAPON_CORE:
-                result = "Any Weapon Core";
-                    break;
+            this.weaponSlotCoreTypes = weaponSlotCoreTypes;
         }
         
-        return result;
+        public String getEnumAsString()
+        {
+            return weaponSlotCoreTypes;
+        }
     }
     
-    // returns array of enum values for ValidWeaponSlotCoreTypes as array of Strings 
-    public static String[] validWeaponSlotCoreTypesAsStrings()
+    public String getWeaponSlotCoreTypeString(String argument)
     {
-        String[] array = new String[StaticMethods.getNumberOfEnumElements(
-            ValidWeaponSlotCoreTypes.values())];
+        return WeaponSlotCoreTypes.valueOf(StaticMethods.stringToEnum(argument)).getEnumAsString();
+    }
+    
+    public WeaponSlotCoreTypes getWeaponSlotCoreTypeEnum(String argument)
+    {
+        return WeaponSlotCoreTypes.valueOf(StaticMethods.stringToEnum(argument));
+    }
+    
+    public static String[] weaponSlotCoreTypeValueStrings()
+    {
+        String[] array = new String[WeaponSlotCoreTypes.values().length];
         
-        for(int i = 0; i < ValidWeaponSlotCoreTypes.values().length; i++)
+        for(int i = 0; i < WeaponSlotCoreTypes.values().length; i++)
         {
-            array[i] = getWeaponSlotCoreTypeStringUsingEnum(
-                ValidWeaponSlotCoreTypes.values()[i]);
+            array[i] = WeaponSlotCoreTypes.values()[i].getEnumAsString();
         }
 
         return array;
     }
     
-    // returns ValidWeaponSlotCoreTypes enum form of String passed so long as String is valid 
-    public static ValidWeaponSlotCoreTypes getWeaponSlotCoreTypesEnumUsingString(String argument)
-    {
-        ValidWeaponSlotCoreTypes result = null;
-        
-        if(StaticMethods.isStringValid(validWeaponSlotCoreTypesAsStrings(), argument))
-        {   
-            result = ValidWeaponSlotCoreTypes.valueOf(StaticMethods.stringToEnum(argument));
-        }
-        
-        return result;
-    }
-    
-    // HashMap creation and population through static means 
-    private static final HashMap<ValidWeaponSlotCoreTypes, String> weaponSlotCoreTypesHashMap 
-        = new HashMap<ValidWeaponSlotCoreTypes, String>();
-        static 
-        {
-            for (ValidWeaponSlotCoreTypes validWeaponType : ValidWeaponSlotCoreTypes.values()) 
-            {
-                weaponSlotCoreTypesHashMap.put(validWeaponType, 
-                    getWeaponSlotCoreTypeStringUsingEnum(validWeaponType));
-            }
-        }
-    
-    // return valid weapon slot/core type as String based on String passed 
-    public static String getWeaponSlotCoreTypeAsString(String argument) 
-    {
-        return weaponSlotCoreTypesHashMap.get(getWeaponSlotCoreTypesEnumUsingString(argument));
-    }
-    
-    // return valid weapon slot/core type as Enum based on String passed 
-    public static ValidWeaponSlotCoreTypes getWeaponSlotCoreTypeAsEnum(String argument) 
-    {
-        ValidWeaponSlotCoreTypes result = null;
-        
-        for(ValidWeaponSlotCoreTypes key : weaponSlotCoreTypesHashMap.keySet())
-        {
-            if(key == getWeaponSlotCoreTypesEnumUsingString(argument))
-            {
-                result = key;
-                    break;
-            }
-        }
-        
-        return result;
-    } 
-        
-    // END: WEAPONS SUBCLASS
+    // WEAPONS SUBCLASS
     
     
-    // START: ARMORS SUBCLASS
+    // ARMORS SUBCLASS
     
-    // enum class denoting valid slot/core types for Armors objects 
     // Note: aside from attribute core/slot types, resistances also have slot/core types 
-    public enum ValidArmorSlotCoreTypes
+    public enum ArmorSlotCoreTypes
     {
-        MAX_HEALTH, MAX_STAMINA, MAX_NANO, DEFENSE, DEXTERITY, NANO_DEFENSE,
-            ANY_ARMOR_CORE;
-    }
-    
-    // returns String form of ValidArmorSlotCoreTypes enum passed (if MAX_STAMINA 
-    // is passed as argument for parameter ValidArmorSlotCoreTypes then result is 
-    // the String "Max Stamina") 
-    public static String getArmorSlotCoreTypeStringUsingEnum(ValidArmorSlotCoreTypes argument)
-    {
-        String result = null;
+        // slot/core types 
+        MAX_HEALTH("Max Health"), MAX_STAMINA("Max Stamina"), MAX_NANO("Max Nano"), 
+        DEFENSE("Defense"), DEXTERITY("Dexterity"), NANO_DEFENSE("Nano Defense"),
+        ANY_ARMOR_CORE("Any Armor Core"),
         
-        switch(argument)
+        // current health status effects 
+	ABLAZE("Ablaze"), BLEED("Bleed"), TOXIC("Toxic"),
+	
+	// attribute status effects 
+	ATTACK_DOWN("Attack Down"), DEFENSE_DOWN("Defense Down"), SHUTDOWN("Shutdown"), 
+	DEXTERITY_DOWN("Dexterity Down"), CRITICAL_DOWN("Critical Down"), ACCURACY_DOWN
+	("Accuracy Down"), BLIND("Blind"), NANO_ATTACK_DOWN("Nano Attack Down"), 
+	NANO_DEFENSE_DOWN("Nano Defense Down"),
+	
+	// behavior status effects 
+	CONFUSED("Confused"), ENAMORED("Enamored"), BERSERK("Berserk"),
+	
+	// turn behavior status effects 
+	FLINCHED("Flinched"), STUNNED("Stunned"), SCARED("Scared"), BOUND("Bound"), 
+	SLEEP("Sleep"), TRANCED("Tranced"), SHOCKED("Shocked"), SLOWED("Slowed"), 
+	STOPPED("Stopped"),
+	
+	// nullify status effects 
+	NULLIFY_STATUS_EFFECTS("Nullify Status Effects");
+        
+        private String armorSlotCoreTypes;
+        
+        ArmorSlotCoreTypes(String armorSlotCoreTypes)
         {
-            case MAX_HEALTH:
-                result = "Max Health";
-                    break;
-            case MAX_STAMINA: 
-                result = "Max Stamina";
-                    break;
-            case MAX_NANO:
-                result = "Max Nano";
-                    break;
-            case DEFENSE:
-                result = "Defense";
-                    break;
-            case DEXTERITY:
-                result = "Dexterity";
-                    break;
-            case NANO_DEFENSE:
-                result = "Nano Defense";
-                    break;
-            case ANY_ARMOR_CORE:
-                result = "Any Armor Core";
-                    break;
+            this.armorSlotCoreTypes = armorSlotCoreTypes;
         }
         
-        return result;
+        public String getEnumAsString()
+        {
+            return armorSlotCoreTypes;
+        }
     }
     
-    // returns array of enum values for ValidArmorSlotCoreTypes as array of Strings 
-    public static String[] validArmorSlotCoreTypesValuesAsStrings()
+    public String getArmorSlotCoreTypeString(String argument)
     {
-        String[] array = new String[StaticMethods.getNumberOfEnumElements(ValidArmorSlotCoreTypes.values())];
+        return ArmorSlotCoreTypes.valueOf(StaticMethods.stringToEnum(argument)).getEnumAsString();
+    }
+    
+    public ArmorSlotCoreTypes getArmorSlotCoreTypeEnum(String argument)
+    {
+        return ArmorSlotCoreTypes.valueOf(StaticMethods.stringToEnum(argument));
+    }
+    
+    public static String[] armorSlotCoreTypeValueStrings()
+    {
+        String[] array = new String[ArmorSlotCoreTypes.values().length];
         
-        for(int i = 0; i < ValidArmorSlotCoreTypes.values().length; i++)
+        for(int i = 0; i < ArmorSlotCoreTypes.values().length; i++)
         {
-            array[i] =  getArmorSlotCoreTypeStringUsingEnum(ValidArmorSlotCoreTypes.values()[i]);
+            array[i] = ArmorSlotCoreTypes.values()[i].getEnumAsString();
+        }
+
+        return array;
+    }
+    
+    // ARMORS SUBCLASS
+    
+    
+    // ACCESSORIES SUBCLASS
+    
+    public enum AccessorySlotCoreTypes
+    {
+        MAX_HEALTH("Max Health"), MAX_STAMINA("Max Stamina"), MAX_NANO("Max Nano"), 
+        ATTACK("Attack"), DEFENSE("Defense"), DEXTERITY("Dexterity"), CRITICAL("Critical"), 
+        ACCURACY("Accuracy"), NANO_ATTACK("Nano Attack"), NANO_DEFENSE("Nano Defense"), 
+        LUCK("Luck"), ANY_ACCESSORY_CORE("Any Accessory Core"); 
+        
+        private String accessorySlotCoreTypes;
+        
+        AccessorySlotCoreTypes(String accessorySlotCoreTypes)
+        {
+            this.accessorySlotCoreTypes = accessorySlotCoreTypes;
+        }
+        
+        public String getEnumAsString()
+        {
+            return accessorySlotCoreTypes;
+        }
+    }
+
+    public String getAccessorySlotCoreTypeString(String argument)
+    {
+        return AccessorySlotCoreTypes.valueOf(StaticMethods.stringToEnum(argument)).getEnumAsString();
+    }
+    
+    public AccessorySlotCoreTypes getAccessorySlotCoreTypeEnum(String argument)
+    {
+        return AccessorySlotCoreTypes.valueOf(StaticMethods.stringToEnum(argument));
+    }
+    
+    public static String[] accessorySlotCoreTypeValueStrings()
+    {
+        String[] array = new String[AccessorySlotCoreTypes.values().length];
+        
+        for(int i = 0; i < AccessorySlotCoreTypes.values().length; i++)
+        {
+            array[i] = AccessorySlotCoreTypes.values()[i].getEnumAsString();
         }
 
         return array;
     }
     
-    // returns ValidArmorSlotCoreTypes enum form of String passed so long as String is valid 
-    public static ValidArmorSlotCoreTypes getArmorSlotCoreTypeEnumUsingString(String argument)
-    {
-        ValidArmorSlotCoreTypes result = null;
-        
-        if(StaticMethods.isStringValid(validArmorSlotCoreTypesValuesAsStrings(), argument))
-        {
-            result = ValidArmorSlotCoreTypes.valueOf(StaticMethods.stringToEnum(argument));
-        }
-        
-        return result;
-    }
+    // ACCESSORIES SUBCLASS
     
-    // HashMap creation and population through static means 
-    private static final HashMap<ValidArmorSlotCoreTypes, String> armorSlotCoreTypeHashMap =
-        new HashMap<ValidArmorSlotCoreTypes, String>();
-        static 
-        {
-            for (ValidArmorSlotCoreTypes validArmorSlotCoreType : ValidArmorSlotCoreTypes.values()) 
-            {
-                armorSlotCoreTypeHashMap.put(validArmorSlotCoreType, 
-                    getArmorSlotCoreTypeStringUsingEnum(validArmorSlotCoreType));
-            }
-        }
-    
-    // return valid weapon slot/core type as String based on String passed 
-    public static String getArmorSlotCoreTypeAsString(String argument) 
-    {
-        return armorSlotCoreTypeHashMap.get(getArmorSlotCoreTypeEnumUsingString(argument));
-    }
-
-    // return valid weapon slot/core type as Enum based on String passed 
-    public static ValidArmorSlotCoreTypes getArmorSlotCoreTypeAsEnum(String argument) 
-    {
-        ValidArmorSlotCoreTypes result = null;
-        
-        for(ValidArmorSlotCoreTypes key : armorSlotCoreTypeHashMap.keySet())
-        {
-            if(key == getArmorSlotCoreTypeEnumUsingString(argument))
-            {
-                result = key;
-            }
-        }
-        
-        return result;
-    } 
-    
-    // START: ARMORS SUBCLASS
-    
-    
-    // START: ACCESSORIES SUBCLASS
-    
-    // enum class denoting valid slot/core types for Accessories objects 
-    public enum ValidAccessorySlotCoreTypes
-    {
-        MAX_HEALTH, MAX_STAMINA, MAX_NANO, ATTACK, DEFENSE, DEXTERITY, 
-            CRITICAL, ACCURACY, NANO_ATTACK, NANO_DEFENSE, LUCK, 
-            ANY_ACCESSORY_CORE; 
-    }
-
-    // returns String form of ValidAccessorySlotCoreTypes enum passed (if MAX_STAMINA 
-    // is passed as argument for parameter ValidAccessorySlotCoreTypes then result is 
-    // the String "Max Stamina") 
-    public static String getAccessorySlotCoreTypeStringUsingEnum(
-        ValidAccessorySlotCoreTypes argument)
-    {
-        String result = null;
-        
-        switch(argument)
-        {
-            case MAX_HEALTH:
-                result = "Max Health";
-                    break;
-            case MAX_STAMINA: 
-                result = "Max Stamina";
-                    break;
-            case MAX_NANO:
-                result = "Max Nano";
-                    break;
-            case ATTACK:
-                result = "Attack";
-                    break;
-            case DEFENSE:
-                result = "Defense";
-                    break;
-            case DEXTERITY:
-                result = "Dexterity";
-                    break;
-            case CRITICAL:
-                result = "Critical";
-                    break;
-            case ACCURACY:
-                result = "Accuracy";
-                    break;
-            case NANO_ATTACK:
-                result = "Nano Attack";
-                    break;
-            case NANO_DEFENSE:
-                result = "Nano Defense";
-                    break;
-            case ANY_ACCESSORY_CORE:
-                result = "Any Accessory Core";
-                    break;
-        }
-        
-        return result;
-    }
-    
-    // returns array of enum values for ValidAccessorySlotCoreTypes as array of Strings 
-    public static String[] validAccessorySlotCoreTypesValuesAsStrings()
-    {
-        String[] array = new String[StaticMethods.getNumberOfEnumElements(ValidAccessorySlotCoreTypes.values())];
-        
-        for(int i = 0; i < ValidAccessorySlotCoreTypes.values().length; i++)
-        {
-            array[i] = getAccessorySlotCoreTypeStringUsingEnum(ValidAccessorySlotCoreTypes.values()[i]);
-        }
-
-        return array;
-    }
-
-    // returns ValidAccessorySlotCoreTypes enum form of String passed so long as String is valid 
-    public static ValidAccessorySlotCoreTypes getAccessorySlotCoreTypesEnumUsingString(String argument)
-    {
-        ValidAccessorySlotCoreTypes result = null;
-        
-        if(StaticMethods.isStringValid(validAccessorySlotCoreTypesValuesAsStrings(), argument))
-        {
-            result = ValidAccessorySlotCoreTypes.valueOf(StaticMethods.stringToEnum(argument));
-        }
-        
-        return result;
-    }
-    
-    // HashMap creation and population through static means 
-    private static final HashMap<ValidAccessorySlotCoreTypes, String> accessorySlotCoreTypesHashMap =
-        new HashMap<ValidAccessorySlotCoreTypes, String>();
-        static 
-        {
-            for (ValidAccessorySlotCoreTypes enchantment : ValidAccessorySlotCoreTypes.values()) 
-            {
-                accessorySlotCoreTypesHashMap.put(enchantment, getAccessorySlotCoreTypeStringUsingEnum(enchantment));
-            }
-        }
-    
-    // return valid weapon slot/core type as String based on String passed 
-    public static String getAccessorySlotCoreTypeAsString(String argument) 
-    {
-        return accessorySlotCoreTypesHashMap.get(getAccessorySlotCoreTypesEnumUsingString(argument));
-    }
-    
-    // return valid weapon slot/core type as Enum based on String passed 
-    public static ValidAccessorySlotCoreTypes getAccessorySlotCoreTypeAsEnum(String argument) 
-    {
-        ValidAccessorySlotCoreTypes result = null;
-        
-        for(ValidAccessorySlotCoreTypes key : accessorySlotCoreTypesHashMap.keySet())
-        {
-            if(key == getAccessorySlotCoreTypesEnumUsingString(argument))
-            {
-                result = key;
-            }
-        }
-        
-        return result;
-    } 
-    
-    // EMD: ACCESSORIES SUBCLASS
-    
-    // END: GENERICOBJECT SUBCLASSES STRINGAND VALIDATION AND ENUM RETRIEVAL 
+    // END: GENERICOBJECT SUBCLASS STRING VALIDATION AND ENUM RETRIEVAL 
     /*******************************************************************************/
 
     
     // START: VALIDATING SUPPLIED SLOT TYPE AGAINST ACCEPTED SLOT TYPES 
     /*******************************************************************************/
     
-    // validates argument representing slot/core type and returns the appropriate result 
     public String validateSlotCoreType(String slotCoreType)
     {
         if(slotCoreType != null)
         {
-            switch(ValidSubclassNames.valueOf(StaticMethods.stringToEnum(subclassName)))
+            switch(getSubclassNameEnum())
             {
                 case WEAPONS:
-                    slotCoreType = getWeaponSlotCoreTypeAsString(slotCoreType);
+                    slotCoreType = getWeaponSlotCoreTypeString(slotCoreType);
                         break;
                 case ARMORS: 
-                    if(StaticMethods.getResistancesForArmorsClassAsValidString(slotCoreType) == null){
-                        slotCoreType = getArmorSlotCoreTypeAsString(slotCoreType);}
-                            else{slotCoreType = StaticMethods.getResistancesForArmorsClassAsValidString(slotCoreType);}
-                                break;
+                    slotCoreType = getArmorSlotCoreTypeString(slotCoreType);
+                        break;
                 case ACCESSORIES: 
-                    slotCoreType = getAccessorySlotCoreTypeAsString(slotCoreType);
+                    slotCoreType = getAccessorySlotCoreTypeString(slotCoreType);
                         break;
             }
         }
@@ -615,115 +609,67 @@ public class OutfitMethods extends GenericObject
         return slotCoreType;
     }
     
-    // return Object containing enum form of ANY enum class value based off String
-    public Object getValidSubclassEnum(String argument)
-    {
-        Object validType = null;
-        
-        if(argument != null)
-        {
-            argument = StaticMethods.stringToEnum(argument);
-            boolean isNotNull = false;
-
-            for(ValidSubclassNames element: ValidSubclassNames.values())
-            {
-                if(isNotNull != true)
-                {
-                    switch(element)
-                    {
-                        case WEAPONS: 
-                            validType = getWeaponSlotCoreTypeAsEnum(argument);
-                                break;
-                        case ARMORS: 
-                            if(StaticMethods.getResistancesForArmorsClassAsValidEnum(argument) == null){
-                                validType = getArmorSlotCoreTypeAsEnum(argument);}
-                                    else{validType = StaticMethods.getResistancesForArmorsClassAsValidEnum(argument);}
-                                        break;
-                        case ACCESSORIES: 
-                            validType = getAccessorySlotCoreTypeAsEnum(argument);
-                                break;
-                    }
-                    if(validType != null){isNotNull = true;}
-                } else
-                {
-                    break;
-                }
-            }
-        }
-        
-        return validType;
-    }
-    
-    // if core type matches a type considered valid for subclass (based on subclass
-    // name) then return the core type 
-    public String getSubclassIfCoreTypeIsValid(String coreType)
-    { 
-        String resultingSubclass = null;
-    
-        if(coreType != null)
-        {
-            switch(ValidSubclassNames.valueOf(StaticMethods.stringToEnum(subclassName)))
-            {
-                case WEAPONS:
-                    if(getWeaponSlotCoreTypeAsString(coreType) != null)
-                        {resultingSubclass = "weapons";}
-                            break;
-                case ARMORS: 
-                    if(StaticMethods.getResistancesForArmorsClassAsValidEnum(coreType) == null){
-                        if(getArmorSlotCoreTypeAsString(coreType) != null)
-                            {resultingSubclass = "armors";}}
-                    else{resultingSubclass = "armors";}
-                                break;
-                case ACCESSORIES: 
-                    if(getAccessorySlotCoreTypeAsString(coreType) != null)
-                        {resultingSubclass = "accessories";}
-                            break;
-            }
-        }
-        
-        return resultingSubclass;
-    }
-    
-    // if slot for object accepts "Any _ Core" for subclass outfit (based on the
-    // subclass name) then compare it against "Any _ Core" type for core type 
-    public boolean isCoreTypeValidForAnyCoreSlotTypeOfObject(Object object, String coreType)
+    public boolean stringExists(String[] array, String argument)
     {
         boolean result = false;
         
-        // Example: if slot type is "Any Weapon Core" then accept any valid weapon core 
-        // if subclassName is "Weapons" and core type is Attack, determine if the 
-            // core type is a valid type for weapons and if so then store core in slot 
-        if(object == getAnyCoreTypeAsEnumBasedOnSubclassName(getSubclassIfCoreTypeIsValid((coreType))))
+        for(String element : array)
         {
-            result = true;
+            if(element.equals(argument))
+            {
+                result = true;
+            }
+        }
+        
+        return result;
+    }
+    
+    public boolean coreTypeValidForSubclassName(String coreType)
+    { 
+        boolean result = false;
+    
+        if(coreType != null)
+        {
+            switch(getSubclassNameEnum())
+            {
+                case WEAPONS:
+                    result = stringExists(weaponSlotCoreTypeValueStrings(), coreType);
+                        break;
+                case ARMORS: 
+                    result = stringExists(armorSlotCoreTypeValueStrings(), coreType);
+                        break;
+                case ACCESSORIES: 
+                    result = stringExists(accessorySlotCoreTypeValueStrings(), coreType);
+                        break;
+            }
         }
         
         return result;
     }
     
     /* core validation requirements 
-        -if core has core type "Any Core" then store core in slot
+        -if core has core type "Any Core" or slot type is "Any Core" 
+         then store core in slot 
         -compare core type against slot type and if there is a 
          match then equip core else reject core 
         -if slot type is "Any _ Core" then accept any core
          that object CAN have if core is valid (see subclassName) */
     
-    public Cores validateCoreUsingSlotType(Cores core, String slotType)
+    public Core validateCore(Core core, String slotType)
     {
-        Cores holdCore = null;
+        Core holdCore = null;
         
         if(core != null && slotType != null)
         {
-            if(getAnyCoreTypeEnumUsingString(core.getCoreType()) == ValidAnyCoreTypes.ANY_CORE)
+            if(core.getCoreType().equals("Any Core") || slotType.equals("Any Core"))
             {
                 holdCore = core;
             }
-            else if(getValidSubclassEnum(core.getCoreType()) == getValidSubclassEnum(slotType))
+            else if(core.getCoreType().equals(slotType))
             {
                 holdCore = core;
             }
-            else if(isCoreTypeValidForAnyCoreSlotTypeOfObject(getAnyCoreTypeEnumUsingString(
-                anyCoreType), core.getCoreType()))
+            else if(coreTypeValidForSubclassName(core.getCoreType()))
             {
                 holdCore = core;
             }
@@ -750,12 +696,12 @@ public class OutfitMethods extends GenericObject
         return slotOneType;
     }
 
-    public void setSlotOneCore(Cores slotOneCore)
+    public void setSlotOneCore(Core slotOneCore)
     {
-        this.slotOneCore = validateCoreUsingSlotType(slotOneCore, slotOneType);		
+        this.slotOneCore = validateCore(slotOneCore, slotOneType);		
     }
 
-    public Cores getSlotOneCore()
+    public Core getSlotOneCore()
     {
         return slotOneCore;
     }
@@ -770,12 +716,12 @@ public class OutfitMethods extends GenericObject
         return slotTwoType;
     }
 
-    public void setSlotTwoCore(Cores slotTwoCore)
+    public void setSlotTwoCore(Core slotTwoCore)
     {
-        this.slotTwoCore = validateCoreUsingSlotType(slotTwoCore, slotTwoType);
+        this.slotTwoCore = validateCore(slotTwoCore, slotTwoType);
     }
 
-    public Cores getSlotTwoCore()
+    public Core getSlotTwoCore()
     {
         return slotTwoCore;
     }
@@ -790,12 +736,12 @@ public class OutfitMethods extends GenericObject
         return slotThreeType;
     }
 
-    public void setSlotThreeCore(Cores slotThreeCore)
+    public void setSlotThreeCore(Core slotThreeCore)
     {
-        this.slotThreeCore = validateCoreUsingSlotType(slotThreeCore, slotThreeType);
+        this.slotThreeCore = validateCore(slotThreeCore, slotThreeType);
     }
 
-    public Cores getSlotThreeCore()
+    public Core getSlotThreeCore()
     {
         return slotThreeCore;
     }
@@ -810,12 +756,12 @@ public class OutfitMethods extends GenericObject
         return slotFourType;
     }
 
-    public void setSlotFourCore(Cores slotFourCore)
+    public void setSlotFourCore(Core slotFourCore)
     {
-        this.slotFourCore = validateCoreUsingSlotType(slotFourCore, slotFourType);
+        this.slotFourCore = validateCore(slotFourCore, slotFourType);
     }
 
-    public Cores getSlotFourCore()
+    public Core getSlotFourCore()
     {
         return slotFourCore;
     }
@@ -830,12 +776,12 @@ public class OutfitMethods extends GenericObject
         return slotFiveType;
     }
 
-    public void setSlotFiveCore(Cores slotFiveCore)
+    public void setSlotFiveCore(Core slotFiveCore)
     {
-        this.slotFiveCore = validateCoreUsingSlotType(slotFiveCore, slotFiveType);
+        this.slotFiveCore = validateCore(slotFiveCore, slotFiveType);
     }
 
-    public Cores getSlotFiveCore()
+    public Core getSlotFiveCore()
     {
         return slotFiveCore;
     }
@@ -850,12 +796,12 @@ public class OutfitMethods extends GenericObject
         return slotSixType;
     }
 
-    public void setSlotSixCore(Cores slotSixCore)
+    public void setSlotSixCore(Core slotSixCore)
     {
-        this.slotFiveCore = validateCoreUsingSlotType(slotSixCore, slotSixType);
+        this.slotFiveCore = validateCore(slotSixCore, slotSixType);
     }
 
-    public Cores getSlotSixCore()
+    public Core getSlotSixCore()
     {
         return slotSixCore;
     }
@@ -870,12 +816,12 @@ public class OutfitMethods extends GenericObject
         return slotSevenType;
     }
 
-    public void setSlotSevenCore(Cores slotFiveCore)
+    public void setSlotSevenCore(Core slotFiveCore)
     {
-        this.slotFiveCore = validateCoreUsingSlotType(slotSevenCore, slotSevenType);
+        this.slotFiveCore = validateCore(slotSevenCore, slotSevenType);
     }
 
-    public Cores getSlotSevenCore()
+    public Core getSlotSevenCore()
     {
         return slotSevenCore;
     }
@@ -885,35 +831,38 @@ public class OutfitMethods extends GenericObject
     
     
     
-    // START: SETTING AND GETTING SLOTS AND CORES INFORMATION
+    // START: EXISTING SLOT TYPES AND SLOT CORES 
     /*******************************************************************************/
 
-    // set max number of slots outfit can have 
-    public void setMaxNumberOfSlotTypes(int maxNumberOfSlots)
+    // COMMON METHODS
+    
+    public void setMaxNumberOfOutfitSlots(int maxNumberOfOutfitSlots)
     {
-        this.maxNumberOfSlots = maxNumberOfSlots;
+        this.maxNumberOfOutfitSlots = maxNumberOfOutfitSlots;
     }
 
-    // get max number of slots outfit can have 
-    public int getMaxNumberOfSlotTypes()
+    public int getMaxNumberOfOutfitSlots()
     {
-        return maxNumberOfSlots;
+        return maxNumberOfOutfitSlots;
     }
     
-    // get all slots that outfit can possibly have
-    public String[] getAllSlots()
+    // COMMON METHODS 
+    
+    
+    // EXISTING SLOT TYPES
+    
+    public String[] getAllOutfitSlotTypes()
     {
         String[] allSlots = {getSlotOneType(), getSlotTwoType(), getSlotThreeType(),
             getSlotFourType(), getSlotFiveType(), getSlotSixType(), getSlotSevenType()};
                 return allSlots;
     }
     
-    // get number of slots that exist (slots that are not null)
-    public int getNumberOfExistingSlots()
+    public int getNumberOfExistingSlotTypes()
     {
         int numberOfExistingSlots = 0;
         
-        for(String element : getAllSlots())
+        for(String element : getAllOutfitSlotTypes())
         {
             if(element != null)
             {
@@ -924,39 +873,54 @@ public class OutfitMethods extends GenericObject
         return numberOfExistingSlots;
     }
     
-    // get all slot types that exist from exisitng cores 
-    public String[] getExistingSlots()
+    public String[] addElementsToFirstArray(int arraySize, String[] array)
     {
-        String[] existingSlots = new String[maxNumberOfSlots];
+        String[] newArray = new String[arraySize];
         
         int counter = 0;
         
-        for(String element : getAllSlots())
+        for(String element : array)
         {
             if(element != null)
             {
-                existingSlots[counter] = element;
+                newArray[counter] = element;
                     counter++;
             }
         }
         
-        return existingSlots;
+        return newArray;
     }
     
-    // get all cores that outfit can possible have 
-    public Cores[] getAllSlotCores()
+    public String[] filterNullAndNoCharacters(String[] array)
     {
-        Cores[] allSlotCores = {getSlotOneCore(), getSlotTwoCore(), getSlotThreeCore(), 
+        String[] cleanedArray = Arrays.stream(array).filter(s -> (s != null && 
+            s.length() > 0)).toArray(String[]::new);
+                return cleanedArray;
+    }
+    
+    public String[] getExistingSlotTypes()
+    {
+        return filterNullAndNoCharacters(addElementsToFirstArray(maxNumberOfOutfitSlots, 
+            getAllOutfitSlotTypes()));
+    }
+    
+    // EXISTING SLOT TYPES
+    
+    
+    // EXISTING SLOT CORES
+    
+    public Core[] getAllOutfitSlotCores()
+    {
+        Core[] allSlotCores = {getSlotOneCore(), getSlotTwoCore(), getSlotThreeCore(), 
             getSlotFourCore(), getSlotFiveCore(), getSlotSixCore(), getSlotSevenCore()};
                 return allSlotCores;
     }
-     
-    // get number of cores that exist (cores that are not null)
+    
     public int getNumberOfExistingCores()
     {
         int numberOfExistingCores = 0;
         
-        for(Cores element : getAllSlotCores())
+        for(Core element : getAllOutfitSlotCores())
         {
             if(element != null)
             {
@@ -967,24 +931,41 @@ public class OutfitMethods extends GenericObject
         return numberOfExistingCores;
     } 
     
-    // get all slot cores that exist from existing slots 
-    public Cores[] getExistingCores()
+    public Core[] addElementsToFirstArray(int arraySize, Core[] array)
     {
-        Cores[] existingCores = new Cores[maxNumberOfSlots];
+        Core[] newArray = new Core[arraySize];
         
         int counter = 0;
         
-        for(Cores element : getAllSlotCores())
+        for(Core element : array)
         {
-            if(element != null && element.getCoreType() != null)
+            if(element != null)
             {
-                existingCores[counter] = element;
+                newArray[counter] = element;
                     counter++;
             }
         }
         
-        return existingCores;
+        return newArray;
     }
+    
+    public Core[] filterNull(Core[] array)
+    {
+        Core[] cleanedArray = Arrays.stream(array).filter(s -> (s != null)).
+            toArray(Core[]::new);
+                return cleanedArray;
+    }
+    
+    public Core[] getExistingCores()
+    {
+        return filterNull(addElementsToFirstArray(maxNumberOfOutfitSlots, 
+            getAllOutfitSlotCores()));
+    }
+    
+    // EXISTING SLOT CORES 
+    
+    // END: SETTING MAX NUMBER OF SLOT TYPES ALLOWED AND RETURNING CORES     
+    // EXISTING SLOT CORES 
     
     // END: SETTING MAX NUMBER OF SLOT TYPES ALLOWED AND RETURNING CORES 
     /*******************************************************************************/
@@ -994,27 +975,25 @@ public class OutfitMethods extends GenericObject
     // START: CORE PENALTY CALCULATION
     /*******************************************************************************/
     
-    // gets core size enum from enum class CoreSizes in public class Cores
-    public Cores.ValidCoreSizes getCoreSizeEnumUsingString(String size)
+    public Core.CoreSizes getCoreSizeEnum(String size)
     {
-        Cores.ValidCoreSizes sizeEnum = null;
+        Core.CoreSizes sizeEnum = null;
         
         if(size != null)
         {
-            sizeEnum = Cores.ValidCoreSizes.valueOf(StaticMethods.stringToEnum(size));
+            sizeEnum = Core.CoreSizes.valueOf(StaticMethods.stringToEnum(size));
         }
         
         return sizeEnum;
     }
     
-    // gets core tier enum from enum class CoreTiers in public class Cores
-    public Cores.ValidCoreTiers getCoreTierEnumUsingString(String tier)
+    public Core.CoreTiers getCoreTierEnum(String tier)
     {
-        Cores.ValidCoreTiers result = null;
+        Core.CoreTiers result = null;
         
         if(tier != null)
         {
-            result = Cores.ValidCoreTiers.valueOf(StaticMethods.stringToEnum(tier));
+            result = Core.CoreTiers.valueOf(StaticMethods.stringToEnum(tier));
         }
         
         return result;
@@ -1027,9 +1006,9 @@ public class OutfitMethods extends GenericObject
              its contents unlike LinkedHashSet which does so at a performance cost. */
     public HashSet<String> getUniqueTypesOfEquippedCores()
     {
-        HashSet<String> typesOfEquippedCores = new HashSet<String>();
+        HashSet<String> typesOfEquippedCores = new HashSet<>();
 
-        for(Cores element : getExistingCores())
+        for(Core element : getExistingCores())
         {
             if(element != null && element.getCoreType() != null)
             {
@@ -1040,17 +1019,15 @@ public class OutfitMethods extends GenericObject
         return typesOfEquippedCores;
     }
     
-    // count and return the number of cores that have the same type as type supplied 
     public double countNumberOfSameCoreTypeCores(String coreType)
     {
         double counter = 0;
 
-        for(Cores element : getExistingCores())
+        for(Core element : getExistingCores())
         {
             if(element != null)
             {
-                if(StaticMethods.getStatAsValidEnum(coreType) == StaticMethods.getStatAsValidEnum(
-                    element.getCoreType()))
+                if(coreType.equals(element.getCoreType()))
                 {
                     counter++;
                 }
@@ -1060,20 +1037,17 @@ public class OutfitMethods extends GenericObject
         return counter;
     }
     
-    // count and return number of cores belonging to core type for specified size 
     public double countDesiredCoresBySize(String coreType, String size)
     {
         double counter = 0;
 
-        for(Cores element : getExistingCores())
+        for(Core element : getExistingCores())
         {
             if(element != null)
             {
-                if(StaticMethods.getStatAsValidEnum(element.getCoreType()) == StaticMethods.
-                    getStatAsValidEnum(coreType))
+                if(coreType.equals(element.getCoreType()))
                 {
-                    if(getCoreTierEnumUsingString(size) == getCoreTierEnumUsingString(element.
-                        getCoreType()))
+                    if(getCoreTierEnum(size) == getCoreTierEnum(element.getCoreType()))
                     {
                         counter++;
                     }
@@ -1084,20 +1058,17 @@ public class OutfitMethods extends GenericObject
         return counter;
     }
 
-    // count and return number of cores belonging to core type for specified tier
-    public double countDesiredCoresByTier(String typeOfCore, String tier)
+    public double countDesiredCoresByTier(String coreType, String tier)
     {
         double counter = 0;
 
-        for(Cores element : getExistingCores())
+        for(Core element : getExistingCores())
         {
             if(element != null) 
             {
-                if(StaticMethods.getStatAsValidEnum(element.getCoreType()) == StaticMethods.
-                    getStatAsValidEnum(typeOfCore))
+                if(coreType.equals(element.getCoreType()))
                 {
-                    if(getCoreTierEnumUsingString(tier) == getCoreTierEnumUsingString(element.
-                        getCoreTier()))
+                    if(getCoreTierEnum(tier) == getCoreTierEnum(element.getCoreTier()))
                     {
                         counter++;
                     }
@@ -1108,7 +1079,7 @@ public class OutfitMethods extends GenericObject
         return counter;
     }
     
-    // calculate penalty incurred for outfit that has cores equipped 
+    // calculate core penalty incurred for outfit that has cores equipped 
     // Note: penalty is meant to be subtracted from cores current points AFTER it 
     //       it is directly multipled against cores max points (avoids small #'s)
     public double corePenaltyCalculation(String typeOfCore)
@@ -1177,14 +1148,13 @@ public class OutfitMethods extends GenericObject
     {
         for(String element : getUniqueTypesOfEquippedCores())
         {
-            for(Cores core : getExistingCores())
+            for(Core core : getExistingCores())
             {
                 if(core != null)
                 {
                     if(!core.getSpecialCoreState())
                     {
-                        if(StaticMethods.getStatAsValidEnum(core.getCoreType()) 
-                            == StaticMethods.getStatAsValidEnum(element))
+                        if(element.equals(core.getCoreType()))
                         {
                             core.setCurrentCorePoints(core.getCurrentCorePoints() - 
                                 (core.getMaxCorePoints() * corePenaltyCalculation(element)));
@@ -1192,8 +1162,8 @@ public class OutfitMethods extends GenericObject
                     }
                     else
                     {
-                        core.setCurrentCorePoints(core.getCurrentCorePoints() - 
-                            ((core.getMaxCorePoints() * corePenaltyCalculation(element)) / 2.25));
+                        core.setCurrentCorePoints(core.getCurrentCorePoints() - ((core.
+                            getMaxCorePoints() * corePenaltyCalculation(element)) / 2.35));
                     }
                 }                
             }
@@ -1208,18 +1178,17 @@ public class OutfitMethods extends GenericObject
     // START: TOTAL FOR ATTRIBUTES WITH CORES SUPPLIED
     /*******************************************************************************/
     
-    // add values of all cores that have same type as argument using for loop 
-    public double addSumOfCoresForType(String type)
+    public double addSumOfCoresForCoreType(String coreType)
     {
         double coreSum = 0.0;
         
-        if(StaticMethods.getStatAsValidEnum(type) != null)
+        if(coreType != null)
         {
-            for(Cores element : getExistingCores())
+            for(Core element : getExistingCores())
             {
                 if(element != null)
                 {
-                    if(getValidSubclassEnum(type) == getValidSubclassEnum(element.getCoreType()))
+                    if(coreType.equals(element.getCoreType()))
                     {
                         coreSum +=  element.getCurrentCorePoints();
                     }
@@ -1230,7 +1199,6 @@ public class OutfitMethods extends GenericObject
         return coreSum;
     }
 
-    // factor in durability effect of outfit on value supplied before rtuning it 
     public double outfitDurabilityEffect(double value, double durability)
     {
         // Note: if accounts for resistances, if-else for resistances and attributes 
@@ -1240,19 +1208,107 @@ public class OutfitMethods extends GenericObject
         }
         else
         {
-            value = value - ((1.0 - durability) * value);
+            value -= ((1.0 - durability) * value);
         }
 
         return value;
     }
     
-    // get total value provided by oufit for specified statName 
-    public double getTotalOutfitValue(double stat, String statName)
+    /*  Note on "total" methods below: 
+            methods get total value for a object (like attack, nano, ect.) by adding 
+            object's power and core points together only if the cores are the same 
+            type as the String supplied as argument (if "Attack" is supplied then 
+            add the current core points of cores with core type "Attack" to value) */
+    
+    public double totalOutfitValue(double stat, String statName)
     {
-        return outfitDurabilityEffect((stat + addSumOfCoresForType(statName)), 
+        return outfitDurabilityEffect((stat + addSumOfCoresForCoreType(statName)), 
             getDurabilityValue());
     }
     
-    // END: TOTAL FOR ATTRIBUTES WITH CORES SUPPLIED
+    // END: TOTAL FOR ATTRIBUTES WITH CORES SUPPLIED    
+    /*******************************************************************************/
+    
+    
+    
+    // START: TOTAL ATTRIBUTES 
+    /*******************************************************************************/
+
+    // MAX GAUGES
+	
+    public double getTotalMaxHealth()
+    {
+        return totalOutfitValue(getMaxHealth(), "Max Health");
+    }
+    
+    public double getTotalMaxStamina()
+    {
+        return totalOutfitValue(getMaxStamina(), "Stamina");
+    }
+	
+    public double getTotalMaxNano()
+    {
+        return totalOutfitValue(getMaxNano(), "Nano"); 
+    }
+	
+    // MAX GAUGES
+	
+	
+    // TYPICAL ATTRIBUTES 
+    
+    public double getTotalAttack()
+    {
+        return totalOutfitValue(getAttack(), "Attack"); 
+    }
+
+	public double getTotalDefense()
+    {
+        return totalOutfitValue(getDefense(), "Defense");
+    }
+
+    public double getTotalDexterity()
+    {
+        return totalOutfitValue(getDexterity(), "Dexterity"); 
+    }
+
+    public double getTotalCritical()
+    {
+        return totalOutfitValue(getCritical(), "Critical"); 
+    }
+
+    public double getTotalAccuracy()
+    {
+        return totalOutfitValue(getAccuracy(), "Accuracy"); 
+    }
+	
+    public double getTotalNanoAttack()
+    {
+        return totalOutfitValue(getNanoAttack(), "Nano Attack"); 
+    }
+	
+    public double getTotalNanoDefense()
+    {
+        return totalOutfitValue(getNanoDefense(), "Nano Defense");
+    }
+	
+    // TYPICAL ATTRIBUTES 
+
+    // END: TOTAL ATTRIBUTES 
+    /*******************************************************************************/
+    
+    
+    
+    // START: GETTING ALL TOTAL ATTRIBUTES
+    /*******************************************************************************/
+
+    public double[] getAllTotalAttributes()
+    {
+        double[] allTotalAttributes = {getTotalMaxHealth(), getTotalMaxStamina(),
+            getTotalMaxNano(), getTotalAttack(), getTotalDefense(), getTotalDexterity(),
+            getTotalCritical(), getTotalAccuracy(), getTotalNanoAttack(), getTotalNanoDefense()};
+                return allTotalAttributes;
+    }
+    
+    // START: WEAPON ENCHANTMENT
     /*******************************************************************************/
 }

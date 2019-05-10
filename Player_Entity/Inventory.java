@@ -159,23 +159,23 @@ public class Inventory
         {
             groupSizeLimit = genericObjectGroupMaxSize;
         }
-        else if(object.getClass() == Items.class)
+        else if(object.getClass() == Item.class)
         {
             groupSizeLimit = itemGroupMaxSize;
         }
-        else if(object.getClass() == Cores.class)
+        else if(object.getClass() == Core.class)
         {
             groupSizeLimit = coreGroupMaxSize;
         }
-        else if(object.getClass() == Weapons.class)
+        else if(object.getClass() == Weapon.class)
         {
             groupSizeLimit = weaponGroupMaxSize;
         }
-        else if(object.getClass() == Armors.class)
+        else if(object.getClass() == Armor.class)
         {
             groupSizeLimit = armorGroupMaxSize;
         }
-        else if(object.getClass() == Accessories.class)
+        else if(object.getClass() == Accessory.class)
         {
             groupSizeLimit = accessoryGroupMaxSize;
         }        
@@ -650,7 +650,7 @@ public class Inventory
         objectTwo) -> compareStrings(objectOne.getName(), objectTwo.getName()); 
 
     public Comparator<GenericObject> sortByMainClass = (GenericObject objectOne, GenericObject 
-        objectTwo) -> compareStrings(objectOne.getMainClass(), objectTwo.getMainClass()); 
+        objectTwo) -> compareStrings(objectOne.getMainClassString(), objectTwo.getMainClassString()); 
 
     public Comparator<GenericObject> sortByCategory = (GenericObject objectOne, GenericObject 
         objectTwo) -> compareStrings(objectOne.getCategory(), objectTwo.getCategory()); 
@@ -744,19 +744,19 @@ public class Inventory
                 specificSortLogic(sortObjectsBy, unsortedObjects, GenericObject.class);
                     break;
             case ITEMS: 
-                specificSortLogic(sortObjectsBy, unsortedObjects, Items.class);
+                specificSortLogic(sortObjectsBy, unsortedObjects, Item.class);
                     break;
             case CORES: 
-                specificSortLogic(sortObjectsBy, unsortedObjects, Cores.class);
+                specificSortLogic(sortObjectsBy, unsortedObjects, Core.class);
                     break;
             case WEAPONS: 
-                specificSortLogic(sortObjectsBy, unsortedObjects, Weapons.class);
+                specificSortLogic(sortObjectsBy, unsortedObjects, Weapon.class);
                     break;
             case ARMORS: 
-                specificSortLogic(sortObjectsBy, unsortedObjects, Armors.class);
+                specificSortLogic(sortObjectsBy, unsortedObjects, Armor.class);
                     break;
             case ACCESSORIES: 
-                specificSortLogic(sortObjectsBy, unsortedObjects, Accessories.class);
+                specificSortLogic(sortObjectsBy, unsortedObjects, Accessory.class);
                     break;
         }
     }

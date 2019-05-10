@@ -3,46 +3,26 @@ package Generic_Character;
 /*
     Stress concerns the mechanic known as "Stress" where almost all stats tied to 
     a character are negatively impacted the higher the current stress value is in
-    relation to the max stress value (closer current stress is to max stress the
-    worse stress effects will be).
+    relation to max stress. 
 
-    Example: Attribute attack is 45, current stress is 19, and max stress is 30 so 
+    Example: Attribute attack is 45, current stress is 19 and max stress is 30 so 
              the attack after stress is taken into account is approximately 29 
 */
 
 public class Stress
 {
-    private double currentStress;	// holds value of current stress 
-    private double maxStress;		// holds value of max stress
-    private double stressDefense;	// used to hold defense value put against stress
+    private double maxStress, currentStress, stressDefense;
     
+    public Stress()
+    {
+        // empty constructor
+    }
+
     
     
     // START: SETTING AND GETTING CURRENT AND MAX STRESS
     /*******************************************************************************/
-	
-    // set value of current stress 
-    public void setCurrentStress(double currentStress)
-    {
-        if(currentStress < 0)
-        {
-            currentStress = 0;
-        }
-        else if(currentStress > maxStress)
-        {
-            currentStress = maxStress;
-        }
-
-        this.currentStress = Math.floor(currentStress);
-    }
-	
-    // get value of current stress 
-    public double getCurrentStress()
-    {
-        return currentStress;
-    }
-
-    // set max value for max stress 
+    
     public void setMaxStress(double maxStress)
     {
         if(maxStress < 0)
@@ -56,17 +36,34 @@ public class Stress
 
         this.maxStress = maxStress;
     }
-	
-    // get value for max stress
+    
     public double getMaxStress()
     {
         return maxStress;
     }
+    
+    public void setCurrentStress(double currentStress)
+    {
+        if(currentStress < 0)
+        {
+            currentStress = 0;
+        }
+        else if(currentStress > maxStress)
+        {
+            currentStress = maxStress;
+        }
 
-    // method returns current value of stress gauge 
+        this.currentStress = currentStress;
+    }
+    
+    public double getCurrentStress()
+    {
+        return currentStress;
+    }
+    
     public double getStressValue()
     {
-        return getCurrentStress() / getMaxStress();
+        return (getCurrentStress() / getMaxStress());
     }
 	
     // END: SETTING AND GETTING CURRENT AND MAX STRESS
