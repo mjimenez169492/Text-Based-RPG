@@ -85,12 +85,14 @@ public class ExpositionBox extends JFrame implements KeyListener
                                 event line
         Person talking 
             exposition
-        [1/ 86] options (left key, autorun, default(nothing), right key)
+        options 
             options:
-                left key: move back by 1 (if possible)
+                [current # / max #]: can manually change AND enter desired talking part 
+                left key: move back by 1 (if possible [also NO LOOPING])
+                right key: advance by 1 (if possible [also NO LOOPING])
                 autorun: advance by default millisec (1800) or custom millisec 
-                default: resets autorun if selected (do nothing otherwise)
-                right key: advance by 1 (if possible)
+                adjust autorun speed: alter line output 
+                movement by click: disable other buttons and move via arrow keys, click, or mouse wheel
                     Note: mouse, scroll(fast inc/dec), and keyboard support
     */
     
