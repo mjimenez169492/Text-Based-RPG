@@ -246,13 +246,20 @@ public class CommonGUIMethods
         }
     };
     
+    private static KeyListener holdColumnKeyEvent = enter;
+    
     public static void buttonColumnKeyboardNavigation(JButton...buttons)
     {
         for (int i = 0; i < buttons.length; i++) 
         {
             int currentButton = i;
             
-            buttons[i].addKeyListener(enter);
+            // Note: if key listener is not pre-emptively removed at start of
+            //       each loop then "enter" key will be pressed twice since 
+            //       enter key event is supplied to activate loop and again
+            //       once player starts moving through keys 
+            buttons[i].removeKeyListener(holdColumnKeyEvent);
+            buttons[i].addKeyListener(holdColumnKeyEvent);
             
             buttons[i].addKeyListener(new KeyAdapter() 
             {
@@ -281,7 +288,12 @@ public class CommonGUIMethods
         {
             int currentButton = i;
             
-            buttons[i].addKeyListener(enter);
+            // Note: if key listener is not pre-emptively removed at start of
+            //       each loop then "enter" key will be pressed twice since 
+            //       enter key event is supplied to activate loop and again
+            //       once player starts moving through keys 
+            buttons[i].removeKeyListener(holdColumnKeyEvent);
+            buttons[i].addKeyListener(holdColumnKeyEvent);
             
             buttons[i].addKeyListener(new KeyAdapter() 
             {
@@ -306,30 +318,8 @@ public class CommonGUIMethods
     
     // KEY LISTENER AND KEYBOARD NAVIGATION 
     
-    /* CONSIDER MAKING OTHER GUI CLASSES SUBCLASSES OF THIS CLASS 
     
-    // MouseAdapter extended to avoid overriding unused methods 
-    private class MouseHandler extends MouseAdapter
-    {
-        // handle event when mouse enters area 
-        @Override
-        public void mouseEntered(MouseEvent event)
-        {
-            JButton button = (JButton)event.getSource();
-            button.requestFocus();
-        }
-    
-        // handle event when mouse exits area
-        @Override
-        public void mouseExited(MouseEvent event)
-        {
-            JButton button = (JButton)event.getSource();
-            button.requestFocus();
-        }
-    }
-    */
-    
-    // MOUSE WHEEL BUTTON AVIGATION 
+    // MOUSE WHEEL BUTTON NAVIGATION 
     
     // Note: mouse wheel rotation results in a series of -1 if moved up and 
     //       a series of 1 if moved down. If mouse rotation is  not checked,
@@ -384,7 +374,7 @@ public class CommonGUIMethods
         });
     }
 
-    // MOUSE WHEEL BUTTON AVIGATION 
+    // MOUSE WHEEL BUTTON NAVIGATION 
     
     // END: BUTTON COLUMN NAVIGATION USING KEYBOARD AND MOUSE WHEEL
     /*******************************************************************************/
@@ -393,34 +383,7 @@ public class CommonGUIMethods
     
     // START: RESIZE COMPONENT TEXT BASED ON COMPONENT RESIZE EVENT
     /*******************************************************************************/
-    
-    /*
-        protected void decreaseFontSize(JLabel comp) 
-        {
-            Font font = comp.getFont();
-            FontMetrics fm = comp.getFontMetrics(font);
-            int width = comp.getWidth();
-            int height = comp.getHeight();
-            int textWidth = fm.stringWidth(comp.getText());
-            int textHeight = fm.getHeight();
 
-            int size = font.getSize();
-            while (size > 0 && (textHeight > height || textWidth > width)) {
-                size -= 2;
-                font = font.deriveFont(font.getStyle(), size);
-                fm = comp.getFontMetrics(font);
-                textWidth = fm.stringWidth(comp.getText());
-                textHeight = fm.getHeight();
-            }
-
-            comp.setFont(font);
-
-        }
-        
-    */
-    
-    
-    
     public static void resizeButtonTextUsingFrameSize(JFrame frame, JButton button)
     {
         button.addComponentListener(
@@ -625,4 +588,7 @@ public class CommonGUIMethods
             }
         );
     }
+    
+    // END: RESIZE COMPONENT TEXT BASED ON COMPONENT RESIZE EVENT
+    /*******************************************************************************/
 }
