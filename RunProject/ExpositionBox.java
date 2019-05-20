@@ -1,128 +1,154 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 package RunProject;
 
 import java.awt.event.ActionListener; 
 import java.awt.event.ActionEvent; 
-import javax.swing.Box; 
-import javax.swing.JFrame; 
-import javax.swing.JTextArea;
-import javax.swing.JButton;
-import javax.swing.JScrollPane;
-import java.awt.*;
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.JTextArea;
-
-import java.awt.Component;
+import javax.swing.SwingConstants;
+import java.awt.event.MouseAdapter;
 import java.awt.GridBagLayout;
-
 import java.awt.*;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.border.EmptyBorder;
-import javax.swing.text.DefaultCaret;
-import javax.swing.JFrame;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.text.AbstractDocument;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DocumentFilter;
-import java.awt.Point; 
-import java.awt.Graphics;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter; 
+import java.awt.event.MouseWheelEvent;
 import java.util.ArrayList;
-import javax.swing.JPanel; 
-import java.util.ArrayList;
-import java.awt.Toolkit;
-import java.awt.Dimension;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+
+/* Note on Gridbag Layout:
+    First see these links: 
+        https://docs.oracle.com/javase/tutorial/uiswing/layout/gridbag.html
+        https://www.javatpoint.com/java-gridbaglayout
+        https://www.decodejava.com/java-gridbaglayout.htm
+    Second:
+        components crated for GridBagLayout start off at center and gradually
+        reach location specified as more components are added since adding any
+        components can cause previously made components to shift as components
+        are gradually added
+    Third:
+        The gridx and gridy of a SINGLE component can affect the layout of the
+        entire GridBagLayout positioning scheme meaning certain components may 
+        need to be adjusted
+    Fourth
+        Although it is possible to create many GridBagLayout components soley
+        using one GridBagContraints object, this programming style denotes bad
+        form due to the increased likelyhood of having bugs in GUI creation as
+        some fields of the GridBagContraints object may not have been properly
+        reset for the component about to be added to GridBagLayout 
+
+        Ex:
+            JButton button;
+            JPanel panel = new JPanel();
+            panel.setLayout(new GridBagLayout());
+
+            GridBagContsraints gridBagContsraints = new GridBagContsraints(); 
+
+            JButton button; = new JButton("test1");
+
+            gridBagContsraints.ipady = 30;
+            gridBagContsraints.gridx = 1;
+            gridBagContsraints.gridy = 0;
+            panel.add(button, gridBagContsraints)
+
+            JButton button2; = new JButton("test2");
+
+            gridBagContsraints.gridx = 1;
+            gridBagContsraints.gridy = 1;
+            panel.add(button2, gridBagContsraints)
+                FORGET: TO RESET IPADY SO button2 IS STRETCHED VERTICALLY 30 PIXELS!!!
+*/
 
 public class ExpositionBox 
 {
-    /* Note on Gridbag Layout:
-        First see these links: 
-            https://docs.oracle.com/javase/tutorial/uiswing/layout/gridbag.html
-            https://www.javatpoint.com/java-gridbaglayout
-            https://www.decodejava.com/java-gridbaglayout.htm
-        Second:
-            components crated for GridBagLayout start off at center and gradually
-            reach location specified as more components are added since adding any
-            components can cause previously made components to shift as components
-            are gradually added
-        Third:
-            The gridx and gridy of a SINGLE component can affect the layout of the
-            entire GridBagLayout positioning scheme meaning certain components may 
-            need to be adjusted
-        Fourth
-            Although it is possible to create many GridBagLayout components soley
-            using one GridBagContraints object, this programming style denotes bad
-            form due to the increased likelyhood of having bugs in GUI creation as
-            some fields of the GridBagContraints object may not have been properly
-            reset for the component about to be added to GridBagLayout 
-    
-            Ex:
-                JButton button;
-                JPanel panel = new JPanel();
-                panel.setLayout(new GridBagLayout());
-    
-                GridBagContsraints gridBagContsraints = new GridBagContsraints(); 
-                
-                JButton button; = new JButton("test1");
-                
-                gridBagContsraints.ipady = 30;
-                gridBagContsraints.gridx = 1;
-                gridBagContsraints.gridy = 0;
-                panel.add(button, gridBagContsraints)
-    
-                JButton button2; = new JButton("test2");
-                
-                gridBagContsraints.gridx = 1;
-                gridBagContsraints.gridy = 1;
-                panel.add(button2, gridBagContsraints)
-                    FORGET: TO RESET IPADY SO button2 IS STRETCHED VERTICALLY 30 PIXELS!!!
-    */
-
+    // set frame for exposition box (final version has frame passed from outside)
     private JFrame frame = new JFrame("Exposition Box");
-    
+
+    // font size used for text of all componenets 
     private Font font = new Font("Serif", Font.PLAIN, 18);
     
+    // set vertical padding in pixels for components on top right of GUI 
     private final int topRightComponentPixelPadding = 62;
     
+    // buttons masquerading as text boxes since JLabels are ugly >:) 
     private JButton currentLocation, eventAndEventLine, currentAndFinalLines;
     
+    // set vertical padding in pixels for components meant for displaying text 
     private final int textDisplayingComponentPixelPadding = 68;
     
+    // buttons meant to store text concerning speaking roles and speech relayed 
     private JButton speakerOrDescription, lineOne, lineTwo, lineThree; 
     
+    // set vertical padding in pixels for components meant to be used by player 
     private final int usableButtonComponentPixelPadding = 45;
     
     // Note: only need to supply THESE buttons for key/mouse movement  
-    private JButton backward, forward, autoRun, alternativeNavigation, 
-        textBoxSettings, mainMenu;
+    // buttons that perform events upon being interacted with by player 
+    private JButton mainMenu, settings, altNav, backward, forward;
     
-    // variables used to manage aspects of text movement and display 
+    // used to determine the max number of characters that a sentence fragment
+    // can display in a button (can be changed with no issue)
     private final int characterLimit = 86;
     
-    // Note: the number BEFORE - 1 signifies buttons that exist needed while
-    //       - 1 is needed to array traversal from first to last button 
+    // Note: number BEFORE - 1 (in this case number 3) signifies buttons that 
+    //       can be used to store text meant to be displayed to players. The
+    //       equation (3 - 1) results in a value which will be used to loop
+    //       through text and buttons themselves in order to set button text 
     private final int fragmentsNeededForConnectedFragement = 3 - 1;
     
+    // meant to store exposition that will be broken up and displayed in pieces 
     private ArrayList<String> exposition = new ArrayList<>();
     
-    // meant to be incremented by 1 as soon as object is initialized 
+    // variable starts at -1 and is incremented by 1 as soon as GUI is displayed 
+    // this variable is used to keep track of current position as contents of 
+    // exposition ArrayList are traversed which can include names or text     
     private int arrayPositionWithNames = -1;
     
-    private int arrayPositionNoNames = 0;
-    
-    // meant for use in backtrack 
-    private int lastArrayListPosition = 0;
-    
-    // total lines spoken or something
+    // total lines of exposition ArrayList (does not include names in count)
     private int totalLines = 0;
     
+    // current array position when names are not accounted for 
+    // Note: arrayPositionNoNames and totalLines are needed to display count
+    //       to player since traditionally speaker names are not included
+    private int arrayPositionNoNames = 0;
     
-    // START: GRID BAG LAYOUT COMPONENT SET UP 
+    // denotes whether alternative exposition box movement scheme is active 
+    boolean altNavState = false;
+    
+    // meant to hold object references for removal 
+    AltNavKeyBoard keyBoard = null;
+    AltNavMouseWheel mouseWheel = null;
+    KeyListener enterListener = null;
+    
+    
+    
+    // START: GRIDBAGLAYOUT COMPONENT SET UP 
     /*******************************************************************************/
     
     public void expositionBoxComponent(JButton button, int ipady, int gridy, int gridx, 
@@ -156,12 +182,12 @@ public class ExpositionBox
         frame.add(button, gridBagConstraint);
     }
     
-    // END: GRID BAG LAYOUT COMPONENT SET UP 
+    // END: GRIDBAGLAYOUT COMPONENT SET UP 
     /*******************************************************************************/
 
     
     
-    // START: GRID BAG LAYOUT COMPONENT PLACEMENT
+    // START: UNUSABLE GRIDBAGLAYOUT COMPONENTS
     /*******************************************************************************/
 
     public JButton unusableButton(JButton newButton, String newButtonName, Font font)
@@ -179,36 +205,44 @@ public class ExpositionBox
     
     public void topRightComponents()
     {
-        // buttons located on the top left of text box GUI
-        currentLocation = unusableButton(currentLocation, "d", font);
-            expositionBoxComponent(currentLocation, topRightComponentPixelPadding, 0, 0, 3, frame);
+        // buttons located on the top right of GUI
+        currentLocation = unusableButton(currentLocation, "Nothing Place - Nothing City - Nothing Plaza - Nothing Bar - Nothing Chair", font);
+            expositionBoxComponent(currentLocation, topRightComponentPixelPadding, 0, 0, 5, frame);
         
-        eventAndEventLine = unusableButton(eventAndEventLine, "d", font);
-            expositionBoxComponent(eventAndEventLine, topRightComponentPixelPadding, 1, 1, 2, frame);
+        eventAndEventLine = unusableButton(eventAndEventLine, "The Tale Of Nothing - Nothing Nowhere", font);
+            expositionBoxComponent(eventAndEventLine, topRightComponentPixelPadding, 1, 2, 3, frame);
 
-        currentAndFinalLines = unusableButton(currentAndFinalLines, "# / # d", font);
-            expositionBoxComponent(currentAndFinalLines, topRightComponentPixelPadding, 2, 2, 1, frame);
+        currentAndFinalLines = unusableButton(currentAndFinalLines, "Number Here / Number There", font);
+            expositionBoxComponent(currentAndFinalLines, topRightComponentPixelPadding, 2, 4, 1, frame);
     }
     
     public void textDisplayingComponents()
     {
         // button located just above first line denoting speaker (if there is one)
-        speakerOrDescription = unusableButton(speakerOrDescription, " ", font);
-            expositionBoxComponent(speakerOrDescription, textDisplayingComponentPixelPadding, 4, 0, 1, frame);
+        speakerOrDescription = unusableButton(speakerOrDescription, "ERROR", font);
+            expositionBoxComponent(speakerOrDescription, textDisplayingComponentPixelPadding, 4, 0, 2, frame);
         
         // lines meant for holding text meant to be displayed to player 
-        lineOne = unusableButton(lineOne, " ", font);
+        lineOne = unusableButton(lineOne, "ERROR", font);
             lineOne.setHorizontalAlignment(SwingConstants.LEADING);
                 expositionBoxComponent(lineOne, textDisplayingComponentPixelPadding, 5, 0, 6, frame);
         
-        lineTwo = unusableButton(lineTwo, "(make blank)", font);
+        lineTwo = unusableButton(lineTwo, "ERROR", font);
             lineTwo.setHorizontalAlignment(SwingConstants.LEADING);
                 expositionBoxComponent(lineTwo, textDisplayingComponentPixelPadding, 6, 0, 6, frame);
         
-        lineThree = unusableButton(lineThree, "(make blank)", font);
+        lineThree = unusableButton(lineThree, "A ROAR", font);
             lineThree.setHorizontalAlignment(SwingConstants.LEADING);
                 expositionBoxComponent(lineThree, textDisplayingComponentPixelPadding, 7, 0, 6, frame);
     }
+    
+    // END: UNUSABLE GRIDBAGLAYOUT COMPONENTS
+    /*******************************************************************************/
+
+    
+    
+    // START: USABLE GRIDBAGLAYOUT COMPONENTS
+    /*******************************************************************************/
     
     public JButton usableButton(JButton newButton, String newButtonName, Font font)
     {
@@ -221,105 +255,24 @@ public class ExpositionBox
     
     public void usableButtonsComponents()
     {
-        // SELECTABLE buttons that vary in affect 
-        alternativeNavigation = usableButton(alternativeNavigation, "Alternative Navigation", font);
-            expositionBoxComponent(alternativeNavigation, usableButtonComponentPixelPadding, 9, 0, 1, frame);
+        // SELECTABLE buttons varying in affect sorted in order from left to right 
+        mainMenu = usableButton(mainMenu, "Main Menu", font);
+            expositionBoxComponent(mainMenu, usableButtonComponentPixelPadding, 9, 0, 1, frame);
+
+        settings = usableButton(settings, "Settings", font);
+            expositionBoxComponent(settings, usableButtonComponentPixelPadding, 9, 1, 1, frame);
+
+        altNav = usableButton(altNav, "Alt Nav", font);
+            expositionBoxComponent(altNav, usableButtonComponentPixelPadding, 9, 2, 1, frame);
         
         backward = usableButton(backward, "Backward", font);
-                expositionBoxComponent(backward, usableButtonComponentPixelPadding, 9, 1, 1, frame);
+            expositionBoxComponent(backward, usableButtonComponentPixelPadding, 9, 3, 1, frame);
                 
         forward = usableButton(forward, "Forward", font);
-                expositionBoxComponent(forward, usableButtonComponentPixelPadding, 9, 2, 1, frame);
-     
-        textBoxSettings = usableButton(textBoxSettings, "Text Box Setting", font);
-                expositionBoxComponent(textBoxSettings, usableButtonComponentPixelPadding, 10, 0, 1, frame);
-        
-        autoRun = usableButton(forward, "Auto Run", font);
-                expositionBoxComponent(autoRun, usableButtonComponentPixelPadding, 10, 1, 1, frame);
-        
-        mainMenu = usableButton(mainMenu, "Main Menu", font);
-                expositionBoxComponent(mainMenu, usableButtonComponentPixelPadding, 10, 2, 1, frame);
+            expositionBoxComponent(forward, usableButtonComponentPixelPadding, 9, 4, 1, frame);
     }
     
-    // END: GRID BAG LAYOUT COMPONENT PLACEMENT
-    /*******************************************************************************/
-
-    
-    
-    // START: ENABLING BUTTON NAVIGATION 
-    /*******************************************************************************/
-
-    public void usableButtonNavigation()
-    {
-        // Note: since buttons are in a row x column format and therfore NOT 
-        //       in column format, buttons must be supplied in reverse order 
-        //       of that specified for column format which requires that all
-        //       buttons be ordered such that the first button of the column
-        //       is supplied first nad the last button supplied last.
-        
-        JButton buttons[] = {textBoxSettings, forward, mainMenu, backward, 
-            autoRun, alternativeNavigation};
-        
-        // account for arrow key movement up or down
-        CommonGUIMethods.buttonColumnKeyboardNavigation(buttons);
-        
-        // account for arrow key movement left or right
-        CommonGUIMethods.buttonRowKeyboardNavigation(mainMenu, autoRun, 
-            textBoxSettings, forward, backward, alternativeNavigation);
-        
-        // account for mouse wheel movement for frame (move while outside frame)
-        CommonGUIMethods.frameMouseWheel(frame, buttons);
-    }
-    
-    // MouseAdapter extended to avoid overriding unused methods 
-    private class MouseHandler extends MouseAdapter
-    {
-        // handle event when mouse enters area 
-        @Override
-        public void mouseEntered(MouseEvent event)
-        {
-            JButton button = (JButton)event.getSource();
-            button.requestFocus();
-        }
-    
-        // handle event when mouse exits area
-        @Override
-        public void mouseExited(MouseEvent event)
-        {
-            JButton button = (JButton)event.getSource();
-            button.requestFocus();
-        }
-    }
-    
-    // attack handlers to components that can be interacted with in some way 
-    public void attachHandlersToComponents(JFrame frame, JButton backward, JButton 
-        forward, JButton autoRun, JButton alternativeNavigationScheme, JButton 
-        textBoxSettings, JButton mainMenu)
-    {
-        MouseHandler handler = new MouseHandler();
-        
-        frame.addMouseWheelListener(handler);
-        
-        backward.addMouseListener(handler);  
-        backward.addMouseMotionListener(handler);
-        
-        forward.addMouseListener(handler);  
-        forward.addMouseMotionListener(handler);
-        
-        autoRun.addMouseListener(handler);  
-        autoRun.addMouseMotionListener(handler);
-        
-        alternativeNavigationScheme.addMouseListener(handler);  
-        alternativeNavigationScheme.addMouseMotionListener(handler);
-        
-        textBoxSettings.addMouseListener(handler);  
-        textBoxSettings.addMouseMotionListener(handler);
-        
-        mainMenu.addMouseListener(handler);  
-        mainMenu.addMouseMotionListener(handler);
-    }
-    
-    // END: ENABLING BUTTON NAVIGATION 
+    // END: GRIDBAGLAYOUT COMPONENT PLACEMENT
     /*******************************************************************************/
 
     
@@ -353,11 +306,11 @@ public class ExpositionBox
 
     
     
-    // START: DISPLAY TEXT FOR TEXT BOX 
+    // START: BREAKING DOWN LARGE PIECES OF TEXT FOR EXPOSITION BOX
     /*******************************************************************************/
     
-                    // Note: method serves as an example of String ArrayList relaying text 
-    public ArrayList<String> initializeArrayList()
+            // Note: method serves as an example of String ArrayList relaying text 
+    public ArrayList<String> textArrayList()
     {
         ArrayList<String> example = new ArrayList<>();
         
@@ -381,6 +334,13 @@ public class ExpositionBox
             + "Now haha!");
         
         return example;
+    }
+    
+    public void initializeExpositionBoxLines(ArrayList arrayList)
+    {
+        arrayPositionWithNames += 1;
+            moveTextForward(arrayList, speakerOrDescription, 
+                lineOne, lineTwo, lineThree);
     }
     
     // BREAKING DOWN LARGE PIECES OF TEXT
@@ -479,6 +439,8 @@ public class ExpositionBox
         for(String element : exposition)
         {
             // if String is speaker then add it to arrayList
+            // Note: if regionMatches(0, String, 0, 0) then String will return
+            //       true (code does not refer to first character anayway)
             if(element.regionMatches(0, "/", 0, 1))
             {
                 namesAndLines.add(element);
@@ -508,12 +470,14 @@ public class ExpositionBox
         return namesAndLines;
     }
     
-    // BREAKING DOWN LARGE PIECES OF TEXT
+    // END: BREAKING DOWN LARGE PIECES OF TEXT FOR EXPOSITION BOX
+    /*******************************************************************************/
+
     
     
-    
-    // REMOVE BOUNDARY MARKERS AND SPACE AT START OF BUTTON TEXT LINE
-    
+    // START: REMOVE BOUNDARY MARKERS AND SPACE AT START OF BUTTON TEXT LINE
+    /*******************************************************************************/
+
     // one of the final steps that must be performed to touch up displayed text
     public ArrayList<String> removeSpecialCharacters(ArrayList<String> unedittedArrayList)
     {
@@ -531,12 +495,6 @@ public class ExpositionBox
         {
             // checks are performed for FIRST character of String 
             if(element.regionMatches(0, "/", 0, 1))
-            {
-                char[] chars = element.toCharArray();
-                chars[0] = ' ';
-                edittedArrayList.add(String.valueOf(chars));
-            }
-            else if(element.regionMatches(0, "|", 0, 1))
             {
                 char[] chars = element.toCharArray();
                 chars[0] = ' ';
@@ -586,12 +544,71 @@ public class ExpositionBox
         return removeSpaceAtStart(removeSpecialCharacters(arrayList));
     }
     
-    // REMOVE BOUNDARY MARKERS AND SPACE AT START OF BUTTON TEXT LINE
+    // END: REMOVE BOUNDARY MARKERS AND SPACE AT START OF BUTTON TEXT LINE
+    /*******************************************************************************/
+
+
+    
+    // START: SETTING CURRENT AND FINAL LINES FOR LINE TRACKING 
+    /*******************************************************************************/
+    
+    // counts total number of lines that are NOT speaker roles 
+    public int totalLines(ArrayList<String> arrayList)
+    {
+        int counter = 0;
+        
+        for(String element : arrayList)
+        {
+            if(!element.regionMatches(0, "/", 0 , 1))
+            {
+                counter++;
+            }
+        }
+    
+        return counter;
+    }
+    
+    // set current and final line after current line argument is supplied 
+    public void setCurrentAndFinalLines(int value)
+    {
+        StringBuilder builder = new StringBuilder(Integer.toString(value));
+        
+        builder.append(" / ").append(totalLines);
+        
+        currentAndFinalLines.setText(builder.toString());
+    }
+    
+    public void incrementCurrentLineNoNames()
+    {
+        setCurrentAndFinalLines(arrayPositionNoNames+=1);
+    }
+    
+    public void decrementCurrentLineNoNames()
+    {
+        setCurrentAndFinalLines(arrayPositionNoNames-=1);
+    }
+    
+    // if true increment current line count else decrement current line count 
+    public void incrementCurrentLineCount(boolean argument)
+    {
+        if(argument)
+        {
+            incrementCurrentLineNoNames();
+        }
+        else
+        {
+            decrementCurrentLineNoNames();
+        }
+    }
+    
+    // END: SETTING CURRENT AND FINAL LINES FOR LINE TRACKING 
+    /*******************************************************************************/
 
     
     
-    // SETTING JBUTTON EXPOSITION TEXT LINES 
-    
+    // START: SETTING JBUTTON EXPOSITION TEXT LINES 
+    /*******************************************************************************/
+
     // clear all lines used for displaying spoken text   
     public void clearLines(JButton lineOne, JButton lineTwo, JButton lineThree)
     {
@@ -656,12 +673,14 @@ public class ExpositionBox
         }
     }
     
-    // SETTING JBUTTON EXPOSITION TEXT LINES 
+    // END: SETTING JBUTTON EXPOSITION TEXT LINES 
+    /*******************************************************************************/
+
     
     
-    
-    // BACKWARD AND FORWARD TEXT MOVEMENT 
-    
+    // START: BACKWARD AND FORWARD TEXT MOVEMENT 
+    /*******************************************************************************/
+
     // allows for moving text forward 
     public void moveTextForward(ArrayList<String> arrayList, JButton speakerOrDescription, 
         JButton lineOne, JButton lineTwo, JButton lineThree)
@@ -729,159 +748,298 @@ public class ExpositionBox
         }
     }
     
-    // BACKWARD AND FORWARD TEXT MOVEMENT 
-    
-    // END: DISPLAY TEXT FOR TEXT BOX 
+    // END: BACKWARD AND FORWARD TEXT MOVEMENT 
     /*******************************************************************************/
 
     
     
-    // START: ACTION LISTENERS FOR BUTTONS 
+    // START: BUTTON STATES AND BUTTON NAVIGATION 
     /*******************************************************************************/
     
-    public void initializeExpositionBoxLines(ArrayList arrayList)
+    public void usableButtonNavigation()
     {
-        arrayPositionWithNames += 1;
-            moveTextForward(arrayList, speakerOrDescription, 
-                lineOne, lineTwo, lineThree);
+        // Note: since buttons are in a row x column format and therfore NOT 
+        //       in column format, buttons must be supplied in reverse order 
+        //       of that specified for column format which requires that all
+        //       buttons be ordered such that the first button of the column
+        //       is supplied first nad the last button supplied last.
+        
+        JButton buttons[] = {forward, backward, altNav, settings, mainMenu};
+        
+        // account for arrow key movement up or down
+        CommonGUIMethods.buttonColumnKeyboardNavigation(buttons);
+        
+        // account for arrow key movement left or right
+        CommonGUIMethods.buttonRowKeyboardNavigation(forward, backward, altNav,
+            settings, mainMenu);
+        
+        // account for mouse wheel movement for frame (move while outside frame)
+        CommonGUIMethods.frameMouseWheel(frame, buttons);
+    }
+    
+    // MouseAdapter extended to avoid overriding unused methods 
+    private class MouseHandler extends MouseAdapter 
+    {
+        // handle event when mouse enters area 
+        @Override
+        public void mouseEntered(MouseEvent event)
+        {
+            if(altNavState)
+            {
+                altNav.requestFocus();
+            }
+            else
+            {
+                JButton button = (JButton)event.getSource();
+                button.requestFocus();
+            }
+        }
+    
+        // handle event when mouse exits area
+        @Override
+        public void mouseExited(MouseEvent event)
+        {
+            if(altNavState)
+            {
+                altNav.requestFocus();
+            }
+            else
+            {
+                JButton button = (JButton)event.getSource();
+                button.requestFocus();
+            }
+        }
+        
+    }
+    
+    // END: BUTTON STATES AND BUTTON NAVIGATION 
+    /*******************************************************************************/
+
+    
+    
+    // START: HANDLERS AND ACTION LISTENERS
+    /*******************************************************************************/
+    
+    // Note: use to SKIP text insanely fast using mouse wheel 
+    // listener for frame mouse wheel when alternative navigation is active 
+    private class AltNavMouseWheel extends MouseAdapter
+    {
+        @Override
+        public void mouseWheelMoved(MouseWheelEvent e) 
+        {
+            // enter only if altNav button movement scheme is considered active 
+            if(altNavState)
+            {
+                // move up else move down
+                if(CommonGUIMethods.getMouseWheelRotationChoice(e.getWheelRotation()) < 0)
+                {
+                    // Note: since mouse wheel moves too fast, do not account
+                    //       for window transfer/exit via mouse wheel movement 
+                    if(arrayPositionNoNames != totalLines)
+                    {
+                        forward.setEnabled(true);
+                            forward.doClick();
+                                forward.setEnabled(false);
+                    }
+                }
+                else
+                {
+                    backward.setEnabled(true);
+                        backward.doClick();
+                            backward.setEnabled(false);
+                }
+            }
+       }
+    }
+    
+    // handler for keyboard movement when alternative navigation is active 
+    private class AltNavKeyBoard extends KeyAdapter
+    {
+        @Override
+        public void keyPressed(KeyEvent e) 
+        {
+            switch(e.getKeyCode()) 
+            {
+                case KeyEvent.VK_LEFT:
+                    backward.setEnabled(true);
+                        backward.doClick();
+                            backward.setEnabled(false);
+                                break;
+                case KeyEvent.VK_RIGHT:
+                    forward.setEnabled(true);
+                        forward.doClick();
+                            forward.setEnabled(false);
+                                break;
+                default:
+                    break;
+            }
+       }
+    }
+    
+    // need this to enable proper mouse wheel scheme for alt nav 
+    public void allowMouseWheelAltNav(MouseHandler handler)
+    {
+        frame.addMouseWheelListener(handler);
+        currentLocation.addMouseWheelListener(handler);
+        eventAndEventLine.addMouseWheelListener(handler);
+        currentAndFinalLines.addMouseWheelListener(handler);
+        speakerOrDescription.addMouseWheelListener(handler);
+        lineOne.addMouseWheelListener(handler);
+        lineTwo.addMouseWheelListener(handler);
+        lineThree.addMouseWheelListener(handler);
+        mainMenu.addMouseWheelListener(handler);
+        settings.addMouseWheelListener(handler);
+        altNav.addMouseWheelListener(handler);
+        backward.addMouseWheelListener(handler);
+        forward.addMouseWheelListener(handler);
+    }
+    
+    public void usableButtonMouseListeners(MouseHandler handler)
+    {
+        mainMenu.addMouseListener(handler);  
+        mainMenu.addMouseMotionListener(handler);
+
+        settings.addMouseListener(handler);  
+        settings.addMouseMotionListener(handler);
+        
+        altNav.addMouseListener(handler);  
+        altNav.addMouseMotionListener(handler);
+        
+        backward.addMouseListener(handler);  
+        backward.addMouseMotionListener(handler);
+        
+        forward.addMouseListener(handler);  
+        forward.addMouseMotionListener(handler);
+    }
+    
+    // attack handlers to components that can be interacted with in some way 
+    public void attachHandlersToComponents(JFrame frame, JButton backward, JButton 
+        forward, JButton altNav, JButton expositionBoxSettings, 
+        JButton mainMenu)
+    {
+        MouseHandler handler = new MouseHandler();
+        
+        allowMouseWheelAltNav(handler);
+        
+        usableButtonMouseListeners(handler);
     }
     
     public void usableButtonsActionListeners(ArrayList<String> arrayList, JButton 
         speakerOrDescription, JButton lineOne, JButton lineTwo, JButton lineThree)
     {
-        // action listener gives button backward ability to move text backward  
-        alternativeNavigation.addActionListener(new ActionListener() 
+        // action listener gives button ability to go through text quickly with mouse wheel 
+        altNav.addActionListener(
+        new ActionListener() 
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
             {
-                @Override
-                public void actionPerformed(ActionEvent e)
+                // if altNavState is true then deactivate it 
+                if(altNavState)
                 {
-                    /*  
-                        
-                        
-                    */
-                    
-                    
-                }
-            }
-        ); 
-        
-        
-        
-        
-        
-        // action listener gives button backward ability to move text backward  
-        backward.addActionListener(new ActionListener() 
-            {
-                @Override
-                public void actionPerformed(ActionEvent e)
-                {
-                    if((arrayPositionNoNames - 1) > 0)
+                    // enable all disabled interactable buttons 
+                    JButton[] array = {backward, forward, settings, mainMenu};
+
+                    for(JButton element : array)
                     {
-                        arrayPositionWithNames -= 1;
-                            moveTextBackward(arrayList, speakerOrDescription, 
-                                lineOne, lineTwo, lineThree);
+                        element.setEnabled(true);
                     }
+                    
+                    // need to remove listeners to avoid movement "stacking"
+                    altNav.removeKeyListener(keyBoard);
+                    frame.removeMouseWheelListener(mouseWheel);
+
+                    // reset alt nav state to false to indicate state exit 
+                    altNavState = false;
+                }
+                // else altNavState is false so activate it 
+                else
+                {
+                    // disable all buttons except altNav
+                    JButton[] array = {backward, forward, settings, mainMenu};
+
+                    for(JButton element : array)
+                    {
+                        element.setEnabled(false);
+                    }
+                    
+                    // activate keyboard arrow functionality 
+                    AltNavKeyBoard keyHandler = new AltNavKeyBoard();
+                        keyBoard = keyHandler;
+                            altNav.addKeyListener(keyBoard);
+                        
+                    // add mouse wheel listener to frame for fast text movement 
+                    AltNavMouseWheel mouseHandler = new AltNavMouseWheel();
+                        mouseWheel = mouseHandler;
+                            frame.addMouseWheelListener(mouseWheel);
+                    
+                    // set to true to enable fast mouse wheel text movement 
+                    altNavState = true;
                 }
             }
-        ); 
+        }); 
+        
+        // action listener gives button backward ability to move text backward  
+        backward.addActionListener(
+        new ActionListener() 
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                if((arrayPositionNoNames - 1) > 0)
+                {
+                    arrayPositionWithNames -= 1;
+                        moveTextBackward(arrayList, speakerOrDescription, 
+                            lineOne, lineTwo, lineThree);
+                }
+            }
+        }); 
         
         // action listener gives button forward ability to move text forward  
-        forward.addActionListener(new ActionListener() 
+        forward.addActionListener(
+        new ActionListener() 
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
             {
-                @Override
-                public void actionPerformed(ActionEvent e)
+                if((arrayPositionNoNames + 1) <= totalLines)
                 {
-                    if((arrayPositionNoNames + 1) <= totalLines)
-                    {
-                        arrayPositionWithNames += 1;
-                            moveTextForward(arrayList, speakerOrDescription, 
-                                lineOne, lineTwo, lineThree);
-                    }
-                    else
-                    {
-                        // terminates program currently running on Java Virtual Machine
-                        // and return all memory used by program back to OS
-                            // System.exit.(0);
-                        
-                        // Note: dispose() can be used to close a single window if a
-                        //       program has many windows displayed
-                        
-                        // release all native screen resources, subcomponents, and all 
-                        // of its owned children; in other words, close GUI and allow  
-                        // program to continue running IF other windows are available 
-                        frame.dispose();
-                        
-                        // this would play afterwards (for example) 
-                        System.out.println("hahah");
-                    }
+                    arrayPositionWithNames += 1;
+                        moveTextForward(arrayList, speakerOrDescription, 
+                            lineOne, lineTwo, lineThree);
+                }
+                else
+                {
+                    // terminates program currently running on Java Virtual Machine
+                    // and return all memory used by program back to OS
+                        // System.exit.(0);
+
+                    // Note: dispose() can be used to close a single window if a
+                    //       program has many windows displayed
+
+                    // release all native screen resources, subcomponents, and all 
+                    // of its owned children; in other words, close GUI and allow  
+                    // program to continue running IF other windows are available 
+                    frame.dispose();
+
+                    // this would play afterwards (for example) 
+                    System.out.println("hahah");
                 }
             }
-        ); 
+        }); 
+        
+        // settings 
+        // main menu 
         
         
     }
     
-    
-    // END: ACTION LISTENERS FOR BUTTONS 
+    // END: HANDLERS AND ACTION LISTENERS
     /*******************************************************************************/
 
     
     
-    // START: SETTING CURRENT AND FINAL LINES FOR LINE TRACKING 
-    /*******************************************************************************/
-    
-    // counts total number of lines that are NOT speaker roles 
-    public int totalLines(ArrayList<String> arrayList)
-    {
-        int counter = 0;
         
-        for(String element : arrayList)
-        {
-            if(!element.regionMatches(0, "/", 0 , 1))
-            {
-                counter++;
-            }
-        }
-    
-        return counter;
-    }
-    
-    // set current and final line after current line argument is supplied 
-    public void setCurrentAndFinalLines(int value)
-    {
-        StringBuilder builder = new StringBuilder(Integer.toString(value));
-        
-        builder.append(" / ").append(totalLines);
-        
-        currentAndFinalLines.setText(builder.toString());
-    }
-    
-    public void incrementCurrentLineNoNames()
-    {
-        setCurrentAndFinalLines(++arrayPositionNoNames);
-    }
-    
-    public void decrementCurrentLineNoNames()
-    {
-        setCurrentAndFinalLines(--arrayPositionNoNames);
-    }
-    
-    // if true increment current line count else decrement current line count 
-    public void incrementCurrentLineCount(boolean argument)
-    {
-        if(argument)
-        {
-            incrementCurrentLineNoNames();
-        }
-        else
-        {
-            decrementCurrentLineNoNames();
-        }
-    }
-    
-    // END: SETTING CURRENT AND FINAL LINES FOR LINE TRACKING 
-    /*******************************************************************************/
-    
     
     public void expositionBox()
     {
@@ -897,85 +1055,32 @@ public class ExpositionBox
         // text resizes within buttons according to frame size itself
         // Note: this is done since buttons are designed to resize on their onw 
         textResizesUponComponentResize(currentLocation, eventAndEventLine, 
-            currentAndFinalLines, speakerOrDescription, lineOne, 
-            lineTwo, lineThree, 
-            backward, forward, autoRun, alternativeNavigation, textBoxSettings, 
-            mainMenu);
+            currentAndFinalLines, speakerOrDescription, lineOne, lineTwo, 
+            lineThree, backward, forward, altNav, settings, mainMenu);
         
         usableButtonsComponents();
         usableButtonNavigation();
         
             // arraylist
-        ArrayList<String> testArrayList = breakdownExposition(initializeArrayList());
+        exposition = breakdownExposition(textArrayList());
 
         //ArrayList<String> cleanArrayList = cleanArrayList(breakdownExposition(initializeArrayList()));
 
-        totalLines = totalLines(testArrayList);
+        totalLines = totalLines(exposition);
         
-        String result = Integer.toString(totalLines(testArrayList));
+        String result = Integer.toString(totalLines(exposition));
         currentAndFinalLines.setText(result);
         
-        initializeExpositionBoxLines(testArrayList);
+        initializeExpositionBoxLines(exposition);
         
             // text stuff
-        usableButtonsActionListeners(testArrayList, speakerOrDescription, lineOne, 
+        usableButtonsActionListeners(exposition, speakerOrDescription, lineOne, 
             lineTwo, lineThree);
         
         // add appropriate mouse handlers to compoenents 
-        attachHandlersToComponents(frame, backward, forward, autoRun, 
-            alternativeNavigation, textBoxSettings, mainMenu);
+        attachHandlersToComponents(frame, backward, forward, 
+            altNav, settings, mainMenu);
         
         displayFrameWindow(); 
     }
-    
-    /*
-    public ExpositionBox() 
-    {
-        // set frame layou signifying component positioning style 
-        frame.setLayout(new GridBagLayout());
-        
-        // set color for panel bydecoding string of hexadecimal color 
-        frame.getContentPane().setBackground(Color.decode("#4d5461"));
-	
-        topRightComponents();
-        textDisplayingComponents(); 
-        
-        // text resizes within buttons according to frame size itself
-        // Note: this is done since buttons are designed to resize on their onw 
-        textResizesUponComponentResize(currentLocation, eventAndEventLine, 
-            currentAndFinalLines, speakerOrDescription, lineOne, 
-            lineTwo, lineThree, 
-            backward, forward, autoRun, alternativeNavigation, textBoxSettings, 
-            mainMenu);
-        
-        usableButtonsComponents();
-        usableButtonNavigation();
-        
-            // arraylist
-        ArrayList<String> testArrayList = breakdownExposition(initializeArrayList());
-
-        //ArrayList<String> cleanArrayList = cleanArrayList(breakdownExposition(initializeArrayList()));
-
-        totalLines = totalLines(testArrayList);
-        
-        //System.out.println("array pos no names: "+arrayPositionNoNames);
-        //System.out.println("clean size: "+totalLines(testArrayList));
-        
-        
-        String result = Integer.toString(totalLines(testArrayList));
-        currentAndFinalLines.setText(result);
-        
-        
-        
-            // text stuff
-        usableButtonsActionListeners(testArrayList, speakerOrDescription, lineOne, 
-            lineTwo, lineThree);
-        
-        // add appropriate mouse handlers to compoenents 
-        attachHandlersToComponents(frame, backward, forward, autoRun, 
-            alternativeNavigation, textBoxSettings, mainMenu);
-        
-        displayFrameWindow(); 
-    }
-    */
 }
