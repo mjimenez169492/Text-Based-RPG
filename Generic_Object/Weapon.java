@@ -1,13 +1,4 @@
-package Generic_Object;
 
-/*
-    Weapons extends OutfitMethods meaning that Weapons is a subclass of superclass 
-    OutfitMethods. Weapons defines methods relating to weapon creation. 
-*/
-
-import Commonly_Used_Methods.StaticMethods;
-import Move_Creation.StatusEffect;
-import java.util.ArrayList;
 
 public class Weapon extends OutfitMethods
 {
@@ -21,7 +12,7 @@ public class Weapon extends OutfitMethods
     private int maxNumberOfStatusEffects;
     
     // ArrayList stores status effects weapon can inflict on a target upon attack 
-    private ArrayList<StatusEffect> weaponStatuses = new ArrayList<StatusEffect>();
+    private ArrayList<StatusEffect> weaponStatuses = new ArrayList<>();
     
     // subclass constructor with method(s) invoked upon object creation 
     public Weapon()
