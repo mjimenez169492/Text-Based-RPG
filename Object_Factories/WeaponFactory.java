@@ -55,8 +55,6 @@ public class WeaponFactory
         
         weapon.setEnchantment("None");
         
-        weapon.setStressEffectUponAttack(100);
-        
         weapon.setMaxNumberOfStatusEffects(3);
         
         weapon.addStatusEffect(null);
@@ -123,8 +121,6 @@ public class WeaponFactory
         
         weapon.setEnchantment("None");
         
-        weapon.setStressEffectUponAttack(3);
-        
         weapon.setMaxNumberOfStatusEffects(3);
         
         weapon.addStatusEffect(null);
@@ -180,8 +176,6 @@ public class WeaponFactory
         weapon.setSlotOneCore(null);
         
         weapon.setEnchantment("None");
-        
-        weapon.setStressEffectUponAttack(100);
         
         weapon.setMaxNumberOfStatusEffects(3);
         
