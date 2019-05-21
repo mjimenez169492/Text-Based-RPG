@@ -44,7 +44,7 @@ public class Armor extends OutfitMethods
     public Armor()
     {
         // need to set subclass name to enable slot/core equip feature for object 
-        setSubclassName("Armors");
+        setSubclassName("Armor");
         
         // set up hashmap for easy value retrieval 
         initializeAttributesAndResistancesHashMap();
@@ -85,10 +85,8 @@ public class Armor extends OutfitMethods
     
     public enum ArmorSuperTypes 
     {
-        CLOSE_QUARTERS_COMBAT("Close Quarters Combat"), SWORD("Sword"), KNIFE("Knife"), 
-        OTHER_ONE_HANDED("Other One Handed"), GREAT_SWORD("Great Sword"), SPEAR("Spear"), 
-        OTHER_TWO_HANDED("Other Two Handed"), BLADES("Blades"), OTHER_DUAL_WIELDED
-        ("Other Dual Wielded");
+        CASUAL("Casual"), BUSINESS("Business"), COMBAT("Combat"), PARTY("Party"), 
+        OTHER("Other"); 
         
         private String amorSuperType;
         
@@ -139,7 +137,7 @@ public class Armor extends OutfitMethods
             getEnumAsString());
     }
     
-    public ArmorSubTypes getWeaponSubTypeEnum()
+    public ArmorSubTypes getArmorSubTypeEnum()
     {
         return ArmorSubTypes.valueOf(StaticMethods.stringToEnum(super.getSubType()));
     }
