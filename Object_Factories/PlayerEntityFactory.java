@@ -2,6 +2,7 @@ package Object_Factories;
 
 import Player_Entity.PlayerEntity;
 import Generic_Object.GenericObject;
+import java.security.SecureRandom;
 
 public class PlayerEntityFactory 
 {
@@ -35,12 +36,14 @@ public class PlayerEntityFactory
         playerEntity.getCurrentLocation().setMinorLocation("Entrance");
         playerEntity.getCurrentLocation().setIntraLocation("Training Area");
         
-        playerEntity.getInventory().setObjectGroupsLimit(5);
-        playerEntity.getInventory().setItemGroupMaxSize(5);
-        playerEntity.getInventory().setCoreGroupMaxSize(5);
-        playerEntity.getInventory().setWeaponGroupMaxSize(5);
-        playerEntity.getInventory().setArmorGroupMaxSize(5);
-        playerEntity.getInventory().setAccessoryGroupMaxSize(5);
+        SecureRandom rand = new SecureRandom();
+        
+        playerEntity.getInventory().setObjectGroupsLimit((rand.nextInt(30)+1));
+        playerEntity.getInventory().setItemGroupMaxSize((rand.nextInt(30)+1));
+        playerEntity.getInventory().setCoreGroupMaxSize((rand.nextInt(30)+1));
+        playerEntity.getInventory().setWeaponGroupMaxSize((rand.nextInt(30)+1));
+        playerEntity.getInventory().setArmorGroupMaxSize((rand.nextInt(30)+1));
+        playerEntity.getInventory().setAccessoryGroupMaxSize((rand.nextInt(30)+1));
         
         ItemFactory itemFactory = new ItemFactory();
         CoreFactory coreFactory = new CoreFactory();
@@ -48,7 +51,7 @@ public class PlayerEntityFactory
         ArmorFactory armorFactory = new ArmorFactory();
         AccessoryFactory accessoryFactory = new AccessoryFactory();
         
-        addObject(playerEntity, itemFactory.getExperimentalExtract());
+        addObject(playerEntity, itemFactory.getRandomItem());
         addObject(playerEntity, itemFactory.getSmallDart());
         addObject(playerEntity, itemFactory.getThrowingKnife());
         addObject(playerEntity, itemFactory.getLomanSeriesHealthWeb());
@@ -62,7 +65,7 @@ public class PlayerEntityFactory
         
         addObject(playerEntity, coreFactory.getCoreExample());
         
-        addObject(playerEntity, accessoryFactory.getAccessoryExample());
+        //addObject(playerEntity, accessoryFactory.getAccessoryExample());
         
         playerEntity.getPartyWallet().updateWalletCapacity();
         
@@ -72,7 +75,11 @@ public class PlayerEntityFactory
     // example 
     public void addObject(PlayerEntity entity, GenericObject object)
     {
-        for(int i = 0; i < 5; i++)
+        SecureRandom rand = new SecureRandom();
+        
+        int value = (rand.nextInt(50) + 1);
+        
+        for(int i = 0; i < value; i++)
         {
             entity.getInventory().addObject(object);
         }

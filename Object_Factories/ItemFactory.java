@@ -2,6 +2,7 @@ package Object_Factories;
 
 import Generic_Object.Item;
 import Move_Creation.Moves;
+import java.security.SecureRandom;
 
 public class ItemFactory 
 {
@@ -26,6 +27,54 @@ public class ItemFactory
         item.setStealRate(5.2);
         item.setPilferRate(0);
         item.setDropRate(7.7);
+        
+        item.setMove(null);
+        
+        return item;
+    }
+    
+    public String randomNumberOfLetters(String[] array)
+    {
+        SecureRandom rand = new SecureRandom();
+        
+        StringBuilder builder = new StringBuilder();
+        
+        for(int i = 0; i < (rand.nextInt(25) + 1); i++)
+        {
+            builder.append(array[i]);
+        }
+        
+        return builder.toString();
+    }
+    
+    public double randomNumber()
+    {
+        SecureRandom rand = new SecureRandom();
+
+        return (double)(rand.nextInt(50) + 1);
+    }
+    
+    public Item getRandomItem()
+    {
+        String[] array = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", 
+            "k", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", 
+            "X", "Y", "z"};
+        
+        Item item = new Item();
+        
+        item.setName(randomNumberOfLetters(array));
+        item.setBriefDescription(randomNumberOfLetters(array));
+        item.setMainClass("Item");
+        item.setItemCategory("Other");
+        item.setItemSuperType("Key Item");
+        item.setSubType("Quest");
+        
+        item.setUseSpeed(randomNumber());
+        item.setBuyPrice(randomNumber());
+        item.setSellPrice(randomNumber());
+        item.setStealRate(randomNumber());
+        item.setPilferRate(randomNumber());
+        item.setDropRate(randomNumber());
         
         item.setMove(null);
         

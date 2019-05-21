@@ -96,13 +96,26 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JScrollPane;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JRadioButtonMenuItem;
+import javax.swing.ButtonGroup;
+import javax.swing.JMenuBar;
+import javax.swing.KeyStroke;
+import javax.swing.ImageIcon;
 
-
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.JScrollPane;
+import javax.swing.JFrame;
+import javax.swing.JPopupMenu;
+import javax.swing.JInternalFrame;
 
 
 public class ItemsMenu 
 {
-    private JButton mainMenu, use, sort;
+    private JButton mainMenu, sort;
     
     private JButton itemDescription, buttonGroupTitle, inventoryJListTitle;
     
@@ -114,7 +127,58 @@ public class ItemsMenu
     
     int buttonVerticalPadding = 55;
     
-    private JList<String> invetoryObjectsJList;
+    private JList<String> inventoryObjectsJList;
+    
+    private JScrollPane inventoryScroll;
+    
+    private Inventory referenceInventory;
+    
+    // frame is made this way since internal frame cannot be done in GridBagLayout
+    private JFrame useFrame = new JFrame();
+    
+    // menu that shows up upon clicking an item or non-item object (key item or other)
+    private JPopupMenu usableItemPopupMenu = new JPopupMenu();
+    
+    private JPopupMenu keyItemPopupMenu = new JPopupMenu();
+    
+    private JPopupMenu nonItemPopupMenu = new JPopupMenu();
+    
+    // indicates whether customize ption is on or off 
+    private boolean customizeOn = false;
+    
+        private GenericObject objectGroupForSwapping = null;
+        private GenericObject swapWithObjectGroup = null;
+    
+    
+    
+    private JMenuBar menuBar;
+    
+    private JMenu sortMenu, specificSort, generalSort;
+    
+    private JMenu item, core, weapon, armor, accessory;
+    private String[] menuItemNames = {"Name", "Main Class", "Category", "Super Type", 
+        "Sub Type", "Use Speed", "Buy Price", "Sell Price", "Steal Rate", 
+        "Pilfer Rate", "Drop Rate", "Highest Quantity", "Lowest Quantity"};
+        private JMenuItem sortByName = new JMenuItem();
+        private JMenuItem sortByMainClass = new JMenuItem();
+        private JMenuItem sortByCategory = new JMenuItem();
+        private JMenuItem sortBySuperType = new JMenuItem();
+        private JMenuItem sortBySubType = new JMenuItem();
+        private JMenuItem sortByUseSpeed = new JMenuItem();
+        private JMenuItem sortByBuyPrice = new JMenuItem();
+        private JMenuItem sortBySellPrice = new JMenuItem();
+        private JMenuItem sortByStealRate = new JMenuItem(); 
+        private JMenuItem sortByPilferRate = new JMenuItem();
+        private JMenuItem sortByDropRate = new JMenuItem(); 
+        private JMenuItem sortByHighestQuantity = new JMenuItem();
+        private JMenuItem sortByLowestQuantity = new JMenuItem();
+        
+        JMenuItem[] menuItems = {sortByName, sortByMainClass, sortByCategory, 
+            sortBySuperType, sortBySubType, sortByUseSpeed, sortByBuyPrice, 
+            sortBySellPrice, sortByStealRate, sortByPilferRate, sortByDropRate, 
+            sortByHighestQuantity, sortByLowestQuantity};
+        
+        JMenuItem menuItem;
     
     
     
@@ -183,12 +247,10 @@ public class ItemsMenu
     {
         mainMenu = newUsableButton("Main Menu");
             usableButtonPlacement(mainMenu, 0, frame);
-        use = newUsableButton("Use");
-            usableButtonPlacement(use, 1, frame);
         sort = newUsableButton("Sort");
             usableButtonPlacement(sort, 2, frame);
         
-        usableButtonsActionsListeners(mainMenu, use, sort);
+        //usableButtonsActionsListeners(mainMenu, use, sort);
     }
     
     // END: USABLE BUTTONS 
@@ -212,16 +274,6 @@ public class ItemsMenu
             }
         }); 
         
-        use.addActionListener(
-        new ActionListener() 
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                // combo box?
-            }
-        }); 
-        
         sort.addActionListener(
         new ActionListener() 
         {
@@ -236,6 +288,147 @@ public class ItemsMenu
     }
     
     // END: ACTION LISTENERS FOR USABLE BUTTONS 
+    /*******************************************************************************/
+
+    
+    
+    // START: SORTING INVENTORY FUNCTIONALITY 
+    /*******************************************************************************/
+
+    public JMenuItem[] newJMenuItems(String[] menuItemNames, JMenuItem...array)
+    {
+        JMenuItem[] newArray = new JMenuItem[array.length];
+        
+        for(int i = 0; i < array.length; i++)
+        {
+            array[i] = new JMenuItem(menuItemNames[i]);
+                newArray[i] = array[i];
+        }
+        
+        return newArray;
+    }
+    
+    public void addSpecificSortJMenuItems(JMenu mainMenu, JMenuItem[] newJMenuItems, 
+        Inventory inventory, String[] sortingTypesStringArray)
+    {
+        for(int i = 0; i < newJMenuItems.length; i++)
+        {
+            // add line separator for menu item in submenu itself 
+            mainMenu.addSeparator();
+            
+            // since local variables referenced from inner class action listener
+            // (in this case the array below) are not final, the assignment done 
+            // outside using a local variable that will pass reference inside 
+            String sortType = sortingTypesStringArray[i];
+            
+            // add action listener for each JMenuItem
+            newJMenuItems[i].addActionListener(
+                new ActionListener() 
+                {
+                    String classForSorting = mainMenu.getText();
+
+                    String specificSortType = sortType;
+
+                    @Override
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        // sort inventory 
+                        inventory.specificSort(classForSorting, specificSortType);
+                            inventoryObjectsJList.setModel(inventoryInJListFormat(inventory));
+                    }
+                }); 
+            
+            mainMenu.add(newJMenuItems[i]);
+        }
+    }
+    
+    public void addGeneralSortJMenuItems(JMenu mainMenu, JMenuItem[] newJMenuItems, 
+        Inventory inventory, String[] sortingTypesStringArray)
+    {
+        for(int i = 0; i < newJMenuItems.length; i++)
+        {
+            // add line separator for menu item in submenu itself 
+            mainMenu.addSeparator();
+            
+            // since local variables referenced from inner class action listener
+            // (in this case the array below) are not final, the assignment done 
+            // outside using a local variable that will pass reference inside 
+            String sortType = sortingTypesStringArray[i];
+            
+            // add action listener for each JMenuItem
+            newJMenuItems[i].addActionListener(
+                new ActionListener() 
+                {
+                    String generalSortType = sortType;
+
+                    @Override
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        // sort inventory 
+                        inventory.generalSort(generalSortType);
+                            inventoryObjectsJList.setModel(inventoryInJListFormat(inventory));
+                    }
+                }); 
+            
+            mainMenu.add(newJMenuItems[i]);
+        }
+    }
+    
+    public void initializeSort(Inventory inventory, JFrame frame)
+    {
+        //Create the menu bar that will be displayed on northern border of frame 
+        menuBar = new JMenuBar();
+
+            // build central menu holding sorting options 
+            sortMenu = new JMenu("Sort");
+            
+            // set length of menu in pixels  
+            sortMenu.setIconTextGap(20);
+            menuBar.add(sortMenu);
+            
+            // specific sort option with line separating options 
+            sortMenu.addSeparator();
+            specificSort = new JMenu("Specific Sort");
+
+                item = new JMenu("Item");
+                    addSpecificSortJMenuItems(item, newJMenuItems(menuItemNames, menuItems), 
+                        inventory, inventory.sortingTypesStrings());
+                            specificSort.add(item);
+                
+                core = new JMenu("Core");
+                    addSpecificSortJMenuItems(core, newJMenuItems(menuItemNames, menuItems), 
+                        inventory, inventory.sortingTypesStrings());
+                            specificSort.add(core);
+                    
+                weapon = new JMenu("Weapon");
+                    addSpecificSortJMenuItems(weapon, newJMenuItems(menuItemNames, menuItems), 
+                        inventory, inventory.sortingTypesStrings());
+                            specificSort.add(weapon);
+                
+                armor = new JMenu("Armor");
+                    addSpecificSortJMenuItems(armor, newJMenuItems(menuItemNames, menuItems), 
+                        inventory, inventory.sortingTypesStrings());
+                            specificSort.add(armor);
+                
+                accessory = new JMenu("Accessory");
+                    addSpecificSortJMenuItems(accessory, newJMenuItems(menuItemNames, menuItems), 
+                        inventory, inventory.sortingTypesStrings());
+                            specificSort.add(accessory);
+        
+            // add menu for sorting objects by class in a specific way 
+            sortMenu.add(specificSort);
+            
+            // General sort option with line separating options 
+            sortMenu.addSeparator();
+            generalSort = new JMenu("General Sort");
+                addGeneralSortJMenuItems(generalSort, newJMenuItems(menuItemNames, menuItems), 
+                    inventory, inventory.sortingTypesStrings());
+                        sortMenu.add(generalSort);
+                
+        frame.setJMenuBar(menuBar);
+    }
+    
+    // END: SORTING INVENTORY FUNCTIONALITY 
     /*******************************************************************************/
 
     
@@ -289,16 +482,18 @@ public class ItemsMenu
             addButtonComponent(itemDescription, 1, 0, 0.11, 1, 1, 0, frame);
     }
     
-    public void newAreaTitle(Inventory inventory)
+    
+    
+    public void newAreaTitle(Inventory inventory, JFrame frame)
     {
-        buttonGroupTitle = newUnusableStandardButton("Object Details");
-            addButtonComponent(buttonGroupTitle, 2, 0, 0.11, 1, 1, 2, frame);
-        
-        String inventoryTitle = String.format("Inventory (Object Groups Limit: %s", String.
+        String inventoryTitle = String.format("Inventory (Object Group Limit: %s", String.
             valueOf(inventory.getObjectGroupsLimit()) + ")");
         
         inventoryJListTitle = newUnusableStandardButton(inventoryTitle);
-            addButtonComponent(inventoryJListTitle, 2, 2, 0.11, 1, 1, 1, frame);
+            addButtonComponent(inventoryJListTitle, 2, 0, 0.11, 1, 1, 2, frame);
+
+        buttonGroupTitle = newUnusableStandardButton("General Details of Selected Object");
+            addButtonComponent(buttonGroupTitle, 2, 2, 0.11, 1, 1, 1, frame);
     }
     
     // END: DESCRIPTION AND FRAME AREA TITLES 
@@ -309,36 +504,42 @@ public class ItemsMenu
     // START: OBJECT DETAILS 
     /*******************************************************************************/
 
-    public void addObjectDetailsButton(JButton button, int gridy, int gridx, JFrame frame)
+    public void addObjectDetailsButton(JButton button, int gridy, JFrame frame)
     {
-        addButtonComponent(button, gridy, gridx, 0.11, 1, 1, 2, frame);
+        addButtonComponent(button, gridy, 1, 0.11, 0.11, 1, 2, frame);
     }
     
+    
+    
+    
+    
+    
+    // NEED TO RESET DESCRIPTION AND DETAILS TO DEFAULT IF INVENTORY IS EMPTY
     public void objectDetailButtons(JFrame frame)
     {
         mainClass = newUnusableObjectDescriptionButton("Main Class", " ");
-            addObjectDetailsButton(mainClass, 3, 0, frame);
+            addObjectDetailsButton(mainClass, 3, frame);
 
         category = newUnusableObjectDescriptionButton("Category", " ");
-            addObjectDetailsButton(category, 4, 0, frame);
+            addObjectDetailsButton(category, 4, frame);
         
         superType = newUnusableObjectDescriptionButton("Super Type", " ");
-            addObjectDetailsButton(superType, 5, 0, frame);
+            addObjectDetailsButton(superType, 5, frame);
         
         subType = newUnusableObjectDescriptionButton("Sub Type", " ");
-            addObjectDetailsButton(subType, 6, 0, frame);
+            addObjectDetailsButton(subType, 6, frame);
     
         useSpeed = newUnusableObjectDescriptionButton("Use Speed", " ");
-            addObjectDetailsButton(useSpeed, 7, 0, frame);
+            addObjectDetailsButton(useSpeed, 7, frame);
         
         buyPrice = newUnusableObjectDescriptionButton("Buy Price", " ");
-            addObjectDetailsButton(buyPrice, 8, 0, frame);
+            addObjectDetailsButton(buyPrice, 8, frame);
         
         sellPrice = newUnusableObjectDescriptionButton("Sell Price", " ");
-            addObjectDetailsButton(sellPrice, 9, 0, frame);
+            addObjectDetailsButton(sellPrice, 9, frame);
         
         dropRate = newUnusableObjectDescriptionButton("Drop Rate", " ");
-            addObjectDetailsButton(dropRate, 10, 0, frame);
+            addObjectDetailsButton(dropRate, 10, frame);
     }
     
     // END: OBJECT DETAILS 
@@ -356,7 +557,7 @@ public class ItemsMenu
         gridBagConstraints.fill = GridBagConstraints.BOTH;
 
         gridBagConstraints.gridy = 3;
-        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridx = 0;
         gridBagConstraints.weighty = 0.10;
         gridBagConstraints.weightx = 0.10;
         gridBagConstraints.gridheight = 3;
@@ -366,36 +567,41 @@ public class ItemsMenu
         // top, int left, int bottom, int right)
         gridBagConstraints.insets = new Insets(0, 0, 0, 0);
         
+        gridBagConstraints.ipady = 125;
+        
         // add a JScrollPane containing JList to frame 
         frame.add(inventoryScroll, gridBagConstraints);
     }
     
     public void createInventoryJList(Inventory inventory, DefaultListModel<String> 
-        invetoryObjects)
+        inventoryObjects, JFrame frame)
     {
         // fill JList with contents of supplied DefaultListModel<> 
-        invetoryObjectsJList = new JList<>(invetoryObjects);
+        inventoryObjectsJList = new JList<>(inventoryObjects);
         
         // The text is not messed up, it's just using a non-monospaced font so 
         // not all characters have the same width.
-        invetoryObjectsJList.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 14));
+        inventoryObjectsJList.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
 
-        invetoryObjectsJList.setVisibleRowCount(-1); // display as many rows as can be shown 
+        inventoryObjectsJList.setVisibleRowCount(-1); // display as many rows as can be shown 
         
         // do not allow multiple selection
-        invetoryObjectsJList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); 
+        inventoryObjectsJList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); 
         
         //invetoryObjectsJList.ensureIndexIsVisible(-1);
-        //invetoryObjectsJList.setSelectedIndex(0);  <- consider this...
+        inventoryObjectsJList.setSelectedIndex(0); 
         
-        JScrollPane inventoryScroll = new JScrollPane(invetoryObjectsJList, 
+        // listener fills in object description/details upon object selection
+        addJListInventoryUpdateListener(inventory, inventoryObjectsJList);
+        
+        inventoryScroll = new JScrollPane(inventoryObjectsJList, 
             JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
             JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         
         addInventoryJList(inventoryScroll, frame);
     }
     
-    public void displayInventoryContents(Inventory inventory, JFrame frame)
+    public DefaultListModel<String> inventoryInJListFormat(Inventory inventory)
     {
         DefaultListModel<String> invetoryObjects = new DefaultListModel<>();
         
@@ -410,39 +616,257 @@ public class ItemsMenu
                         counter++;
         }
         
-        createInventoryJList(inventory, invetoryObjects);
+        return invetoryObjects;
+    }
+    
+    public void displayInventoryContents(Inventory inventory, JFrame frame)
+    {
+        createInventoryJList(inventory, inventoryInJListFormat(inventory), frame);
     }
     
     // perform event upon change in JList entry focus 
-    public void invetoryObjectsJListValueChanged(Inventory inventory, ListSelectionEvent evt) 
+    public void inventoryObjectsJListValueChanged(Inventory inventory, ListSelectionEvent evt) 
     {
-        if (!invetoryObjectsJList.getValueIsAdjusting()) 
+        if (!inventoryObjectsJList.getValueIsAdjusting()) 
         {
-            // CHANGE
-            getObjectName(inventory, (String)invetoryObjectsJList.getSelectedValue());
-            System.out.println(((String)invetoryObjectsJList.getSelectedValue()));
-            
+            // prevents null being passed upon sort completion
+            if(inventoryObjectsJList.getSelectedValue() != null)
+            {
+                // use String of object name currently highlighted in JList to 
+                // update object description and object details 
+                updateObjectDescriptionAndDetails(getInventoryObject(inventory, trimString(
+                    (String)inventoryObjectsJList.getSelectedValue(), 10)));
+            }
         }
     }
     
-    public void addJListListener(Inventory inventory, JList jList)
+    public void addJListItemOptionsListener(Inventory inventory, JList jList, JPopupMenu 
+        usableItem, JPopupMenu keyItem, JPopupMenu nonItem)
     {
-        // INVENTORY SHENANGIANS BELOW...
         // allows for events to occur upon change in JList entry focus  
-        invetoryObjectsJList.addListSelectionListener(
-            new ListSelectionListener() 
+        jList.addMouseListener(
+            new MouseAdapter() 
             {
-                public void valueChanged(ListSelectionEvent evt) 
+                @Override
+                public void mouseClicked(MouseEvent me)
                 {
-                    invetoryObjectsJListValueChanged(inventory, evt);
+                    // if evt object is item, show pop menu for item else do nothing 
+                    // if right mouse button clicked and list selection is not empty
+                    // and clicked point is inside selected item bounds
+                    if (SwingUtilities.isLeftMouseButton(me) && !jList.isSelectionEmpty()
+                        && jList.locationToIndex(me.getPoint()) == jList.getSelectedIndex()) 
+                    {
+                        GenericObject object = getInventoryObject(inventory, trimString((String)jList.
+                            getSelectedValue(), 10));
+                        
+            // MUST NOT BE ABLE TO TOSS KEY ITEMS
+                        // pop up menu for Item object ONLY
+                        // if evt object is item, show pop menu for item else do nothing 
+                        if(object.getClass() == Generic_Object.Item.class)
+                        {
+                            Generic_Object.Item item = (Generic_Object.Item)object;
+                            
+                            if(item.getItemSuperTypeEnum() != Generic_Object.Item.ItemSuperTypes.KEY_ITEM)
+                            {
+                                usableItem.show(jList, me.getX(), me.getY());
+                            }
+                            else
+                            {
+                                keyItem.show(jList, me.getX(), me.getY());
+                            }
+                        }
+                        else
+                        {
+                            nonItem.show(jList, me.getX(), me.getY());
+                        }
+                    }
                 }
             }
         );
     }
     
+    public void addJListInventoryUpdateListener(Inventory inventory, JList jList)
+    {
+        // allows for events to occur upon change in JList entry focus  
+        jList.addListSelectionListener(
+            new ListSelectionListener() 
+            {
+                @Override
+                public void valueChanged(ListSelectionEvent evt) 
+                {
+                    // update object information upon JList selection change 
+                    inventoryObjectsJListValueChanged(inventory, evt);
+                }
+            }
+        );
+    }
+    
+    // MouseAdapter extended to avoid overriding unused methods 
+    private class MouseHandler extends MouseAdapter 
+    {
+        // handle event when mouse exits area
+        @Override
+        public void mouseExited(MouseEvent event)
+        {
+            useFrame.dispose();
+            
+            // sets original frame back into focus without closing as well
+            // since dispose closes program if no window comes after 
+            frame.setVisible(true);
+            frame.toFront();
+            frame.requestFocus();
+            frame.requestFocus();
+        }
+    }
+    
     // END: INVENTORY AS JLIST 
     /*******************************************************************************/
 
+    
+    // START: OPTIONS MENU FOR JLIST ENTRY ON CLICK
+    /*******************************************************************************/
+
+    public void useActionListener(JMenuItem menuItem, JFrame characterDisplayFrame)
+    {
+        menuItem.addActionListener(
+            new ActionListener() 
+            {
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    characterDisplayFrame.addMouseListener(new MouseHandler());
+                    
+                    Rectangle bounds = frame.getBounds();
+                    
+                    // calculation makes frame have location starting from bottom left of outer frame 
+                    // with y-axis position based on bounds.y multiplier (in this case 1.75) and outer 
+                    // multiplier (in this case 0.58); 
+                    characterDisplayFrame.setLocation(bounds.x, (int)((bounds.y * 1.75 + frame.getHeight()) * 0.58));
+                    
+                    // frame width equal to width of outer frame and height based on coder menu preference 
+                    characterDisplayFrame.setSize(frame.getWidth(), (int)(0.42 * frame.getHeight()));
+                    characterDisplayFrame.setVisible(true);                
+                }
+            }); 
+        
+    }
+    
+    public void tossActionListener(JMenuItem menuItem)
+    {
+        menuItem.addActionListener(
+            new ActionListener() 
+            {
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    referenceInventory.removeObject(getInventoryObject(referenceInventory, 
+                        trimString((String)inventoryObjectsJList.getSelectedValue(), 10)));
+                            inventoryObjectsJList.setModel(inventoryInJListFormat(referenceInventory));
+                }
+            }); 
+    }
+    
+    public void removeAllActionListener(JMenuItem menuItem)
+    {
+        menuItem.addActionListener(
+            new ActionListener() 
+            {
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    referenceInventory.removeObjectGroup(getInventoryObject(referenceInventory, 
+                        trimString((String)inventoryObjectsJList.getSelectedValue(), 10)));
+                            inventoryObjectsJList.setModel(inventoryInJListFormat(referenceInventory));
+                }
+            }); 
+    }
+    
+    public void customizeActionListener(JMenuItem customize)
+    {
+        customize.addActionListener(
+            new ActionListener() 
+            {
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    if(!customizeOn)
+                    {
+                        objectGroupForSwapping = getInventoryObject(referenceInventory, 
+                            trimString((String)inventoryObjectsJList.getSelectedValue(), 10));
+                                customizeOn = true;
+                    }
+                    else
+                    {
+                        swapWithObjectGroup = getInventoryObject(referenceInventory, 
+                            trimString((String)inventoryObjectsJList.getSelectedValue(), 10));
+
+                        // if first object group still exists in inventory 
+                        if(objectGroupForSwapping != null && referenceInventory.getInventory().containsKey(objectGroupForSwapping))
+                        {
+                            int objectGroupOne = referenceInventory.objectGroupPosition(objectGroupForSwapping);
+                            int objectGroupTwo = referenceInventory.objectGroupPosition(swapWithObjectGroup);
+
+                            objectGroupForSwapping = null;
+                            swapWithObjectGroup = null;
+
+                            referenceInventory.customize(objectGroupOne, objectGroupTwo);
+
+                            inventoryObjectsJList.setModel(inventoryInJListFormat(referenceInventory));
+
+                            customizeOn = false;
+                        }
+                        else
+                        {
+                            objectGroupForSwapping = null;
+                            swapWithObjectGroup = null;
+                            customizeOn = false;
+                        }
+                    }
+                }
+            }); 
+    }
+    
+    public void setUpItemMenu(JFrame characterDisplayFrame)
+    {
+        // each popup menu needs its own object because if each popup menu
+        // refers to same object, the last popup menu to add the object is
+        // the only popup menu that will have the object 
+        JMenuItem useItem = new JMenuItem("Use");
+            useActionListener(useItem, characterDisplayFrame);
+                usableItemPopupMenu.add(useItem);
+        
+        JMenuItem tossItem = new JMenuItem("Toss");
+            tossActionListener(tossItem);
+                usableItemPopupMenu.add(tossItem);
+        JMenuItem tossNonItem = new JMenuItem("Toss");
+            tossActionListener(tossNonItem);
+                nonItemPopupMenu.add(tossNonItem);
+        
+        JMenuItem removeAllItems = new JMenuItem("Remove All");
+            removeAllActionListener(removeAllItems);
+                usableItemPopupMenu.add(removeAllItems);
+        JMenuItem removeAllNonItems = new JMenuItem("Remove All");
+            removeAllActionListener(removeAllNonItems);
+                nonItemPopupMenu.add(removeAllNonItems);
+        
+        // if private instance variable customizeOn did not exist then each
+        // popup menu would have their own versions of boolean customizeOn
+        // meaning customize feature amongst objects would function weirdly 
+        JMenuItem customizeItemPlacement  = new JMenuItem("Customize");
+            customizeActionListener(customizeItemPlacement);
+                usableItemPopupMenu.add(customizeItemPlacement);
+        JMenuItem customizeKeyItemPlacement = new JMenuItem("Customize");
+            customizeActionListener(customizeKeyItemPlacement);
+                keyItemPopupMenu.add(customizeKeyItemPlacement);
+        JMenuItem customizeNonItemPlacement = new JMenuItem("Customize");
+            customizeActionListener(customizeNonItemPlacement);
+                nonItemPopupMenu.add(customizeNonItemPlacement);
+    }
+        
+    // END: OPTIONS MENU FOR JLIST ENTRY ON CLICK
+    /*******************************************************************************/
+
+    
     
     
     // START: OBJECT INFORMATION USING JLIST STRING 
@@ -456,28 +880,87 @@ public class ItemsMenu
                 slots for object details INCLUDING description button
     */
     
-    pu
-    
-    public void getObjectName(Inventory inventory, String jListObjectName)
+    public String formatDescriptionDetailsString(String text, String appendText)
     {
-        char[] array = jListObjectName.toCharArray();
+        // trim String based on character length of String as precaution 
+        StringBuilder builder = new StringBuilder();
+        
+        if(appendText.length() > 45)
+        {
+            builder.append(trimString(appendText, 45));
+        }
+        else
+        {
+            builder.append(appendText);
+        }
+        
+        String formattedText = String.format("%-11s: %s", text, builder.toString());
+            return formattedText;
+    }
+    
+    public void updateObjectDescriptionAndDetails(GenericObject object)
+    {
+        itemDescription.setText(formatDescriptionDetailsString("Description", 
+            object.getBriefDescription()));
+        
+        mainClass.setText(formatDescriptionDetailsString("Main Class", 
+            object.getMainClassString()));
+
+        category.setText(formatDescriptionDetailsString("Category", 
+            object.getCategory()));
+        
+        superType.setText(formatDescriptionDetailsString("Super Type", 
+            object.getSuperType()));
+        
+        subType.setText(formatDescriptionDetailsString("Sub Type", 
+            object.getSubType()));
+    
+        useSpeed.setText(formatDescriptionDetailsString("Use Speed", 
+            String.valueOf(object.getUseSpeed())));
+        
+        buyPrice.setText(formatDescriptionDetailsString("Buy Price ", 
+            String.valueOf(object.getBuyPrice())));
+        
+        sellPrice.setText(formatDescriptionDetailsString("Sell Price", 
+            String.valueOf(object.getSellPrice())));
+        
+        dropRate.setText(formatDescriptionDetailsString("Drop Rate", 
+            String.valueOf(object.getDropRate())));
+    }
+    
+    public GenericObject getInventoryObject(Inventory inventory, String jListObjectName)
+    {
+        GenericObject object = null;
+        
+        for(Map.Entry<GenericObject, ArrayList<GenericObject>> entry : inventory.
+            getInventory().entrySet())
+        {
+            if(jListObjectName.equals(entry.getKey().getName()))
+            {
+                object = entry.getKey();
+            }
+        }
+        
+        return object;
+    }
+    
+    public String trimString(String argument, int startingPosition)
+    {
+        // convert String to character array 
+        char[] array = argument.toCharArray();
         
         StringBuilder builder = new StringBuilder();
         
-        // i is n - 1 so instead of 9 (space), must put 10 to start at first character 
+        // since first 9 characters are not useful for finding object name, 
+        // supply 10 since we know first character of object name is there 
         for(int i = 10; i < array.length; i++)
         {
             // append characters to builder to return as String later 
             builder.append(array[i]);
         }
         
-        getInventoryObject(inventory, builder.toString());
+        return builder.toString();
     }
-    
-    
-    
-    
-    
     
     // END: OBJECT INFORMATION USING JLIST STRING 
     /*******************************************************************************/
@@ -508,7 +991,7 @@ public class ItemsMenu
     
     public void addInventoryDetailsButton(JButton button, int gridy, JFrame frame)
     {
-        addButtonComponent(button, gridy, 2, 0.11, 1, 1, 1, frame);
+        addButtonComponent(button, gridy, 0, 0.11, 1, 1, 1, frame);
     }
     
     public void inventoryDetailsButtons(Inventory inventory, JFrame frame)
@@ -556,12 +1039,16 @@ public class ItemsMenu
 
         addUsableButtons(frame);
         
+        
+        
         addObjectDescriptionButton(frame);
         
         // party as list (display)
         PlayerEntityFactory entity = new PlayerEntityFactory();
         
-        newAreaTitle(entity.getPlayerEntityExample().getInventory());
+        referenceInventory = entity.getPlayerEntityExample().getInventory();
+        
+        newAreaTitle(referenceInventory, frame);
         
         objectDetailButtons(frame);
         
@@ -572,18 +1059,25 @@ public class ItemsMenu
                 match namr of key object 
         */
         
-        displayInventoryContents(entity.getPlayerEntityExample().getInventory(), frame);
+        setUpItemMenu(useFrame);
         
-        inventoryDetailsButtons(entity.getPlayerEntityExample().getInventory(), frame);
+        displayInventoryContents(referenceInventory, frame);
         
-        addJListListener(entity.getPlayerEntityExample().getInventory(), invetoryObjectsJList);
+        inventoryDetailsButtons(referenceInventory, frame);
         
+        addJListItemOptionsListener(referenceInventory, inventoryObjectsJList, 
+            usableItemPopupMenu, keyItemPopupMenu, nonItemPopupMenu);
+        
+        
+        initializeSort(referenceInventory, frame);
+        
+        // set object details so they are shown immediately for first element 
+        inventoryObjectsJList.setSelectedIndex(1);
+        inventoryObjectsJList.setSelectedIndex(0);
         
         displayFrameWindow();
     }
     
     
     
-    
 }
-
