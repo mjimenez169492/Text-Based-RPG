@@ -406,6 +406,69 @@ public class MainMenu
         panel.add(button, gridBagConstraints);
     }
     
+    public String setUpStatusEffectTextArea(GenericCharacter character)
+    {
+        StringBuilder builder = new StringBuilder("Status Effects: ");
+        
+        int counter = 0;
+        
+        for(StatusEffect status : character.getStatusEffectContainer().getStatusEffects())
+        {
+            if(1 == character.getStatusEffectContainer().getStatusEffects().size())
+            {
+                builder.append(status.getName());
+            }
+            else if(counter == (character.getStatusEffectContainer().getStatusEffects().size() - 1))
+            {
+                builder.append(status.getName());
+            }
+            else
+            {
+                builder.append(status.getName());
+                    builder.append(", ");
+                        counter++;
+            }
+        }
+        
+        return builder.toString();
+    }
+    
+    public void statusEffectTextArea(GenericCharacter character, int gridy, 
+        int gridx, JPanel panel)
+    {
+        JTextArea textArea = new JTextArea(setUpStatusEffectTextArea(character));
+        
+        textArea.setBackground(Color.BLACK);
+        
+        textArea.setForeground(Color.WHITE);
+        
+        textArea.setEditable(true);
+        
+        textArea.setFont(font);
+        
+        // add first text area 
+        JScrollPane scroll = new JScrollPane(textArea, 
+            JScrollPane.VERTICAL_SCROLLBAR_NEVER,
+            JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        
+        GridBagConstraints gridBagConstraints = new GridBagConstraints();
+        
+        gridBagConstraints = new GridBagConstraints();
+        gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.gridy = gridy;
+        gridBagConstraints.gridx = gridx;
+        gridBagConstraints.weighty = 0.1;
+        gridBagConstraints.weightx = 0.5;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.ipady = 15;
+        
+        // specifies space component must leave at each edges; (Insets(int 
+        // top, int left, int bottom, int right) (- value incrases border)
+        gridBagConstraints.insets = new Insets(0, 0, 0, 0);
+        
+        panel.add(scroll, gridBagConstraints);
+    }
+    
     public JPanel internalJPanelCharacterInformation(GenericCharacter character)
     {
         // panel will hold several buttons 
@@ -428,11 +491,11 @@ public class MainMenu
         buttonForInternalPanelPlacement(builder.toString(), 0, 1, internalPanel);
         
         // add stress value of character 
-        builder = new StringBuilder();
+        builder = new StringBuilder("Remodel");
         
-        builder.append("Stress: ").append(String.valueOf(character.getStress().
-            getCurrentStress())).append(" / ").append(String.valueOf(character.
-            getStress().getMaxStress()));
+        //builder.append("Stress: ").append(String.valueOf(character.getStress().
+        //    getCurrentStress())).append(" / ").append(String.valueOf(character.
+        //    getStress().getMaxStress()));
         
         buttonForInternalPanelPlacement(builder.toString(), 1, 0, internalPanel);
         
@@ -485,6 +548,9 @@ public class MainMenu
         builder.append("      ").append(String.valueOf(level.nextLevelExp(character)));
         
         buttonForInternalPanelPlacement(builder.toString(), 4, 1, internalPanel);
+        
+        // add text area meant for showing status effects tied to character 
+        statusEffectTextArea(character, 5, 0, internalPanel);
         
         return internalPanel;
     }

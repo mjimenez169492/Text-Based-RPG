@@ -146,7 +146,7 @@ public class MoveImmunity
 
     // location: involved in determining fail states 
     
-    public void immoral(boolean immortal)
+    public void immortal(boolean immortal)
     {
         this.immortal = immortal;
     }

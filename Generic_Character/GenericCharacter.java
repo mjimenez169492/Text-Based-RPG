@@ -9,17 +9,15 @@ package Generic_Character;
 public class GenericCharacter 
 {
     // holds objects created using classes in package Generic_Character 
-    Stress stress = new Stress();
-    
     StatusEffectContainer statusEffectContainer = new StatusEffectContainer();
     
     Stats stats = new Stats();
     
     EquippableOutfits equippableOutfits = new EquippableOutfits(stats);
     
-    TotalStats totalStats = new TotalStats(stress, statusEffectContainer, equippableOutfits);
+    TotalStats totalStats = new TotalStats(statusEffectContainer, equippableOutfits);
     
-    RetrieveResistances retrieveResistances = new RetrieveResistances(stress, totalStats);
+    RetrieveResistances retrieveResistances = new RetrieveResistances(totalStats);
     
     MoveImmunity moveImmunity = new MoveImmunity();
     
@@ -48,11 +46,6 @@ public class GenericCharacter
     // START: GETTING OBJECTS CREATED USING OTHER CLASSES 
     /*******************************************************************************/
 
-    public Stress getStress()
-    {
-        return stress;
-    }
-    
     public StatusEffectContainer getStatusEffectContainer()
     {
         return statusEffectContainer;

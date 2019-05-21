@@ -161,7 +161,7 @@ public class StatusEffect
     }
     
     // adds stat (attribute/resistance) name as key and Double value as effect
-    public void addStatAndDoubleEffect(String stat, Double effect)
+    public void addStatNameAndDoubleEffect(String stat, Double effect)
     {
         if(StaticMethods.getStatString(stat) != null)
         {

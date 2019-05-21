@@ -1,21 +1,7 @@
-package Generic_Character;
 
-/*
-    TotalStats concerns "getTotal_" methods where "_" stands for almost every 
-    attribute/resistence tied to a GenericCharacter object. 
-*/
-
-public class TotalStats
-{   
-    // holding objects from other classes 
-    private Stress stress;
-    private StatusEffectContainer statusEffectContainer;
-    private EquippableOutfits equippableOutfits;
-    
-    public TotalStats(Stress stress, StatusEffectContainer statusEffectContainer, 
+    public TotalStats(StatusEffectContainer statusEffectContainer, 
         EquippableOutfits equippableOutfits)
     {
-        this.stress = stress;
         this.statusEffectContainer = statusEffectContainer;
         this.equippableOutfits = equippableOutfits;
     }
@@ -25,11 +11,6 @@ public class TotalStats
     // START: HOLDING OBJECTS SUPPLIED FROM OTHER CLASSES 
     /*******************************************************************************/
 
-    public Stress getStress()
-    {
-        return stress;
-    }
-    
     public StatusEffectContainer getStatusEffectContainer()
     {
         return statusEffectContainer;
@@ -101,7 +82,7 @@ public class TotalStats
         double attribute = validateTotalAttribute(attributeWithOutfits + (attributeWithOutfits 
             * getStatusEffectContainer().sumOfEffects(attributeName)));
         
-        return getStress().getStressPenalty(attribute);	
+        return attribute;	
     }
     
     public double getTotalAttack()
@@ -177,8 +158,7 @@ public class TotalStats
         // validation must be performed before stress penalty can be applied to ensure 
         // that a value meant to be retrieved has stress penalty applied to it correctly
         double resistance = validateResistance(resistanceWithOutfits + getStatusEffectContainer().sumOfEffects(resistanceName));
-        
-        return getStress().getStressPenalty(resistance);	
+            return resistance;	
     }
 
     // START: ENCHANTMENT RELATED
@@ -289,7 +269,7 @@ public class TotalStats
 
     public Object[] getAllTotalUniqueStatusEffectResistancesWithNames()
     {
-        Object[] array = {"Dry", getTotalMaxHealth(), "Wet", getTotalWetResistance(), 
+        Object[] array = {"Dry", getTotalDryResistance(), "Wet", getTotalWetResistance(), 
             "Cold", getTotalColdResistance(), "Conductive", getTotalConductiveResistance(),
             "Sickness", getTotalSicknessResistance(),"Hypersensitive", getTotalHypersensitiveResistance(),
             "Coated", getTotalCoatedResistance(), "Lightweight", getTotalLightweightResistance(),

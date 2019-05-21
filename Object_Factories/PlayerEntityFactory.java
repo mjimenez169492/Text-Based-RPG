@@ -3,6 +3,7 @@ package Object_Factories;
 import Player_Entity.PlayerEntity;
 import Generic_Object.GenericObject;
 import java.security.SecureRandom;
+import Generic_Character.GenericCharacter;
 
 public class PlayerEntityFactory 
 {
@@ -11,20 +12,24 @@ public class PlayerEntityFactory
         PlayerEntity playerEntity = new PlayerEntity();
         
         GenericCharacterFactory characterOne = new GenericCharacterFactory();
-        
-            playerEntity.getParty().addToParty(characterOne.getExampleCharacter());
+        GenericCharacter charOne = characterOne.getExampleCharacter();
+        charOne.getGeneralFeatures().setName("dv");
+            playerEntity.getParty().addToParty(charOne);
         
         GenericCharacterFactory characterTwo = new GenericCharacterFactory();
-        
-            playerEntity.getParty().addToParty(characterTwo.getExampleCharacter());
+        GenericCharacter charTwo = characterTwo.getExampleCharacter();
+        charTwo.getGeneralFeatures().setName("ppp dwwd");
+            playerEntity.getParty().addToParty(charTwo);
         
         GenericCharacterFactory characterThree = new GenericCharacterFactory();
-        
-            playerEntity.getParty().addToParty(characterThree.getExampleCharacter());
+        GenericCharacter charThree = characterThree.getExampleCharacter();
+        charTwo.getGeneralFeatures().setName("12345678901234567890123456");
+            playerEntity.getParty().addToParty(charThree);
         
         GenericCharacterFactory characterFour = new GenericCharacterFactory();
-        
-            playerEntity.getParty().addToParty(characterFour.getExampleCharacter());
+        GenericCharacter charFour = characterFour.getExampleCharacter();
+        charFour.getGeneralFeatures().setName("thte wdhd eh");
+            playerEntity.getParty().addToParty(charFour);
         
         //GenericCharacterFactory characterFive = new GenericCharacterFactory();
         

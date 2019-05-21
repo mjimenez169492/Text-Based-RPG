@@ -9,6 +9,7 @@ package Move_Creation;
     order to properly design move formulas. 
 */
 
+import Commonly_Used_Methods.StaticMethods;
 import Generic_Character.GenericCharacter;
 import Player_Entity.Party;
 
@@ -444,7 +445,7 @@ public class MoveCalculations
         return trueCritical(userCritical, targetCriticalResistance);
     }
     
-    // END: BASE STRESS EFFECT CALCULATIONS
+    // END: BASE CRITICAL CALCULATIONS
     /*******************************************************************************/
     
     
@@ -599,9 +600,13 @@ public class MoveCalculations
     public double moveEnchantment(GenericCharacter target, String moveEnchantmentName, 
         double ouputValue)
     {
-        ouputValue += enchantmentCalculation((ouputValue * 0.45), target.getRetrieveResistances().
-            getEnchantmentResistanceValueForKey(moveEnchantmentName));
-                return ouputValue;
+        if(StaticMethods.getEnchantmentEnum(moveEnchantmentName) != StaticMethods.Enchantments.NONE)
+        {
+            ouputValue += enchantmentCalculation((ouputValue * 0.45), target.getRetrieveResistances().
+                getEnchantmentResistanceValueForKey(moveEnchantmentName));
+        }
+        
+        return ouputValue;
     }
     
     public double totalEnchantment(GenericCharacter user, GenericCharacter target, 
@@ -732,8 +737,9 @@ public class MoveCalculations
     public double outputVarianceCalculation(double variance)
     {
         SecureRandom rand = new SecureRandom();
-        
-        int varianceAsInt = Math.abs((int)(variance * 100));
+
+        // add 1 to variance in case variance is 0 which messes with rand.nextInt()
+        int varianceAsInt = Math.abs((int)((variance + 1) * 100));
         
         varianceAsInt = (rand.nextInt(varianceAsInt) + 1);
         
@@ -809,6 +815,7 @@ public class MoveCalculations
             switch(choice)
             {
                 case CURRENT_HEALTH:
+                    System.out.println("output apply: "+ output);
                     character.getGeneralFeatures().setCurrentHealth(character.getGeneralFeatures().getCurrentHealth() + output);
                         break;
                 case CURRENT_STAMINA:
@@ -834,6 +841,7 @@ public class MoveCalculations
         {
             for(Moves.Gauges element : move.getGaugesTargeted())
             {
+                System.out.println("out is: "+output);
                 applyValueToGauge(target, output, element);
             }
         }
@@ -863,19 +871,11 @@ public class MoveCalculations
     public int statusEffectResistance(GenericCharacter target, StatusEffect status)
     {
         int result = 0;
-
+        
         if(!target.getEquippableOutfits().accessoryNegatesStatusEffect(status))
         {
-            if(target.getGeneralFeatures().nanomachines())
-            {
-                // store sum of target's resistance, immune and nano response 
-                result = (int)target.getRetrieveResistances().getNanoTotalResistance(status.getName());
-            }
-            else
-            {
-                // store sum of target's resistance and immune response
-                result = (int)target.getRetrieveResistances().getNonNanoTotalResistance(status.getName());
-            }
+            // store sum of target's resistance, immune and nano response 
+            result = (int)target.getRetrieveResistances().getTotalStatusResistanceForKey(status.getName());
         }
         else
         {
@@ -895,22 +895,12 @@ public class MoveCalculations
             
             int randStatusInflictRate = (rand.nextInt(status.getInflictionRate()) + 1);
 
-            int randStatusResistance = (rand.nextInt(statusResistance) + 1);
+            // add 1 to avoid issue with rand.nextInt() being 0 where it is n - 1
+            int randStatusResistance = (rand.nextInt((statusResistance + 1)) + 1);
 
             if(randStatusInflictRate > randStatusResistance)
             {
                 target.getStatusEffectContainer().addStatusEffect(status);
-
-                target.getRetrieveResistances().updateImmuneResponseValueForKey(status.getName(), target.getRetrieveResistances().
-                    getStatusImmuneResponseForKey(status.getName()) + (rand.
-                    nextInt(3)) + 1);
-
-                if(target.getGeneralFeatures().nanomachines())
-                {
-                    target.getRetrieveResistances().updateNanoResponseValueForKey(status.getName(), target.
-                        getRetrieveResistances().getStatusNanoResponseForKey(status.getName()) + (rand.
-                        nextInt(5)) + 3);
-                }
             }
         }
     }
@@ -956,26 +946,6 @@ public class MoveCalculations
 
 
 
-    // START: BASE STRESS EFFECT CALCULATIONS
-    /*******************************************************************************/
-
-    public double totalStressEffect(GenericCharacter character, double moveStressEffect)
-    {
-        double totalStressEffect = 0;
-        
-        if(character.getEquippableOutfits().getWeapon() != null)
-        {
-            totalStressEffect = character.getEquippableOutfits().getWeapon().getStressEffectUponAttack();
-        }
-        
-        return (totalStressEffect + moveStressEffect);
-    }
-    
-    // END: BASE STRESS EFFECT CALCULATIONS
-    /*******************************************************************************/
-
-    
-    
     // START: ACCOUNTING FOR MOVE EFFECT ON DURABILITY
     /*******************************************************************************/
 
@@ -1083,10 +1053,6 @@ public class MoveCalculations
             // apply effect move has on durability of equipped outfits 
             applyMoveDurabilityEffects(user, target, move);
             
-            // apply stress move and user's weapon have on target's stress gauge 
-            target.getStress().setCurrentStress(target.getStress().getCurrentStress() + totalStressEffect(user,
-                move.getStressEffect()));
-            
             // apply effect move has on on target
             applyTotalOutputToTarget(target, move, output);
             
@@ -1140,10 +1106,13 @@ public class MoveCalculations
     
     public double addItemMoveEnchantment(GenericCharacter target, Moves move, double output)
     {
-        if(!target.getMoveImmunity().immuneTo("Enchantment"))
+        if(StaticMethods.getEnchantmentEnum(move.getEnchantmentString()) != StaticMethods.Enchantments.NONE)
         {
-            output += moveEnchantment(target, move.getEnchantmentString(), output);
-	}
+            if(!target.getMoveImmunity().immuneTo("Enchantment"))
+            {
+                output += moveEnchantment(target, move.getEnchantmentString(), output);
+            }
+        }
         
         return output;
     }
@@ -1151,14 +1120,15 @@ public class MoveCalculations
     public double itemTotalOutput(GenericCharacter user, GenericCharacter target, 
         Moves move, double output, double critical)
     {
+        System.out.println("start1: "+output);
         output = addItemMoveEnchantment(user, move, output);
-        
+        System.out.println("start2: "+output);
         output = applyCritical(user, target, critical, output);
-
+        System.out.println("start3: "+output);
         output = applyOutputVariance(move.getOutputVariance(), output); 
-        
+        System.out.println("start4: "+output);
         output = positiveOrNegativeOutput(move, output);
-        
+        System.out.println("start5: "+output);
         return output;
     }
     
@@ -1203,10 +1173,6 @@ public class MoveCalculations
             // apply effect move has on durability of equipped outfits 
             applyMoveDurabilityEffects(user, target, move);
             
-            // apply stress move and user's weapon have on target's stress gauge 
-            target.getStress().setCurrentStress(target.getStress().getCurrentStress() + totalStressEffect(user,
-                move.getStressEffect()));
-            
             // apply effect move has on on target
             applyTotalOutputToTarget(target, move, output);
             
@@ -1234,9 +1200,12 @@ public class MoveCalculations
         {
             for(int i = 0; i < move.getTimesMoveAffectsTarget(); i++)
             {
-                output = (itemOutputBasedOnAccuracy(user, target, move, accuracy, 
-                    output, critical) * move.getOutputModifier());
-
+                output = itemOutputBasedOnAccuracy(user, target, move, accuracy, 
+                    output, critical);
+                
+                output += output * move.getOutputModifier();
+                
+                System.out.println("out is: "+output);
                 postItemOutputTasks(user, target, move, output);
             }
         }

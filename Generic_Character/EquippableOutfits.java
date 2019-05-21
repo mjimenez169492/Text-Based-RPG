@@ -407,7 +407,7 @@ public class EquippableOutfits
                 resistanceValue += element.getResistanceValueForKey(resistanceName);
             }
         }
-
+        
         return getStats().validateResistance(resistanceValue);
     }
     
@@ -566,7 +566,7 @@ public class EquippableOutfits
     }
 
     public double getDarknessResistanceWithOutfits()
-{
+    {
         return resistanceWithOutfitResistance(getStats().getDarknessResistance(), "Darkness");
     }
 

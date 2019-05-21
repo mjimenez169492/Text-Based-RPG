@@ -1,16 +1,13 @@
 package Object_Factories;
 
 import Generic_Character.GenericCharacter;
+import java.security.SecureRandom;
 
 public class GenericCharacterFactory 
 {
     public GenericCharacter getExampleCharacter()
     {
         GenericCharacter character = new GenericCharacter();
-        
-        character.getStress().setMaxStress(10);
-        character.getStress().setCurrentStress(character.getStress().getMaxStress());
-        character.getStress().setStressDefense(0.00);
         
         character.getStats().setMaxHealth(24);
         character.getStats().setMaxStamina(15);
@@ -106,16 +103,16 @@ public class GenericCharacterFactory
         character.getGeneralFeatures().nanomachines(true);
         character.getGeneralFeatures().endBattle(true);
         
-        character.getGeneralFeatures().setName("Test");
+        character.getGeneralFeatures().setName("12345678901234567890123456");
         character.getGeneralFeatures().setType("Apple");
         
         character.getGeneralFeatures().setLevel(1);
         character.getGeneralFeatures().setExperience(12);
         character.getGeneralFeatures().setExpScale(33);
         
-        character.getGeneralFeatures().setCurrentHealth(character.getTotalStats().getTotalMaxHealth());
-        character.getGeneralFeatures().setCurrentStamina(character.getTotalStats().getTotalMaxStamina());
-        character.getGeneralFeatures().setCurrentNano(character.getTotalStats().getTotalMaxNano());
+        character.getGeneralFeatures().setCurrentHealth(character.getTotalStats().getTotalMaxHealth() - 10);
+        character.getGeneralFeatures().setCurrentStamina(character.getTotalStats().getTotalMaxStamina() - 6);
+        character.getGeneralFeatures().setCurrentNano(character.getTotalStats().getTotalMaxNano() - 12);
         
         character.getGeneralFeatures().setChanceToPreventEscape(0);
         

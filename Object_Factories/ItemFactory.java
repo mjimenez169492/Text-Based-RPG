@@ -151,7 +151,7 @@ public class ItemFactory
         item.setPilferRate(0);
         item.setDropRate(10.5);
         
-        item.setMove(null);
+        item.setMove(new MovesFactory().getItemMoveHealExample());
         
         return item;
     }

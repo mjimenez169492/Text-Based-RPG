@@ -1,3 +1,13 @@
+
+
+
+
+
+
+
+
+
+
 package RunProject;
 
 import Player_Entity.PlayerEntity;
@@ -8,7 +18,11 @@ import Player_Entity.PartyWallet;
 import Move_Creation.StatusEffect;
 import Generic_Object.GenericObject;
 import Player_Entity.Inventory;
+import Generic_Object.Item;
+import Move_Creation.Moves;
+import Move_Creation.MoveCalculations;
 
+import java.security.SecureRandom;
 import java.awt.event.ActionListener; 
 import java.awt.event.ActionEvent; 
 import javax.swing.Box; 
@@ -133,6 +147,8 @@ public class ItemsMenu
     
     private Inventory referenceInventory;
     
+    private PlayerEntity referencePlayerEntity;
+    
     // frame is made this way since internal frame cannot be done in GridBagLayout
     private JFrame useFrame = new JFrame();
     
@@ -149,7 +165,8 @@ public class ItemsMenu
         private GenericObject objectGroupForSwapping = null;
         private GenericObject swapWithObjectGroup = null;
     
-    
+    // triggers once when user enter external frame and resets after exit 
+    private boolean externalFrameExit = false;
     
     private JMenuBar menuBar;
     
@@ -180,6 +197,18 @@ public class ItemsMenu
         
         JMenuItem menuItem;
     
+    // needed in order to alter button values 
+    JPanel internalCharacterInfoPanel = null;
+    
+    // buttons AND text area need to be updated 
+    JButton characterName = new JButton();
+    JButton characterHealth = new JButton();
+    JButton characterStamina = new JButton();
+    JButton characterNano = new JButton();
+    
+    JTextArea characterStatusEffects = new JTextArea();
+    
+    JFrame characterDisplayFrame;
     
     
     // START: ADDING BUTTON COMPONENTS 
@@ -374,7 +403,7 @@ public class ItemsMenu
         }
     }
     
-    public void initializeSort(Inventory inventory, JFrame frame)
+    public void sortObjectsFrameAttachment(Inventory inventory, JFrame frame)
     {
         //Create the menu bar that will be displayed on northern border of frame 
         menuBar = new JMenuBar();
@@ -701,32 +730,142 @@ public class ItemsMenu
         );
     }
     
-    // MouseAdapter extended to avoid overriding unused methods 
-    private class MouseHandler extends MouseAdapter 
-    {
-        // handle event when mouse exits area
-        @Override
-        public void mouseExited(MouseEvent event)
-        {
-            useFrame.dispose();
-            
-            // sets original frame back into focus without closing as well
-            // since dispose closes program if no window comes after 
-            frame.setVisible(true);
-            frame.toFront();
-            frame.requestFocus();
-            frame.requestFocus();
-        }
-    }
-    
     // END: INVENTORY AS JLIST 
     /*******************************************************************************/
 
     
     // START: OPTIONS MENU FOR JLIST ENTRY ON CLICK
     /*******************************************************************************/
+    
+    // JLIST STUFF
+    
+    public DefaultListModel<String> partyMembersInJListFormat(PlayerEntity entity)
+    {
+        DefaultListModel<String> partyMemberNames = new DefaultListModel<>();
+        
+        for(GenericCharacter element : entity.getParty().getPartyMembers())
+        {
+            String elementAndSize = String.format("%-26s", element.getGeneralFeatures().getName());
+                partyMemberNames.addElement(elementAndSize);
+        }
+        
+        return partyMemberNames;
+    }
+    
+    public void addPartyMemberJList(JFrame frame, JList<String> characterJList,
+        int gridy, int gridx)
+    {
+        // set button font 
+        characterJList.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+        
+        GridBagConstraints gridBagConstraints = new GridBagConstraints();
+        
+        // button will expand horizontally and vertically to fill empty space 
+        gridBagConstraints.fill = GridBagConstraints.BOTH;
+        
+        // row position 
+        gridBagConstraints.gridy = gridy;
+        
+        // column of specified row position
+        gridBagConstraints.gridx = gridx;
+        
+        // specified column length component takes up (1/10 of frame if no 
+        // other components are in the way)
+        gridBagConstraints.weighty = 0.20;
+        
+        // specified row length component takes up (1/10 of frame if no 
+        // other components are in the way)
+        gridBagConstraints.weightx = 0.20;
+        
+        gridBagConstraints.gridheight = 2;
+        gridBagConstraints.gridwidth = 1;
 
-    public void useActionListener(JMenuItem menuItem, JFrame characterDisplayFrame)
+        frame.add(characterJList, gridBagConstraints);
+    }
+    
+    // JLIST STUFF
+    
+    
+    // UPDATE CHARACTER PANEL USING JLIST VALUE
+    
+    public void updateCharacterPanel(GenericCharacter character)
+    {
+        // format so all names up to 26 characters are correctly structured 
+        String formatName = String.format("%-26s", character.getGeneralFeatures().getName());
+            characterName.setText(formatName);
+        
+        // StringBuilder object used for creating text passed to button 
+        StringBuilder builder = new StringBuilder();
+        
+        // add Health Points (HP) and current/max points 
+        builder = new StringBuilder();
+        
+        builder.append("HP:     ").append(String.valueOf(character.getGeneralFeatures().
+            getCurrentHealth())).append(" / ").append(String.valueOf(character.
+            getTotalStats().getTotalMaxHealth()));
+        
+        String formatHealth = String.format("%-26s", builder.toString());
+            characterHealth.setText(formatHealth);
+
+        // add Stamina Points (SP) and current/max points 
+        builder = new StringBuilder();
+        
+        builder.append("SP:     ").append(String.valueOf(character.getGeneralFeatures().
+            getCurrentStamina())).append(" / ").append(String.valueOf(character.
+            getTotalStats().getTotalMaxStamina()));
+        
+        String formatStamina = String.format("%-26s", builder.toString());
+            characterStamina.setText(formatStamina);
+        
+        // add Nanomachine Points (NP) and current/max points 
+        builder = new StringBuilder();
+        
+        // NOTE: if gauge is 0, need 6 spaces else 5 spaces MAYBE
+        builder.append("NP:     ").append(String.valueOf(character.getGeneralFeatures().
+            getCurrentNano())).append(" / ").append(String.valueOf(character.
+            getTotalStats().getTotalMaxNano()));
+        
+        String formatNano = String.format("%-26s", builder.toString());
+            characterNano.setText(formatNano);
+        
+        // add text area meant for showing status effects tied to character 
+        characterStatusEffects.setText(statusEffectTextAreaString(character));
+    }
+    
+    // perform event upon change in character JList entry focus 
+    public void characterJListValueChanged(JFrame externalFrame, PlayerEntity 
+        entity, JList jList, ListSelectionEvent evt) 
+    {
+        if (!evt.getValueIsAdjusting()) 
+        {
+            // show chaacter infor based on String selection value
+            // need to get character and pass to panel creation for frame
+            // need to be able to replace center frame each time 
+            
+            GenericCharacter character = getPartyMember(trimCharacterName((String)
+                jList.getSelectedValue()));
+            
+            // NEED to update panel buttons, NOT add new panels 
+            updateCharacterPanel(character);
+        }
+    }
+    
+    // UPDATE CHARACTER PANEL USING JLIST VALUE
+    
+    
+    // USE SINGLE TARGET ITEM POPUP MENU 
+    
+    public JPopupMenu setUpUseItemPopupMenu(JList characterJList, JFrame externalFrame)
+    {
+        JPopupMenu useItemPopupMenu = new JPopupMenu();
+            JMenuItem useItem = new JMenuItem("Use Item");
+                useItemActionListener(useItem, characterJList, externalFrame);
+                    useItemPopupMenu.add(useItem);
+                        return useItemPopupMenu;
+    }
+    
+    public void useItemActionListener(JMenuItem menuItem, JList characterJList, 
+        JFrame externalFrame)
     {
         menuItem.addActionListener(
             new ActionListener() 
@@ -734,8 +873,601 @@ public class ItemsMenu
                 @Override
                 public void actionPerformed(ActionEvent e)
                 {
-                    characterDisplayFrame.addMouseListener(new MouseHandler());
+                    /* idea
+                        create popup menu on creation time (not instance)
+                        action gets item, performs item move, removes item and closes external frame 
+                    */
                     
+                    Item item = (Item)getInventoryObject(referenceInventory,
+                        trimString((String)inventoryObjectsJList.getSelectedValue(), 10));
+                    
+                    GenericCharacter user = getPartyMember(trimCharacterName((String)
+                        (String)characterJList.getSelectedValue()));
+                    
+                    GenericCharacter target = getPartyMember(trimCharacterName((String)
+                        (String)characterJList.getSelectedValue()));
+                    
+                    item.getMove().singleTargetMove(user, target, item.getMove());
+                    
+                    // update inventory JList
+                    referenceInventory.removeObject(item);
+                        inventoryObjectsJList.setModel(inventoryInJListFormat(referenceInventory));
+                    
+                    // dispose of external frame and shift focus to frame 
+                    externalFrame.dispose();
+            
+                    // sets original frame back into focus without closing as well
+                    // since dispose closes program if no window comes after 
+                    frame.setVisible(true);
+                    frame.toFront();
+                    frame.requestFocus();
+                }
+            }); 
+    }
+    
+    public void addJListUseItemOnCharacterListener(JList jList, JPopupMenu usableItem)
+    {
+        // allows for events to occur upon change in JList entry focus  
+        jList.addMouseListener(
+            new MouseAdapter() 
+            {
+                @Override
+                public void mouseClicked(MouseEvent me)
+                {
+                    // if character is clicked, show popup menu for use item 
+                    if (SwingUtilities.isLeftMouseButton(me) && !jList.isSelectionEmpty()
+                        && jList.locationToIndex(me.getPoint()) == jList.getSelectedIndex()) 
+                    {
+                        usableItem.show(jList, me.getX(), me.getY());
+                    }
+                }
+            }
+        );
+    }
+    
+    // USE SINGLE TARGET ITEM POPUP MENU 
+    
+    
+    public void addJListCharacterUpdatePopupListener(JFrame externalFrame, PlayerEntity 
+        entity, JList jList)
+    {
+        // allows for events to occur upon change in JList entry focus  
+        jList.addListSelectionListener(
+            new ListSelectionListener() 
+            {
+                @Override
+                public void valueChanged(ListSelectionEvent evt) 
+                {
+                    // update character information displayed on JList selection change 
+                    characterJListValueChanged(externalFrame, entity, jList, evt);
+                    
+                    // get popup menu for character with use option 
+                    addJListUseItemOnCharacterListener(jList, setUpUseItemPopupMenu
+                        (jList, externalFrame));
+                }
+            }
+        );
+    }
+    
+    public void addJListCharacterUpdateListener(JFrame externalFrame, PlayerEntity 
+        entity, JList jList)
+    {
+        // allows for events to occur upon change in JList entry focus  
+        jList.addListSelectionListener(
+            new ListSelectionListener() 
+            {
+                @Override
+                public void valueChanged(ListSelectionEvent evt) 
+                {
+                    // update character information displayed on JList selection change 
+                    characterJListValueChanged(externalFrame, entity, jList, evt);
+                }
+            }
+        );
+    }
+    
+    // JLIST STUFF
+    
+    
+    // CHARACTER RETRIEVAL
+    
+    public GenericCharacter getPartyMember(String partyMemberName)
+    {
+        GenericCharacter character = new GenericCharacter();
+        
+        for(GenericCharacter element : referencePlayerEntity.getParty().getPartyMembers())
+        {
+            if(partyMemberName.equals(element.getGeneralFeatures().getName()))
+            {
+                character = element;
+            }
+        }
+        
+        return character;
+    }
+    
+    public String trimCharacterName(String name)
+    {
+        String[] words = name.split(" ");
+        
+        StringBuilder builder = new StringBuilder();
+        
+        for(int i = 0; i < words.length; i++)
+        {
+            if(words.length == 1)
+            {
+                builder.append(words[i]);
+            }
+            else if(i < words.length - 1)
+            {
+                // add word since last word so no space after 
+                builder.append(words[i]);
+            }
+            else
+            {
+                builder.append(words[i]);
+                    builder.append(" ");
+            }
+        }
+        
+        return builder.toString();
+    }
+    
+    // CHARACTER RETRIEVAL
+    
+    
+    // INTERNAL PANEL BUTTON SET UP 
+    
+    public JButton newButton(String buttonText)
+    {
+        // create new button to attach to internal panel 
+        JButton button = new JButton(buttonText);
+        
+        // text will be displayed starting at furthest left of button text area 
+        button.setHorizontalAlignment(SwingConstants.LEADING);
+        
+        button.setBackground(Color.BLACK);
+        
+        button.setForeground(Color.WHITE);
+        
+        // set button font 
+        button.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 14));
+        
+        //textResizesUponButtonResize(button);
+        
+        return button;
+    }
+    
+    public void buttonPanelPlacement(JButton button, int gridy, int gridx, 
+        JPanel panel)
+    {
+        GridBagConstraints gridBagConstraints = new GridBagConstraints();
+        
+        // button will expand horizontally and vertically to fill empty space 
+        gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+        
+        // row position 
+        gridBagConstraints.gridy = gridy;
+        
+        // column of specified row position
+        gridBagConstraints.gridx = gridx;
+        
+        // specified column length component takes up (1/10 of frame if no 
+        // other components are in the way)
+        gridBagConstraints.weighty = 0.10;
+        
+        // specified row length component takes up (1/10 of frame if no 
+        // other components are in the way)
+        gridBagConstraints.weightx = 0.10;
+        
+        gridBagConstraints.ipady = 70;
+        
+        panel.add(button, gridBagConstraints);
+    }
+    
+    public String statusEffectTextAreaString(GenericCharacter character)
+    {
+        StringBuilder builder = new StringBuilder("  Status Effects: ");
+        
+        int counter = 0;
+        
+        for(StatusEffect status : character.getStatusEffectContainer().getStatusEffects())
+        {
+            if(1 == character.getStatusEffectContainer().getStatusEffects().size())
+            {
+                builder.append(status.getName());
+            }
+            else if(counter == (character.getStatusEffectContainer().getStatusEffects().size() - 1))
+            {
+                builder.append(status.getName());
+            }
+            else
+            {
+                builder.append(status.getName());
+                    builder.append(", ");
+                        counter++;
+            }
+        }
+        
+        return builder.toString();
+    }
+
+    public JTextArea newTextArea()
+    {
+        JTextArea textArea = new JTextArea();
+        
+        textArea.setBackground(Color.BLACK);
+        
+        textArea.setForeground(Color.WHITE);
+        
+        textArea.setEditable(false);
+        
+        textArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 14));
+        
+        return textArea;
+    }
+    
+    public void statusEffectTextAreaPlacement(JTextArea textArea, int gridy, 
+        int gridx, JPanel panel)
+    {
+        // add first text area 
+        JScrollPane scroll = new JScrollPane(textArea, 
+            JScrollPane.VERTICAL_SCROLLBAR_NEVER,
+            JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        
+        GridBagConstraints gridBagConstraints = new GridBagConstraints();
+        
+        gridBagConstraints = new GridBagConstraints();
+        gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.gridy = gridy;
+        gridBagConstraints.gridx = gridx;
+        gridBagConstraints.weighty = 0.1;
+        gridBagConstraints.weightx = 0.5;
+        gridBagConstraints.gridwidth = 1;
+        gridBagConstraints.ipady = 95;
+        
+        // specifies space component must leave at each edges; (Insets(int 
+        // top, int left, int bottom, int right) (- value incrases border)
+        gridBagConstraints.insets = new Insets(0, 0, 0, 0);
+        
+        panel.add(scroll, gridBagConstraints);
+    }
+    
+    // INTERNAL PANEL BUTTON SET UP 
+    
+    
+    // ADDING INTERNAL PANEL TO DISPLAY CHARACTER INFO
+    
+    //SINGLE target items ONLY (need diff panel for multiple)
+    public JPanel addInternalJPanelForCharacterInfo()
+    {
+        // panel will hold several buttons 
+        JPanel internalPanel = new JPanel();
+        
+        // set layout for internal panel as GridBagLayout 
+        internalPanel.setLayout(new GridBagLayout());
+        
+        characterName = newButton("Name: ");
+            buttonPanelPlacement(characterName, 0, 0, internalPanel);
+        
+        characterHealth = newButton("Health: ");
+            buttonPanelPlacement(characterHealth, 1, 0, internalPanel);
+        
+        characterStamina = newButton("Stamina: ");
+            buttonPanelPlacement(characterStamina, 2, 0, internalPanel);
+        
+        characterNano = newButton("Nano: ");
+            buttonPanelPlacement(characterNano, 3, 0, internalPanel);
+        
+        characterStatusEffects = newTextArea();
+            statusEffectTextAreaPlacement(characterStatusEffects, 4, 0, internalPanel);
+        
+        return internalPanel;
+    }
+    
+    public void internalJPanelPlacement(JFrame frame, JPanel internalPanel)
+    {
+        GridBagConstraints gridBagConstraints = new GridBagConstraints();
+        
+        // button will expand horizontally and vertically to fill empty space 
+        gridBagConstraints.fill = GridBagConstraints.BOTH;
+        
+        // row position 
+        gridBagConstraints.gridy = 0;
+        
+        // column of specified row position
+        gridBagConstraints.gridx = 1;
+        
+        // specified column length component takes up (1/10 of frame if no 
+        // other components are in the way)
+        gridBagConstraints.weighty = 0.8;
+        
+        // specified row length component takes up (1/10 of frame if no 
+        // other components are in the way)
+        gridBagConstraints.weightx = 0.8;
+        
+        frame.add(internalPanel, gridBagConstraints);
+    }
+    
+    // ADDING INTERNAL PANEL TO DISPLAY CHARACTER INFO
+    
+    
+    
+    
+    // single target moves or moves where player can pick who is affected 
+    public boolean controlledTargetMove(Moves move)
+    {
+        Moves.Targets[] array = {Moves.Targets.ANY, Moves.Targets.ANY_EXCEPT_USER,
+            Moves.Targets.ANY_PARTY_MEMBER, Moves.Targets.ANY_OPPOSING_PARTY_MEMBER};
+        
+        boolean result = false;
+        
+        for(Moves.Targets element : array)
+        {
+            if(move.getTargetEnum() == element)
+            {
+                result = true;
+            }
+        }
+        
+        return result;
+    }
+    
+    // includes multiple target moves and random moves performed via button
+    public boolean uncontrolledTargetsMove(Moves move)
+    {
+        Moves.Targets[] array = {Moves.Targets.ANY_PARTY, Moves.Targets.USER_PARTY,
+            Moves.Targets.OPPOSING_PARTY, Moves.Targets.RANDOM_ANY, Moves.Targets.RANDOM_ANY_EXCEPT_USER,
+            Moves.Targets.RANDOM_ANY_PARTY_MEMBER, Moves.Targets.RANDOM_ANY_OPPOSING_PARTY_MEMBER,
+            Moves.Targets.RANDOM_ANY_PARTY, Moves.Targets.RANDOM_ALL, Moves.Targets.ALL,
+            Moves.Targets.ALL_EXCEPT_USER};
+        
+        boolean result = false;
+        
+        for(Moves.Targets element : array)
+        {
+            if(move.getTargetEnum() == element)
+            {
+                result = true;
+            }
+        }
+        
+        return result;
+    }
+    
+    public void addUseItemOnMultipleTargetsListener(JButton button, JList characterJList,
+        JFrame externalFrame)
+    {
+        // allows for events to occur upon change in JList entry focus  
+        button.addActionListener(
+            new ActionListener() 
+            {
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    /* idea (unique no stipulation unlike non item moves)
+                        need to obtain item cuurrently selected in object jList
+                        and store item as item
+                        use item target type to perform action using switch case
+                            if this, then do this...
+                        after move is performed, remove item and refresh object JList
+                    */
+                    
+                    Item item = (Item)getInventoryObject(referenceInventory,
+                        trimString((String)inventoryObjectsJList.getSelectedValue(), 10));
+
+                    SecureRandom rand = new SecureRandom();
+                    
+                    int randomNumber = rand.nextInt(characterJList.getModel().getSize());
+                    
+                    int counter = 0;
+                    
+                    switch(item.getMove().getTargetEnum())
+                    {
+                        // Note: use single move method and for loops if needed 
+                        
+                        // since one party (player party), supply all characters 
+                        case ANY_PARTY:
+                            for(GenericCharacter character : referencePlayerEntity.getParty().getPartyMembers())
+                            {
+                                item.getMove().singleTargetMove(character, character, item.getMove());
+                            }
+                                break;
+                        // since one party (player party), supply all characters 
+                        case USER_PARTY:
+                            for(GenericCharacter character : referencePlayerEntity.getParty().getPartyMembers())
+                            {
+                                item.getMove().singleTargetMove(character, character, item.getMove());
+                            }
+                                break;
+                        // since one party (player party), supply all characters 
+                        case OPPOSING_PARTY:
+                            for(GenericCharacter character : referencePlayerEntity.getParty().getPartyMembers())
+                            {
+                                item.getMove().singleTargetMove(character, character, item.getMove());
+                            }
+                                break;
+                        // from 0 to size of character JList length, pick character at random
+                        // and perform single move on character 
+                        case RANDOM_ANY:
+                            for(GenericCharacter character : referencePlayerEntity.getParty().getPartyMembers())
+                            {
+                                if(counter == randomNumber)
+                                {
+                                    item.getMove().singleTargetMove(character, character, item.getMove());
+                                }
+                                
+                                counter++;
+                            }
+                                break;
+                        case RANDOM_ANY_EXCEPT_USER:
+                            for(GenericCharacter character : referencePlayerEntity.getParty().getPartyMembers())
+                            {
+                                if(counter == randomNumber)
+                                {
+                                    item.getMove().singleTargetMove(character, character, item.getMove());
+                                }
+                                
+                                counter++;
+                            }
+                                break;
+                        case RANDOM_ANY_PARTY_MEMBER:
+                            for(GenericCharacter character : referencePlayerEntity.getParty().getPartyMembers())
+                            {
+                                if(counter == randomNumber)
+                                {
+                                    item.getMove().singleTargetMove(character, character, item.getMove());
+                                }
+                                
+                                counter++;
+                            }
+                                break;
+                        case RANDOM_ANY_OPPOSING_PARTY_MEMBER:
+                            for(GenericCharacter character : referencePlayerEntity.getParty().getPartyMembers())
+                            {
+                                if(counter == randomNumber)
+                                {
+                                    item.getMove().singleTargetMove(character, character, item.getMove());
+                                }
+                                
+                                counter++;
+                            }
+                                break;
+                        case RANDOM_ANY_PARTY:
+                            for(GenericCharacter character : referencePlayerEntity.getParty().getPartyMembers())
+                            {
+                                item.getMove().singleTargetMove(character, character, item.getMove());
+                            }
+                                break;
+                        case RANDOM_ALL:
+                            for(GenericCharacter character : referencePlayerEntity.getParty().getPartyMembers())
+                            {
+                                item.getMove().singleTargetMove(character, character, item.getMove());
+                            }
+                                break;
+                        case ALL:
+                            for(GenericCharacter character : referencePlayerEntity.getParty().getPartyMembers())
+                            {
+                                item.getMove().singleTargetMove(character, character, item.getMove());
+                            }
+                                break;
+                        case ALL_EXCEPT_USER:
+                            for(GenericCharacter character : referencePlayerEntity.getParty().getPartyMembers())
+                            {
+                                if(counter != randomNumber)
+                                {
+                                    item.getMove().singleTargetMove(character, character, item.getMove());
+                                }
+                                
+                                counter++;
+                            }
+                                break;
+                    }
+                    
+                    // update inventory JList
+                    referenceInventory.removeObject(item);
+                        inventoryObjectsJList.setModel(inventoryInJListFormat(referenceInventory));
+
+                    // dispose of external frame and shift focus to frame 
+                    externalFrame.dispose();
+
+                    // sets original frame back into focus without closing as well
+                    // since dispose closes program if no window comes after 
+                    frame.setVisible(true);
+                    frame.toFront();
+                    frame.requestFocus();
+                }
+            }
+        );
+        
+    }
+    
+    public void addUseItemOnMultipleTargetsButton(JList characterJList, JFrame externalFrame)
+    {
+        JButton button = new JButton("Use Item");
+        
+        // set button font 
+        button.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 14));
+        
+        addUseItemOnMultipleTargetsListener(button, characterJList, externalFrame);
+        
+        GridBagConstraints gridBagConstraints = new GridBagConstraints();
+        
+        // button will expand horizontally and vertically to fill empty space 
+        gridBagConstraints.fill = GridBagConstraints.BOTH;
+        
+        // row position 
+        gridBagConstraints.gridy = 0;
+        
+        // column of specified row position
+        gridBagConstraints.gridx = 2;
+        
+        // specified column length component takes up (1/10 of frame if no 
+        // other components are in the way)
+        gridBagConstraints.weighty = 0.3;
+        
+        // specified row length component takes up (1/10 of frame if no 
+        // other components are in the way)
+        gridBagConstraints.weightx = 0.3;
+        
+        externalFrame.add(button, gridBagConstraints);
+    }
+    
+    // external frame made to look like internal frame for displaying characters 
+    public void setUpFauxCharacterInternalFrame(PlayerEntity entity, JFrame externalFrame)
+    {
+        /* idea: jlist of characters on left and info on right (like on main menu)
+            ability to update character stuff after item is used so player can see results 
+            stuff: jlist, jpanel, border layout 
+        */
+        
+        externalFrame.setLayout(new GridBagLayout());
+        
+        Item item = (Item)getInventoryObject(referenceInventory,
+            trimString((String)inventoryObjectsJList.getSelectedValue(), 10));
+        
+        JList partyMemberJList = new JList(partyMembersInJListFormat(entity));
+        
+        addPartyMemberJList(externalFrame, partyMemberJList, 0, 0);
+        
+        internalJPanelPlacement(externalFrame, addInternalJPanelForCharacterInfo());
+        
+        // if item is single target, account for multiple targets 
+        if(controlledTargetMove(item.getMove()))
+        {
+            addJListCharacterUpdatePopupListener(externalFrame, entity, partyMemberJList);
+            
+            // initialize list and panel in frame
+                partyMemberJList.setSelectedIndex(1);
+                partyMemberJList.setSelectedIndex(0);
+        }
+        else
+        {
+            addJListCharacterUpdateListener(externalFrame, entity, partyMemberJList);
+            
+            // initialize list and panel in frame
+                partyMemberJList.setSelectedIndex(1);
+                partyMemberJList.setSelectedIndex(0);
+            
+            // add button signifying use item (NO POPUP MENU)
+            addUseItemOnMultipleTargetsButton(partyMemberJList, externalFrame);
+        }
+    }
+    
+    
+    // FOR OTHER JLIST 
+    public void useActionListener(JMenuItem menuItem)
+    {
+        menuItem.addActionListener(
+            new ActionListener() 
+            {
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    characterDisplayFrame = new JFrame();
+                    
+                    // Note: external frame may have access to already used item (item x0)
+// MUST CHECK IF ITEM EXISTS (NOT NULL) IN USE ITEM METHODS 
                     Rectangle bounds = frame.getBounds();
                     
                     // calculation makes frame have location starting from bottom left of outer frame 
@@ -743,12 +1475,13 @@ public class ItemsMenu
                     // multiplier (in this case 0.58); 
                     characterDisplayFrame.setLocation(bounds.x, (int)((bounds.y * 1.75 + frame.getHeight()) * 0.58));
                     
+                    setUpFauxCharacterInternalFrame(referencePlayerEntity, characterDisplayFrame);
+                    
                     // frame width equal to width of outer frame and height based on coder menu preference 
                     characterDisplayFrame.setSize(frame.getWidth(), (int)(0.42 * frame.getHeight()));
-                    characterDisplayFrame.setVisible(true);                
+                    characterDisplayFrame.setVisible(true);
                 }
             }); 
-        
     }
     
     public void tossActionListener(JMenuItem menuItem)
@@ -826,13 +1559,13 @@ public class ItemsMenu
             }); 
     }
     
-    public void setUpItemMenu(JFrame characterDisplayFrame)
+    public void setUpPopupMenusByObject()
     {
         // each popup menu needs its own object because if each popup menu
         // refers to same object, the last popup menu to add the object is
         // the only popup menu that will have the object 
         JMenuItem useItem = new JMenuItem("Use");
-            useActionListener(useItem, characterDisplayFrame);
+            useActionListener(useItem);
                 usableItemPopupMenu.add(useItem);
         
         JMenuItem tossItem = new JMenuItem("Toss");
@@ -1035,49 +1768,47 @@ public class ItemsMenu
     {
         frame.setLayout(new GridBagLayout());
         
+        // use party entity to store references to player entity and inventory
+        PlayerEntityFactory entity = new PlayerEntityFactory();
+            referencePlayerEntity = entity.getPlayerEntityExample();
+                referenceInventory = entity.getPlayerEntityExample().getInventory();
         
-
+        // buttons that do something upon click (go to main menu)
         addUsableButtons(frame);
         
-        
-        
+        // button for object description
         addObjectDescriptionButton(frame);
         
-        // party as list (display)
-        PlayerEntityFactory entity = new PlayerEntityFactory();
-        
-        referenceInventory = entity.getPlayerEntityExample().getInventory();
-        
+        // add button with text signifying column theme
         newAreaTitle(referenceInventory, frame);
         
+        // buttons containing details tied to object selected 
         objectDetailButtons(frame);
         
+        // popup menus meant to appear upon clicking an inventory object 
+        setUpPopupMenusByObject();
         
-        /* idea for inventory display ONLY (itemName x#)
-            show stuff using stringBuilder 
-                selection will refer to party inventory stuff using String to 
-                match namr of key object 
-        */
-        
-        setUpItemMenu(useFrame);
-        
+        // JList meant to show object contained in player inventory 
         displayInventoryContents(referenceInventory, frame);
         
+        // buttons that show information relating to inventory itself 
         inventoryDetailsButtons(referenceInventory, frame);
         
+        // updates object information related buttons and shows popup menus 
         addJListItemOptionsListener(referenceInventory, inventoryObjectsJList, 
             usableItemPopupMenu, keyItemPopupMenu, nonItemPopupMenu);
         
+        // drop down menu can sort player inventory in a predefined way 
+        sortObjectsFrameAttachment(referenceInventory, frame);
         
-        initializeSort(referenceInventory, frame);
-        
-        // set object details so they are shown immediately for first element 
+        // since JList selection value has not been set (which means object 
+        // description/details are not set yet either), set information for
+        // first object by selecting index 1 (if index exists) then index 0
+        // since just setting JList index 0 does not update object details  
         inventoryObjectsJList.setSelectedIndex(1);
         inventoryObjectsJList.setSelectedIndex(0);
         
+        // display frame window accordingly 
         displayFrameWindow();
     }
-    
-    
-    
 }

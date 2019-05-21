@@ -390,52 +390,52 @@ public class Moves
     // START: DEFINING CONDITIONS IN WHICH MOVE CAN/CANNOT BE USED 
     /*******************************************************************************/
 
-    public void setUsableFromMainMenu(boolean usableFromMainMenu)
+    public void usableFromMainMenu(boolean usableFromMainMenu)
     {
         this.usableFromMainMenu = usableFromMainMenu;
     }
     
-    public boolean getUsableFromMainMenu()
+    public boolean usableFromMainMenu()
     {
         return usableFromMainMenu;
     }
     
-    public void setUsableInBattle(boolean usableInBattle)
+    public void usableInBattle(boolean usableInBattle)
     {
         this.usableInBattle = usableInBattle;
     }
     
-    public boolean getUsableInBattle()
+    public boolean usableInBattle()
     {
         return usableInBattle;
     }
     
-    public void setUsableIfKnockedDown(boolean usableIfKnockedDown)
+    public void usableIfKnockedDown(boolean usableIfKnockedDown)
     {
         this.usableIfKnockedDown = usableIfKnockedDown;
     }
     
-    public boolean getUsableIfKnockedDown()
+    public boolean usableIfKnockedDown()
     {
         return usableIfKnockedDown;
     }
     
-    public void setUsableIfGrabbed(boolean usableIfGrabbed)
+    public void usableIfGrabbed(boolean usableIfGrabbed)
     {
         this.usableIfGrabbed = usableIfGrabbed;
     }
     
-    public boolean getUsableIfGrabbed()
+    public boolean usableIfGrabbed()
     {
         return usableIfGrabbed;
     }
     
-    public void setUsableIfAirborne(boolean usableIfAirborne)
+    public void usableIfAirborne(boolean usableIfAirborne)
     {
         this.usableIfAirborne = usableIfAirborne;
     }
     
-    public boolean getUsableIfAirborne()
+    public boolean usableIfAirborne()
     {
         return usableIfAirborne;
     }
@@ -512,7 +512,7 @@ public class Moves
         {
             timesMoveAffectsTarget = 1;
         }
-        else if(timesMoveAffectsTarget < 16)
+        else if(timesMoveAffectsTarget > 16)
         {
             timesMoveAffectsTarget = 16;
         }
@@ -573,42 +573,42 @@ public class Moves
     // START: MOVE BEHAVIOR AGAINST UNIQUE TARGET STATE  
     /*******************************************************************************/
     
-    public void setParrayable(boolean parryable)
+    public void parryable(boolean parryable)
     {
         this.parryable = parryable;
     }
     
-    public boolean getParrayable()
+    public boolean parryable()
     {
         return parryable;
     }
     
-    public void setCounterable(boolean counterable)
+    public void counterable(boolean counterable)
     {
         this.counterable = counterable;
     }
     
-    public boolean getCounterable()
+    public boolean counterable()
     {
         return counterable;
     }
     
-    public void setGuardable(boolean guardable)
+    public void guardable(boolean guardable)
     {
         this.guardable = guardable;
     }
     
-    public boolean getGuardable()
+    public boolean guardable()
     {
         return guardable;
     }
     
-    public void setGrabBloackable(boolean grabBlockable)
+    public void grabBlockable(boolean grabBlockable)
     {
         this.grabBlockable = grabBlockable;
     }
     
-    public boolean getGuardBlockable()
+    public boolean grabBlockable()
     {
         return grabBlockable;
     }
@@ -939,6 +939,13 @@ public class Moves
         moveCalculation.executeMove(charactersInBattle, userParty, opposingParty, user, move);
     }
     
+    // Note: move refers to moves object itself NOT another moves object 
+    public void singleTargetMove(GenericCharacter user, GenericCharacter target, Moves move)
+    {
+        MoveCalculations moveCalculation = new MoveCalculations();
+        
+        moveCalculation.singleTargetMoveLogic(user, target, move);
+    }
     
     // START: DOUBLE VALUES RELATING TO MOVE USAGE 
     /*******************************************************************************/

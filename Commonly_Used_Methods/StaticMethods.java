@@ -470,6 +470,9 @@ public class StaticMethods
     
     public static enum AllStatusEffects
     {
+        // 
+        NONE("None"),
+        
         // unique
         ABLAZE("Ablaze"), BLEED("Bleed"), TOXIC("Toxic"),
         
@@ -576,11 +579,18 @@ public class StaticMethods
     
     public static enum AllStats
     {
+        // None 
+        NONE("None"),
+        
         // attributes 
         MAX_HEALTH("Max Health"), MAX_STAMINA("Max Stamina"), MAX_NANO("Max Nano"), 
         ATTACK("Attack"), DEFENSE("Defense"), DEXTERITY("Dexterity"), CRITICAL("Critical"), 
         ACCURACY("Accuracy"), NANO_ATTACK("Nano Attack"), NANO_DEFENSE("Nano Defense"), 
         LUCK("Luck"),
+        
+        // current attributes
+        CURRENT_HEALTH("Current Health"), CURRENT_STAMINA("Current Stamina"), 
+        CURRENT_NANO("Current Nano"),
         
         // enchantments
         FIRE("Fire"), WATER("Water"), ICE("Ice"), ELECTRICITY("Electricity"), 
