@@ -1,12 +1,18 @@
+package Generic_Object;
 
+/*
+    Weapons extends OutfitMethods meaning that Weapons is a subclass of superclass 
+    OutfitMethods. Weapons defines methods relating to weapon creation. 
+*/
+
+import Commonly_Used_Methods.StaticMethods;
+import Move_Creation.StatusEffect;
+import java.util.ArrayList;
 
 public class Weapon extends OutfitMethods
 {
     // stores enchantment imbued onto weapon 
     private String enchantment;
-    
-    // stores stress effect of weapon inflicted upon attack
-    private double stressEffectUponAttack;
     
     // sets max number of status effects that can be imbued on a weapon 
     private int maxNumberOfStatusEffects;
@@ -138,24 +144,6 @@ public class Weapon extends OutfitMethods
     }
     
     // END: WEAPON ENCHANTMENT
-    /*******************************************************************************/
-
-    
-    
-    // START: STRESS EFFECT UPON ATTACK
-    /*******************************************************************************/
-
-    public void setStressEffectUponAttack(double stressEffectUponAttack)
-    {
-        this.stressEffectUponAttack = lowerUpperBounds(-500, 500, stressEffectUponAttack);
-    }
-    
-    public double getStressEffectUponAttack()
-    {
-        return stressEffectUponAttack;
-    }
-        
-    // END: STRESS EFFECT UPON ATTACK
     /*******************************************************************************/
 
     
