@@ -1,30 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 package RunProject;
 
 import java.awt.event.ActionListener; 
@@ -160,10 +133,14 @@ public class ExpositionBox
         // determine how components will stretch (in this case horizontally)
 	gridBagConstraint.fill = GridBagConstraints.BOTH; 
         
-        // specifies component horizontal space distribution upon window resize 
+        // specifies component horizontal space distribution (how much row space
+        // is taken up by component if more than one component is present)
+        // ex: code below has component take up 1/10 of total row space 
         gridBagConstraint.weightx = 0.1;
         
-        // specifies component vertical space distribution upon window resize 
+        // specifies component vertical space distribution (how much column space
+        // is taken up by component if more than one component is present)
+        // ex: code below has component take up 1/10 of total column space 
         gridBagConstraint.weighty = 0.1;
         
         // determine how tall component should be in pixels 
@@ -336,7 +313,7 @@ public class ExpositionBox
         return example;
     }
     
-    public void initializeExpositionBoxLines(ArrayList arrayList)
+    public void displayExpositionBoxLines(ArrayList arrayList)
     {
         arrayPositionWithNames += 1;
             moveTextForward(arrayList, speakerOrDescription, 
@@ -1071,7 +1048,7 @@ public class ExpositionBox
         String result = Integer.toString(totalLines(exposition));
         currentAndFinalLines.setText(result);
         
-        initializeExpositionBoxLines(exposition);
+        displayExpositionBoxLines(exposition);
         
             // text stuff
         usableButtonsActionListeners(exposition, speakerOrDescription, lineOne, 
