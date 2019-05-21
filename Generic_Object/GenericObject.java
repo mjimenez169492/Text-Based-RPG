@@ -84,8 +84,8 @@ public class GenericObject
 
     public enum MainClasses
     {
-        GENERIC_OBJECT("Generic Object"), ITEMS("Item"), CORE("Core"), WEAPON("Weapon"),
-        ARMOR("Armor"), ACCESSORY("Accessory");
+        ITEM("Item"), CORE("Core"), WEAPON("Weapon"), ARMOR("Armor"), 
+        ACCESSORY("Accessory");
         
         private String mainClass;
         
