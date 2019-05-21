@@ -417,7 +417,7 @@ public class OptionsPostExpositionBox extends JFrame
     /*******************************************************************************/
 
     
-    
+    // Note: exposition text with boundary "/" is supplied 
     // number of buttons (options) varies depending on text supplied for buttons 
     public OptionsPostExpositionBox()
     { 
