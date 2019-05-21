@@ -1,31 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 package RunProject;
 
 import java.awt.GridBagConstraints;
@@ -119,6 +91,9 @@ public class TraversalBox
         
         button = new JButton(text);
         
+        // allow text resize for button text upon frame resize 
+        textResizesUponButtonResize(frame, button);
+        
         // set font for button text 
         button.setFont(new Font("Serif", Font.BOLD, 18));
         
@@ -153,6 +128,7 @@ public class TraversalBox
         
         // specifies space component must leave at each edges; (Insets(int 
         // top, int left, int bottom, int right)
+        // Note: positive shrinks, negative expands...
         gridBagConstraints.insets = new Insets(0, 0, 0, 225);
         
         // add button to frame with positioning 
@@ -165,6 +141,9 @@ public class TraversalBox
         GridBagConstraints gridBagConstraints = new GridBagConstraints();
         
         button = new JButton(text);
+        
+        // allow text resize for button text upon frame resize 
+        textResizesUponButtonResize(frame, button);
         
         // set font for button text 
         button.setFont(new Font("Serif", Font.ITALIC, 18));
@@ -259,6 +238,118 @@ public class TraversalBox
         frame.add(button, gridBagConstraints);
     }
     
+    public void usableButtonsActionsListeners()
+    {
+        mainMenu.addActionListener(
+        new ActionListener() 
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                
+            }
+        }); 
+        
+        comms.addActionListener(
+        new ActionListener() 
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                
+            }
+        }); 
+        
+        settings.addActionListener(
+        new ActionListener() 
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                
+            }
+        }); 
+        
+        activities.addActionListener(
+        new ActionListener() 
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                
+            }
+        }); 
+        
+        interactions.addActionListener(
+        new ActionListener() 
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                
+            }
+        }); 
+        
+        save.addActionListener(
+        new ActionListener() 
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                
+            }
+        }); 
+        
+        load.addActionListener(
+        new ActionListener() 
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                
+            }
+        }); 
+        
+        exitGame.addActionListener(
+        new ActionListener() 
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                System.exit(0);
+            }
+        }); 
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     // END: LEFT SIDE USABLE BUTTONS
     /*******************************************************************************/
 
@@ -299,7 +390,7 @@ public class TraversalBox
         
         // specifies space component must leave at each edges; (Insets(int 
         // top, int left, int bottom, int right) Insets(0, -225, 0, -125);
-        gridBagConstraints.insets = new Insets(10, -215, 10, -100);
+        gridBagConstraints.insets = new Insets(10, -215, 10, -60);
         
         frame.add(map, gridBagConstraints);
     }
@@ -437,7 +528,7 @@ public class TraversalBox
         
 	// specifies space component must leave at each edges; (Insets(int 
 	// top, int left, int bottom, int right)
-	gridBagConstraints.insets = new Insets(0, 110, 0, 0);
+	gridBagConstraints.insets = new Insets(0, 70, 0, 0);
 	
 	// add button to frame with positioning 
 	frame.add(button, gridBagConstraints);
@@ -514,8 +605,20 @@ public class TraversalBox
         return mostElements;
     }
     
-    public void fillRowControlButtonArrayList()
+    // Note: since buttons are in a row x column format and therfore NOT 
+    //       in column format, buttons must be supplied in reverse order 
+    //       of that specified for column format which requires that all
+    //       buttons be ordered such that the first button of the column
+    //       is supplied first nad the last button supplied last.
+    public void keyboardRowFunctionality(JFrame frame, ArrayList<JButton> buttonsArrayList, 
+        JButton[] privateButtons)
     {
+        // stores elements in order that left/right arrow keys will move in 
+        ArrayList<JButton> rowControlButtons = new ArrayList<>();  
+        
+        // store value representing most number of elements held in one of two containers
+        int mostElements = mostElements(privateButtons, buttonsArrayList);
+        
         // add button components to rowControlButtons 
         // Note: add element to position 0 of rowControlButtons since last
         //       button will be first button for arrow key movement 
@@ -523,63 +626,32 @@ public class TraversalBox
         {
             // add element based on mostElements value and whether or not it 
             // is possible to add element from a given container 
-            if(mostElements == privateButtonsInReverse.length)
+            if(mostElements == privateButtons.length)
             {
-                rowControlButtons.add(0, privateButtonsInReverse[i]);
+                rowControlButtons.add(0, privateButtons[i]);
                 
-                if(i < buttonsArrayListInReverse.size())
+                if(i < buttonsArrayList.size())
                 {
-                    rowControlButtons.add(0, buttonsArrayListInReverse.get(i));
+                    rowControlButtons.add(0, buttonsArrayList.get(i));
                 }
             }
-            else if(mostElements == buttonsArrayListInReverse.size())
+            else if(mostElements == buttonsArrayList.size())
             {
-                rowControlButtons.add(0, buttonsArrayListInReverse.get(i));
+                rowControlButtons.add(0, buttonsArrayList.get(i));
                 
-                if(i < privateButtonsInReverse.length)
+                if(i < privateButtons.length)
                 {
-                    rowControlButtons.add(0, privateButtonsInReverse[i]);
+                    rowControlButtons.add(0, privateButtons[i]);
                 }
             }
             // if containers are the same size, add buttons such that left 
             // side buttons have priority over right buttons 
             else
             {
-                rowControlButtons.add(0, privateButtonsInReverse[i]);
-                rowControlButtons.add(0, buttonsArrayListInReverse.get(i));
+                rowControlButtons.add(0, privateButtons[i]);
+                rowControlButtons.add(0, buttonsArrayList.get(i));
             }
         }
-    }
-    
-    public void keyboardRowFunctionality(JFrame frame, ArrayList<JButton> buttonsArrayList, 
-        JButton[] privateButtons)
-    {
-        // stores elements in order that left/right arrow keys will move in 
-        ArrayList<JButton> rowControlButtons = new ArrayList<>();  
-        
-        // Note: since buttons are in a row x column format and therfore NOT 
-        //       in column format, buttons must be supplied in reverse order 
-        //       of that specified for column format which requires that all
-        //       buttons be ordered such that the first button of the column
-        //       is supplied first nad the last button supplied last.
-        JButton[] privateButtonsInReverse = new JButton[privateButtons.length];
-        
-        for(int i = 0; i < privateButtons.length; i++)
-        {
-            privateButtonsInReverse[i] = privateButtons[i];
-        }
-        
-        ArrayList<JButton> buttonsArrayListInReverse = new ArrayList<>();
-        
-        for(JButton element : buttonsArrayList)
-        {
-            buttonsArrayListInReverse.add(element);
-        }
-        
-        // store value representing most number of elements held in one of two containers
-        int mostElements = mostElements(privateButtonsInReverse, buttonsArrayListInReverse);
-        
-        
         
         // convert ArrayList to array starting from first position of Arrat
         JButton[] buttonsAsArray = rowControlButtons.toArray(new JButton[0]);
@@ -621,46 +693,24 @@ public class TraversalBox
             buttons);
     }
     
-    /*
-    public void addButtonComponents(ArrayList<JButton> buttonsArrayList, JFrame frame)
-    {
-        // convert ArrayList to array starting from first position of Arrat
-        JButton[] buttonsAsArray = buttonsArrayList.toArray(new JButton[0]);
-        
-        // add button column functionality for keyboard and mouse wheel 
-        CommonGUIMethods.buttonColumnKeyboardNavigation(buttonsAsArray);
-        CommonGUIMethods.frameMouseWheel(frame, buttonsAsArray);
-        
-        // add ability for text to resize upon frame resize 
-        textResizesUponButtonResize(frame, buttonsAsArray);
-        
-        // add button as components for layout GridBagLayout of the frame 
-        for(int i = 0; i < buttonsAsArray.length; i++)
-        {
-            addButtonComponent(buttonsAsArray[i], i, frame);
-        }
-    }
-    
-    // Note: number of buttons made depend on size of String ArrayList supplied 
-    public ArrayList<JButton> variableNumberOfButtonChoiceComponents(ArrayList<String> arrayList,
-        JFrame frame)
-    {
-        return addButtonComponents(buttonsUsingButtonTextArrayList(arrayList), frame);
-    }
-            */
-    
     // END: MAKING BUTTONS WITH TEXT
     /*******************************************************************************/
 
     
     
-    public void titlesForTextAreas(JButton descriptionTitle, JButton effectsTitle,
-        JFrame frame)
+    
+    // START: TEXT AREAS 
+    /*******************************************************************************/
+
+    public void titlesForTextAreas(JButton buttonOne, JButton buttonTwo, JFrame frame)
     {
         // title one
-        descriptionTitle = new JButton("Environmental Description");
+        buttonOne = new JButton("Environmental Description");
 
-        descriptionTitle.setFont(font);
+        buttonOne.setFont(new Font("Serif", Font.BOLD, 12));
+        
+        // allow text resize for button text upon frame resize 
+        textResizesUponButtonResize(frame, buttonOne);
         
         GridBagConstraints gridBagConstraints = new GridBagConstraints();
         
@@ -678,12 +728,15 @@ public class TraversalBox
         // top, int left, int bottom, int right) (- value incrases border)
         gridBagConstraints.insets = new Insets(0, 0, 0, -15);
         
-        frame.add(descriptionTitle, gridBagConstraints);
+        frame.add(buttonOne, gridBagConstraints);
         
         // title two
-        effectsTitle = new JButton("Effects On Party");
+        buttonTwo = new JButton("Effects On Party");
         
-        effectsTitle.setFont(font);
+        buttonTwo.setFont(new Font("Serif", Font.BOLD, 16));
+        
+        // allow text resize for button text upon frame resize 
+        textResizesUponButtonResize(frame, buttonTwo);
         
         gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
@@ -700,10 +753,10 @@ public class TraversalBox
         // top, int left, int bottom, int right)
         gridBagConstraints.insets = new Insets(0, 20, 0, 0);
         
-        frame.add(effectsTitle, gridBagConstraints);
+        frame.add(buttonTwo, gridBagConstraints);
     }
     
-    public void textAreaSetUp(JTextArea textArea)
+    public JTextArea textAreaSetUp(JTextArea textArea)
     {
         textArea = new JTextArea();
         
@@ -717,20 +770,21 @@ public class TraversalBox
         textArea.setBackground(Color.BLACK);
         
         // text area where text is displayed cannot be editted 
-        textArea.setEditable(false);
+        textArea.setEditable(true);
         
         // sentences "wrap" or go to next line if text area boundary is reached 
         textArea.setLineWrap(true);
         
         // sentences wrap to next line if word touches boundary 
         textArea.setWrapStyleWord(true);
+        
+        return textArea;
     }
     
     public void textAreasForBox(JTextArea textAreaOneType, JTextArea textAreaTwoType,
         JFrame frame)
     {
-        textAreaSetUp(textAreaOneType);
-        
+        // add first text area 
         JScrollPane textAreaOneScroll = new JScrollPane(textAreaOneType, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
             JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         
@@ -746,7 +800,7 @@ public class TraversalBox
         gridBagConstraints.weightx = 0.6;
         
         // vertical padding in pixels for component in given row 
-	gridBagConstraints.ipady = 125;
+	gridBagConstraints.ipady = 160;
         
         // specifies space component must leave at each edges; (Insets(int 
         // top, int left, int bottom, int right) (- value incrases border)
@@ -754,8 +808,7 @@ public class TraversalBox
         
         frame.add(textAreaOneScroll, gridBagConstraints);
         
-        textAreaSetUp(textAreaTwoType);
-        
+        // add second text area 
         JScrollPane textAreaTwoScroll = new JScrollPane(textAreaTwoType, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
             JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         
@@ -767,10 +820,9 @@ public class TraversalBox
         gridBagConstraints.gridheight = 3;
         gridBagConstraints.weighty = 0.1;
         gridBagConstraints.weightx = 0.6;
-        gridBagConstraints.ipady = 115;
         
         // vertical padding in pixels for component in given row 
-	gridBagConstraints.ipady = 125;
+	gridBagConstraints.ipady = 160;
         
         // specifies space component must leave at each edges; (Insets(int 
         // top, int left, int bottom, int right)
@@ -779,8 +831,26 @@ public class TraversalBox
         frame.add(textAreaTwoScroll, gridBagConstraints);
     }
     
+    public void appendTextToEnvironmentDescription(String text)
+    {
+        StringBuilder builder = new StringBuilder(text);
+            builder.append("\n\n");
+                textAreaOne.append(builder.toString());
+    }
     
-    // START: RESIZE COMPONENT BASED ON FRAME RESIZE AND DISPLAYING FRAME 
+    public void appendTextToEffectOnParty(String text)
+    {
+        StringBuilder builder = new StringBuilder(text);
+            builder.append("\n\n");
+                textAreaTwo.append(builder.toString());
+    }
+    
+    // END: TEXT AREAS 
+    /*******************************************************************************/
+
+    
+    
+    // START: DISPLAYING FRAME 
     /*******************************************************************************/
     
     // display frame window 
@@ -792,7 +862,7 @@ public class TraversalBox
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
     
-    // END: RESIZE COMPONENT BASED ON FRAME RESIZE AND DISPLAYING FRAME 
+    // END: DISPLAYING FRAME 
     /*******************************************************************************/
 
     
@@ -814,56 +884,41 @@ public class TraversalBox
         // Need to make button first and then add to frame 
         // options available to player 
         mainMenu = newUsableButton(mainMenu, "Main Menu");
+            mainMenu.setEnabled(false);
         comms = newUsableButton(comms, "Comms");
+            comms.setEnabled(false);
         settings = newUsableButton(settings, "Settings");
+            settings.setEnabled(false);
         activities = newUsableButton(activities, "Activities");
+            activities.setEnabled(false);
         interactions = newUsableButton(interactions, "Interactions");
+            interactions.setEnabled(false);
         save = newUsableButton(save, "Save");
+            save.setEnabled(false);
         load = newUsableButton(load, "Load");
+            load.setEnabled(false);
         exitGame= newUsableButton(exitGame, "Exit Game");
-
+            exitGame.setEnabled(true);
+        
+        usableButtonsActionsListeners();
+        
         JButton[] privateButtons = {mainMenu, comms, settings, activities,
             interactions, save, load, exitGame};
         
         buttonChoices(textForButtons(), frame, privateButtons);
         
-        /*
-        // add button column functionality for keyboard and mouse wheel 
-        CommonGUIMethods.buttonColumnKeyboardNavigation(mainMenu, comms, settings,
-            activities, interactions, save, load);
-        
-        CommonGUIMethods.frameMouseWheel(frame, mainMenu, comms, settings,
-            activities, interactions, save, load);
-        
-        // add ability for text to resize upon frame resize 
-        textResizesUponButtonResize(frame, mainMenu, comms, settings,
-            activities, interactions, save, load);
-        */
-        
         // panel for displaying map for easier movement 
         addJPanelForMap(map, frame);
-        
-        //variableNumberOfButtonChoiceComponents(textForButtons(), frame);
-        
-        /*
-        // buttons signifying directions party can move for given map
-        addRightButtonComponent(directionZero, rightButtonText("d0"), font, 2, 3, 0.07, 0.2, 0, frame);
-        addRightButtonComponent(directionOne, rightButtonText("vnnievdnfvfvfdv"), font, 3, 3, 0.07, 0.2, 0, frame);
-        addRightButtonComponent(directionTwo, rightButtonText("d2"), font, 4, 3, 0.07, 0.2, 0, frame);
-        addRightButtonComponent(directionThree, rightButtonText("d3"), font, 5, 3, 0.07, 0.2, 0, frame);
-        addRightButtonComponent(directionFour, rightButtonText("d4"), font, 6, 3, 0.07, 0.2, 0, frame);
-        addRightButtonComponent(directionFive, rightButtonText("d5"), font, 7, 3, 0.07, 0.2, 0, frame);
-        addRightButtonComponent(directionSix, rightButtonText("d6"), font, 8, 3, 0.07, 0.2, 0, frame);
-        addRightButtonComponent(directionSeven, rightButtonText("d7"), font, 9, 3, 0.07, 0.2, 0, frame);
-*/
 
         // titles for text area buttons indicating type of text area 
         titlesForTextAreas(textAreaOneTitle, textAreaTwoTitle, frame);
         
+        textAreaOne = textAreaSetUp(textAreaOne);
+        textAreaTwo = textAreaSetUp(textAreaTwo);
+        
         // text areas for different kinds of information 
         textAreasForBox(textAreaOne, textAreaTwo, frame);
-
-        displayFrameWindow(frame);
         
+        displayFrameWindow(frame);
     }
 }
