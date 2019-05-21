@@ -9,6 +9,7 @@ package Player_Entity;
 */
 
 import Generic_Object.*;        // asterisk (*) imports all classes in package Generic_Object
+import Commonly_Used_Methods.StaticMethods;
 import java.util.LinkedHashMap;
 import java.util.Comparator;
 import java.util.ArrayList;
@@ -304,6 +305,12 @@ public class Inventory
         }
     }
     
+    // removes object group from inventory 
+    public void removeObjectGroup(GenericObject object)
+    {
+        inventory.remove(object);
+    }
+    
     // gets inventory object containing all objects stored by the player party 
     public LinkedHashMap<GenericObject, ArrayList<GenericObject>> getInventory()
     {
@@ -505,7 +512,9 @@ public class Inventory
                     if(entrySelected != swapWithEntryAtPosition)
                     {
                         // TreeMap meant to temporarily store entries meant to be swapped 
-                        TreeMap<GenericObject, ArrayList<GenericObject>> entriesToBeSwapped = new TreeMap<>();
+                        // NOTE: needs a dummy comparator or way to sort GenericObject objects in order
+                        //       to sort objects without creating additional methods 
+                        TreeMap<GenericObject, ArrayList<GenericObject>> entriesToBeSwapped = new TreeMap<>(sortByName);
 
                         // store entries meant to be swapped in supplied TreeMap 
                         storeSelectedEntries(entriesToBeSwapped, entrySelected, swapWithEntryAtPosition);
@@ -527,6 +536,26 @@ public class Inventory
         }
     }
 
+    // count position of object group in inventory from position 1
+    public int objectGroupPosition(GenericObject object)
+    {
+        int counter = 1;
+        
+        for(Map.Entry<GenericObject, ArrayList<GenericObject>> entry : inventory.entrySet())
+        {
+            if(object.equals(entry.getKey()))
+            {
+                break;
+            }
+            else
+            {
+                counter++;
+            }
+        }
+        
+        return counter;
+    }
+    
     // END: CUSTOMIZE OBJECT PLACEMENT BY SWAPPING TWO ENTRY SETS AT A TIME 
     /********************************************************************************/
     
@@ -702,9 +731,27 @@ public class Inventory
     // START: SPECIFIC SORT BY KEY
     
     // enum class containing classes whose objects can be stored in inventory 
-    public enum ValidClassesForSorting
+    public enum ClassesForSorting
     {
-        ITEM, CORE, WEAPON, ARMOR, ACCESSORY;
+        ITEM("Item"), CORE("Core"), WEAPON("Weapon"), ARMOR("Armor"), 
+        ACCESSORY("Accessory");
+        
+        private String classForSorting;
+        
+        ClassesForSorting(String classForSorting)
+        {
+            this.classForSorting = classForSorting;
+        }
+        
+        public String getEnumAsString()
+        {
+            return classForSorting;
+        }
+    }
+    
+    public ClassesForSorting getClassForSortingEnum(String argument)
+    {
+        return ClassesForSorting.valueOf(StaticMethods.stringToEnum(argument));
     }
     
     // class belonging to GenericObject hierarchy MUST be supplied in order to 
@@ -713,7 +760,8 @@ public class Inventory
         LinkedHashMap<GenericObject, ArrayList<GenericObject>> unsortedObjects, Class<? extends 
         GenericObject> hierarchy)
     {
-        for(Map.Entry<GenericObject, ArrayList<GenericObject>> entry : inventory.entrySet()){
+        for(Map.Entry<GenericObject, ArrayList<GenericObject>> entry : inventory.entrySet())
+        {
             if(entry.getKey().getClass() == hierarchy){
                 sortObjectsBy.put(entry.getKey(), entry.getValue());
             }else{
@@ -724,7 +772,7 @@ public class Inventory
     
     // sorts objects belonging to specified class while leaving other objects alone
     public void specificSortByClass(TreeMap<GenericObject, ArrayList<GenericObject>> sortObjectsBy, 
-        LinkedHashMap<GenericObject, ArrayList<GenericObject>> unsortedObjects, ValidClassesForSorting choice)
+        LinkedHashMap<GenericObject, ArrayList<GenericObject>> unsortedObjects, ClassesForSorting choice)
     {
         // switch statement determines what class objects are stored/sorted 
         switch(choice)
@@ -765,7 +813,7 @@ public class Inventory
     }
     
     // sort class objects specified and place them at the top of the inventory 
-    public void specificSortByKey(Comparator<GenericObject> comparator, ValidClassesForSorting choice)
+    public void specificSortByKey(Comparator<GenericObject> comparator, ClassesForSorting choice)
     {
         // sortObjectsBy will hold objects from specified class ONLY and sort them 
         // according to custom comparator given as argument implemented at the end 
@@ -818,7 +866,7 @@ public class Inventory
     }
 
     // sort specified class objects by desired quantity by swapping keys and values 
-    public void specificSortByValue(Comparator<ArrayList<GenericObject>> comparator, ValidClassesForSorting choice)
+    public void specificSortByValue(Comparator<ArrayList<GenericObject>> comparator, ClassesForSorting choice)
     {
         /* steps: 
             1. store objects that need to be sorted and objects to be left unsorted 
@@ -827,7 +875,9 @@ public class Inventory
                first and then place remaining entries from linked HashMap next  */
         
         // temporarily store objects belonging to specified class with no comparator
-        TreeMap<GenericObject, ArrayList<GenericObject>> storeSpecifiedObjects = new TreeMap<>();
+        // NOTE: needs a dummy comparator or way to sort GenericObject objects in order
+        //       to sort objects without creating additional methods
+        TreeMap<GenericObject, ArrayList<GenericObject>> storeSpecifiedObjects = new TreeMap<>(sortByName);
 
         // unsortedObjects stores entry sets of inventory not stored in sortObjectsBy
         LinkedHashMap<GenericObject, ArrayList<GenericObject>> unsortedObjects = new LinkedHashMap<>();
@@ -866,57 +916,57 @@ public class Inventory
     
     // START: METHODS FOR SPECIFIED SORT OF KEYS
     
-    public void specificSortByName(ValidClassesForSorting choice)
+    public void specificSortByName(ClassesForSorting choice)
     {
         specificSortByKey(sortByName, choice);
     }
 
-    public void specificSortByClass(ValidClassesForSorting choice)
+    public void specificSortByMainClass(ClassesForSorting choice)
     {
         specificSortByKey(sortByMainClass, choice);
     }
 
-    public void specificSortByCategory(ValidClassesForSorting choice)
+    public void specificSortByCategory(ClassesForSorting choice)
     {
         specificSortByKey(sortByCategory, choice);
     }
 
-    public void specificSortBySuperType(ValidClassesForSorting choice)
+    public void specificSortBySuperType(ClassesForSorting choice)
     {
         specificSortByKey(sortBySuperType, choice);
     }
 
-    public void specificSortBySubType(ValidClassesForSorting choice)
+    public void specificSortBySubType(ClassesForSorting choice)
     {
         specificSortByKey(sortBySubType, choice);
     }
 
-    public void specificSortByUseSpeed(ValidClassesForSorting choice)
+    public void specificSortByUseSpeed(ClassesForSorting choice)
     {
         specificSortByKey(sortByUseSpeed, choice);
     }
 
-    public void specificSortByBuyPrice(ValidClassesForSorting choice)
+    public void specificSortByBuyPrice(ClassesForSorting choice)
     {
         specificSortByKey(sortByBuyPrice, choice);
     }
 
-    public void specificSortBySellPrice(ValidClassesForSorting choice)
+    public void specificSortBySellPrice(ClassesForSorting choice)
     {
         specificSortByKey(sortBySellPrice, choice);
     }
 
-    public void specificSortByStealRate(ValidClassesForSorting choice)
+    public void specificSortByStealRate(ClassesForSorting choice)
     {
         specificSortByKey(sortByStealRate, choice);
     }
     
-    public void specificSortByPilferRate(ValidClassesForSorting choice)
+    public void specificSortByPilferRate(ClassesForSorting choice)
     {
         specificSortByKey(sortByDropRate, choice);
     }
     
-    public void specificSortByDropRate(ValidClassesForSorting choice)
+    public void specificSortByDropRate(ClassesForSorting choice)
     {
         specificSortByKey(sortByDropRate, choice);
     }
@@ -926,19 +976,116 @@ public class Inventory
     
     // START: METHODS FOR SPECIFIC SORT BY VALUES (KEY AND VALUE SWAPPING)
     
-    public void specificSortByHighestQuantity(ValidClassesForSorting choice)
+    public void specificSortByHighestQuantity(ClassesForSorting choice)
     {
         specificSortByValue(sortByHighestQuanity, choice);
     }
     
     // sorts objects from specfied class by lowest quantity and places them at 
     // the top of linkedHashMapInventory 
-    public void specificSortByLowestQuantity(ValidClassesForSorting choice)
+    public void specificSortByLowestQuantity(ClassesForSorting choice)
     {
         specificSortByValue(sortByLowestQuanity, choice);
     }
     
     // END: METHODS FOR SPECIFIC SORT BY VALUES (KEY AND VALUE SWAPPING)
+    /*------------------------------------------------------------------------------*/	
+    
+    
+    // START: SPECIFIC SORT CENTRAL METHOD 
+    /*------------------------------------------------------------------------------*/	
+
+    public enum SortingTypes
+    {
+        SORT_BY_NAME("Sort by Name"), SORT_BY_MAIN_CLASS("Sort by Main Class"), 
+        SORT_BY_CATEGORY("Sort by Category"), SORT_BY_SUPER_TYPE("Sort by Super Type"), 
+        SORT_BY_SUB_TYPE("Sort by Sub Type"), SORT_BY_USE_SPEED("Sort by Use Speed"), 
+        SORT_BY_BUY_PRICE("Sort by Buy Price"), SORT_BY_SELL_PRICE("Sort by Sell Price"),
+        SORT_BY_STEAL_RATE("Sort by Steal Rate"), SORT_BY_PILFER_RATE("Sort by Pilfer Rate"), 
+        SORT_BY_DROP_RATE("Sort by Drop Rate"), SORT_BY_HIGHEST_QUANTITY("Sort by Highest Quantity"), 
+        SORT_BY_LOWEST_QUANTITY("Sort by Lowest Quantity");
+        
+        private String sortingType;
+        
+        SortingTypes(String specificSortType)
+        {
+            this.sortingType = specificSortType;
+        }
+        
+        public String getEnumAsString()
+        {
+            return sortingType;
+        }
+    }
+    
+    public SortingTypes getSortingTypeEnum(String argument)
+    {
+        return SortingTypes.valueOf(StaticMethods.stringToEnum(argument));
+    }
+    
+    public String[] sortingTypesStrings()
+    {
+        String[] array = new String[SortingTypes.values().length];
+        
+        for(int i = 0; i < SortingTypes.values().length; i++)
+        {
+            array[i] = SortingTypes.values()[i].getEnumAsString();
+        }
+        
+        return array;
+    }
+    
+    public void specificSort(String objectClass, String sortingType)
+    {
+        ClassesForSorting classForSorting = getClassForSortingEnum(objectClass);
+        
+        SortingTypes sortType = getSortingTypeEnum(sortingType);
+        
+        switch(sortType)
+        {
+            case SORT_BY_NAME:
+                specificSortByName(classForSorting);
+                    break;
+            case SORT_BY_MAIN_CLASS:
+                specificSortByMainClass(classForSorting);
+                    break;
+            case SORT_BY_CATEGORY:
+                specificSortByCategory(classForSorting);
+                    break;
+            case SORT_BY_SUPER_TYPE:
+                specificSortBySuperType(classForSorting);
+                    break;
+            case SORT_BY_SUB_TYPE:
+                specificSortBySubType(classForSorting);
+                    break;
+            case SORT_BY_USE_SPEED:
+                specificSortByUseSpeed(classForSorting);
+                    break;
+            case SORT_BY_BUY_PRICE:
+                specificSortByBuyPrice(classForSorting);
+                    break;
+            case SORT_BY_SELL_PRICE:
+                specificSortBySellPrice(classForSorting);
+                    break;
+            case SORT_BY_STEAL_RATE:
+                specificSortByStealRate(classForSorting);
+                    break;
+            case SORT_BY_PILFER_RATE:
+                specificSortByPilferRate(classForSorting);
+                    break;
+            case SORT_BY_DROP_RATE:
+                specificSortByDropRate(classForSorting);
+                    break;    
+            case SORT_BY_HIGHEST_QUANTITY:
+                specificSortByHighestQuantity(classForSorting);
+                    break;
+            case SORT_BY_LOWEST_QUANTITY:
+                specificSortByLowestQuantity(classForSorting);
+                    break;
+        }
+    }
+    
+    // END: SPECIFIC SORT CENTRAL METHOD 
     /*------------------------------------------------------------------------------*/	
     
     // END: SPECIFIC SORT SORTS CERTAIN CLASS OBJECTS IN A PREDFINED WAY 
@@ -1114,6 +1261,63 @@ public class Inventory
 
     // END: METHODS FOR GENERAL SORT OF VALUES (INVOLVES KEY/VALUE SWAPPING)
 
+    
+    // START: GENERAL SORT FOR ALL OBJECTS 
+    
+    public void generalSort(String sortingType)
+    {
+        SortingTypes sortType = getSortingTypeEnum(sortingType);
+        
+        switch(sortType)
+        {
+            case SORT_BY_NAME:
+                generalSortByName();
+                    break;
+            case SORT_BY_MAIN_CLASS:
+                generalSortByMainClass();
+                    break;
+            case SORT_BY_CATEGORY:
+                generalSortByCategory();
+                    break;
+            case SORT_BY_SUPER_TYPE:
+                generalSortBySuperType();
+                    break;
+            case SORT_BY_SUB_TYPE:
+                generalSortBySubType();
+                    break;
+            case SORT_BY_USE_SPEED:
+                generalSortByUseSpeed();
+                    break;
+            case SORT_BY_BUY_PRICE:
+                generalSortByBuyPrice();
+                    break;
+            case SORT_BY_SELL_PRICE:
+                generalSortBySellPrice();
+                    break;
+            case SORT_BY_STEAL_RATE:
+                generalSortByStealRate();
+                    break;
+            case SORT_BY_PILFER_RATE:
+                generalSortByPilferRate();
+                    break;
+            case SORT_BY_DROP_RATE:
+                generalSortByDropRate();
+                    break;    
+            case SORT_BY_HIGHEST_QUANTITY:
+                generalSortByHighestQuantity();
+                    break;
+            case SORT_BY_LOWEST_QUANTITY:
+                generalSortByLowestQuantity();
+                    break;
+        }
+    }
+    
+    // END: SPECIFIC SORT CENTRAL METHOD 
+    /*------------------------------------------------------------------------------*/	
+
+    
+    // END: GENERAL SORT FOR ALL OBJECTS 
+    
     // END: GENERAL SORT SORTS ALL INVENTORY OBJECTS IN A PREDEFINED WAY
     /********************************************************************************/
     
