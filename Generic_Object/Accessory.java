@@ -26,14 +26,13 @@ public class Accessory extends OutfitMethods
     private final ArrayList<String> statusEffectsNegated = new ArrayList<String>();
     
     // skillsAndValues HashMap creation and population through static means 
-    private static final HashMap<Skills, Integer> skillsAndValues =
-        new HashMap<Skills, Integer>();
+    private final HashMap<Skills, Integer> skillsAndValues = new HashMap<>();
     
     // subclass constructor with method(s) invoked upon object creation 
     public Accessory()
     {
         // need to set subclass name to enable slot/core equip feature for object 
-        setSubclassName("Accessories");
+        setSubclassName("Accessory");
         
         // set up hashmap for easy value retrieval 
         initializeSkillsAndValuesHashMap();
@@ -41,7 +40,7 @@ public class Accessory extends OutfitMethods
 
 
 
-    // START: ARMOR CATEGORY, SUPERTYPE, AND SUBTYPE
+    // START: ACCESSORY CATEGORY, SUPERTYPE, AND SUBTYPE
     /*******************************************************************************/
 
     public enum AccessoryCategory
@@ -130,7 +129,7 @@ public class Accessory extends OutfitMethods
         return AccessorySubTypes.valueOf(StaticMethods.stringToEnum(super.getSubType()));
     }
     
-    // END: ARMOR CATEGORY, SUPERTYPE, AND SUBTYPE
+    // END: ACCESSORY CATEGORY, SUPERTYPE, AND SUBTYPE
     /*******************************************************************************/
 
     

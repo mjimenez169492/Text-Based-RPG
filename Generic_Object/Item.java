@@ -6,11 +6,11 @@ package Generic_Object;
 */
 
 import Commonly_Used_Methods.StaticMethods;
-
+import Move_Creation.Moves;
 
 public class Item extends GenericObject
 {
-        // private itemMove move;                   // DOES NOT EXIST YET 
+    private Moves move;                   // DOES NOT EXIST YET 
     
     // create Items objects that can call upon GenericObject methods; Items objects 
     // can be customized further by calling upon methods created within this class 
@@ -70,13 +70,13 @@ public class Item extends GenericObject
         }
     } 
     
-    public void setWeaponSuperType(String argument)
+    public void setItemSuperType(String argument)
     {
         super.setSuperType(ItemSuperTypes.valueOf(StaticMethods.stringToEnum(argument)).
             getEnumAsString());
     }
     
-    public ItemSuperTypes getWeaponSuperTypeEnum()
+    public ItemSuperTypes getItemSuperTypeEnum()
     {
         return ItemSuperTypes.valueOf(StaticMethods.stringToEnum(super.getSuperType()));
     }
@@ -153,6 +153,16 @@ public class Item extends GenericObject
     public ItemSubTypes getItemSubTypeEnum()
     {
         return ItemSubTypes.valueOf(StaticMethods.stringToEnum(super.getSubType()));
+    }
+    
+    public void setMove(Moves move)
+    {
+        this.move = move;
+    }
+    
+    public Moves getMove()
+    {
+        return move;
     }
     
     // END: ITEN CATEGORY, SUPERTYPE, AND SUBTYPE

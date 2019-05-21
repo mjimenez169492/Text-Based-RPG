@@ -192,7 +192,7 @@ public class PartyWallet
         boolean maxWalletTier = (getTierEnum() == WalletTiers.TIER_5);
         
         // if wallet has reached max wallet level then assign true 
-        boolean maxWalletLevel = (maxWalletSize == maxWalletTier);
+        boolean maxWalletLevel = (maxWalletSize && maxWalletTier);
         
         // proceed if wallet has not been upgraded to max level 
         if(!maxWalletLevel)
@@ -204,7 +204,7 @@ public class PartyWallet
             {
                 for(int i = 0; i < WalletTiers.values().length; i++){
                     if(getTierEnum() == WalletTiers.values()[i]){
-                        setSize(WalletTiers.values()[i+1].getEnumAsString());
+                        setTier(WalletTiers.values()[i+1].getEnumAsString());
                             updateWalletCapacity();
                                 break;
                     }
@@ -234,7 +234,7 @@ public class PartyWallet
         boolean minWalletTier = (getTierEnum() == WalletTiers.TIER_1);
         
         // if wallet has reached min wallet level then assign true 
-        boolean minWalletLevel = (minWalletSize == minWalletTier);
+        boolean minWalletLevel = (minWalletSize && minWalletTier);
         
         // proceed if wallet is not min wallet level 
         if(!minWalletLevel)
@@ -246,7 +246,7 @@ public class PartyWallet
             {
                 for(int i = 0; i < WalletTiers.values().length; i++){
                     if(getTierEnum() == WalletTiers.values()[i]){
-                        setSize(WalletTiers.values()[i-1].getEnumAsString());
+                        setTier(WalletTiers.values()[i-1].getEnumAsString());
                             updateWalletCapacity();
                                 break;
                     }

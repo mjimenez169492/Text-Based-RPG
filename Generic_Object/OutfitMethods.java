@@ -82,16 +82,6 @@ public class OutfitMethods extends GenericObject
         return maxHealth; 
     } 
 
-    public void setMaxNano(double maxNano) 
-    {
-        this.maxNano = validateMaxGauges(maxNano); 
-    } 
-
-    public double getMaxNano()
-    {
-        return maxNano; 
-    } 
-
     public void setMaxStamina(double maxStamina) 
     {
         this.maxStamina = validateMaxGauges(maxStamina); 
@@ -100,6 +90,16 @@ public class OutfitMethods extends GenericObject
     public double getMaxStamina()
     {
         return maxStamina; 
+    } 
+    
+    public void setMaxNano(double maxNano) 
+    {
+        this.maxNano = validateMaxGauges(maxNano); 
+    } 
+
+    public double getMaxNano()
+    {
+        return maxNano; 
     } 
 
     // END: OUTFIT MAX GAUGES
@@ -337,7 +337,7 @@ public class OutfitMethods extends GenericObject
 
     public enum SubclassNames
     {
-        WEAPONS("Weapons"), ARMORS("Armors"), ACCESSORIES("Accessories");
+        WEAPON("Weapon"), ARMOR("Armor"), ACCESSORY("Accessory");
         
         private String subclassNames;
         
@@ -594,13 +594,13 @@ public class OutfitMethods extends GenericObject
         {
             switch(getSubclassNameEnum())
             {
-                case WEAPONS:
+                case WEAPON:
                     slotCoreType = getWeaponSlotCoreTypeString(slotCoreType);
                         break;
-                case ARMORS: 
+                case ARMOR: 
                     slotCoreType = getArmorSlotCoreTypeString(slotCoreType);
                         break;
-                case ACCESSORIES: 
+                case ACCESSORY: 
                     slotCoreType = getAccessorySlotCoreTypeString(slotCoreType);
                         break;
             }
@@ -632,13 +632,13 @@ public class OutfitMethods extends GenericObject
         {
             switch(getSubclassNameEnum())
             {
-                case WEAPONS:
+                case WEAPON:
                     result = stringExists(weaponSlotCoreTypeValueStrings(), coreType);
                         break;
-                case ARMORS: 
+                case ARMOR: 
                     result = stringExists(armorSlotCoreTypeValueStrings(), coreType);
                         break;
-                case ACCESSORIES: 
+                case ACCESSORY: 
                     result = stringExists(accessorySlotCoreTypeValueStrings(), coreType);
                         break;
             }

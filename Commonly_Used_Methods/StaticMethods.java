@@ -147,7 +147,7 @@ public class StaticMethods
     public static enum Enchantments
     {
         FIRE("Fire"), WATER("Water"), ICE("Ice"), ELECTRICITY("Electricity"), 
-        POISON("Poison"), SONIC("Sonic"), PLASMA("Plasma"), WIND("Wind");
+        POISON("Poison"), SONIC("Sonic"), PLASMA("Plasma"), WIND("Wind"), NONE("None");
         
         private String enchantment;
         

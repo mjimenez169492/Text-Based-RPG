@@ -184,10 +184,14 @@ public class Core extends GenericObject
     // if NOT a special core, then supply super.getSubType() 
     public void setCoreType(String coreType)
     {
-        if(coreType != null)
+        if(specialCoreState && coreType != null)
         {
             this.coreType = coreType;
-        }        
+        }
+        else if(!specialCoreState && coreType != null)
+        {
+            this.coreType = getSubType();
+        }
     }
     
     public String getCoreType()
