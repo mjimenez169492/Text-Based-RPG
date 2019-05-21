@@ -17,7 +17,7 @@ public class OppositionMethods
 
     // variables holds max amount of money characters can hold on their person 
     // personal wallet funds cannot be accessed directly (must steak from self)
-    private double personalWalletMaxSize, personalWallet;
+    private double personalWalletMaxSize, personalWalletMoney;
     
     // variables holding the maximum size for each inventory-like ArrayList  
     private int stealableObjectsMaxCapacity, pilferableObjectsMaxCapacity, 
@@ -96,23 +96,23 @@ public class OppositionMethods
         return personalWalletMaxSize;
     }
     
-    public void setPersonalWallet(double personalWallet)
+    public void setPersonalWalletMoney(double personalWalletMoney)
     {
-        if(personalWallet < 0)
+        if(personalWalletMoney < 0)
         {
-            personalWallet = 0;
+            personalWalletMoney = 0;
         }
-        else if(personalWallet > personalWalletMaxSize)
+        else if(personalWalletMoney > personalWalletMaxSize)
         {
-            personalWallet = personalWalletMaxSize;
+            personalWalletMoney = personalWalletMaxSize;
         }
         
-        this.personalWallet = personalWallet;
+        this.personalWalletMoney = personalWalletMoney;
     }
     
-    public double getPersonalWallet()
+    public double getPersonalWalletMoney()
     {
-        return personalWallet;
+        return personalWalletMoney;
     }
     
     // END: PERSONAL WALLET (CAN ONLY BE ACCESSED BY STEALING FROM SELF)
