@@ -589,7 +589,7 @@ public class MoveCalculations
 
         if(user.getEquippableOutfits().getWeapon() != null)
         {
-            result += enchantmentCalculation((ouputValue * 0.36), target.getRetrieveResistances().
+            result += enchantmentCalculation((ouputValue * 0.36), target.getTotalStats().
                 getEnchantmentResistanceValueForKey(user.getEquippableOutfits().
                 getWeapon().getEnchantment()));
         }
@@ -602,7 +602,7 @@ public class MoveCalculations
     {
         if(StaticMethods.getEnchantmentEnum(moveEnchantmentName) != StaticMethods.Enchantments.NONE)
         {
-            ouputValue += enchantmentCalculation((ouputValue * 0.45), target.getRetrieveResistances().
+            ouputValue += enchantmentCalculation((ouputValue * 0.45), target.getTotalStats().
                 getEnchantmentResistanceValueForKey(moveEnchantmentName));
         }
         
@@ -875,7 +875,7 @@ public class MoveCalculations
         if(!target.getEquippableOutfits().accessoryNegatesStatusEffect(status))
         {
             // store sum of target's resistance, immune and nano response 
-            result = (int)target.getRetrieveResistances().getTotalStatusResistanceForKey(status.getName());
+            result = (int)target.getTotalStats().getTotalStatusResistanceForKey(status.getName());
         }
         else
         {
