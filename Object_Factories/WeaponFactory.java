@@ -90,17 +90,17 @@ public class WeaponFactory
         weapon.setPilferRate(100);
         weapon.setDropRate(100);
         
-        weapon.setMaxHealth(5);
-        weapon.setMaxStamina(5);
-        weapon.setMaxNano(5);
+        weapon.setMaxHealth(11);
+        weapon.setMaxStamina(12);
+        weapon.setMaxNano(33);
         
-        weapon.setAttack(3);
+        weapon.setAttack(33);
         weapon.setDefense(0);
-        weapon.setDexterity(2);
-        weapon.setCritical(1);
+        weapon.setDexterity(22);
+        weapon.setCritical(13);
         weapon.setAccuracy(0);
-        weapon.setNanoAttack(0);
-        weapon.setNanoDefense(0);
+        weapon.setNanoAttack(30);
+        weapon.setNanoDefense(30);
         weapon.setLuck(0);
         
         weapon.setCurrentHealthRegeneration(0);
