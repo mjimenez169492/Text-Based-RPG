@@ -74,7 +74,7 @@ public class GenericObject
 
     public void setBriefDescription(String briefDescription)
     {
-        this.briefDescription = customStringLength(briefDescription, 140);
+        this.briefDescription = customStringLength(briefDescription, 50);
     }
     
     public String getBriefDescription()
