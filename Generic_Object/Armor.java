@@ -931,22 +931,6 @@ public class Armor extends OutfitMethods
 
     // END: TURN BEHAVIOR BASED 
     
-    
-    // START: NULLIFY STATUS EFFECTS BASED 
-    
-    public double getTotalNullifyPositiveEffectsResistance()
-    {
-        return totalOutfitValue(getNullifyStatusEffectsResistance(), "Nullify Status Effects");
-    }
-    
-    public Object[] getAllTotalNullifyStatusEffectResistancesWithNames()
-    {
-        Object[] array = {"Nullify Status Effects", getTotalNullifyPositiveEffectsResistance()};
-            return array;
-    }
-    
-    // END: NULLIFY STATUS EFFECTS BASED 
-    
     // END: STATUS EFFECT RELATED
     
     // END: TOTAL ARMOR RESISTANCES WITH CORES AND DURABILITY SUPPLIED
@@ -959,16 +943,17 @@ public class Armor extends OutfitMethods
     
     public Object[][] getArrayContainingResistances()
     {
-        Object[] arrayOfArrays [] = {getAllTotalEnchantmentResistancesWithNames(), 
+        Object[] arrayOfArrays [] = {
+            getAllTotalEnchantmentResistancesWithNames(), 
             getAllTotalUniqueStatusEffectResistancesWithNames(),
+            getAllTotalCurrentHealthStatusEffectResistancesWithNames(),
             getAllTotalAttributeStatusEffectResistancesWithNames(),
             getAllTotalBehaviorStatusEffectResistancesWithNames(),
-            getAllTotalTurnBehaviorStatusEffectResistancesWithNames(), 
-            getAllTotalNullifyStatusEffectResistancesWithNames()};
+            getAllTotalTurnBehaviorStatusEffectResistancesWithNames()};
                 return arrayOfArrays;
     }
     
-    public ArrayList<Object> getAttributesAndResistancesArrayList()
+    public ArrayList<Object> getAllResistances()
     {
         ArrayList<Object> arrayList = new ArrayList<>();
 
@@ -985,7 +970,7 @@ public class Armor extends OutfitMethods
     
     public final void initializeAttributesAndResistancesHashMap()
     {
-        ArrayList<Object> arrayList = getAttributesAndResistancesArrayList();
+        ArrayList<Object> arrayList = getAllResistances();
         
         for(int i = 0; i < arrayList.size(); i+=2)
         {
