@@ -69,7 +69,6 @@ public class GenericCharacterFactory
         character.getStats().setShockedResistance(0);
         character.getStats().setSlowedResistance(0);
         character.getStats().setStoppedResistance(0);
-        character.getStats().setNullifyPositiveEffectsResistance(0);
         
         // can be used to allow/deny all outfit changes at once 
             //character.getEquippableOutfits().allowAnyOutfitChange();
