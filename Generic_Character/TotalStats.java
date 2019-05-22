@@ -1,4 +1,19 @@
+package Generic_Character;
 
+import Commonly_Used_Methods.StaticMethods;
+import java.util.ArrayList;
+
+/*
+    TotalStats concerns "getTotal_" methods where "_" stands for almost every 
+    attribute/resistence tied to a GenericCharacter object. 
+*/
+
+public class TotalStats
+{   
+    // holding objects from other classes 
+    private StatusEffectContainer statusEffectContainer;
+    private EquippableOutfits equippableOutfits;
+    
     public TotalStats(StatusEffectContainer statusEffectContainer, 
         EquippableOutfits equippableOutfits)
     {
@@ -121,15 +136,6 @@
     }
     
     // ATTRIBUTES
-    
-    public Object[] getAllTotalAttributesWithNames()
-    {
-        Object[] array = {"Max Health", getTotalMaxHealth(), "Max Stamina", 
-            getTotalMaxStamina(), "Max Nano", getTotalMaxNano(), "Defense", 
-            getTotalDefense(), "Dexterity", getTotalDexterity(), "Nano Defense",
-            getTotalNanoDefense()};
-                return array;
-    }
 
     // END: RETURN TOTAL ATTRIBUTES 
     /*******************************************************************************/
@@ -446,11 +452,6 @@
         return getTotalResistance(getEquippableOutfits().getStoppedResistanceWithOutfits(), "Stopped");	
     }
 
-    public double getTotalNullifyPositiveEffectsResistance()
-    {
-        return getTotalResistance(getEquippableOutfits().getNullifyPositiveEffectsResistanceWithOutfits(), "Nullify Positive Effects");	
-    }
-    
     public Object[] getAllTotalTurnBehaviorStatusEffectResistancesWithNames()
     {
         Object[] array = {"Flinched", getTotalFlinchedResistance(), "Stunned", getTotalStunnedResistance(), 
@@ -462,21 +463,115 @@
     }
 
     // END: TURN BEHAVIOR BASED 
-    
-    
-    // START: NULLIFY STATUS EFFECTS BASED 
-    
-    public Object[] getAllTotalNullifyStatusEffectResistancesWithNames()
-    {
-        Object[] array = {"Nullify Status Effects", getTotalNullifyPositiveEffectsResistance()};
-            return array;
-    }
-    
-    // END: NULLIFY STATUS EFFECTS BASED 
 
     // END: STATUS EFFECT RELATED
     /*----------------------------------------------------------------------------*/
 
     // END: RETURN TOTAL RESISTANCES
     /*******************************************************************************/			
+
+    
+    
+    // START: STORING AND RETRIEVING TOTAL ATTRIBUTES 
+    /*******************************************************************************/
+        
+    /*
+    public Object[] getAllTotalAttributesWithNames()
+    {
+        Object[] array = {"Max Health", getTotalMaxHealth(), "Max Stamina", 
+            getTotalMaxStamina(), "Max Nano", getTotalMaxNano(), "Defense", 
+            getTotalDefense(), "Dexterity", getTotalDexterity(), "Nano Defense",
+            getTotalNanoDefense()};
+                return array;
+    }
+    */
+    
+    public Object[] getAllTotalAttributesWithNames()
+    {
+        Object[] characterAttributes = {"Attack", getTotalAttack(), "Defense", 
+            getTotalDefense(), "Dexterity", getTotalDexterity(), "Critical", 
+            getTotalCritical(), "Accuracy", getTotalAccuracy(), "Nano Attack", 
+            getTotalNanoAttack(), "Nano Defense", getTotalNanoDefense()};
+                return characterAttributes;
+    }
+    
+    // END: STORING AND RETRIEVING TOTAL ATTRIBUTES 
+    /*******************************************************************************/
+
+    
+    
+    // START: STORING AND RETRIEVING TOTAL ENCHANTMENTS 
+    /*******************************************************************************/
+    
+    public double getEnchantmentResistanceValueForKey(String key)
+    {
+        double result = 0;
+        
+        Object[] array = {getAllTotalEnchantmentResistancesWithNames()};
+        
+        for(int i = 0; i < array.length; i+=2)
+        {
+            if(StaticMethods.getEnchantmentEnum(key) != StaticMethods.Enchantments.NONE)
+            {
+                result = (double)array[i+1];
+            }
+        }
+        
+        return result;
+    }
+    
+    // END: STORING AND RETRIEVING TOTAL ENCHANTMENTS 
+    /*******************************************************************************/
+
+    
+    
+    // START: STORING AND RETRIEVING TOTAL RESISTANCES 
+    /*******************************************************************************/
+    
+    public Object[][] getArrayContainingResistances()
+    {
+        Object[] arrayOfArrays [] = {
+            getAllTotalEnchantmentResistancesWithNames(),
+            getAllTotalUniqueStatusEffectResistancesWithNames(),
+            getAllTotalCurrentHealthStatusEffectResistancesWithNames(),
+            getAllTotalAttributeStatusEffectResistancesWithNames(),
+            getAllTotalBehaviorStatusEffectResistancesWithNames(),
+            getAllTotalTurnBehaviorStatusEffectResistancesWithNames()};
+                return arrayOfArrays;
+    }
+    
+    public ArrayList<Object> getAllTotalResistances()
+    {
+        ArrayList<Object> arrayList = new ArrayList<>();
+
+        for(Object[] arrayWithinArray : getArrayContainingResistances())
+        {
+            for(Object element : arrayWithinArray)
+            {
+                arrayList.add(element);
+            }
+        }
+        
+        return arrayList;
+    }
+    
+    public double getTotalStatusResistanceForKey(String key)
+    {
+        double result = 0.0;
+        
+        ArrayList<Object> arrayList = getAllTotalResistances();
+        
+        for(int i = 0; i < getAllTotalResistances().size(); i += 2)
+        {
+            if(key.equals((String)arrayList.get(i)))
+            {
+                result = (double)arrayList.get(i + 1);
+            }
+        }
+        
+        return result;
+    }
+
+    // END: STORING AND RETRIEVING TOTAL ATTRIBUTES AND RESISTANCES 
+    /*******************************************************************************/
 }

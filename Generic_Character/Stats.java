@@ -669,16 +669,6 @@ public class Stats
         return stoppedResistance;
     }
 
-    public void setNullifyPositiveEffectsResistance(double nullifyPositiveEffectsResistance)
-    {
-        this.nullifyPositiveEffectsResistance = validateResistance(nullifyPositiveEffectsResistance);
-    }
-
-    public double getNullifyPositiveEffectsResistance()
-    {
-        return nullifyPositiveEffectsResistance;
-    }
-
     // TURN BEHAVIOR BASED 
 
     // STATUS EFFECT RELATED

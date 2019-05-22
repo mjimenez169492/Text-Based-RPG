@@ -138,6 +138,14 @@ public class EquippableOutfits
         setAccessoryTwoChangeState(false);
     }
     
+    public Object[] getOutfitChangeStates()
+    {
+        Object[] array = {"Weapon", weaponChangeState, "Body Armor", bodyArmorChangeState,
+            "Leg Armor", legArmorChangeState, "Foot Armor", footArmorChangeState, "Accessory 1",
+            accessoryOneChangeState, "Accessory 2", accessoryTwoChangeState};
+                return array;
+    }
+    
     // END: DETERMINING WHETHER OUTFITS CAN BE CHANGED 
     /*******************************************************************************/
 
@@ -648,11 +656,6 @@ public class EquippableOutfits
     public double getStoppedResistanceWithOutfits()
     {
         return resistanceWithOutfitResistance(getStats().getStoppedResistance(), "Stopped");
-    }
-
-    public double getNullifyPositiveEffectsResistanceWithOutfits()
-    {
-        return resistanceWithOutfitResistance(getStats().getNullifyPositiveEffectsResistance(), "Nullify Positive Effects");
     }
     
     // TURN BEHAVIOR STATUS EFFECTS 

@@ -461,14 +461,9 @@ public class Battle
     // START: APPLYING START/END OF TURN EFFECTS BY CHARACTER
     /*******************************************************************************/
 
-    public void reduceStressIfNotDamaged(GenericCharacter character)
+    public void resetDamagedIfDamaged(GenericCharacter character)
     {
-        if(!character.getGeneralFeatures().damaged())
-        {
-            character.getStress().setCurrentStress(character.getStress().getCurrentStress() 
-                - (character.getStress().getMaxStress() / 6));
-        }
-        else
+        if(character.getGeneralFeatures().damaged())
         {
             character.getGeneralFeatures().damaged(false);
         }
@@ -478,7 +473,7 @@ public class Battle
     {
         if(character != null && !character.getGeneralFeatures().knockedOut())
         {
-            reduceStressIfNotDamaged(character);
+            resetDamagedIfDamaged(character);
             character.getStatusEffectContainer().decrementStartOfTurnStatusEffectTurns();
             character.getStatusEffectContainer().removeStatusEffectIfZeroTurns();
         }

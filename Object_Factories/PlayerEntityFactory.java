@@ -14,11 +14,13 @@ public class PlayerEntityFactory
         GenericCharacterFactory characterOne = new GenericCharacterFactory();
         GenericCharacter charOne = characterOne.getExampleCharacter();
         charOne.getGeneralFeatures().setName("dv");
+            charOne.getStats().setFireResistance(10);
             playerEntity.getParty().addToParty(charOne);
         
         GenericCharacterFactory characterTwo = new GenericCharacterFactory();
         GenericCharacter charTwo = characterTwo.getExampleCharacter();
         charTwo.getGeneralFeatures().setName("ppp dwwd");
+            charOne.getStats().setFireResistance(100);
             playerEntity.getParty().addToParty(charTwo);
         
         GenericCharacterFactory characterThree = new GenericCharacterFactory();
