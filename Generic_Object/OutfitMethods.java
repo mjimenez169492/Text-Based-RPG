@@ -1309,6 +1309,16 @@ public class OutfitMethods extends GenericObject
                 return allTotalAttributes;
     }
     
+    public Object[] getAllTotalAttributesWithNames()
+    {
+        Object[] allTotalAttributes = {"Max Health", getTotalMaxHealth(), "Max Stamina", 
+            getTotalMaxStamina(), "Max Nano", getTotalMaxNano(), "Attack", getTotalAttack(), 
+            "Defense", getTotalDefense(), "Dexterity", getTotalDexterity(), "Critical", 
+            getTotalCritical(), "Accuracy", getTotalAccuracy(), "Nano Attack", getTotalNanoAttack(), 
+            "Nano Defense", getTotalNanoDefense()};
+                return allTotalAttributes;
+    }
+    
     // START: WEAPON ENCHANTMENT
     /*******************************************************************************/
 }
