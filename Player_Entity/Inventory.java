@@ -178,6 +178,78 @@ public class Inventory
 
     
     
+    // START: COUNTING OBJECT GROUPS AND MAX SIZE ALLOWED USING OBJECT CLASS
+    /*******************************************************************************/
+    
+    // finds position from 1 to inventory.size() of object group using key comparison
+    public int objectGroupPosition(GenericObject object)
+    {
+        // start counting from first inventory entry if inventory is not empty 
+        int counter = 1;
+
+        // enchanced for loop loops through contents of inventory
+        for(Map.Entry<GenericObject, ArrayList<GenericObject>> entry : inventory.entrySet()) 
+        {
+            // break loop once object matches key in LinkedHashMap and return its position
+            if(object.equals(entry.getKey()))
+            {
+                break;
+            }
+            
+            counter++;
+        }
+        
+        return counter;
+    }
+    
+    // Note: counter for counting objects of a certain class starts from 0 in case
+    //       inventory is empty 
+    
+    public int getTotalObjectsForClass(Class<? extends GenericObject> objectClass)
+    {
+        int counter = 0;
+        
+        for(Map.Entry<GenericObject, ArrayList<GenericObject>> entry : inventory.entrySet()) 
+        {
+            if(entry.getKey().getClass() == objectClass)
+            {
+                counter++;
+            }
+        }
+        
+        return counter;
+    }
+    
+    public int getTotalNumberOfItemObjects()
+    {
+        return getTotalObjectsForClass(Item.class);
+    }
+    
+    public int getTotalNumberOfCoreObjects()
+    {
+        return getTotalObjectsForClass(Core.class);
+    }
+    
+    public int getTotalNumberOfWeaponObjects()
+    {
+        return getTotalObjectsForClass(Weapon.class);
+    }
+    
+    public int getTotalNumberOfArmorObjects()
+    {
+        return getTotalObjectsForClass(Armor.class);
+    }
+    
+    public int getTotalNumberOfAccessoryObjects()
+    {
+        return getTotalObjectsForClass(Accessory.class);
+    }
+    
+    // END: COUNTING OBJECT GROUPS AND MAX SIZE ALLOWED USING OBJECT CLASS
+    /*******************************************************************************/
+
+    
+    
     // START: DETERMINE IF OBJECT CAN BE ADDED TO INVENTORY BEFORE ADDING IT 
     /*******************************************************************************/
     
@@ -536,26 +608,6 @@ public class Inventory
         }
     }
 
-    // count position of object group in inventory from position 1
-    public int objectGroupPosition(GenericObject object)
-    {
-        int counter = 1;
-        
-        for(Map.Entry<GenericObject, ArrayList<GenericObject>> entry : inventory.entrySet())
-        {
-            if(object.equals(entry.getKey()))
-            {
-                break;
-            }
-            else
-            {
-                counter++;
-            }
-        }
-        
-        return counter;
-    }
-    
     // END: CUSTOMIZE OBJECT PLACEMENT BY SWAPPING TWO ENTRY SETS AT A TIME 
     /********************************************************************************/
     
