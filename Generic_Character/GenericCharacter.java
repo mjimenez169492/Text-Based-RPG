@@ -17,8 +17,6 @@ public class GenericCharacter
     
     TotalStats totalStats = new TotalStats(statusEffectContainer, equippableOutfits);
     
-    RetrieveResistances retrieveResistances = new RetrieveResistances(totalStats);
-    
     MoveImmunity moveImmunity = new MoveImmunity();
     
     SkillsForSkillPoints skillsForSkillPoints = new SkillsForSkillPoints();
@@ -26,8 +24,6 @@ public class GenericCharacter
     Moveset moveset = new Moveset(equippableOutfits.getWeapon(), statusEffectContainer);
     
     OppositionMethods oppositionMethods = new OppositionMethods();
-    
-    CharacterReactionsInBattle characterReactionsInBattle = new CharacterReactionsInBattle();
     
     GeneralFeatures generalFeatures = new GeneralFeatures(totalStats);
 
@@ -66,11 +62,6 @@ public class GenericCharacter
         return totalStats;
     }
     
-    public RetrieveResistances getRetrieveResistances()
-    {
-        return retrieveResistances;
-    }
-    
     public MoveImmunity getMoveImmunity()
     {
         return moveImmunity;
@@ -89,11 +80,6 @@ public class GenericCharacter
     public OppositionMethods getOppositionMethods()
     {
         return oppositionMethods;
-    }
-    
-    public CharacterReactionsInBattle getCharacterReactionsInBattle()
-    {
-        return characterReactionsInBattle;
     }
     
     public GeneralFeatures getGeneralFeatures()
