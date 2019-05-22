@@ -193,11 +193,11 @@ public class ItemsMenu
     private boolean useFrameActive = false;
     
     // buttons and text area used to updated external frame character panel
-    JButton characterName = new JButton();
-    JButton characterHealth = new JButton();
-    JButton characterStamina = new JButton();
-    JButton characterNano = new JButton();
-    JTextArea characterStatusEffects = new JTextArea();
+    private JButton characterName = new JButton();
+    private JButton characterHealth = new JButton();
+    private JButton characterStamina = new JButton();
+    private JButton characterNano = new JButton();
+    private JTextArea characterStatusEffects = new JTextArea();
     
     
     
