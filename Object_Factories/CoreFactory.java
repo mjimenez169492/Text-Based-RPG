@@ -8,9 +8,9 @@ public class CoreFactory
     {
         Core core = new Core();
         
-        core.setName("Training Gloves");
+        core.setName("Core");
         core.setBriefDescription("A tiny pair of boxing gloves. A nice gift");
-        core.setMainClass("Accessory");
+        core.setMainClass("Core");
         core.setCoreCategory("Standard");
         core.setCoreSuperType("Attribute");
         core.setCoreSubType("Attack");
