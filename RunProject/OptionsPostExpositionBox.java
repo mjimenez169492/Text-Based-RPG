@@ -178,7 +178,7 @@ public class OptionsPostExpositionBox extends CommonGUIMethods
     /*******************************************************************************/
 
     // TESTING STUFF 
-    
+    /*
     // Note: exposition arrayList passed should be same as one passed to ExpositionBox
     public ArrayList<String> testArrayList()
     {
@@ -220,7 +220,7 @@ public class OptionsPostExpositionBox extends CommonGUIMethods
 
         return example;
     }
-    
+    */
     // TESTING STUFF
     
     
@@ -237,7 +237,7 @@ public class OptionsPostExpositionBox extends CommonGUIMethods
             builder.append(". ");
         
         // attempt to add text to builder by appending it to the end 
-        if(text.length() <= characterLimit)
+        if(text.length() < characterLimit)
         {
             builder.append(text);
         }

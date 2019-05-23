@@ -352,7 +352,7 @@ public class ExpositionBox extends CommonGUIMethods
             
             // if length of StringBuilder object and word to be added does not
             // exceed character limit then append word to StringBuilder 
-            if((fragment.toString().length() + element.length()) <= characterLimit)
+            if((fragment.toString().length() + element.length()) < characterLimit)
             {
                 fragment.append(element).append(" "); 
             }
@@ -867,7 +867,8 @@ public class ExpositionBox extends CommonGUIMethods
        }
     }
     
-    // need this to enable proper mouse wheel scheme for alt nav 
+    // need this to enable proper mouse wheel scheme for alt nav so mouse
+    // wheel can be used to move around if mouse is in/out of frame
     public void allowMouseWheelAltNav(MouseHandler handler)
     {
         frame.addMouseWheelListener(handler);

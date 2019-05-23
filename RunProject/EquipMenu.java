@@ -2,122 +2,47 @@ package RunProject;
 
 import Player_Entity.PlayerEntity;
 import Generic_Character.GenericCharacter;
-import Battle_Feature.LevelMechanics;
 import Commonly_Used_Methods.StaticMethods;
-import Object_Factories.PlayerEntityFactory;
-import Player_Entity.PartyWallet;
-import Move_Creation.StatusEffect;
 import Generic_Object.GenericObject;
 import Player_Entity.Inventory;
-import Generic_Character.*;
 import Generic_Object.OutfitMethods;
 import Generic_Object.*;
 
-import java.awt.event.ActionListener; 
-import java.awt.event.ActionEvent; 
-import javax.swing.Box; 
-import javax.swing.JFrame; 
-import javax.swing.JTextArea;
-import javax.swing.JButton;
-import javax.swing.JScrollPane;
-import java.awt.*;
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.JTextArea;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.SwingConstants;
+import java.awt.Rectangle;
+import java.awt.event.MouseAdapter;
 
-import java.awt.Component;
 import java.awt.GridBagLayout;
-
-import java.awt.*;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.border.EmptyBorder;
-import javax.swing.text.DefaultCaret;
-import javax.swing.JFrame;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.text.AbstractDocument;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DocumentFilter;
-import java.awt.Point; 
-import java.awt.Graphics;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter; 
 import java.util.ArrayList;
-import javax.swing.JPanel; 
-import java.util.ArrayList;
-import java.awt.Toolkit;
-import java.awt.Dimension;
 import java.util.Map;
-import java.util.LinkedHashMap;
-import java.util.HashMap;
-import java.util.Map;
-import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
-import javax.swing.DefaultListSelectionModel;
-import javax.swing.JButton;
-import javax.swing.JFrame;
+import javax.swing.DefaultListModel;
+import javax.swing.SwingUtilities;
+import java.awt.GridBagConstraints;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Insets;
 import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
-import javax.swing.AbstractAction;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JRadioButtonMenuItem;
-import javax.swing.ButtonGroup;
-import javax.swing.JMenuBar;
-import javax.swing.KeyStroke;
-import javax.swing.ImageIcon;
-
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.JScrollPane;
-import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JRadioButtonMenuItem;
-import javax.swing.ButtonGroup;
-import javax.swing.JMenuBar;
-import javax.swing.KeyStroke;
-import javax.swing.ImageIcon;
-
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.JScrollPane;
-import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JRadioButtonMenuItem;
-import javax.swing.ButtonGroup;
-import javax.swing.JMenuBar;
-import javax.swing.KeyStroke;
-import javax.swing.ImageIcon;
-
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
 import javax.swing.JScrollPane;
 import javax.swing.JFrame;
 import javax.swing.JPopupMenu;
-import javax.swing.JInternalFrame;
 
-public class EquipMenu 
+public class EquipMenu extends CommonGUIMethods
 {
+    // frame meant to store components in a desired layout 
+    private JFrame frame = new JFrame("Capstone RPG");
+
+    // store JFrame that originally called frame of this class to return to it later 
+    private JFrame callingFrame = new JFrame();
+    
     // stores reference to inventory of player for easy access 
     private Inventory referenceInventory;
     
@@ -131,28 +56,26 @@ public class EquipMenu
     private Font buttonFont = new Font(Font.MONOSPACED, Font.PLAIN, 14);
     private Font JListFont = new Font(Font.MONOSPACED, Font.PLAIN, 12);
     
+    // vertical padding in pixels for given components 
     private int buttonVerticalPadding = 55;
-    
     private int jListVerticalPadding = 240;
     
+    // button allowing player to return to main menu 
     private JButton mainMenu;
     
-    private JButton outfitOverview, outfitDescription, actionTakenText;
+    // buttons providing some information about outfit selected 
+    private JButton outfitOverview, outfitDescription;
     
-    
-    
+    // JLists used to present players with different aspects related to outfit equip 
     private JList partyMemberJList, canChangeOutfits, currentNewTotalStatsJList, 
-        inventoryObjectsJList;
+        inventoryOutfitsJList;
     
-    
-    
-    
+    // buttons denoting currently equipped outfits 
     private JButton equippedWeapon, equippedAccessoryOne, equippedAccessoryTwo,
         equippedBodyArmor, equippedLegArmor, equippedFootArmor;
 
+    // stores reference to button which has outfit player wishes to change or view 
     private JButton equippedOutfitReference;
-    
-    
     
     // buttons and text area used to updated external frame character panel
     private JButton characterName = new JButton();
@@ -160,11 +83,13 @@ public class EquipMenu
     private JButton characterStamina = new JButton();
     private JButton characterNano = new JButton();
     
-    
+    // external frame used to present outfit equip or view functions 
     private JFrame externalFrame = new JFrame();
     
+    // denotes whether a certain external frame layout is active or not 
     private boolean viewFrameActive, equipFrameActive;
     
+    // buttons used in external frame to present some outfit information to player 
     private JButton externalOutfitName = new JButton();
     private JButton externalExperienceMultiplier = new JButton();
     private JButton externalDurabilityInfo = new JButton();
@@ -172,20 +97,23 @@ public class EquipMenu
     
     // button for equip action button
     private JButton externalEquip = new JButton();
-        
+    
+    // external frame JLists present information tied to selected outfit 
     private JList externalOutfitNamesJList = new JList();
     private JList externalEquippedCores = new JList();
     private JList externalOutfitStats = new JList();
     
-    // upon selecting equip 
+    // store character in focus for equip function so equip affects that character only 
     private GenericCharacter characterForOutfitEquip;
     
     // Note: outfit in focus can only be an equipped outfit 
     private OutfitMethods outfitTiedToOutfitButton;
     
+    // popup menus that appear upon selecting certain components 
     private JPopupMenu inventoryOutfitsJPopupMenu = new JPopupMenu(); 
-    private JPopupMenu equippedOutfitsJPopupMenu = new JPopupMenu();
-    
+    private JPopupMenu alterableEquippedOutfitsJPopupMenu = new JPopupMenu();
+    private JPopupMenu unalterableEquippedOutfitsJPopupMenu = new JPopupMenu();
+
     
     
     // START: ADDING BUTTON COMPONENTS TO FRAME
@@ -205,12 +133,10 @@ public class EquipMenu
         // column of specified row position
         gridBagConstraints.gridx = gridx;
         
-        // specified column length component takes up (1/10 of frame if no 
-        // other components are in the way)
+        // specified column length component takes up 
         gridBagConstraints.weighty = weighty;
         
-        // specified row length component takes up (1/10 of frame if no 
-        // other components are in the way)
+        // specified row length component takes up 
         gridBagConstraints.weightx = weightx;
         
         // width of component in given row 
@@ -250,7 +176,6 @@ public class EquipMenu
         addButtonComponent(button, 0, 0, 0.11, 0.33, 1, 0, frame);
     }
     
-    // INCOMPLETE 
     public void addUsableButtons(JFrame frame)
     {
         mainMenu = newUsableButton("Main Menu");
@@ -260,7 +185,12 @@ public class EquipMenu
                     @Override
                     public void actionPerformed(ActionEvent e)
                     {
-                        // return to main menu (may need method to hold frame before disposal)
+                        // dispose of Equips Menu frame and external frame
+                        frame.dispose();
+                        externalFrame.dispose();
+
+                        // return focus to frame that orginally called Main Menu 
+                        displayFrameWindow(callingFrame);
                     }
                 }); 
         
@@ -301,10 +231,10 @@ public class EquipMenu
         String partyMemberJListTitle = String.format("%s", "All Party Members");
             addTitleButton(partyMemberJListTitle, 1, 0, 1, frame);
         
-        String partyMemberInfoJPanelTitle = String.format("%s", "Party Member Info");
+        String partyMemberInfoJPanelTitle = String.format("%s", "Party Member & Accessory");
             addTitleButton(partyMemberInfoJPanelTitle, 1, 1, 1, frame);
         
-        String equippedOutfitsButtonTitle = String.format("%s", "All Equipped Outfits");
+        String equippedOutfitsButtonTitle = String.format("%s", "More Equipped Outfits");
             addTitleButton(equippedOutfitsButtonTitle, 1, 2, 1, frame);
         
         String unequipStatesButtonTitle = String.format("%s", "Can Change Outfits");
@@ -344,12 +274,10 @@ public class EquipMenu
         // column of specified row position
         gridBagConstraints.gridx = gridx;
         
-        // specified column length component takes up (1/10 of frame if no 
-        // other components are in the way)
+        // specified column length component takes up 
         gridBagConstraints.weighty = weighty;
         
-        // specified row length component takes up (1/10 of frame if no 
-        // other components are in the way)
+        // specified row length component takes up 
         gridBagConstraints.weightx = weightx;
         
         // width of component in given row 
@@ -425,12 +353,10 @@ public class EquipMenu
         // column of specified row position
         gridBagConstraints.gridx = 0;
         
-        // specified column length component takes up (2/10 of frame if no 
-        // other components are in the way)
+        // specified column length component takes up 
         gridBagConstraints.weighty = 0.10;
         
-        // specified row length component takes up (2/10 of frame if no 
-        // other components are in the way)
+        // specified row length component takes up 
         gridBagConstraints.weightx = 0.10;
         
         gridBagConstraints.gridheight= 2;
@@ -482,12 +408,10 @@ public class EquipMenu
         // column of specified row position
         gridBagConstraints.gridx = 0;
         
-        // specified column length component takes up (2/10 of frame if no 
-        // other components are in the way)
+        // specified column length component takes up 
         gridBagConstraints.weighty = 0.10;
         
-        // specified row length component takes up (2/10 of frame if no 
-        // other components are in the way)
+        // specified row length component takes up 
         gridBagConstraints.weightx = 0.10;
         
         gridBagConstraints.gridheight= 2;
@@ -502,6 +426,36 @@ public class EquipMenu
     
     
     // GET PARTY MEMBER
+    
+    public String trimCharacterName(String name)
+    {
+        // split name into words using white space as delimiter 
+        String[] words = name.split(" ");
+        
+        StringBuilder builder = new StringBuilder();
+        
+        for(int i = 0; i < words.length; i++)
+        {
+            // add word if ther is only one word
+            if(words.length == 1)
+            {
+                builder.append(words[i]);
+            }
+            // add word since last word so no space after 
+            else if(i < words.length - 1)
+            {
+                builder.append(words[i]);
+            }
+            // add space between words for proper name structure
+            else
+            {
+                builder.append(words[i]);
+                    builder.append(" ");
+            }
+        }
+        
+        return builder.toString();
+    }
     
     public GenericCharacter getPartyMember(Object JListPartyMemberName)
     {
@@ -520,93 +474,11 @@ public class EquipMenu
         return character;
     }
     
-    public String trimCharacterName(String name)
-    {
-        String[] words = name.split(" ");
-        
-        StringBuilder builder = new StringBuilder();
-        
-        for(int i = 0; i < words.length; i++)
-        {
-            if(words.length == 1)
-            {
-                builder.append(words[i]);
-            }
-            else if(i < words.length - 1)
-            {
-                // add word since last word so no space after 
-                builder.append(words[i]);
-            }
-            else
-            {
-                builder.append(words[i]);
-                    builder.append(" ");
-            }
-        }
-        
-        return builder.toString();
-    }
-    
     // GET PARTY MEMBER
     
     
     
     // UPDATE CHARACTER AND EQUIPPED OUTFIT INFO FOR FRAME USING JLIST VALUE
-    
-    public String desiredSpaces(int spaces)
-    {
-        StringBuilder builder = new StringBuilder();
-        
-        for(int i = 0; i < spaces; i++)
-        {
-            builder.append(" ");
-        }
-        
-        return builder.toString();
-    }
-    
-    public String formatCurrentMaxValues(double currentValue, double maximumValue)
-    {
-        String curValue = String.valueOf(currentValue);
-        
-        String maxValue = String.valueOf(maximumValue);
-        
-        StringBuilder builder = new StringBuilder();
-        
-        // spaces are used to make current value Strings appear alligned 
-        if(currentValue < 10)
-        {
-            builder.append(desiredSpaces(3));
-        }
-        else if(currentValue < 100)
-        {
-            builder.append(desiredSpaces(2));
-        }
-        else if(currentValue < 1000)
-        {
-            builder.append(desiredSpaces(1));
-        }
-        
-        builder.append(curValue).append(" / ");
-        
-        // spaces are used to make max value Strings appear alligned 
-        if(maximumValue < 10)
-        {
-            builder.append(desiredSpaces(3));
-        }
-        else if(maximumValue < 100)
-        {
-            builder.append(desiredSpaces(2));
-        }
-        else if(maximumValue < 1000)
-        {
-            builder.append(desiredSpaces(1));
-        }
-        
-        builder.append(maxValue);
-        
-        return builder.toString();
-    }
     
     public void updateCharacterInfo(GenericCharacter character)
     {
@@ -615,17 +487,17 @@ public class EquipMenu
             characterName.setText(formatName);
         
         // add Health Points (HP) and current/max points 
-        String health = String.format("%-6s: %s", "HP", formatCurrentMaxValues(character.
+        String health = String.format("%-6s: %s", "HP", formatCurrentMaxGauges(character.
             getGeneralFeatures().getCurrentHealth(), character.getTotalStats().getTotalMaxHealth()));
                 characterHealth.setText(health);
 
         // add Stamina Points (SP) and current/max points 
-        String stamina = String.format("%-6s: %s", "SP", formatCurrentMaxValues(character.
+        String stamina = String.format("%-6s: %s", "SP", formatCurrentMaxGauges(character.
             getGeneralFeatures().getCurrentStamina(), character.getTotalStats().getTotalMaxStamina()));
                 characterStamina.setText(stamina);
            
         // add Nanomachine Points (NP) and current/max points
-        String nano = String.format("%-6s: %s", "NP", formatCurrentMaxValues(character.
+        String nano = String.format("%-6s: %s", "NP", formatCurrentMaxGauges(character.
             getGeneralFeatures().getCurrentNano(), character.getTotalStats().getTotalMaxNano()));
                 characterNano.setText(nano);
     }
@@ -652,7 +524,7 @@ public class EquipMenu
         addButtonComponent(button, gridy, gridx, 0.11, 0.33, 1, gridwidth, frame);
     }
     
-    // Note: 14 characters oer name!!!
+    // Note: 14 characters per outfit name due to space limitations 
     public void addEquippedOutfitsButtons(JFrame frame)
     {
         equippedWeapon = newUnusableStandardButton("WPN: 12345678901234");
@@ -712,7 +584,7 @@ public class EquipMenu
     }
 
     // update character buttons and stat JLists using selected value 
-    public void addCharacterJListUpdatePopupListener(JList jList)
+    public void addPartyMemberJListUpdateInformation(JList jList)
     {
         jList.addListSelectionListener(
             new ListSelectionListener() 
@@ -725,18 +597,18 @@ public class EquipMenu
                     {
                         GenericCharacter partyMember = getPartyMember(jList.getSelectedValue());
 
+                        // update JLists and buttons using character in focus 
                         updateCharacterInfo(partyMember);
                         updateEquippedOutfitsButtons(partyMember);
-
                         canChangeOutfits.setModel(canChangeOutfitsInJListFormat(partyMember));
 
                         // update new total stats JList using character in focus 
                         // to prevent info from previous character being shown 
-                        if(inventoryObjectsJList.getSelectedValue() != null)
+                        if(inventoryOutfitsJList.getSelectedValue() != null)
                         {
                             currentNewTotalStatsJList.setModel(currentNewTotalStatsModelWithOutfit(
                                 partyMember, getInventoryOutfit(referenceInventory, 
-                                inventoryObjectsJList.getSelectedValue())));
+                                inventoryOutfitsJList.getSelectedValue())));
                         }
                         else
                         {
@@ -767,10 +639,7 @@ public class EquipMenu
         
         button.setForeground(Color.WHITE);
         
-        // set button font 
         button.setFont(buttonFont);
-        
-        //textResizesUponButtonResize(button);
         
         return button;
     }
@@ -805,7 +674,6 @@ public class EquipMenu
         frame.add(button, gridBagConstraints);
     }
     
-    // DEFAULT values for new buttons meant to be placed in panel 
     public void addCharacterInfoButtons(JFrame frame)
     {
         characterName = unusableCharacterFrameButtons();
@@ -954,22 +822,23 @@ public class EquipMenu
     public void displayInventoryOutfitsAsJList(Inventory inventory, JFrame frame)
     {
         // fill JList with contents of DefaultListModel<String> object
-        inventoryObjectsJList = new JList<>(inventoryOutfitsInJListFormat(inventory));
+        inventoryOutfitsJList = new JList<>(inventoryOutfitsInJListFormat(inventory));
         
         // make JList use monospaced font so all characters have the same width
-        inventoryObjectsJList.setFont(JListFont);
+        inventoryOutfitsJList.setFont(JListFont);
         
         // do not allow for multiple selection (i.e. selecting more than 1 row)
-        inventoryObjectsJList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); 
+        inventoryOutfitsJList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); 
         
         // add JScrollPane to frame to enable vertical scrolling for JList  
-        JScrollPane inventoryScroll = new JScrollPane(inventoryObjectsJList, 
+        JScrollPane inventoryScroll = new JScrollPane(inventoryOutfitsJList, 
             JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
             JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         
         addInventoryJList(inventoryScroll, frame);
     }
     
+    // only objects that can equipped are considered valid 
     public boolean validOutfit(GenericObject object)
     {
         boolean result = false;
@@ -1179,6 +1048,7 @@ public class EquipMenu
     public double newValueWithSelectedOutfit(StatType statType, int loopCount, 
         OutfitMethods selectedOutfit, GenericCharacter character)
     {
+        // attempt to store outfit specified by selected outfit if it exists 
         OutfitMethods equippedOutfit = getEquippedOutfitUsingSelectedOutfit(selectedOutfit, 
             character);
         
@@ -1432,7 +1302,7 @@ public class EquipMenu
     }
     
     // NEW CURRENT NEW TOTAL STATS MODEL USING CHARACTER, OUTFIT (AND ARMOR) 
-
+    
     
     
     // RETRIEVING OUTFITS AND UPDATING NEW TOTAL STATS JLIST 
@@ -1465,7 +1335,6 @@ public class EquipMenu
     public void resetOutfitOverviewAndDescription()
     {
         outfitOverview.setText("Overview:");
-        
         outfitDescription.setText("Description:");
     }
     
@@ -1552,52 +1421,12 @@ public class EquipMenu
     
     // END: UPDATING OBJECT DESCRIPTION AND DETAILS USING JLIST
     /*******************************************************************************/
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     
     
     
     // START: VIEW AND EQUIP ACTIONLISTENERS FOR POPUPMENU OPTIONS 
     /*******************************************************************************/
 
-    // SELECTED OBJECT JLIST WITH JSCROLLPANE FUNCTIONALITY
-    
-    /* idea
-        find objectin treemap inventory and get its VALUE (ArrayList<GenericObject>)
-        for loop through ArrayList retreived (0 to n)
-        info displayed:
-            Buttons (col 2)
-                name
-                cur/max durability
-                number of filled slots / number of slots
-            JLists 
-                outfits displayed via JList (col 1)
-                equipped core types with core info (size and tier ONLY) (col 3)
-                stats (col 4)
-                    Weapon, Accessory 
-                        Attributes JList
-                    Armor
-                        Attributes JList, 
-                        Enchantment Resistance JList, 
-                        Status Effect Resistance JList
-    */
-    
     // METHODS FOR ADDING COMPONENTS TO EXTERNAL FRAME 
     
     public void addJListToExternalFrame(JList jList, int gridx, JFrame externalFrame)
@@ -1632,6 +1461,11 @@ public class EquipMenu
         // specified row length component takes up (2/10 of frame if no 
         // other components are in the way)
         gridBagConstraints.weightx = 0.25;
+        
+// padding is wrong!
+        // vertical and horizontal padding in pixels 
+        gridBagConstraints.ipady = 50;
+        gridBagConstraints.ipadx = 230;
         
         // height is 4 column 
         gridBagConstraints.gridheight = 4;
@@ -1694,6 +1528,7 @@ public class EquipMenu
         externalFrame.add(button, gridBagConstraints);
     }
     
+    // unused for external frame size constraints 
     public void addOutfitInfoButtonsToExternalFrame(int gridx, JFrame externalFrame)
     {
         addButtonToExternalFrame(externalOutfitName, 0, gridx, externalFrame);
@@ -1735,13 +1570,14 @@ public class EquipMenu
         String location = null;
         
         // different ways to retrieve location based on weapon, armor, or accessory 
-        if(outfit.getClass() == Weapon.class || outfit.getClass() == Accessory.class)
+        if(outfit.getClass() == Weapon.class)
         {
-            // Note: differs from Armor objects since Weapon/Accessory objects are 
-            //       created according to a different naming scheme 
+            // Note: differs from Armor/Accessory objects since Weapon objects are 
+            //       created using a different cetegorization scheme 
             location = outfit.getMainClassString();
         }
-        // account for armor which can be placed on body, legs, or feet
+        // account for Armor which can be placed on body, legs, or feet and
+        // Accessory which can be placed in slot one or slot two of character 
         else
         {
             location = outfit.getCategory();
@@ -1887,11 +1723,10 @@ public class EquipMenu
         
         referenceInventory.removeObject(jListOutfit);
                                 
-        inventoryObjectsJList.setModel(inventoryOutfitsInJListFormat
+        inventoryOutfitsJList.setModel(inventoryOutfitsInJListFormat
             (referenceInventory));
 
-        shiftToNextExistingObject(inventoryObjectsJList, 
-            jListOutfitPosition);
+        shiftToNextExistingObject(inventoryOutfitsJList, jListOutfitPosition);
     }
     
     public void addEquipActionListener(JButton button, JList outfitArrayListJList,
@@ -1903,51 +1738,60 @@ public class EquipMenu
                 @Override
                 public void actionPerformed(ActionEvent e)
                 {
+                    // get selected outfit from list of outfits displayed in JList of
+                    // external frame based on its position within JList
                     OutfitMethods jListOutfit = (OutfitMethods)outfitArrayList().get(
                         positionOfOutfitInJList(externalOutfitNamesJList, (String)
                         externalOutfitNamesJList.getSelectedValue()));
                     
-                    // proceed if outfit can be placed at character's outfit location
-                    if(canEquipOutfitAtLocation(outfitLocation(jListOutfit), characterForOutfitEquip))
+                    // store equipped outfit at specified location of character if it exists 
+                    OutfitMethods equippedOutfit = getOutfitAtLocation(outfitLocation(
+                        jListOutfit), characterForOutfitEquip);
+
+                    // store last position of outfit selected for equip 
+                    int jListOutfitPosition = positionOfOutfitInJList(inventoryOutfitsJList, 
+                        jListOutfit.getName());
+
+                    // if location that outfit must be equipped at has an outfit in
+                    // place, then attempt to "swap" it with equipped outfit 
+                    if(equippedOutfit != null)
                     {
-                        OutfitMethods equippedOutfit = getOutfitAtLocation(outfitLocation(
-                            jListOutfit), characterForOutfitEquip);
-                        
-                        int jListOutfitPosition = positionOfOutfitInJList(inventoryObjectsJList, 
-                            jListOutfit.getName());
-                        
-                        // if location that outfit must be equipped at has an outfit in
-                        // place, then attempt to "swap" it with equipped outfit 
-                        if(equippedOutfit != null)
+                        // proceed if inventory can hold instance of equipped outfit 
+                        if(referenceInventory.canAddObject(equippedOutfit))
                         {
-                            // proceed if inventory can hold instance of equipped outfit 
-                            if(referenceInventory.canAddObject(equippedOutfit))
-                            {
-                                removeEquippedOutfit(outfitLocation(equippedOutfit), 
-                                    characterForOutfitEquip);
-                                
-                                equipOutfitAtLocation(outfitLocation(jListOutfit), 
-                                    jListOutfit, characterForOutfitEquip);
-                                
-                                referenceInventory.addObject(equippedOutfit);
-                                
-                                outfitRemovalAndInventoryJListReload(jListOutfitPosition, 
-                                    jListOutfit);
-                            }
-                        }
-                        // else equip outfit to character at appropriate location 
-                        else
-                        {
+                            // remove equipped outfit from character 
+                            removeEquippedOutfit(outfitLocation(equippedOutfit), 
+                                characterForOutfitEquip);
+
+                            // add outfit selected for equip to character 
                             equipOutfitAtLocation(outfitLocation(jListOutfit), 
                                 jListOutfit, characterForOutfitEquip);
-                            
+
+                            // add previously equipped outfit into inventory 
+                            referenceInventory.addObject(equippedOutfit);
+
+                            // account for removing object selected for equip from
+                            // inventory and reload appropriate JLists 
                             outfitRemovalAndInventoryJListReload(jListOutfitPosition, 
                                 jListOutfit);
                         }
-                        
-                        externalFrame.dispose();
                     }
+                    // else equip outfit to character at appropriate location 
+                    else
+                    {
+                        // add outfit selected for equip to character 
+                        equipOutfitAtLocation(outfitLocation(jListOutfit), 
+                            jListOutfit, characterForOutfitEquip);
+
+                        // account for removing object selected for equip from
+                        // inventory and reload appropriate JLists 
+                        outfitRemovalAndInventoryJListReload(jListOutfitPosition, 
+                            jListOutfit);
+                    }
+
+                    externalFrame.dispose();
                 }
+                
             }
         );
         
@@ -1995,14 +1839,15 @@ public class EquipMenu
 
     
     
-    // INITIALIZING EXTERNL FRAME COMPONENTS
+    // INITIALIZING EXTERNAL FRAME COMPONENTS
     
+    // gets ArrayList of outfit objects for inventory object in focus 
     public ArrayList<GenericObject> outfitArrayList()
     {
         ArrayList<GenericObject> outfitArrayList = new ArrayList<>();
         
         GenericObject outfit = getInventoryOutfit(referenceInventory, 
-            inventoryObjectsJList.getSelectedValue());
+            inventoryOutfitsJList.getSelectedValue());
         
         for(Map.Entry<GenericObject, ArrayList<GenericObject>> entry : referenceInventory.
             getInventory().entrySet())
@@ -2017,7 +1862,7 @@ public class EquipMenu
         return outfitArrayList;
     }
 
-    public DefaultListModel<String> equipFrameOutfitModel(ArrayList<GenericObject> arrayList)
+    public DefaultListModel<String> equipFrameOutfitNamesJListModel(ArrayList<GenericObject> arrayList)
     {
         DefaultListModel<String> outfits = new DefaultListModel<>();
         
@@ -2029,7 +1874,6 @@ public class EquipMenu
         return outfits;
     }
     
-    // Note: if 1 outfit, supply outfit immediately in external frame set up 
     public void updateExternalButtonsForOutfitInFocus(OutfitMethods outfit)
     {
         String formattedName = String.format("%-26s", outfit.getName());
@@ -2053,7 +1897,8 @@ public class EquipMenu
     public String coreInformationFormat(int counter, Core core)
     {
         String coreFormat = String.format("%d Core -> Type:%-14s\tSize: %-12s\t Tier: %-6s",
-            counter, core.getCoreType(), core.getCoreSizeString(), core.getCoreTierString());
+            counter, core.getCoreType(), core.getCoreSizeString(), core.getCoreTierString().
+            charAt(core.getCoreTierString().length() - 1));
         
         return coreFormat;
     }
@@ -2194,10 +2039,10 @@ public class EquipMenu
                         if(!evt.getValueIsAdjusting())
                         {
                             // proceed if there is focus in external JList 
-                            if(inventoryObjectsJList.getSelectedValue() != null)
+                            if(inventoryOutfitsJList.getSelectedValue() != null)
                             {
                                 // add listener for externalOutfitNamesJList that updates 
-                                // button info equipped cores, and outfit stats 
+                                // button info, equipped cores, and outfit stats 
                                 OutfitMethods outfit = (OutfitMethods)outfitArrayList().get(
                                     positionOfOutfitInJList(jList, (String)jList.getSelectedValue()));
 
@@ -2217,6 +2062,9 @@ public class EquipMenu
     // OUTFIT ARRAYLIST JLIST LISTENER FOR UPDATING EXTERNAL FRAME INFO 
     
     
+    
+    // EXTERNAL FRAME COMPONENT LAYOUT BASED ON DESIRED EXTERNAL FRAME 
+    
     // boolean instance variables viewFrameActive and equipFrameActive determine
     // how external frame is set up as well as functionality it provides 
     public void externalFrameByBoolean(JFrame externalFrame)
@@ -2224,19 +2072,18 @@ public class EquipMenu
         // if concerns view frame suited only for equipped outfits  
         if(viewFrameActive)
         {
-            // initialize components 
-            
-                // NEED TO DETERMINE OUTFIT FROM OUTFIT BUTTON!!!
+            // update external frame components using selected outfit before they are added 
             updateExternalButtonsForOutfitInFocus(outfitTiedToOutfitButton);
             externalEquippedCores.setModel(equipFrameEquippedCoresModel(outfitTiedToOutfitButton));
             externalOutfitStats.setModel(outfitStatsModel(outfitTiedToOutfitButton));
             
-            // components: col 0 -> info buttons, col 1 -> equipped cores, 
-            //             col 2 -> all outfit stats 
-            addOutfitInfoButtonsToExternalFrame(0, externalFrame);
-            addJListToExternalFrame(externalEquippedCores, 1, externalFrame);
-            addJListToExternalFrame(externalOutfitStats, 2, externalFrame);
+            // components: col 0 -> equipped cores, col 1 -> all outfit stats
+            addJListToExternalFrame(externalEquippedCores, 0, externalFrame);
+            addJListToExternalFrame(externalOutfitStats, 1, externalFrame);
             
+            // default selection is first element which prevents null from being
+            // passed when "equip" button is pressed immediately after external 
+            // frame creation 
             externalOutfitNamesJList.setSelectedIndex(0);
         }
         else if(equipFrameActive)
@@ -2244,7 +2091,8 @@ public class EquipMenu
             // to avoid "stacking" listeners, preemptively reset externalOutfitNamesJList
             externalOutfitNamesJList = new JList();
             
-            externalOutfitNamesJList.setModel(equipFrameOutfitModel(outfitArrayList()));
+            // update external frame components using selected outfit before they are added 
+            externalOutfitNamesJList.setModel(equipFrameOutfitNamesJListModel(outfitArrayList()));
             externalOutfitStats.setModel(outfitStatsModel((OutfitMethods)outfitArrayList().get(0)));
             
             // display info for first object in outfit ArrayList using buttons 
@@ -2254,24 +2102,85 @@ public class EquipMenu
             // equipped cores, and outfit stats 
             addOutfitArrayListJListUpdateInfoListener(externalOutfitNamesJList, externalFrame);
             
-            // components: col 0 -> outfitArrayList     col 1 -> info buttons, 
-            //             col 2 -> equipped cores,     col 3 -> all outfit stats 
-            //             col 4 -> equip button 
+            // components: col 0 -> outfitArrayList     col 1 -> all outfit stats, 
+            //             col 2 -> equipped cores,     col 3 -> equip button 
             addJListToExternalFrame(externalOutfitNamesJList, 0, externalFrame);
-            addOutfitInfoButtonsToExternalFrame(1, externalFrame);
-            addJListToExternalFrame(externalOutfitStats, 2, externalFrame);
-            addEquipButton(externalOutfitNamesJList, 3, externalFrame);
+            addJListToExternalFrame(externalOutfitStats, 1, externalFrame);
+            addEquipButton(externalOutfitNamesJList, 2, externalFrame);
             
+            // default selection is first element which prevents null from being
+            // passed when "equip" button is pressed immediately after external 
+            // frame creation 
             externalOutfitNamesJList.setSelectedIndex(0);
         }
     }
     
+    // denotes where external frame will appear upon creation 
+    public void externalFrameLocation()
+    {
+        // store character selected to have outfit equipped 
+        characterForOutfitEquip = getPartyMember((String)partyMemberJList.
+            getSelectedValue());
+        
+        // external frame is reset each time option is selected (better than 
+        // creating new JFrames each time option is selected)
+        externalFrame = new JFrame();
+
+        // frame has components set up according to GridBagLayout scheme 
+        externalFrame.getContentPane().setLayout(new GridBagLayout());
+        
+        // use location properties of original frame to position use frame
+        Rectangle bounds = frame.getBounds();
+
+        // calculation makes frame have location starting from bottom left 
+        // of outer frame with y-axis position based on bounds.y multiplier 
+        // (in this case 1.75) and outer multiplier (in this case 0.58); 
+        externalFrame.setLocation(bounds.x, (int)((bounds.y * 1.75 + frame.
+            getHeight()) * 0.58));
+
+        // set up components for external frame so player can use it 
+        externalFrameByBoolean(externalFrame);
+
+        // external frame width equal to width of original frame and while height 
+        // is calculated using original frame height as point of reference 
+        externalFrame.setSize(frame.getWidth(), (int)(0.42 * frame.getHeight()));
+        externalFrame.setVisible(true);
+
+        // Note: externalFrame is NOT set to exit on close since doing so will 
+        //       cause program to terminate early (disposing original frame 
+        //       will dispose of this frame as well (Maybe?))
+    }
+    
+    // EXTERNAL FRAME COMPONENT LAYOUT BASED ON DESIRED EXTERNAL FRAME 
     
     
     
-    
-    
-    
+    // action listener for button denoting equipped outfit which allows outfit
+    // information to be viewed at player's convenience via popup menu 
+    public void addViewActionListener(JMenuItem menuItem)
+    {
+        menuItem.addActionListener(
+            new ActionListener() 
+            {
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    // set other external frame variant to false 
+                    equipFrameActive = false;
+                    
+                    // prevents creation of infinite exteral frames by disposing 
+                    // of external frame if it is active before creating new one
+                    // and reset appropriate boolean indicators 
+                    externalFrame.dispose();
+                    
+                    // indicate frame style that should be active
+                    viewFrameActive = true;
+                    
+                    // set up new external frame according to view/equip boolean 
+                    externalFrameLocation();
+                }
+            }); 
+    }
     
     // update object overview/description and inventory object group count upon equip 
     public void shiftToNextExistingObject(JList inventoryJList, int outfitPositionInJList)
@@ -2312,68 +2221,7 @@ public class EquipMenu
         }
     }
     
-    public void externalFrameLocation()
-    {
-        // store character selected to have outfit equipped 
-        characterForOutfitEquip = getPartyMember((String)partyMemberJList.
-            getSelectedValue());
-        
-        // external frame is reset each time option is selected (better than 
-        // creating new JFrames each time option is selected)
-        externalFrame = new JFrame();
-
-        // frame has components set up according to GridBagLayout scheme 
-        externalFrame.getContentPane().setLayout(new GridBagLayout());
-        
-        // use location properties of original frame to position use frame
-        Rectangle bounds = frame.getBounds();
-
-        // calculation makes frame have location starting from bottom left 
-        // of outer frame with y-axis position based on bounds.y multiplier 
-        // (in this case 1.75) and outer multiplier (in this case 0.58); 
-        externalFrame.setLocation(bounds.x, (int)((bounds.y * 1.75 + frame.
-            getHeight()) * 0.58));
-
-        // set up components for external frame so player can use it 
-        externalFrameByBoolean(externalFrame);
-
-        // external frame width equal to width of original frame and while height 
-        // is calculated using original frame height as point of reference 
-        externalFrame.setSize(frame.getWidth(), (int)(0.42 * frame.getHeight()));
-        externalFrame.setVisible(true);
-
-        // Note: externalFrame is NOT set to exit on close since doing so will 
-        //       cause program to terminate early (disposing original frame 
-        //       will dispose of this frame as well (Maybe?))
-    }
-    
-    // FOR BUTTON THAT DISPLAYS EQUIPPED OUTFITS POPUP MENU  
-    public void addViewActionListener(JMenuItem menuItem)
-    {
-        menuItem.addActionListener(
-            new ActionListener() 
-            {
-                @Override
-                public void actionPerformed(ActionEvent e)
-                {
-                    // set other external frame variant to false 
-                    equipFrameActive = false;
-                    
-                    // prevents creation of infinite exteral frames by disposing 
-                    // of external frame if it is active before creating new one
-                    // and reset appropriate boolean indicators 
-                    externalFrame.dispose();
-                    
-                    // indicate frame style that should be active
-                    viewFrameActive = true;
-                    
-                    // set up new external frame according to view/equip boolean 
-                    externalFrameLocation();
-                }
-            }); 
-    }
-    
-    // FOR INVENTORY JLIST POPUP MENU 
+    // equip action for inventory JList outfit in focus 
     public void addEquipActionListener(JMenuItem menuItem)
     {
         menuItem.addActionListener(
@@ -2394,7 +2242,8 @@ public class EquipMenu
                     equipFrameActive = true;
                     
                     // set up new external frame according to view/equip boolean 
-                    externalFrameLocation();                }
+                    externalFrameLocation();                
+                }
             }); 
     }
     
@@ -2512,10 +2361,13 @@ public class EquipMenu
     
     public void postUnequipTasks()
     {
+        // add outfit tied to button reference to inventory 
         referenceInventory.addObject(getEquippedOutfit());
         
+        // remove outfit equipped at location dictated by button reference
         removeEquippedOutfit();
         
+        // get character in focus to update character information 
         GenericCharacter character = getPartyMember(partyMemberJList.getSelectedValue());
         
         updateCharacterInfo(character);
@@ -2524,14 +2376,15 @@ public class EquipMenu
         
         resetOutfitOverviewAndDescription();
         
-        inventoryObjectsJList.setModel(inventoryOutfitsInJListFormat(referenceInventory));
+        // reload inventory outfits JList after outfit is unequipped from character 
+        inventoryOutfitsJList.setModel(inventoryOutfitsInJListFormat(referenceInventory));
         
         // current stats model for character with current outfits 	
 	currentNewTotalStatsJList.setModel(currentNewTotalStatsModelWithoutOutfit(
             character));
     }
     
-    // FOR BUTTON THAT DISPLAYS EQUIPPED OUTFITS POPUP MENU ONLY 
+    // popup menu option for button displaying an equipped outfit only  
     public void addUnequipActionListener(JMenuItem menuItem)
     {
         menuItem.addActionListener(
@@ -2601,17 +2454,19 @@ public class EquipMenu
     //       refers to same object, last popup menu to add object is the only 
     //       popup menu that will have access to object 
     public void setUpPopupMenusByObject(JPopupMenu inventoryJListJPopupMenu, JPopupMenu
-        equipsJPopupMenu)
+        changeableOutfitJPopupMenu, JPopupMenu unchangeableOutfitJPopupMenu)
     {
         addPopupMenuJMenuItem(inventoryJListJPopupMenu, "Equip", ActionListeners.EQUIP);
         
-        addPopupMenuJMenuItem(equipsJPopupMenu, "View", ActionListeners.VIEW);
-        addPopupMenuJMenuItem(equipsJPopupMenu, "Unequip", ActionListeners.UNEQUIP);
+        addPopupMenuJMenuItem(changeableOutfitJPopupMenu, "View", ActionListeners.VIEW);
+        addPopupMenuJMenuItem(changeableOutfitJPopupMenu, "Unequip", ActionListeners.UNEQUIP);
+        
+        addPopupMenuJMenuItem(unchangeableOutfitJPopupMenu, "View", ActionListeners.VIEW);
     }
     
     // shows a different popup menu filled with choices for object based on its class 
     // upon left clicking JList value with mouse 
-    public void addinventoryOutfitsJListOptionsListener(JList jList, JPopupMenu 
+    public void addInventoryOutfitsJListOptionsListener(JList jList, JPopupMenu 
         inventoryJListJPopupMenu)
     {
         jList.addMouseListener(
@@ -2625,7 +2480,20 @@ public class EquipMenu
                     if (SwingUtilities.isLeftMouseButton(me) && !jList.isSelectionEmpty()
                         && jList.locationToIndex(me.getPoint()) == jList.getSelectedIndex()) 
                     {
-                        inventoryJListJPopupMenu.show(jList, me.getX(), me.getY());
+                        // proceed if selection in JList focus is not null
+                        if(inventoryOutfitsJList.getSelectedValue() != null)
+                        {
+                            OutfitMethods inventoryOutfit = getInventoryOutfit(referenceInventory, 
+                            inventoryOutfitsJList.getSelectedValue());
+                            
+                            // account for whether or not character can change outfit at location 
+                            if(canEquipOutfitAtLocation(outfitLocation(inventoryOutfit), getPartyMember(
+                                partyMemberJList.getSelectedValue())))
+                            {
+                                // popup menu for equip outfit option
+                                inventoryJListJPopupMenu.show(jList, me.getX(), me.getY());
+                            }
+                        }
                     }
                 }
             }
@@ -2658,18 +2526,26 @@ public class EquipMenu
                     // proceed if outfit at location of party member is not null
                     if(outfit != null)
                     {
-                        // state which outfit belongs to button for unequip action
-                        outfitTiedToOutfitButton = outfit;
-                        
-                        // variable stores reference to button of specified outfit
-                        // for unequip choice 
-                        equippedOutfitReference = button;
-                        
                         // update overview and description buttons using outfit
                         updateOutfitOverviewAndDescription(outfit);
                         
-                        // popup menu is displayed on bottom left of butotn 
-                        equippedOutfitsJPopupMenu.show(button, 0, button.getBounds().height);
+                        // state which outfit belongs to button for unequip action
+                        outfitTiedToOutfitButton = outfit;
+
+                        // store reference to button of specified outfit for unequip choice 
+                        equippedOutfitReference = button;
+                        
+                        // account for whether or not character can change outfit at location 
+                        if(canEquipOutfitAtLocation(outfitLocation(outfit), getPartyMember(
+                            partyMemberJList.getSelectedValue())))
+                        {
+                            // popup menu is displayed on bottom left of butotn 
+                            alterableEquippedOutfitsJPopupMenu.show(button, 0, button.getBounds().height);
+                        }
+                        else
+                        {
+                            unalterableEquippedOutfitsJPopupMenu.show(button, 0, button.getBounds().height);
+                        }
                     }
                 }
             });
@@ -2693,84 +2569,78 @@ public class EquipMenu
     /*******************************************************************************/
 
     
-    
-    
-    
-    public void displayFrameWindow()
+
+    // START: CONSTRUCTOR 
+    /*******************************************************************************/
+
+    public EquipMenu(JFrame mainMenuFrame, PlayerEntity entity)
     {
-        frame.pack();
-        frame.setSize(640, 480);
-        frame.setVisible(true);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    }
-    
-    JFrame frame = new JFrame();
-    
-    public EquipMenu()
-    {
+        // store main menu frame to call it later 
+        callingFrame = mainMenuFrame;
+        
+        // set layout frame will use to organize components 
         frame.getContentPane().setLayout(new GridBagLayout());
         
-        // use party entity to store references to player entity and inventory
-        PlayerEntityFactory entity = new PlayerEntityFactory();
-            referencePlayerEntity = entity.getPlayerEntityExample();
-                referenceInventory = entity.getPlayerEntityExample().getInventory();
+        // use variables to store references to player entity and inventory
+        referencePlayerEntity = entity;
+        referenceInventory = entity.getInventory();
         
+        // adding components to frame 
         addUsableButtons(frame);
         
         addUnusableTopTitles(frame);
         
-        // store party members as values for character displaying JList
+        // store party members names in party member JList and add it to frame 
         partyMemberJList = new JList(partyMembersInJListFormat(referencePlayerEntity));
-        
-        // add party member JList to frame
         addPartyMemberJList(partyMemberJList, frame);
         
+        // store outfit change states for party member in JList and add it to frame 
         canChangeOutfits = new JList();
-        
         addCanChangeOutfitsJList(canChangeOutfits, frame);
         
+        // buttons meant to display character information 
         addCharacterInfoButtons(frame);
-        
         addEquippedOutfitsButtons(frame);
         
+        // buttons used to described an outfit in focus 
         addOutfitOverviewAndDescription(frame);
         
+        // buttons meant to serve as titles for a given frame section 
         addUnusableBottomTitles(frame);
         
+        // JList meant to show attributes and resistances tied to a party member 
         addCharacterAttributeAndResistancesJLists(frame);
         
+        // only outfits contained in player inventory are displayed in JList 
         displayInventoryOutfitsAsJList(referenceInventory, frame);
         
-        // listener updates panel and has a popup menu display on click
-        addCharacterJListUpdatePopupListener(partyMemberJList);
+        // listener updates party member information upon change in JList selection value 
+        addPartyMemberJListUpdateInformation(partyMemberJList);
 
         // listener fills in object description/details upon object selection
-        addUpdateOutfitInformationJListListener(referenceInventory, inventoryObjectsJList);
+        addUpdateOutfitInformationJListListener(referenceInventory, inventoryOutfitsJList);
         
-        // make panel display information about character in first slot
+        // make party member JList display information about party member in first slot
         partyMemberJList.setSelectedIndex(1);
         partyMemberJList.setSelectedIndex(0);
         
-        inventoryObjectsJList.setSelectedIndex(1);
-        inventoryObjectsJList.setSelectedIndex(0);
+        // make inventory outfits JList display information about outfit in first slot 
+        inventoryOutfitsJList.setSelectedIndex(1);
+        inventoryOutfitsJList.setSelectedIndex(0);
         
-        
-        // initialize popup menus 
-        setUpPopupMenusByObject(inventoryOutfitsJPopupMenu, equippedOutfitsJPopupMenu);
+        // initialize popup menus meant to appear upon button or JList selection 
+        setUpPopupMenusByObject(inventoryOutfitsJPopupMenu, alterableEquippedOutfitsJPopupMenu,
+            unalterableEquippedOutfitsJPopupMenu);
         
         // popup menu showing options for player upon outfit selection 
-        addinventoryOutfitsJListOptionsListener(inventoryObjectsJList, inventoryOutfitsJPopupMenu);
+        addInventoryOutfitsJListOptionsListener(inventoryOutfitsJList, inventoryOutfitsJPopupMenu);
         
         // add popup menu functionality for equipped outfit buttons 
         equippedOutfitButtonsJPopupMenu();
         
-        
-        
-        
-        
-        
-        displayFrameWindow();
-        
+        displayFrameWindow(frame);
     }
     
+    // END: CONSTRUCTOR 
+    /*******************************************************************************/
 }

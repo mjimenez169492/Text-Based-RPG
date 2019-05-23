@@ -1,143 +1,52 @@
 package RunProject;
 
 /*
-        Battle concerns creating objects/methods relating to the concept of battle 
-        commonly found in various RPGs (Role Playing Games). Battles occur between
-        AT MOST two parties consisting of characters which may be under AI control
-        (low level AI script based on certain conditions) or under player control. 
-        A battle between two parties has a success state and a fail state with the
-        criteria for meeting each varying based on the type of battle initiated.
-    */
+    Battle concerns creating objects/methods relating to the concept of battle 
+    commonly found in various RPGs (Role Playing Games). Battles occur between
+    AT MOST two parties consisting of characters which may be under AI control
+    (low level AI script based on certain conditions) or under player control. 
+    A battle between two parties has a success state and a fail state with the
+    criteria for meeting each varying based on the type of battle initiated.
+*/
 
-    import Generic_Character.*;
-    import java.security.SecureRandom;
-    import java.util.PriorityQueue;	
-    import Player_Entity.Party;
-    import java.util.ArrayList;
 
-import Player_Entity.PlayerEntity;
 import Generic_Character.GenericCharacter;
-import Battle_Feature.LevelMechanics;
 import Object_Factories.PlayerEntityFactory;
-import Player_Entity.PartyWallet;
 import Move_Creation.StatusEffect;
-import Generic_Object.GenericObject;
-import Player_Entity.Inventory;
-import Generic_Object.Item;
-import Move_Creation.Moves;
 import Move_Creation.MoveCalculations;
+import Player_Entity.PlayerEntity;
 import Player_Entity.Party;
 import Object_Factories.MovesFactory;
 
+
 import java.util.PriorityQueue;
 import java.security.SecureRandom;
-import java.awt.event.ActionListener; 
-import java.awt.event.ActionEvent; 
-import javax.swing.Box; 
-import javax.swing.JFrame; 
-import javax.swing.JTextArea;
-import javax.swing.JButton;
-import javax.swing.JScrollPane;
-import java.awt.*;
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.JTextArea;
-
-import java.awt.Component;
 import java.awt.GridBagLayout;
-
-import java.awt.*;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.border.EmptyBorder;
-import javax.swing.text.DefaultCaret;
-import javax.swing.JFrame;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.text.AbstractDocument;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DocumentFilter;
-import java.awt.Point; 
-import java.awt.Graphics;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter; 
 import java.util.ArrayList;
-import javax.swing.JPanel; 
-import java.util.ArrayList;
-import java.awt.Toolkit;
-import java.awt.Dimension;
-import java.util.Map;
-import java.util.LinkedHashMap;
-import java.util.HashMap;
-import java.util.Map;
-import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
-import javax.swing.DefaultListSelectionModel;
-import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
-import javax.swing.AbstractAction;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JRadioButtonMenuItem;
-import javax.swing.ButtonGroup;
-import javax.swing.JMenuBar;
-import javax.swing.KeyStroke;
-import javax.swing.ImageIcon;
-
-import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JScrollPane;
 import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JRadioButtonMenuItem;
-import javax.swing.ButtonGroup;
-import javax.swing.JMenuBar;
-import javax.swing.KeyStroke;
-import javax.swing.ImageIcon;
+import javax.swing.DefaultListModel;
+import java.awt.GridBagConstraints;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Insets;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.SwingConstants;
+import java.awt.Rectangle;
 
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.JScrollPane;
-import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JRadioButtonMenuItem;
-import javax.swing.ButtonGroup;
-import javax.swing.JMenuBar;
-import javax.swing.KeyStroke;
-import javax.swing.ImageIcon;
-
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.JScrollPane;
-import javax.swing.JFrame;
-import javax.swing.JPopupMenu;
-import javax.swing.JInternalFrame;
-
-
-
-public class BattleMenu extends CommonGUIMethods
+public class BattleMenu 
 {
+    // frame has access to methods available to BattleMenu and BattleMenu.Battle 
+    private static JFrame frame = new JFrame("Capstone RPG");
+    
+    // references to both parties in battle allow easy access to party members 
+    private static Party referencePartyOne, referencePartyTwo;
+    
     // When formatting text displayed under certain fonts, it is possible for 
     // text to be displayed "incorrectly" or in an unintended fashion since 
     // characters may not have the same width. Font "Monospaced" alleviates 
@@ -145,56 +54,31 @@ public class BattleMenu extends CommonGUIMethods
     private static Font buttonFont = new Font(Font.MONOSPACED, Font.PLAIN, 14);
     private static Font JListFont = new Font(Font.MONOSPACED, Font.PLAIN, 12);
 
+    // vertical padding in pixels for buttons and JList components 
     private static int buttonVerticalPadding = 0;
-    
     private static int jListVerticalPadding = 0;
     
+    // JList components track turn statesfor all characters in battle 
     private static JList currentRoundJList, nextRoundJList, escapedCharactersJList;
     
+    // options available to player on their turn
     private static JButton attack, skills, items;
     
-    private static JList partyOneBottom;
-    private static JList partyTwoTop;
+    // JLists show party information for both parties in battle 
+    private static JList partyOneBottom, partyTwoTop;
     
+    // text area meant to track events that occur in battle 
     private static JTextArea battleLog;
     
-    private static Party referencePartyOne;
-    private static Party referencePartyTwo;
-    
-    
-    
-    
-    
+    // external frame meant to be called with usable button is selected 
     private static JFrame externalFrame = new JFrame();
     
-    private static boolean attackFrameActive;
-    private static boolean skillsFrameActive;
-    private static boolean itemsFrameActive;
+    // booleans determining how external frame is set up component-wise 
+    private static boolean attackFrameActive, skillsFrameActive, itemsFrameActive;
     
-    
-    
-    
-    private static JButton attackName; 
-    private static JButton attackOverview;
-    private static JButton attackDescription;
-    
-    private static JList allAvailableNonKoCombatantsJList;
-    
-    private static JButton attackChoice;
-    
-    
-    /*
-    private JButton overview, description;
-    
-    private JList controlledMove, uncontrolledMove;
-    
-    private JList controlledItemMove, uncontrolledItemMove;
-    
-    private JList controlledMoveTargets, uncontrolledMoveTargets;
-    
-    private JButton useControlledMove, useUncontrolledMove;
-    */
-    
+    // JList meant to store all non-KO characters involved in battle that have not escaped 
+    private static JList allAvailableNonKoCombatantsJList = new JList();
+
     
     
     // START: ADDING BUTTON COMPONENTS TO FRAME
@@ -263,6 +147,7 @@ public class BattleMenu extends CommonGUIMethods
         }
     }
     
+    // Note: for loop starts at position 4 (i.e. 3 for array) since there are 3 buttons 
     public static void bottomLayoutButtons(JFrame frame)
     {
         for(int i = 3; i < 7; i++)
@@ -327,11 +212,25 @@ public class BattleMenu extends CommonGUIMethods
     // START: PARTY ONE AND PARTY TWO JLISTS 
     /*******************************************************************************/
 
+    public static JList setUpJList(JList jList)
+    {
+        jList = new JList();
+        
+        // set font for text that will be displayed in text area 
+        jList.setFont(JListFont);
+        
+        // set color of text to white 
+        jList.setForeground(Color.WHITE);
+        
+        // set color of background to black 
+        jList.setBackground(Color.BLACK);
+        
+        return jList;
+    }
+    
     public static void addPartyMemberJListComponent(JList jList, int gridy, int gridx, 
         int gridheight, int gridwidth, JFrame frame)
     {
-        jList.setFont(JListFont);
-        
         GridBagConstraints gridBagConstraints = new GridBagConstraints();
         
         // add JScrollPane to frame to enable vertical scrolling for JList  
@@ -373,10 +272,10 @@ public class BattleMenu extends CommonGUIMethods
     
     public static void addPartyMemberJLists(JFrame frame)
     {
-        partyOneBottom = new JList(partyMembersModel(referencePartyOne));
+        partyOneBottom = setUpJList(partyOneBottom);
             addPartyMemberJListComponent(partyOneBottom, 11, 0, 4, 6, frame);
         
-        partyTwoTop = new JList(partyMembersModel(referencePartyTwo));
+        partyTwoTop = setUpJList(partyTwoTop);
             addPartyMemberJListComponent(partyTwoTop, 1, 0, 4, 6, frame);
     }
     
@@ -410,13 +309,13 @@ public class BattleMenu extends CommonGUIMethods
     
     public static void addUnusableTurnTrackingJListTitles(JFrame frame)
     {
-        String currentRoundTitle = String.format("%26s", "Current Round Turn Order");
+        String currentRoundTitle = String.format("%s", "Current Round Turn Order");
             addUnusableTitleButton(currentRoundTitle, 0, 6, 1, frame);
         
-        String nextRoundTitle = String.format("%26s", "Next Round Turn Order");
+        String nextRoundTitle = String.format("%s", "Next Round Turn Order");
             addUnusableTitleButton(nextRoundTitle, 5, 6, 1, frame);
         
-        String escapedCharactersTitle = String.format("%26s", "Escaped Characters");
+        String escapedCharactersTitle = String.format("%s", "Escaped Characters");
             addUnusableTitleButton(escapedCharactersTitle, 10, 6, 1, frame);
     }
     
@@ -448,11 +347,9 @@ public class BattleMenu extends CommonGUIMethods
     public static void addTurnTrackingJListComponent(JList jList, int gridy, int gridwidth, 
         JFrame frame)
     {
-        jList.setFont(JListFont);
-        
         // allign view of JList such that text is displayed at its center 
         DefaultListCellRenderer renderer = (DefaultListCellRenderer) jList.getCellRenderer();
-        renderer.setHorizontalAlignment(SwingConstants.CENTER);
+            renderer.setHorizontalAlignment(SwingConstants.CENTER);
         
         GridBagConstraints gridBagConstraints = new GridBagConstraints();
         
@@ -487,7 +384,7 @@ public class BattleMenu extends CommonGUIMethods
         
         // specifies space component must leave at each edges; (Insets(int 
         // top, int left, int bottom, int right)
-        gridBagConstraints.insets = new Insets(0, 0, 0, 10);
+        gridBagConstraints.insets = new Insets(0, 0, 0, 0);
         
         // add button to frame with positioning 
         frame.add(statsScroll, gridBagConstraints);
@@ -495,13 +392,13 @@ public class BattleMenu extends CommonGUIMethods
     
     public static void addTurnTrackingJLists(JFrame frame)
     {
-        currentRoundJList = new JList();
+        currentRoundJList = setUpJList(currentRoundJList);
             addTurnTrackingJListComponent(currentRoundJList, 1, 1, frame);
         
-        nextRoundJList = new JList();
+        nextRoundJList = setUpJList(nextRoundJList);
             addTurnTrackingJListComponent(nextRoundJList, 6, 1, frame);
         
-        escapedCharactersJList = new JList();
+        escapedCharactersJList = setUpJList(escapedCharactersJList);
             addTurnTrackingJListComponent(escapedCharactersJList, 11, 1, frame);
     }
     
@@ -516,8 +413,6 @@ public class BattleMenu extends CommonGUIMethods
     public static void addBattleLogTextAreaComponent(JTextArea textArea, int gridy, int gridwidth, 
         JFrame frame)
     {
-        textArea.setFont(JListFont);
-        
         GridBagConstraints gridBagConstraints = new GridBagConstraints();
         
         // add JScrollPane to frame to enable vertical scrolling for JList  
@@ -557,10 +452,36 @@ public class BattleMenu extends CommonGUIMethods
         frame.add(textAreaScroll, gridBagConstraints);
     }
     
+    public static JTextArea setUpTextArea(JTextArea textArea)
+    {
+        textArea = new JTextArea();
+        
+        // set font for text that will be displayed in text area 
+        textArea.setFont(JListFont);
+        
+        // set color of text to white 
+        textArea.setForeground(Color.WHITE);
+        
+        // set color of background to black 
+        textArea.setBackground(Color.BLACK);
+        
+        // text area where text is displayed cannot be editted 
+        textArea.setEditable(true);
+        
+        // sentences "wrap" or go to next line if text area boundary is reached 
+        textArea.setLineWrap(true);
+        
+        // sentences wrap to next line if word touches boundary 
+        textArea.setWrapStyleWord(true);
+        
+        return textArea;
+    }
+    
     public static void addBattleLogJTextArea(JFrame frame)
     {
         battleLog = new JTextArea("Battle Log:\n\n");
-            addBattleLogTextAreaComponent(battleLog, 9, 6, frame);
+            setUpTextArea(battleLog);
+                addBattleLogTextAreaComponent(battleLog, 9, 6, frame);
     }
     
     // END: ADDING JTEXTAREA AS BATTLE LOG FOR ALL BATTLE ACTIONS 
@@ -572,7 +493,7 @@ public class BattleMenu extends CommonGUIMethods
     // START: UPDATING PARTY MEMBER JLIST BY PARTY
     /*******************************************************************************/
     
-    public static String desiredStaticSpaces(int spaces)
+    public static String desiredSpaces(int spaces)
     {
         StringBuilder builder = new StringBuilder();
         
@@ -584,7 +505,27 @@ public class BattleMenu extends CommonGUIMethods
         return builder.toString();
     }
     
-    public static String formatCurrentMaxValues(double currentValue, double maximumValue)
+    // Note: spaces are used to make value Strings appear aligned 
+    public static void appendGaugeValueToStringBuilder(StringBuilder builder, double valueAsDouble,
+        String valueAsString)
+    {
+        if(valueAsDouble < 10)
+        {
+            builder.append(desiredSpaces(3));
+        }
+        else if(valueAsDouble < 100)
+        {
+            builder.append(desiredSpaces(2));
+        }
+        else if(valueAsDouble < 1000)
+        {
+            builder.append(desiredSpaces(1));
+        }
+        
+        builder.append(valueAsString);
+    }
+    
+    public static String formatCurrentMaxGauges(double currentValue, double maximumValue)
     {
         String curValue = String.valueOf(currentValue);
         
@@ -592,69 +533,43 @@ public class BattleMenu extends CommonGUIMethods
         
         StringBuilder builder = new StringBuilder();
         
-        // spaces are used to make current value Strings appear alligned 
-        if(currentValue < 10)
-        {
-            builder.append(desiredStaticSpaces(3));
-        }
-        else if(currentValue < 100)
-        {
-            builder.append(desiredStaticSpaces(2));
-        }
-        else if(currentValue < 1000)
-        {
-            builder.append(desiredStaticSpaces(1));
-        }
+        appendGaugeValueToStringBuilder(builder, currentValue, curValue);
         
-        builder.append(curValue).append(" / ");
+        builder.append(" / ");
         
-        // spaces are used to make max value Strings appear alligned 
-        if(maximumValue < 10)
-        {
-            builder.append(desiredStaticSpaces(3));
-        }
-        else if(maximumValue < 100)
-        {
-            builder.append(desiredStaticSpaces(2));
-        }
-        else if(maximumValue < 1000)
-        {
-            builder.append(desiredStaticSpaces(1));
-        }
-        
-        builder.append(maxValue);
+        appendGaugeValueToStringBuilder(builder, maximumValue, maxValue);
         
         return builder.toString();
     }
     
+    // format so all names up to 26 characters are correctly structured 
     public static String name(GenericCharacter character, int counter)
     {
-        // format so all names up to 26 characters are correctly structured 
         String formatName = String.format("%-26s %s %s: %-2s", character.getGeneralFeatures().getName(),
-            desiredStaticSpaces(13), "Member", String.valueOf(counter));
-            return formatName;
+            desiredSpaces(13), "Member", String.valueOf(counter));
+                return formatName;
     }
     
+    // add Health Points (HP) and current/max points 
     public static String health(GenericCharacter character)
     {
-        // add Health Points (HP) and current/max points 
-        String formatHealth = String.format("%-3s: %s", "HP", formatCurrentMaxValues(character.
+        String formatHealth = String.format("%-3s: %s", "HP", formatCurrentMaxGauges(character.
             getGeneralFeatures().getCurrentHealth(), character.getTotalStats().getTotalMaxHealth()));
                 return formatHealth;
     }
     
+    // add Stamina Points (SP) and current/max points 
     public static String stamina(GenericCharacter character)
     {
-        // add Stamina Points (SP) and current/max points 
-        String formatStamina = String.format("%-3s: %s", "SP", formatCurrentMaxValues(character.
+        String formatStamina = String.format("%-3s: %s", "SP", formatCurrentMaxGauges(character.
             getGeneralFeatures().getCurrentStamina(), character.getTotalStats().getTotalMaxStamina()));
                 return formatStamina;
     }
     
+    // add Nanomachine Points (NP) and current/max points
     public static String nano(GenericCharacter character)
     {
-        // add Nanomachine Points (NP) and current/max points
-        String formatNano = String.format("%-3s: %s", "NP", formatCurrentMaxValues(character.
+        String formatNano = String.format("%-3s: %s", "NP", formatCurrentMaxGauges(character.
             getGeneralFeatures().getCurrentNano(), character.getTotalStats().getTotalMaxNano()));
                 return formatNano;
     }
@@ -729,6 +644,12 @@ public class BattleMenu extends CommonGUIMethods
         return partyMembers;
     }
     
+    public static void setModelForPartyJLists()
+    {
+        partyOneBottom = new JList(partyMembersModel(referencePartyOne));
+        partyTwoTop = new JList(partyMembersModel(referencePartyTwo));
+    }
+    
     // END: UPDATING PARTY MEMBER JLIST BY PARTY
     /*******************************************************************************/
 
@@ -768,12 +689,55 @@ public class BattleMenu extends CommonGUIMethods
 
     
     
+    // START: EXTERNAL FRAME STUFF BELOW!!!!
     
+    // START: GETTING CHARACTER DISPLAYED IN JLIST 
+    /*******************************************************************************/
+
+    public static GenericCharacter findCharacterInParty(String characterName, Party party)
+    {
+        GenericCharacter character = null;
+        
+        for(GenericCharacter element : party.getPartyMembers())
+        {
+            if(characterName.equals(element.getGeneralFeatures().getName()))
+            {
+                character = element;
+            }
+        }
+        
+        return character;
+    }
     
+    // Note: gets character REGARDLESS of whether character is KO or has escaped 
+    //       so consider boolean condition for finding KO and non-KO combatants? 
+    public static GenericCharacter getCharacter(Object name)
+    {
+        GenericCharacter character = findCharacterInParty(((String)name), referencePartyOne);
+        
+        if(character == null)
+        {
+            character = findCharacterInParty(((String)name), referencePartyTwo);
+        }
+        
+        return character;
+    }
     
+    // determine whether user object is the same as target object based on name 
+    public static boolean userSameAsTarget(Object userName, Object targetName)
+    {
+        boolean result = false;
+        
+        // null check for same object being referenced (user == target)
+        if(getCharacter(userName) != null && getCharacter(targetName) == null)
+        {
+            result = true;
+        }
+        
+        return result;
+    }
     
-    
-    // START: EXTERNAL FRAME STUF BELOW!!!!
+    // END: GETTING CHARACTER DISPLAYED IN JLIST 
     /*******************************************************************************/
 
     
@@ -791,43 +755,75 @@ public class BattleMenu extends CommonGUIMethods
         
         button.setForeground(Color.WHITE);
         
-        button.setFont(buttonFont);
+        button.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
         
         return button;
     }
     
-    public static void addExternalFrameButtons(JButton button, int gridy, int gridx, 
+    public static void addExternalAttackDetailsComponent(JButton button, int gridy, int gridx, double
+        weighty, double weightx, int gridheight, int gridwidth, JFrame frame)
+    {
+        GridBagConstraints gridBagConstraints = new GridBagConstraints();
+        
+        // button will expand horizontally to fill empty space 
+        gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+        
+        // row position 
+        gridBagConstraints.gridy = gridy;
+        
+        // column of specified row position
+        gridBagConstraints.gridx = gridx;
+        
+        // specified column length component takes up in frame height
+        gridBagConstraints.weighty = weighty;
+        
+        // specified row length component takes up in frame width
+        gridBagConstraints.weightx = weightx;
+        
+        // width of component in given row 
+        gridBagConstraints.gridwidth = gridwidth;
+        
+        // vertical padding in pixels for component in given row 
+	gridBagConstraints.ipady = 55;
+        
+        // specifies space component must leave at each edges; (Insets(int 
+        // top, int left, int bottom, int right)
+        gridBagConstraints.insets = new Insets(0, 0, 0, 0);
+        
+        // add button to frame with positioning 
+        frame.add(button, gridBagConstraints);
+    }
+    
+    public static void addExternalAttackDetailsButtons(JButton button, int gridy, int gridx, 
         int gridheight, int gridwidth, JFrame frame)
     {
         // Note: if component width is 0, component occupies whole row 
-        addButtonComponent(button, gridy, gridx, 0.11, 0.33, gridheight, gridwidth, frame);
+        addExternalAttackDetailsComponent(button, gridy, gridx, 0.11, 0.33, gridheight, gridwidth, frame);
     }
     
     public static void addAttackDetailsButtons(JFrame externalFrame)
     {
-        attackName = attackDetailButtons("Attack");
-            addExternalFrameButtons(attackName, 0, 0, 1, 1, externalFrame);
+        String formatAttackName = String.format("%-35s", "Attack");
+            addExternalAttackDetailsButtons(attackDetailButtons(formatAttackName), 0, 0, 1, 1, externalFrame);
         
-        attackOverview = attackDetailButtons("Overview: (Default) (Universal)");
-            addExternalFrameButtons(attackOverview, 1, 0, 1, 1, externalFrame);
+        String formatAttackOverview = String.format("%-35s", "Overview: Default Universal Move");
+            addExternalAttackDetailsButtons(attackDetailButtons(formatAttackOverview), 1, 0, 1, 1, externalFrame);
         
-        attackDescription = attackDetailButtons("Description: inflict damage upon a single target.");
-            addExternalFrameButtons(attackDescription, 2, 0, 1, 1, externalFrame);
+        String formatAttackDescription = String.format("%-35s", "Description: damage single target.");
+            addExternalAttackDetailsButtons(attackDetailButtons(formatAttackDescription), 2, 0, 1, 1, externalFrame);
     }
     
     public static void addAllAvailableCombatantsJListComponent(JList jList, int gridy, int gridx, 
         int gridheight, int gridwidth, JFrame frame)
     {
-        jList.setFont(JListFont);
-        
         // allign view of JList such that text is displayed at its center 
         DefaultListCellRenderer renderer = (DefaultListCellRenderer) jList.getCellRenderer();
-        renderer.setHorizontalAlignment(SwingConstants.CENTER);
+            renderer.setHorizontalAlignment(SwingConstants.CENTER);
         
         GridBagConstraints gridBagConstraints = new GridBagConstraints();
         
         // add JScrollPane to frame to enable vertical scrolling for JList  
-        JScrollPane statsScroll = new JScrollPane(jList, 
+        JScrollPane jListScroll = new JScrollPane(jList, 
             JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
             JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         
@@ -840,12 +836,10 @@ public class BattleMenu extends CommonGUIMethods
         // column of specified row position
         gridBagConstraints.gridx = gridx;
         
-        // specified column length component takes up (1/10 of frame if no 
-        // other components are in the way)
+        // specified column length component takes up 
         gridBagConstraints.weighty = 0.20;
         
-        // specified row length component takes up (1/10 of frame if no 
-        // other components are in the way)
+        // specified row length component takes up 
         gridBagConstraints.weightx = 0.20;
         
         // height of component in given column 
@@ -854,89 +848,25 @@ public class BattleMenu extends CommonGUIMethods
         // width of component in given row 
         gridBagConstraints.gridwidth = gridwidth;
         
-        // vertical padding in pixels for component in given row 
-	gridBagConstraints.ipady = 250;
+        // vertical and horizontal padding in pixels for component in given row 
+	gridBagConstraints.ipady = 165;
+        gridBagConstraints.ipadx = 165;
         
         // specifies space component must leave at each edges; (Insets(int 
         // top, int left, int bottom, int right)
         gridBagConstraints.insets = new Insets(0, 0, 0, 0);
         
         // add button to frame with positioning 
-        frame.add(statsScroll, gridBagConstraints);
+        frame.add(jListScroll, gridBagConstraints);
     }
     
-    // FOR MODEL, NEED TO MERGE WITH BATTLE CLASS MADE LONG AGO (ASSUME PQ)
     public static void addAllAvailableNonKoCombatantsJList(JFrame frame)
     {
-        allAvailableNonKoCombatantsJList = new JList();
+        allAvailableNonKoCombatantsJList = setUpJList(allAvailableNonKoCombatantsJList);
             addAllAvailableCombatantsJListComponent(allAvailableNonKoCombatantsJList, 
                 0, 1, 3, 2, frame);
     }
     
-    public static void addAttackChoiceButton(JFrame externalFrame)
-    {
-        attackChoice = newUsableButton("Choice");
-            addExternalFrameButtons(attackChoice, 0, 4, 1, 2, externalFrame);
-    }
-    
-    // ATTACK FRAME COMPONENTS 
-    
-    
-    
-    // GETTING CHARACTER DISPLAYED IN JLIST 
-    
-    
-    
-    public static GenericCharacter findCharacterInParty(String characterName, Party party)
-    {
-        GenericCharacter character = null;
-        
-        for(GenericCharacter element : party.getPartyMembers())
-        {
-            if(characterName.equals(element.getGeneralFeatures().getName()))
-            {
-                character = element;
-            }
-        }
-        
-        return character;
-    }
-    
-    // Note: gets character REGARDLESS of whether character is KO ior has escaped 
-    // make boolean for finding KO and non-KO combatants 
-    public static GenericCharacter getCharacter(Object name)
-    {
-        GenericCharacter character = findCharacterInParty(((String)name), referencePartyOne);
-        
-        if(character == null)
-        {
-            character = findCharacterInParty(((String)name), referencePartyTwo);
-        }
-        
-        return character;
-    }
-    
-    // determine whether user object is the same as target object based in name 
-    public static boolean userSameAsTarget(Object userName, Object targetName)
-    {
-        boolean result = false;
-        
-        //null check for same object being referenced (user == target)
-        if(getCharacter(userName) != null && getCharacter(targetName) == null)
-        {
-            result = true;
-        }
-        
-        return result;
-    }
-    
-    // GETTING CHARACTER DISPLAYED IN JLIST 
-    
-    
-    
-    // SETTING ATTACK FRAME JLIST MODEL USING ALL NON KO COMBATANTS
-    
-    // MERGE WITH BATTLE CLASS 
     public static DefaultListModel<String> allNonKoCombatantsModel(PriorityQueue
         <GenericCharacter> allPqContents)
     {
@@ -956,11 +886,45 @@ public class BattleMenu extends CommonGUIMethods
         return model;
     }
     
-    // SETTING ATTACK FRAME JLIST MODEL USING ALL NON KO COMBATANTS
+    public static void addExternalAttackChoiceComponent(JButton button, int gridy, int gridx, double
+        weighty, double weightx, int gridheight, int gridwidth, JFrame frame)
+    {
+        GridBagConstraints gridBagConstraints = new GridBagConstraints();
+        
+        // button will expand horizontally to fill empty space 
+        gridBagConstraints.fill = GridBagConstraints.BOTH;
+        
+        // row position 
+        gridBagConstraints.gridy = gridy;
+        
+        // column of specified row position
+        gridBagConstraints.gridx = gridx;
+        
+        // specified column length component takes up in frame height
+        gridBagConstraints.weighty = weighty;
+        
+        // specified row length component takes up in frame width
+        gridBagConstraints.weightx = weightx;
+        
+        // height of component in given column 
+        gridBagConstraints.gridheight = gridheight;
+        
+        // width of component in given row 
+        gridBagConstraints.gridwidth = gridwidth;
+        
+        // specifies space component must leave at each edges; (Insets(int 
+        // top, int left, int bottom, int right)
+        gridBagConstraints.insets = new Insets(0, 0, 0, 0);
+        
+        // add button to frame with positioning 
+        frame.add(button, gridBagConstraints);
+    }
     
-    
-    
-    // ACTION LISTENERSAND EXTERNAL FRAME COMPONENT SET UP 
+    public static void addExternalAttackChoiceButtons(JButton button, int gridy, int gridx, JFrame frame)
+    {
+        // Note: if component width is 0, component occupies whole column/row 
+        addExternalAttackChoiceComponent(button, gridy, gridx, 0.11, 0.33, 3, 1, frame);
+    }
     
     public static void addConfirmAttackActionListener(JButton button)
     {
@@ -981,40 +945,42 @@ public class BattleMenu extends CommonGUIMethods
                         move target 
                     */
                     
-                    // set to head of current round 
+                    // since user is character at head of current round, make 
+                    // sure that character is treated as move user 
                     currentRoundJList.setSelectedIndex(0);
                     
+                    // store name of move user 
                     Object userName = currentRoundJList.getSelectedValue();
                     
+                    // store name of move target  
                     Object targetName = allAvailableNonKoCombatantsJList.getSelectedValue();
                     
-                    // use factory object to call method for standard attack
+                    // use factory object to call pre-made method for attack move
                     MovesFactory factory = new MovesFactory();
 
                     // create object meant for calculating outcome of move 
                     MoveCalculations calculation = new MoveCalculations();
                     
-                    // account for when target is the same! (null otherwise 
-                    // due to referencing same character object )
+                    // account for when target is the same! (null if the same 
+                    // due to referencing same character object from party)
                     if(userSameAsTarget(userName, targetName))
                     {
                         calculation.singleTargetMoveLogic(getCharacter(userName), 
                             getCharacter(userName), factory.getStandardAttack());
-                        
-                        // display attack info 
-                        // round number, user name, hit/miss/fail text, target name
-                        // 
-                        
                     }
                     // else proceed as normal 
                     else
                     {
-                        // ERROR!?
                         calculation.singleTargetMoveLogic(getCharacter(userName), 
                             getCharacter(targetName), factory.getStandardAttack());
-                        
-                        // display attack info 
                     }
+                    
+                // display attack info 
+                // round number, user name, hit/miss/fail text, target name
+                // 
+                    battleLog.append(String.valueOf(calculation.getOutput()));
+                    
+                    
                     
                     // reload party JLists to display results of action 
                     partyOneBottom.setModel(partyMembersModel(referencePartyOne));
@@ -1029,31 +995,51 @@ public class BattleMenu extends CommonGUIMethods
             }); 
     }
     
+    public static void addAttackChoiceButton(JFrame externalFrame)
+    {
+        JButton attackChoice = newUsableButton("Choice");
+            addConfirmAttackActionListener(attackChoice);
+                addExternalAttackChoiceButtons(attackChoice, 0, 3, externalFrame);
+    }
+    
+    public static void attackExternalFrame(JFrame externalFrame)
+    {
+        // add button for name. overview, and description and JList for 
+        // all active characters 
+        addAttackDetailsButtons(externalFrame);
+        addAllAvailableNonKoCombatantsJList(externalFrame);
+        addAttackChoiceButton(externalFrame);
+
+        // create dummy priority queue that sorts accoring to style set for
+        // priority queues created and managed in inner class Battle 
+        PriorityQueue<GenericCharacter> storePqContents = new PriorityQueue<>( 
+            (a, b) -> (b.getGeneralFeatures().getBattleDexterity()) - (a.getGeneralFeatures().
+            getBattleDexterity()));
+
+        // fill dummy priority queue with contents of turn tracking priority 
+        // queues that exist in inner class Battle 
+        Battle.clearAndFillAllPqContents(storePqContents, Battle.currentRound, Battle.nextRound);
+
+        // fill JList with all non-ko characters that have not fled from battle 
+        allAvailableNonKoCombatantsJList.setModel(allNonKoCombatantsModel(
+            storePqContents)); 
+
+        // set default target of move to 0 such that first character in 
+        // JList is target of move to avoid passing null as target 
+        allAvailableNonKoCombatantsJList.setSelectedIndex(0);
+    }
+    
+    // ATTACK FRAME COMPONENTS 
+    
+    
+    
+    // SETTING UP EXTERNAL FRAME BASED ON BOOLEAN 
     
     public static void externalFrameByBoolean(JFrame externalFrame)
     {
         if(attackFrameActive)
         {
-            // add button for name. overview, and description and JList for 
-            // all active characters 
-            addAttackDetailsButtons(externalFrame);
-            addAllAvailableNonKoCombatantsJList(externalFrame);
-            addAttackChoiceButton(externalFrame);
-            addConfirmAttackActionListener(attackChoice);
-            
-            // 
-            PriorityQueue<GenericCharacter> storePqContents = new PriorityQueue<>( 
-                (a, b) -> (b.getGeneralFeatures().getBattleDexterity()) - (a.getGeneralFeatures().
-                getBattleDexterity()));
-            
-            Battle.clearAndFillAllPqContents(storePqContents, Battle.currentRound, Battle.nextRound);
-            
-            
-            // initialize JList
-            allAvailableNonKoCombatantsJList.setModel(allNonKoCombatantsModel(
-                storePqContents)); 
-            
-            // turn complete once "choice" is pressed
+            attackExternalFrame(externalFrame);
         }
         else if(skillsFrameActive)
         {
@@ -1063,8 +1049,6 @@ public class BattleMenu extends CommonGUIMethods
         {
             
         }
-        
-        
     }
     
     public static void externalFrameLocation()
@@ -1098,7 +1082,6 @@ public class BattleMenu extends CommonGUIMethods
         //       will dispose of this frame as well (Maybe?))
     }
     
-    // INCOMPLETE 
     public static void usableButtonActionListeners()
     {
         attack.addActionListener(
@@ -1141,6 +1124,8 @@ public class BattleMenu extends CommonGUIMethods
                     // result in JTextArea 
                 }
             }); 
+                // does not exist in this build due to time constraints 
+                skills.setEnabled(false);
 
         items.addActionListener(
             new ActionListener() 
@@ -1154,28 +1139,25 @@ public class BattleMenu extends CommonGUIMethods
                     // battle and allows character to use item 
                 }
             }); 
+                // does not exist in this build due to time constraints 
+                items.setEnabled(false);
     }
     
-    // ACTION LISTENERSAND EXTERNAL FRAME COMPONENT SET UP 
+    // SETTING UP EXTERNAL FRAME BASED ON BOOLEAN 
     
     // END: EXTERNAL FRAME STUF BELOW!!!!
     /*******************************************************************************/
-
     
     
     
     
     
     
-    
-    
-    
-    
-    
-    
-    
-    // START: BATTLE NESTED CLASS
-    /**/
+    // START: NESTED CLASS BATTLE
+    /*******/
+    /***************/
+    /*********************/
+    /***************************/
 
     // By default (without static), instances of B contain a hidden reference to 
     // an instance of A (may need a different instance of Enum object per scope)
@@ -1184,7 +1166,7 @@ public class BattleMenu extends CommonGUIMethods
         // keeps track of the number of rounds that have passed in battle 
         private static double round;
 
-        // 
+        // signify that turn is complete 
         private static boolean turnComplete;
         
         // denotes whether battle is winnable or not from the start
@@ -1224,7 +1206,7 @@ public class BattleMenu extends CommonGUIMethods
 
         
 
-        // START: COUNTING ROUNDS IN BATTLE 
+        // START: MISCELLANEOUS METHODS 
         /*******************************************************************************/
 
         public void setRoundCount(double round)
@@ -1251,25 +1233,19 @@ public class BattleMenu extends CommonGUIMethods
             return round;
         }
 
-        // END: END BATTLE CONDITIONS
-        /*******************************************************************************/
-
-
-
-        // START: UNWINNABLE BATTLE BOOLEANS 
-        /*******************************************************************************/
-
         public void unwinnableBattle(boolean unwinnableBattle)
         {
             this.unwinnableBattle = unwinnableBattle;
         }
-
+        
         public boolean unwinnableBattle()
         {
             return unwinnableBattle;
         }
+        
+        // defeatedCharacters
 
-        // START: UNWINNABLE BATTLE BOOLEANS 
+        // END: MISCELLANEOUS METHODS 
         /*******************************************************************************/
 
 
@@ -1396,7 +1372,7 @@ public class BattleMenu extends CommonGUIMethods
         {
             return playerPartyWin;
         }
-
+        
         // END: END BATTLE CONDITIONS 
         /*******************************************************************************/
 
@@ -1757,7 +1733,7 @@ public class BattleMenu extends CommonGUIMethods
         
         // START: CHARACTER TURN LOGIC 
         /*******************************************************************************/
-
+        
         public void characterTurnLogic(PriorityQueue<GenericCharacter> allPqContents, 
             PriorityQueue<GenericCharacter> currentRound, PriorityQueue<GenericCharacter> 
             nextRound, double roundCount, Party partyOne, Party partyTwo)
@@ -2262,22 +2238,11 @@ public class BattleMenu extends CommonGUIMethods
         // END: END BATTLE LOOP BOOLEAN MANAGEMENT 
         /*******************************************************************************/
         
-        public Battle()
+        public Battle(PlayerEntity entity, Party opposingParty)
         {
             BattleMenu.frame.setLayout(new GridBagLayout());
             
-            PlayerEntityFactory entityOne = new PlayerEntityFactory();
-                referencePartyOne = entityOne.getPlayerEntityExample().getParty();
-        
-            PlayerEntityFactory entityTwo = new PlayerEntityFactory();
-                referencePartyTwo = entityTwo.getPlayerEntityExampleTwo().getParty();
-
-            standardBattle(entityOne.getPlayerEntityExample().getParty(), 
-                entityTwo.getPlayerEntityExampleTwo().getParty(), BattleMenu.frame);
+            standardBattle(entity.getParty(), opposingParty, BattleMenu.frame);
         }
     }
-
-
-    static JFrame frame = new JFrame();
-
 }

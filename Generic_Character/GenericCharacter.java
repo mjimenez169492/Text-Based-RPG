@@ -19,8 +19,6 @@ public class GenericCharacter
     
     MoveImmunity moveImmunity = new MoveImmunity();
     
-    SkillsForSkillPoints skillsForSkillPoints = new SkillsForSkillPoints();
-    
     Moveset moveset = new Moveset(equippableOutfits.getWeapon(), statusEffectContainer);
     
     OppositionMethods oppositionMethods = new OppositionMethods();
@@ -65,11 +63,6 @@ public class GenericCharacter
     public MoveImmunity getMoveImmunity()
     {
         return moveImmunity;
-    }
-    
-    public SkillsForSkillPoints getSkillsForSkillPoints()
-    {
-        return skillsForSkillPoints;
     }
     
     public Moveset getMoveset()

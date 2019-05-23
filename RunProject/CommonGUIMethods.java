@@ -377,6 +377,7 @@ public class CommonGUIMethods
         return position;
     }
     
+    // Note: ineffective method since rotation scheme changes from mouse to mouse 
     public static void frameMouseWheel(JFrame frame, JButton...buttons)
     {
         frame.addMouseWheelListener(

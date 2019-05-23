@@ -94,7 +94,7 @@ public class ItemsMenu extends CommonGUIMethods
     // Note: external frame is used over an internal frame since an internal frame
     //       cannot be properly displayed in a frame/panel using GridBagLayout for
     //       the components already in place may obscure it 
-    private JFrame useFrame;
+    private JFrame useFrame = new JFrame();
 
     // indicates whether customize option is on or off 
     // Note: if private instance variable customizeOn did not exist, each popup 
@@ -190,8 +190,9 @@ public class ItemsMenu extends CommonGUIMethods
                     @Override
                     public void actionPerformed(ActionEvent e)
                     {
-                        // dispose of Items Menu frame 
+                        // dispose of Items Menu frame and external frame
                         frame.dispose();
+                        useFrame.dispose();
 
                         // return focus to frame that orginally called Main Menu 
                         displayFrameWindow(callingFrame);
