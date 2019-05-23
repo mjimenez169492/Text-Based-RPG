@@ -16,13 +16,13 @@ public class PlayerEntityFactory
         charOne.getGeneralFeatures().setName("dv");
             charOne.getStats().setFireResistance(10);
             playerEntity.getParty().addToParty(charOne);
-        
+        /*
         GenericCharacterFactory characterTwo = new GenericCharacterFactory();
         GenericCharacter charTwo = characterTwo.getExampleCharacter();
         charTwo.getGeneralFeatures().setName("ppp dwwd");
             charOne.getStats().setFireResistance(100);
             playerEntity.getParty().addToParty(charTwo);
-        
+        /*
         GenericCharacterFactory characterThree = new GenericCharacterFactory();
         GenericCharacter charThree = characterThree.getExampleCharacter();
         charTwo.getGeneralFeatures().setName("12345678901234567890123456");
@@ -32,7 +32,7 @@ public class PlayerEntityFactory
         GenericCharacter charFour = characterFour.getExampleCharacter();
         charFour.getGeneralFeatures().setName("thte wdhd eh");
             playerEntity.getParty().addToParty(charFour);
-        
+        */
         //GenericCharacterFactory characterFive = new GenericCharacterFactory();
         
         //    playerEntity.getParty().addToParty(characterFive.getExampleCharacter());
@@ -92,7 +92,25 @@ public class PlayerEntityFactory
         }
     }
     
-    
+    public PlayerEntity getPlayerEntityExampleTwo()
+    {
+        PlayerEntity playerEntity = new PlayerEntity();
+        
+        GenericCharacterFactory characterTwo = new GenericCharacterFactory();
+        characterTwo.getExampleCharacter().getGeneralFeatures().setName("ppp dwwd");
+        characterTwo.getExampleCharacter().getStats().setFireResistance(100);
+        characterTwo.getExampleCharacter().getGeneralFeatures().playerControl(false);
+            playerEntity.getParty().addToParty(characterTwo.getExampleCharacter());
+        
+        /*
+        GenericCharacterFactory characterFour = new GenericCharacterFactory();
+        GenericCharacter charFour = characterFour.getExampleCharacter();
+        charFour.getGeneralFeatures().setName("thte wdhd eh");
+            playerEntity.getParty().addToParty(charFour);
+        */
+        
+        return playerEntity;
+    }
     
     
 }

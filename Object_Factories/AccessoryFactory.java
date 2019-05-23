@@ -11,7 +11,7 @@ public class AccessoryFactory
         accessory.setName("Training Gloves");
         accessory.setBriefDescription("A tiny pair of boxing gloves. A nice gift");
         accessory.setMainClass("Accessory");
-        accessory.setAccessoryCategory("Miscelleanous");
+        accessory.setAccessoryCategory("Slot One");
         accessory.setAccessorySuperType("Combat Oriented");
         accessory.setAccessorySubType("Unique effects");
         

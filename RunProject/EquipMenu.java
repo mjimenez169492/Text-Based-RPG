@@ -1035,10 +1035,101 @@ public class EquipMenu
                 return currentNewValue;
     }
     
+    public OutfitMethods getEquippedOutfitUsingSelectedOutfit(OutfitMethods outfit, 
+        GenericCharacter character)
+    {
+        OutfitMethods equippedOutfit = null;
+        
+        if(outfit.getClass() == Weapon.class)
+        {
+            equippedOutfit = character.getEquippableOutfits().getWeapon();
+                character.getEquippableOutfits().setWeapon(null);
+        }
+        else if(outfit.getClass() == Accessory.class)
+        {
+            switch(((Accessory)outfit).getAccessoryCategoryEnum())
+            {
+                case SLOT_ONE:
+                    equippedOutfit = character.getEquippableOutfits().getAccessoryOne();
+                        character.getEquippableOutfits().setAccessoryOne(null);
+                            break;
+                case SLOT_TWO:
+                    equippedOutfit = character.getEquippableOutfits().getAccessoryTwo();
+                        character.getEquippableOutfits().setAccessoryTwo(null);
+                            break;
+            }
+        }
+        else if(outfit.getClass() == Armor.class)
+        {
+            switch(((Armor)outfit).getArmorCategoryEnum())
+            {
+                case BODY_ARMOR:
+                    equippedOutfit = character.getEquippableOutfits().getBodyArmor();
+                        character.getEquippableOutfits().setBodyArmor(null);
+                            break;
+                case LEG_ARMOR:
+                    equippedOutfit = character.getEquippableOutfits().getLegArmor();
+                        character.getEquippableOutfits().setLegArmor(null);
+                            break;
+                case FOOT_ARMOR:
+                    equippedOutfit = character.getEquippableOutfits().getFootArmor();
+                        character.getEquippableOutfits().setFootArmor(null);
+                            break;
+            }
+        }
+        
+        return equippedOutfit;
+    }
+    
+    public void addBackEquippedOutfit(OutfitMethods outfit, GenericCharacter character)
+    {
+        if(outfit.getClass() == Weapon.class)
+        {
+            character.getEquippableOutfits().setWeapon((Weapon)outfit);
+        }
+        else if(outfit.getClass() == Accessory.class)
+        {
+            switch(((Accessory)outfit).getAccessoryCategoryEnum())
+            {
+                case SLOT_ONE:
+                    character.getEquippableOutfits().setAccessoryOne((Accessory)outfit);
+                        break;
+                case SLOT_TWO:
+                    character.getEquippableOutfits().setAccessoryTwo((Accessory)outfit);
+                        break;
+            }
+        }
+        else if(outfit.getClass() == Armor.class)
+        {
+            switch(((Armor)outfit).getArmorCategoryEnum())
+            {
+                case BODY_ARMOR:
+                    character.getEquippableOutfits().setBodyArmor((Armor)outfit);
+                        break;
+                case LEG_ARMOR:
+                    character.getEquippableOutfits().setLegArmor((Armor)outfit);
+                        break;
+                case FOOT_ARMOR:
+                    character.getEquippableOutfits().setFootArmor((Armor)outfit);
+                        break;
+            }
+        }
+    }
+    
+    
+// ACCOUNT FOR NO EQUIPPED OUTFIT!!!
+    
+    
     public void addCurrentNewAttributeObjectsWithOutfit(GenericCharacter character, 
         OutfitMethods outfit, DefaultListModel<String> model)
     {
-        Object[] characterAttributes = character.getTotalStats().getAllTotalAttributesWithNames();
+        Object[] characterAttributesWithEquip = character.getTotalStats().getAllTotalAttributesWithNames();
+        
+        OutfitMethods storedOutfit = getEquippedOutfitUsingSelectedOutfit(outfit, character);
+        
+        Object[] characterAttributesWithoutEquip = character.getTotalStats().getAllTotalAttributesWithNames();
+        
+        addBackEquippedOutfit(storedOutfit, character);
         
         Object[] outfitAttributes = outfit.getAllTotalAttributesWithNames();
         
@@ -1048,14 +1139,16 @@ public class EquipMenu
         
         int counter = 1;
         
-        for(int i = 0; i < characterAttributes.length; i+=2)
+        for(int i = 0; i < characterAttributesWithEquip.length; i+=2)
         {
-            double currentValue = (double)characterAttributes[i + 1];
+            double currentValue = (double)characterAttributesWithEquip[i + 1];
             
-            double newValue = currentValue + (double)outfitAttributes[i + 1];
+            double newValue = (double)characterAttributesWithoutEquip[i + 1] + 
+                (double)outfitAttributes[i + 1];
             
-            model.addElement(currentNewTotalStatWithOutfit(counter, (String)characterAttributes[i],  
-                checkAttribute(currentValue), checkAttribute(newValue)));
+            model.addElement(currentNewTotalStatWithOutfit(counter, (String)
+                characterAttributesWithEquip[i], checkAttribute(currentValue), 
+                checkAttribute(newValue)));
 
             counter++;
         }
@@ -1086,8 +1179,14 @@ public class EquipMenu
     public void addCurrentNewEnchantmentResistanceObjectsWithArmor(GenericCharacter character, 
         Armor armor, DefaultListModel<String> model)
     {
-        Object[] characterEnchantmentResistances = character.getTotalStats().
+        Object[] characterEnchantmentResistancesWithArmor = character.getTotalStats().
             getAllTotalEnchantmentResistancesWithNames();
+        
+        OutfitMethods storedArmor = getEquippedOutfitUsingSelectedOutfit(armor, character);
+        
+        Object[] characterEnchantmentsWithoutArmor = character.getTotalStats().getAllTotalAttributesWithNames();
+        
+        addBackEquippedOutfit(storedArmor, character);
         
         Object[] armorEnchantmentResistances = armor.
             getAllTotalEnchantmentResistancesWithNames();
@@ -1100,25 +1199,16 @@ public class EquipMenu
         
         int counter = 1;
         
-        for(int i = 0; i < characterEnchantmentResistances.length; i+=2)
+        for(int i = 0; i < characterEnchantmentResistancesWithArmor.length; i+=2)
         {
-            double currentValue = (double)characterEnchantmentResistances[i + 1];
+            double currentValue = (double)characterEnchantmentResistancesWithArmor[i + 1];
             
-            // double newValue = currentValue + (double)armorEnchantmentResistances[i + 1];
+            double newValue = (double)characterEnchantmentsWithoutArmor[i + 1] + 
+                (double)armorEnchantmentResistances[i + 1];
             
-            double newValue = 0;
-            
-            // FIX UNEQUIP
-            // if armor is equipped, subtract armor value from current value before 
-            // value from new armor is added 
-            //if()
-            //{
-                
-           // }
-            //x
-            
-            model.addElement(currentNewTotalStatWithOutfit(counter, (String)characterEnchantmentResistances[i],  
-                checkResistance(currentValue), checkResistance(newValue)));
+            model.addElement(currentNewTotalStatWithOutfit(counter, (String)
+                characterEnchantmentResistancesWithArmor[i], checkResistance(currentValue), 
+                checkResistance(newValue)));
 
             counter++;
         }
@@ -1152,7 +1242,14 @@ public class EquipMenu
     public void addCurrentNewStatusEffectResistanceObjectsWithArmor(GenericCharacter character, Armor armor, 
         DefaultListModel<String> model)
     {
-        Object[] characterResistances = character.getTotalStats().getAllTotalResistances().toArray( new Object[0]);
+        Object[] characterStatusEffectResistancesWithArmor = character.getTotalStats().
+            getAllTotalResistances().toArray( new Object[0]);
+        
+        OutfitMethods storedArmor = getEquippedOutfitUsingSelectedOutfit(armor, character);
+        
+        Object[] characterStatusEffectResistancesWithoutArmor = character.getTotalStats().getAllTotalAttributesWithNames();
+        
+        addBackEquippedOutfit(storedArmor, character);
         
         Object[] armorResistances = armor.getAllStatusEffectResistances().toArray(new Object[0]);
         
@@ -1164,14 +1261,16 @@ public class EquipMenu
         
         int counter = 1;
         
-        for(int i = 0; i < characterResistances.length; i+=2)
+        for(int i = 0; i < characterStatusEffectResistancesWithArmor.length; i+=2)
         {
-            double currentValue = (double)characterResistances[i + 1];
+            double currentValue = (double)characterStatusEffectResistancesWithArmor[i + 1];
             
-            double newValue = currentValue + (double)armorResistances[i + 1];
+            double newValue = (double)characterStatusEffectResistancesWithoutArmor[i + 1] 
+                + (double)armorResistances[i + 1];
             
-            model.addElement(currentNewTotalStatWithOutfit(counter, (String)characterResistances[i],  
-                checkResistance(currentValue), checkResistance(newValue)));
+            model.addElement(currentNewTotalStatWithOutfit(counter, (String)
+                characterStatusEffectResistancesWithArmor[i], checkResistance(
+                currentValue), checkResistance(newValue)));
 
             counter++;
         }
