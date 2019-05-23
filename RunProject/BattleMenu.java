@@ -1,206 +1,63 @@
 package RunProject;
 
-/*
-        Battle concerns creating objects/methods relating to the concept of battle 
-        commonly found in various RPGs (Role Playing Games). Battles occur between
-        AT MOST two parties consisting of characters which may be under AI control
-        (low level AI script based on certain conditions) or under player control. 
-        A battle between two parties has a success state and a fail state with the
-        criteria for meeting each varying based on the type of battle initiated.
-    */
-
-    import Generic_Character.*;
-    import java.security.SecureRandom;
-    import java.util.PriorityQueue;	
-    import Player_Entity.Party;
-    import java.util.ArrayList;
-
+import Generic_Character.*;
+import java.security.SecureRandom;
+import java.util.PriorityQueue;	
+import Player_Entity.Party;
+import java.util.ArrayList;
+import Battle_Feature.LevelMechanics;
 import Player_Entity.PlayerEntity;
 import Generic_Character.GenericCharacter;
 import Battle_Feature.LevelMechanics;
 import Object_Factories.PlayerEntityFactory;
 import Player_Entity.PartyWallet;
-import Move_Creation.StatusEffect;
 import Generic_Object.GenericObject;
 import Player_Entity.Inventory;
-import Generic_Object.Item;
-import Move_Creation.Moves;
-import Move_Creation.MoveCalculations;
 import Player_Entity.Party;
-import Object_Factories.MovesFactory;
 
-import java.util.PriorityQueue;
-import java.security.SecureRandom;
-import java.awt.event.ActionListener; 
-import java.awt.event.ActionEvent; 
-import javax.swing.Box; 
-import javax.swing.JFrame; 
-import javax.swing.JTextArea;
-import javax.swing.JButton;
-import javax.swing.JScrollPane;
-import java.awt.*;
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.JTextArea;
-
-import java.awt.Component;
 import java.awt.GridBagLayout;
-
-import java.awt.*;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.border.EmptyBorder;
-import javax.swing.text.DefaultCaret;
-import javax.swing.JFrame;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.text.AbstractDocument;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DocumentFilter;
-import java.awt.Point; 
-import java.awt.Graphics;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter; 
 import java.util.ArrayList;
-import javax.swing.JPanel; 
-import java.util.ArrayList;
-import java.awt.Toolkit;
-import java.awt.Dimension;
-import java.util.Map;
-import java.util.LinkedHashMap;
-import java.util.HashMap;
-import java.util.Map;
-import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
-import javax.swing.DefaultListSelectionModel;
-import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
-import javax.swing.AbstractAction;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JRadioButtonMenuItem;
-import javax.swing.ButtonGroup;
-import javax.swing.JMenuBar;
-import javax.swing.KeyStroke;
-import javax.swing.ImageIcon;
-
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
 import javax.swing.JScrollPane;
 import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JRadioButtonMenuItem;
-import javax.swing.ButtonGroup;
-import javax.swing.JMenuBar;
-import javax.swing.KeyStroke;
-import javax.swing.ImageIcon;
+import java.awt.GridBagConstraints;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Insets;
+import javax.swing.DefaultListModel;
+import javax.swing.SwingConstants;
 
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.JScrollPane;
-import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JRadioButtonMenuItem;
-import javax.swing.ButtonGroup;
-import javax.swing.JMenuBar;
-import javax.swing.KeyStroke;
-import javax.swing.ImageIcon;
-
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.JScrollPane;
-import javax.swing.JFrame;
-import javax.swing.JPopupMenu;
-import javax.swing.JInternalFrame;
-
-
-
-public class BattleMenu extends CommonGUIMethods
+public class BattleResults extends CommonGUIMethods
 {
+    // frame meant to store components in a desired layout 
+    private JFrame frame = new JFrame("Capstone RPG");
+    
     // When formatting text displayed under certain fonts, it is possible for 
     // text to be displayed "incorrectly" or in an unintended fashion since 
     // characters may not have the same width. Font "Monospaced" alleviates 
     // this problem by making letters the same width-wise
-    private static Font buttonFont = new Font(Font.MONOSPACED, Font.PLAIN, 14);
-    private static Font JListFont = new Font(Font.MONOSPACED, Font.PLAIN, 12);
+    private Font buttonFont = new Font(Font.MONOSPACED, Font.PLAIN, 14);
+    private Font JListFont = new Font(Font.MONOSPACED, Font.PLAIN, 12);
 
-    private static int buttonVerticalPadding = 0;
+    // vertical and horizontal padding for button and JList components 
+    private int buttonVerticalPadding = 75;
+    private int jListVerticalPadding = 0;
     
-    private static int jListVerticalPadding = 0;
+    // JLists showing characters that received experience and objects dropped by foes 
+    private JList charactersThatReceivedExperience, objectsDropped;
     
-    private static JList currentRoundJList, nextRoundJList, escapedCharactersJList;
-    
-    private static JButton attack, skills, items;
-    
-    private static JList partyOneBottom;
-    private static JList partyTwoTop;
-    
-    private static JTextArea battleLog;
-    
-    private static Party referencePartyOne;
-    private static Party referencePartyTwo;
-    
-    
-    
-    
-    
-    private static JFrame externalFrame = new JFrame();
-    
-    private static boolean attackFrameActive;
-    private static boolean skillsFrameActive;
-    private static boolean itemsFrameActive;
-    
-    
-    
-    
-    private static JButton attackName; 
-    private static JButton attackOverview;
-    private static JButton attackDescription;
-    
-    private static JList allAvailableNonKoCombatantsJList;
-    
-    private static JButton attackChoice;
-    
-    
-    /*
-    private JButton overview, description;
-    
-    private JList controlledMove, uncontrolledMove;
-    
-    private JList controlledItemMove, uncontrolledItemMove;
-    
-    private JList controlledMoveTargets, uncontrolledMoveTargets;
-    
-    private JButton useControlledMove, useUncontrolledMove;
-    */
+    // allows player to exit battle results by disposing of battle results frame 
+    private JButton exitBattleResults;
     
     
     
     // START: ADDING BUTTON COMPONENTS TO FRAME
     /*******************************************************************************/
 
-    public static void addButtonComponent(JButton button, int gridy, int gridx, double
+    public void addButtonComponent(JButton button, int gridy, int gridx, double
         weighty, double weightx, int gridheight, int gridwidth, JFrame frame)
     {
         GridBagConstraints gridBagConstraints = new GridBagConstraints();
@@ -239,12 +96,12 @@ public class BattleMenu extends CommonGUIMethods
 
     
     
-    // START: UNUSABLE BUTTONS USED TO PARSE OUT CURRENT LAYOUT 
+    // START: UNUSABLE MENU TITLE BUTTON AND EXPERIENCE/MONEY GAINED BUTTONS
     /*******************************************************************************/
 
-    public static JButton buttonUsedForLayout()
+    public JButton newUnusableMenuTitleButton(String text)
     {
-        JButton button = new JButton(" ");
+        JButton button = new JButton(text);
         
         button.setBackground(Color.BLACK);
         
@@ -255,139 +112,94 @@ public class BattleMenu extends CommonGUIMethods
         return button;
     }
     
-    public static void topLayoutButtons(JFrame frame)
+    public void addUnusableMenuTitleButton(String buttonName, int gridy, int gridx, int gridwidth, 
+        JFrame frame)
     {
-        for(int i = 0; i < 6; i++)
-        {
-            addButtonComponent(buttonUsedForLayout(), 0, i, 0.11, 0.33, 1, 1, frame);
-        }
+        addButtonComponent(newUnusableMenuTitleButton(buttonName), gridy, gridx, 0.11, 0.25, 
+            1, gridwidth, frame);
     }
     
-    public static void bottomLayoutButtons(JFrame frame)
+    public void addBattleResultsMenuButton(JFrame frame)
     {
-        for(int i = 3; i < 7; i++)
-        {
-            addButtonComponent(buttonUsedForLayout(), 15, i, 0.11, 0.33, 1, 1, frame);
-        }
+        addUnusableMenuTitleButton("Battle Results Menu", 0, 0, 0, frame);
     }
     
-    // END: UNUSABLE BUTTONS USED TO PARSE OUT CURRENT LAYOUT 
+    // END: UNUSABLE MENU TITLE BUTTON AND EXPERIENCE/MONEY GAINED BUTTONS
     /*******************************************************************************/
 
     
-    // START: ADD USABLE BUTTONS TO BOTTOM LEFT OF FRAME LAYOUT 
-    /*******************************************************************************/
     
-    public static JButton newUsableButton(String text)
+    // START: EXPERIENCE GAINED AND MONEY GAINED BUTTON 
+    /*******************************************************************************/
+
+    public JButton newUnusableInfoButtons(String text)
     {
         JButton button = new JButton(text);
+        
+        button.setHorizontalAlignment(SwingConstants.LEADING);
+        
+        // gun metal blue color in hexadecimal 
+        button.setBackground(Color.BLACK);
+        
+        button.setForeground(Color.WHITE);
         
         button.setFont(buttonFont);
         
         return button;
     }
     
-    public static void usableButtonPlacement(JButton button, int gridy, int gridx, JFrame frame)
+    public void addUnusableInfoButton(String buttonName, int gridy, int gridx, int gridwidth, 
+        JFrame frame)
     {
-        // Note: if component width is 0, component occupies whole row 
-        addButtonComponent(button, gridy, gridx, 0.11, 0.33, 1, 1, frame);
+        addButtonComponent(newUnusableInfoButtons(buttonName), gridy, gridx, 0.11, 0.25, 
+            1, gridwidth, frame);
     }
     
-    public static void addUsableButtons(JFrame frame)
+    public int totalExpGained(ArrayList<GenericCharacter> defeatedCharacters)
     {
-        attack = newUsableButton("Attack");
-            usableButtonPlacement(attack, 15, 0, frame);
+        int exp = 0;
         
-        skills = newUsableButton("Skills");
-            usableButtonPlacement(skills, 15, 1, frame);
+        for(GenericCharacter element : defeatedCharacters)
+        {
+            exp += element.getOppositionMethods().getDefeatExp();
+        }
         
-        items = newUsableButton("Items");
-            usableButtonPlacement(items, 15, 2, frame);
+        return exp;
     }
     
-    public static void enableUsableButtons()
+    public double moneyGained(ArrayList<GenericCharacter> defeatedCharacters)
     {
-        attack.setEnabled(true);
-        skills.setEnabled(true);
-        items.setEnabled(true);
+        double money = 0;
+        
+        for(GenericCharacter element : defeatedCharacters)
+        {
+            money += element.getOppositionMethods().getDefeatMoney();
+        }
+        
+        return money;
     }
     
-    public static void disableUsableButtons()
+// NEED TO ADD EXP AND MONEY TO WALLET 
+    public void addGainedButtons(ArrayList<GenericCharacter> defeatedCharacters, JFrame frame)
     {
-        attack.setEnabled(false);
-        skills.setEnabled(false);
-        items.setEnabled(false);
+        String expGainedText = String.format("%14s: %s", "EXP Gained", String.valueOf(
+            totalExpGained(defeatedCharacters)));
+                addUnusableInfoButton(expGainedText, 1, 0, 1, frame);
+        
+        String moneyGainedText = String.format("%14s: %s", "Money Gained", String.valueOf(
+            moneyGained(defeatedCharacters)));
+                addUnusableInfoButton(moneyGainedText, 1, 1, 1, frame);
     }
     
-    // END: ADD USABLE BUTTONS TO BOTTOM LEFT OF FRAME LAYOUT 
+    // END: EXPERIENCE GAINED AND MONEY GAINED BUTTON
     /*******************************************************************************/
 
     
-
-    // START: PARTY ONE AND PARTY TWO JLISTS 
+    
+    // START: CHARACTERS GAINING EXP AND OBJECTS DROPPED JLIST TITLES 
     /*******************************************************************************/
 
-    public static void addPartyMemberJListComponent(JList jList, int gridy, int gridx, 
-        int gridheight, int gridwidth, JFrame frame)
-    {
-        jList.setFont(JListFont);
-        
-        GridBagConstraints gridBagConstraints = new GridBagConstraints();
-        
-        // add JScrollPane to frame to enable vertical scrolling for JList  
-        JScrollPane statsScroll = new JScrollPane(jList, 
-            JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-            JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        
-        // button will expand horizontally to fill empty space 
-        gridBagConstraints.fill = GridBagConstraints.BOTH;
-        
-        // row position 
-        gridBagConstraints.gridy = gridy;
-        
-        // column of specified row position
-        gridBagConstraints.gridx = gridx;
-        
-        // specified column length component takes up of frame height
-        gridBagConstraints.weighty = 0.60;
-        
-        // specified row length component takes up of frame width
-        gridBagConstraints.weightx = 0.60;
-        
-        // height of component in given column 
-        gridBagConstraints.gridheight = 4;
-        
-        // width of component in given row 
-        gridBagConstraints.gridwidth = gridwidth;
-        
-        // vertical padding in pixels for component in given row 
-	gridBagConstraints.ipady = 150;
-        
-        // specifies space component must leave at each edges; (Insets(int 
-        // top, int left, int bottom, int right)
-        gridBagConstraints.insets = new Insets(0, 0, 0, 0);
-        
-        // add button to frame with positioning 
-        frame.add(statsScroll, gridBagConstraints);
-    }
-    
-    public static void addPartyMemberJLists(JFrame frame)
-    {
-        partyOneBottom = new JList(partyMembersModel(referencePartyOne));
-            addPartyMemberJListComponent(partyOneBottom, 11, 0, 4, 6, frame);
-        
-        partyTwoTop = new JList(partyMembersModel(referencePartyTwo));
-            addPartyMemberJListComponent(partyTwoTop, 1, 0, 4, 6, frame);
-    }
-    
-    // END: PARTY ONE AND PARTY TWO JLISTS 
-    /*******************************************************************************/
-
-    
-    // START: UNUSABLE TITLE BUTTONS FOR TURN TRACKING JLISTS 
-    /*******************************************************************************/
-
-    public static JButton newUnusableTitleButton(String text)
+    public JButton newUnusableTitleButtons(String text)
     {
         JButton button = new JButton(text);
         
@@ -401,58 +213,32 @@ public class BattleMenu extends CommonGUIMethods
         return button;
     }
     
-    public static void addUnusableTitleButton(String buttonName, int gridy, int gridx, int gridwidth, 
+    public void addUnusableTitleButton(String buttonName, int gridy, int gridx, int gridwidth, 
         JFrame frame)
     {
-        addButtonComponent(newUnusableTitleButton(buttonName), gridy, gridx, 0.11, 0.25, 
-            2, gridwidth, frame);
+        addButtonComponent(newUnusableTitleButtons(buttonName), gridy, gridx, 0.11, 0.25, 
+            1, gridwidth, frame);
     }
     
-    public static void addUnusableTurnTrackingJListTitles(JFrame frame)
+    public void addJListTitleButtons(JFrame frame)
     {
-        String currentRoundTitle = String.format("%26s", "Current Round Turn Order");
-            addUnusableTitleButton(currentRoundTitle, 0, 6, 1, frame);
+        addUnusableTitleButton("Characters Gaining EXP", 2, 0, 1, frame);
         
-        String nextRoundTitle = String.format("%26s", "Next Round Turn Order");
-            addUnusableTitleButton(nextRoundTitle, 5, 6, 1, frame);
-        
-        String escapedCharactersTitle = String.format("%26s", "Escaped Characters");
-            addUnusableTitleButton(escapedCharactersTitle, 10, 6, 1, frame);
+        addUnusableTitleButton("Objects Dropped", 2, 1, 1, frame);
     }
     
-    // END: UNUSABLE TITLE BUTTONS FOR TURN TRACKING JLISTS 
+    // END: CHARACTERS GAINING EXP AND OBJECTS DROPPED JLIST TITLES 
     /*******************************************************************************/
 
     
     
-    // START: JLIST JTEXTAREA BUTTON TITLES 
+    // START: ADDING CHARACTERS RECEIVING EXP AND OBJECTS DROPPED JLISTS
     /*******************************************************************************/
 
-    public static void addJListJTextAreaButtonTitles(JFrame frame)
-    {
-        String opposingPartyFormatted = String.format("%s", "Enemies");
-            addUnusableTitleButton(opposingPartyFormatted, 5, 0, 1, frame);
-        
-        String playerPartyFormatted = String.format("%s", "Allies");
-            addUnusableTitleButton(playerPartyFormatted, 10, 0, 1, frame);
-    }
-    
-    // END: JLIST JTEXTAREA BUTTON TITLES 
-    /*******************************************************************************/
-
-
-
-    // START: ADDING JLISTS MEANT FOR TRACKING TURN BEHAVIOR 
-    /*******************************************************************************/
-
-    public static void addTurnTrackingJListComponent(JList jList, int gridy, int gridwidth, 
+    public void addCharacterJListComponent(JList jList, int gridy, int gridx, int gridwidth, 
         JFrame frame)
     {
         jList.setFont(JListFont);
-        
-        // allign view of JList such that text is displayed at its center 
-        DefaultListCellRenderer renderer = (DefaultListCellRenderer) jList.getCellRenderer();
-        renderer.setHorizontalAlignment(SwingConstants.CENTER);
         
         GridBagConstraints gridBagConstraints = new GridBagConstraints();
         
@@ -468,7 +254,7 @@ public class BattleMenu extends CommonGUIMethods
         gridBagConstraints.gridy = gridy;
         
         // column of specified row position
-        gridBagConstraints.gridx = 6;
+        gridBagConstraints.gridx = gridx;
         
         // specified column length component takes up in frame height
         gridBagConstraints.weighty = 0.20;
@@ -483,237 +269,104 @@ public class BattleMenu extends CommonGUIMethods
         gridBagConstraints.gridwidth = gridwidth;
         
         // vertical padding in pixels for component in given row 
-	gridBagConstraints.ipady = 150;
+	gridBagConstraints.ipady = 350;
         
         // specifies space component must leave at each edges; (Insets(int 
         // top, int left, int bottom, int right)
-        gridBagConstraints.insets = new Insets(0, 0, 0, 10);
+        gridBagConstraints.insets = new Insets(0, 0, 0, 0);
         
         // add button to frame with positioning 
         frame.add(statsScroll, gridBagConstraints);
     }
     
-    public static void addTurnTrackingJLists(JFrame frame)
+    public void addBattleResultsJLists(JFrame frame)
     {
-        currentRoundJList = new JList();
-            addTurnTrackingJListComponent(currentRoundJList, 1, 1, frame);
+        charactersThatReceivedExperience = new JList();
+            addCharacterJListComponent(charactersThatReceivedExperience, 3, 0, 1, frame);
         
-        nextRoundJList = new JList();
-            addTurnTrackingJListComponent(nextRoundJList, 6, 1, frame);
-        
-        escapedCharactersJList = new JList();
-            addTurnTrackingJListComponent(escapedCharactersJList, 11, 1, frame);
+        objectsDropped = new JList();
+            addCharacterJListComponent(objectsDropped, 3, 1, 1, frame);
     }
     
-    // END: ADDING JLISTS MEANT FOR TRACKING TURN BEHAVIOR 
+    // END: ADDING CHARACTERS RECEIVING EXP AND OBJECTS DROPPED JLISTS
     /*******************************************************************************/
 
     
     
-    // START: ADDING JTEXTAREA AS BATTLE LOG FOR ALL BATTLE ACTIONS 
-    /*******************************************************************************/
-
-    public static void addBattleLogTextAreaComponent(JTextArea textArea, int gridy, int gridwidth, 
-        JFrame frame)
-    {
-        textArea.setFont(JListFont);
-        
-        GridBagConstraints gridBagConstraints = new GridBagConstraints();
-        
-        // add JScrollPane to frame to enable vertical scrolling for JList  
-        JScrollPane textAreaScroll = new JScrollPane(textArea, 
-            JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-            JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        
-        // button will expand horizontally to fill empty space 
-        gridBagConstraints.fill = GridBagConstraints.BOTH;
-        
-        // row position 
-        gridBagConstraints.gridy = gridy;
-        
-        // column of specified row position
-        gridBagConstraints.gridx = 0;
-        
-        // specified column length component takes up in frame height
-        gridBagConstraints.weighty = 0.20;
-        
-        // specified row length component takes up in frame width
-        gridBagConstraints.weightx = 0.20;
-        
-        // height of component in given column 
-        gridBagConstraints.gridheight = 1;
-        
-        // width of component in given row 
-        gridBagConstraints.gridwidth = gridwidth;
-        
-        // vertical padding in pixels for component in given row 
-	gridBagConstraints.ipady = 100;
-        
-        // specifies space component must leave at each edges; (Insets(int 
-        // top, int left, int bottom, int right)
-        gridBagConstraints.insets = new Insets(18, 0, 18, 0);
-        
-        // add button to frame with positioning 
-        frame.add(textAreaScroll, gridBagConstraints);
-    }
-    
-    public static void addBattleLogJTextArea(JFrame frame)
-    {
-        battleLog = new JTextArea("Battle Log:\n\n");
-            addBattleLogTextAreaComponent(battleLog, 9, 6, frame);
-    }
-    
-    // END: ADDING JTEXTAREA AS BATTLE LOG FOR ALL BATTLE ACTIONS 
-    /*******************************************************************************/
-
-
-    
-    
-    // START: UPDATING PARTY MEMBER JLIST BY PARTY
+    // START: ADDING CHARACTERS TO CHARACTERS RECEIVING EXP JLIST
     /*******************************************************************************/
     
-    public static String desiredStaticSpaces(int spaces)
+    public ArrayList<GenericCharacter> nonKoPartyMembers(Party party)
     {
-        StringBuilder builder = new StringBuilder();
-        
-        for(int i = 0; i < spaces; i++)
-        {
-            builder.append(" ");
-        }
-        
-        return builder.toString();
-    }
-    
-    public static String formatCurrentMaxValues(double currentValue, double maximumValue)
-    {
-        String curValue = String.valueOf(currentValue);
-        
-        String maxValue = String.valueOf(maximumValue);
-        
-        StringBuilder builder = new StringBuilder();
-        
-        // spaces are used to make current value Strings appear alligned 
-        if(currentValue < 10)
-        {
-            builder.append(desiredStaticSpaces(3));
-        }
-        else if(currentValue < 100)
-        {
-            builder.append(desiredStaticSpaces(2));
-        }
-        else if(currentValue < 1000)
-        {
-            builder.append(desiredStaticSpaces(1));
-        }
-        
-        builder.append(curValue).append(" / ");
-        
-        // spaces are used to make max value Strings appear alligned 
-        if(maximumValue < 10)
-        {
-            builder.append(desiredStaticSpaces(3));
-        }
-        else if(maximumValue < 100)
-        {
-            builder.append(desiredStaticSpaces(2));
-        }
-        else if(maximumValue < 1000)
-        {
-            builder.append(desiredStaticSpaces(1));
-        }
-        
-        builder.append(maxValue);
-        
-        return builder.toString();
-    }
-    
-    public static String name(GenericCharacter character, int counter)
-    {
-        // format so all names up to 26 characters are correctly structured 
-        String formatName = String.format("%-26s %s %s: %-2s", character.getGeneralFeatures().getName(),
-            desiredStaticSpaces(13), "Member", String.valueOf(counter));
-            return formatName;
-    }
-    
-    public static String health(GenericCharacter character)
-    {
-        // add Health Points (HP) and current/max points 
-        String formatHealth = String.format("%-3s: %s", "HP", formatCurrentMaxValues(character.
-            getGeneralFeatures().getCurrentHealth(), character.getTotalStats().getTotalMaxHealth()));
-                return formatHealth;
-    }
-    
-    public static String stamina(GenericCharacter character)
-    {
-        // add Stamina Points (SP) and current/max points 
-        String formatStamina = String.format("%-3s: %s", "SP", formatCurrentMaxValues(character.
-            getGeneralFeatures().getCurrentStamina(), character.getTotalStats().getTotalMaxStamina()));
-                return formatStamina;
-    }
-    
-    public static String nano(GenericCharacter character)
-    {
-        // add Nanomachine Points (NP) and current/max points
-        String formatNano = String.format("%-3s: %s", "NP", formatCurrentMaxValues(character.
-            getGeneralFeatures().getCurrentNano(), character.getTotalStats().getTotalMaxNano()));
-                return formatNano;
-    }
-    
-    public static String statusEffectString(GenericCharacter character)
-    {
-        StringBuilder builder = new StringBuilder("Status Effects: ");
-        
-        int counter = 0;
-        
-        for(StatusEffect status : character.getStatusEffectContainer().getStatusEffects())
-        {
-            // account for when one status effect exists (no , after it)
-            if(character.getStatusEffectContainer().getStatusEffects().size() == 1)
-            {
-                builder.append(status.getName());
-            }
-            // account for last status effect (no , after it)
-            else if(counter == (character.getStatusEffectContainer().getStatusEffects().size() - 1))
-            {
-                builder.append(status.getName());
-            }
-            // account for next status effect (, after it)
-            else
-            {
-                builder.append(status.getName());
-                    builder.append(", ");
-                        counter++;
-            }
-        }
-        
-        return builder.toString();
-    }
-    
-    // Note: new line is called AFTER element is added to model 
-    public static void addPartyMemberDetails(DefaultListModel<String> partyMemberModel, 
-        GenericCharacter character, int counter)
-    {
-        // counter is used to identify number of party members in battle
-        partyMemberModel.addElement(name(character, counter));
-        partyMemberModel.addElement(health(character));
-        partyMemberModel.addElement(stamina(character));
-        partyMemberModel.addElement(nano(character));
-        partyMemberModel.addElement(statusEffectString(character));
-    }
-    
-    public static DefaultListModel<String> partyMembersModel(Party party)
-    {
-        DefaultListModel<String> partyMembers = new DefaultListModel<>();
-       
-        int counter = 1;
+        ArrayList<GenericCharacter> partyMembers = new ArrayList<>();
         
         for(GenericCharacter character : party.getPartyMembers())
         {
-            if(party.getPartyMembers().size() == 1)
+            if(!character.getGeneralFeatures().knockedOut())
+            {
+                partyMembers.add(character);
+            }
+        }
+        
+        return partyMembers;
+    }
+    
+    public String name(GenericCharacter character, int counter)
+    {
+        // format so all names up to 26 characters are correctly structured 
+        String formatName = String.format("%-26s %s %s: %-2s", character.getGeneralFeatures().getName(),
+            desiredSpaces(5), "Member", String.valueOf(counter));
+            return formatName;
+    }
+    
+    public String level(GenericCharacter character)
+    {
+        String formatLevel = String.format("%-13s: %s", "LV:", formatExperience(character.
+            getGeneralFeatures().getLevel()));
+                return formatLevel;
+    }
+    
+    public String currentExpPostBattle(GenericCharacter character)
+    {
+        String formatCurrentExpPostBattle = String.format("%-13s: %s", "Current EXP", 
+            formatExperience(character.getGeneralFeatures().getExperience()));
+                return formatCurrentExpPostBattle;
+    }
+    
+    public String nextLevel(GenericCharacter character)
+    {
+        LevelMechanics level = new LevelMechanics();
+        
+        String formatNano = String.format("%-13s: %s", "Next Level", formatExperience(level.
+            nextLevelExp(character)));
+                return formatNano;
+    }
+    
+    // Note: new line is called AFTER element is added to model 
+    public void addPartyMemberDetails(DefaultListModel<String> nonKopartyMemberModel, 
+        GenericCharacter character, int counter)
+    {
+        nonKopartyMemberModel.addElement(name(character, counter));
+        nonKopartyMemberModel.addElement(level(character));
+        nonKopartyMemberModel.addElement(currentExpPostBattle(character));
+        nonKopartyMemberModel.addElement(nextLevel(character));
+    }
+    
+    public DefaultListModel<String> partyMembersModel(Party party)
+    {
+        DefaultListModel<String> partyMembers = new DefaultListModel<>();
+       
+        ArrayList<GenericCharacter> nonKoPartyMembers = nonKoPartyMembers(party);
+        
+        int counter = 1;
+        
+        for(GenericCharacter character : nonKoPartyMembers)
+        {
+            if(nonKoPartyMembers.size() == 1)
             {
                 addPartyMemberDetails(partyMembers, character, counter);
             }
-            else if(counter == party.getPartyMembers().size())
+            else if(counter == nonKoPartyMembers.size())
             {
                 addPartyMemberDetails(partyMembers, character, counter);
             }
@@ -729,1555 +382,189 @@ public class BattleMenu extends CommonGUIMethods
         return partyMembers;
     }
     
-    // END: UPDATING PARTY MEMBER JLIST BY PARTY
+    // END: ADDING CHARACTERS TO CHARACTERS RECEIVING EXP JLIST
     /*******************************************************************************/
 
     
     
-    // START: UPDATING TRUN TRACKING JLISTS
+    // START: ADDING OBJECTS TO OBJECTS DROPPED JLIST AND INVENTORY 
     /*******************************************************************************/
 
-    public static DefaultListModel<String> turnTrackingJListModel(PriorityQueue
-        <GenericCharacter> priorityQueue)
+    /* idea 
+        from defeated enemies, loop through drops ArrayList and place objects
+        by character into JList (characters from ArrayList<GenericCharacter>)
+            if objects can be added to inventory then add them and then put
+            names of objects added to inventory in JList 
+    */
+    
+    public static DefaultListModel<String> addObjectsToInventoryAndSetJListModel(
+        ArrayList<GenericCharacter> defeatedCharacters, Inventory inventory)
     {
         DefaultListModel<String> model = new DefaultListModel<>();
         
-        for(GenericCharacter element : priorityQueue)
+        for(GenericCharacter element : defeatedCharacters)
         {
-            model.addElement(element.getGeneralFeatures().getName());
+            for(GenericObject object : element.getOppositionMethods().getDroppableObjects())
+            {
+                if(inventory.canAddObject(object))
+                {
+                    inventory.addObject(object);
+                    
+                    model.addElement(object.getName());
+                }
+            }
         }
         
         return model;
     }
     
-    public static DefaultListModel<String> escapedCharactersJListModel(ArrayList
-        <GenericCharacter> escapedCharacters)
+    // END: ADDING OBJECTS TO OBJECTS DROPPED JLIST AND INVENTORY 
+    /*******************************************************************************/
+
+    
+    
+    // START: INVENTORY CAPACITY INFO AND WALLET MONEY INFO 
+    /*******************************************************************************/
+
+    public String formatCurrentMaxValues(double currentValue, double maximumValue)
     {
-        DefaultListModel<String> model = new DefaultListModel<>();
+        String curValue = String.valueOf(currentValue);
         
-        for(GenericCharacter element : escapedCharacters)
+        String maxValue = String.valueOf(maximumValue);
+        
+        StringBuilder builder = new StringBuilder();
+        
+        // spaces are used to make current value Strings appear alligned 
+        if(currentValue < 10)
         {
-            model.addElement(element.getGeneralFeatures().getName());
+            builder.append(desiredSpaces(3));
+        }
+        else if(currentValue < 100)
+        {
+            builder.append(desiredSpaces(2));
+        }
+        else if(currentValue < 1000)
+        {
+            builder.append(desiredSpaces(1));
         }
         
-        return model;
+        builder.append(curValue).append(" / ");
+        
+        // spaces are used to make max value Strings appear alligned 
+        if(maximumValue < 10)
+        {
+            builder.append(desiredSpaces(3));
+        }
+        else if(maximumValue < 100)
+        {
+            builder.append(desiredSpaces(2));
+        }
+        else if(maximumValue < 1000)
+        {
+            builder.append(desiredSpaces(1));
+        }
+        
+        builder.append(maxValue);
+        
+        return builder.toString();
     }
     
-    // END: UPDATING TRUN TRACKING JLISTS
+    public void addInventoryInfoAndWalletInfoButtons(Inventory inventory, PartyWallet wallet, 
+        ArrayList<GenericCharacter> defeatedCharacters, JFrame frame)
+    {
+        String inventoryInfo = String.format("%-8s (%s)", "Inventory", 
+            formatCurrentMaxValues(inventory.getInventory().size(), 
+            inventory.getObjectGroupsLimit()));
+                addUnusableInfoButton(inventoryInfo, 7, 0, 1, frame);
+        
+        // add money to wallet 
+        wallet.setCurrentMoney(wallet.getCurrentMoney() + moneyGained(defeatedCharacters));
+                
+        String walletMoney = String.format("%12s: %s", "Wallet Money", 
+            String.valueOf(wallet.getCurrentMoney()));
+                addUnusableInfoButton(walletMoney, 7, 1, 1, frame);
+    }
+    
+    // END: INVENTORY CAPACITY INFO AND WALLET MONEY INFO 
     /*******************************************************************************/
 
     
     
-    
-    
-    
-    
-    
-    // START: EXTERNAL FRAME STUF BELOW!!!!
+    // START: USABLE FRAME BUTTONS 
     /*******************************************************************************/
-
     
-    
-    // START: EXTERNAL FRAME ATTACK ACTION
-    /*******************************************************************************/
-
-    // ATTACK FRAME COMPONENTS 
-    
-    public static JButton attackDetailButtons(String text)
+    public JButton newUsableButton(String text)
     {
         JButton button = new JButton(text);
-        
-        button.setBackground(Color.BLACK);
-        
-        button.setForeground(Color.WHITE);
         
         button.setFont(buttonFont);
         
         return button;
     }
     
-    public static void addExternalFrameButtons(JButton button, int gridy, int gridx, 
-        int gridheight, int gridwidth, JFrame frame)
+    public void usableButtonPlacement(JButton button, JFrame frame)
     {
         // Note: if component width is 0, component occupies whole row 
-        addButtonComponent(button, gridy, gridx, 0.11, 0.33, gridheight, gridwidth, frame);
-    }
-    
-    public static void addAttackDetailsButtons(JFrame externalFrame)
-    {
-        attackName = attackDetailButtons("Attack");
-            addExternalFrameButtons(attackName, 0, 0, 1, 1, externalFrame);
-        
-        attackOverview = attackDetailButtons("Overview: (Default) (Universal)");
-            addExternalFrameButtons(attackOverview, 1, 0, 1, 1, externalFrame);
-        
-        attackDescription = attackDetailButtons("Description: inflict damage upon a single target.");
-            addExternalFrameButtons(attackDescription, 2, 0, 1, 1, externalFrame);
-    }
-    
-    public static void addAllAvailableCombatantsJListComponent(JList jList, int gridy, int gridx, 
-        int gridheight, int gridwidth, JFrame frame)
-    {
-        jList.setFont(JListFont);
-        
-        // allign view of JList such that text is displayed at its center 
-        DefaultListCellRenderer renderer = (DefaultListCellRenderer) jList.getCellRenderer();
-        renderer.setHorizontalAlignment(SwingConstants.CENTER);
-        
-        GridBagConstraints gridBagConstraints = new GridBagConstraints();
-        
-        // add JScrollPane to frame to enable vertical scrolling for JList  
-        JScrollPane statsScroll = new JScrollPane(jList, 
-            JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-            JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        
-        // button will expand horizontally to fill empty space 
-        gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
-        
-        // row position 
-        gridBagConstraints.gridy = gridy;
-        
-        // column of specified row position
-        gridBagConstraints.gridx = gridx;
-        
-        // specified column length component takes up (1/10 of frame if no 
-        // other components are in the way)
-        gridBagConstraints.weighty = 0.20;
-        
-        // specified row length component takes up (1/10 of frame if no 
-        // other components are in the way)
-        gridBagConstraints.weightx = 0.20;
-        
-        // height of component in given column 
-        gridBagConstraints.gridheight = gridheight;
-        
-        // width of component in given row 
-        gridBagConstraints.gridwidth = gridwidth;
-        
-        // vertical padding in pixels for component in given row 
-	gridBagConstraints.ipady = 250;
-        
-        // specifies space component must leave at each edges; (Insets(int 
-        // top, int left, int bottom, int right)
-        gridBagConstraints.insets = new Insets(0, 0, 0, 0);
-        
-        // add button to frame with positioning 
-        frame.add(statsScroll, gridBagConstraints);
-    }
-    
-    // FOR MODEL, NEED TO MERGE WITH BATTLE CLASS MADE LONG AGO (ASSUME PQ)
-    public static void addAllAvailableNonKoCombatantsJList(JFrame frame)
-    {
-        allAvailableNonKoCombatantsJList = new JList();
-            addAllAvailableCombatantsJListComponent(allAvailableNonKoCombatantsJList, 
-                0, 1, 3, 2, frame);
-    }
-    
-    public static void addAttackChoiceButton(JFrame externalFrame)
-    {
-        attackChoice = newUsableButton("Choice");
-            addExternalFrameButtons(attackChoice, 0, 4, 1, 2, externalFrame);
-    }
-    
-    // ATTACK FRAME COMPONENTS 
-    
-    
-    
-    // GETTING CHARACTER DISPLAYED IN JLIST 
-    
-    
-    
-    public static GenericCharacter findCharacterInParty(String characterName, Party party)
-    {
-        GenericCharacter character = null;
-        
-        for(GenericCharacter element : party.getPartyMembers())
-        {
-            if(characterName.equals(element.getGeneralFeatures().getName()))
-            {
-                character = element;
-            }
-        }
-        
-        return character;
-    }
-    
-    // Note: gets character REGARDLESS of whether character is KO ior has escaped 
-    // make boolean for finding KO and non-KO combatants 
-    public static GenericCharacter getCharacter(Object name)
-    {
-        GenericCharacter character = findCharacterInParty(((String)name), referencePartyOne);
-        
-        if(character == null)
-        {
-            character = findCharacterInParty(((String)name), referencePartyTwo);
-        }
-        
-        return character;
-    }
-    
-    // determine whether user object is the same as target object based in name 
-    public static boolean userSameAsTarget(Object userName, Object targetName)
-    {
-        boolean result = false;
-        
-        //null check for same object being referenced (user == target)
-        if(getCharacter(userName) != null && getCharacter(targetName) == null)
-        {
-            result = true;
-        }
-        
-        return result;
-    }
-    
-    // GETTING CHARACTER DISPLAYED IN JLIST 
-    
-    
-    
-    // SETTING ATTACK FRAME JLIST MODEL USING ALL NON KO COMBATANTS
-    
-    // MERGE WITH BATTLE CLASS 
-    public static DefaultListModel<String> allNonKoCombatantsModel(PriorityQueue
-        <GenericCharacter> allPqContents)
-    {
-        DefaultListModel<String> model = new DefaultListModel<>();
-        
-        for(GenericCharacter element : allPqContents)
-        {
-            if(!element.getGeneralFeatures().knockedOut())
-            {
-                String name = String.format("%-26s", element.getGeneralFeatures().
-                    getName());
-                
-                model.addElement(name);
-            }
-        }
-        
-        return model;
-    }
-    
-    // SETTING ATTACK FRAME JLIST MODEL USING ALL NON KO COMBATANTS
-    
-    
-    
-    // ACTION LISTENERSAND EXTERNAL FRAME COMPONENT SET UP 
-    
-    public static void addConfirmAttackActionListener(JButton button)
-    {
-        button.addActionListener(
-            new ActionListener() 
-            {
-                @Override
-                public void actionPerformed(ActionEvent e)
-                {
-                    /* idea 
-                        get selection value of allAvailableCombatantsJList and 
-                        use string to go through both parties in battle until 
-                        character to perform move on is found 
-                            store character temporarily 
-                        perform move such that character performing move is the
-                        passed as user (characer at head of current round) and 
-                        character retrieved via allAvailableCombatantsJList as 
-                        move target 
-                    */
-                    
-                    // set to head of current round 
-                    currentRoundJList.setSelectedIndex(0);
-                    
-                    Object userName = currentRoundJList.getSelectedValue();
-                    
-                    Object targetName = allAvailableNonKoCombatantsJList.getSelectedValue();
-                    
-                    // use factory object to call method for standard attack
-                    MovesFactory factory = new MovesFactory();
-
-                    // create object meant for calculating outcome of move 
-                    MoveCalculations calculation = new MoveCalculations();
-                    
-                    // account for when target is the same! (null otherwise 
-                    // due to referencing same character object )
-                    if(userSameAsTarget(userName, targetName))
-                    {
-                        calculation.singleTargetMoveLogic(getCharacter(userName), 
-                            getCharacter(userName), factory.getStandardAttack());
-                        
-                        // display attack info 
-                        // round number, user name, hit/miss/fail text, target name
-                        // 
-                        
-                    }
-                    // else proceed as normal 
-                    else
-                    {
-                        // ERROR!?
-                        calculation.singleTargetMoveLogic(getCharacter(userName), 
-                            getCharacter(targetName), factory.getStandardAttack());
-                        
-                        // display attack info 
-                    }
-                    
-                    // reload party JLists to display results of action 
-                    partyOneBottom.setModel(partyMembersModel(referencePartyOne));
-                    partyTwoTop.setModel(partyMembersModel(referencePartyTwo));
-                    
-                    // dispose of external frame upon attack
-                    externalFrame.dispose();
-   
-                    // turn complete upon selecting attack
-                    Battle.turnComplete = true;
-                }
-            }); 
-    }
-    
-    
-    public static void externalFrameByBoolean(JFrame externalFrame)
-    {
-        if(attackFrameActive)
-        {
-            // add button for name. overview, and description and JList for 
-            // all active characters 
-            addAttackDetailsButtons(externalFrame);
-            addAllAvailableNonKoCombatantsJList(externalFrame);
-            addAttackChoiceButton(externalFrame);
-            addConfirmAttackActionListener(attackChoice);
-            
-            // 
-            PriorityQueue<GenericCharacter> storePqContents = new PriorityQueue<>( 
-                (a, b) -> (b.getGeneralFeatures().getBattleDexterity()) - (a.getGeneralFeatures().
-                getBattleDexterity()));
-            
-            Battle.clearAndFillAllPqContents(storePqContents, Battle.currentRound, Battle.nextRound);
-            
-            
-            // initialize JList
-            allAvailableNonKoCombatantsJList.setModel(allNonKoCombatantsModel(
-                storePqContents)); 
-            
-            // turn complete once "choice" is pressed
-        }
-        else if(skillsFrameActive)
-        {
-            
-        }
-        else if(itemsFrameActive)
-        {
-            
-        }
-        
-        
-    }
-    
-    public static void externalFrameLocation()
-    {
-        // external frame is reset each time option is selected (better than 
-        // creating new JFrames each time option is selected)
-        externalFrame = new JFrame();
-
-        // frame has components set up according to GridBagLayout scheme 
-        externalFrame.getContentPane().setLayout(new GridBagLayout());
-        
-        // use location properties of original frame to position use frame
-        Rectangle bounds = frame.getBounds();
-
-        // calculation makes frame have location starting from bottom left 
-        // of outer frame with y-axis position based on bounds.y multiplier 
-        // (in this case 1.75) and outer multiplier (in this case 0.58); 
-        externalFrame.setLocation(bounds.x, (int)((bounds.y * 1.75 + frame.
-            getHeight()) * 0.58));
-
-        // set up components for external frame so player can use it 
-        externalFrameByBoolean(externalFrame);
-
-        // external frame width equal to width of original frame and while height 
-        // is calculated using original frame height as point of reference 
-        externalFrame.setSize(frame.getWidth(), (int)(0.42 * frame.getHeight()));
-        externalFrame.setVisible(true);
-
-        // Note: externalFrame is NOT set to exit on close since doing so will 
-        //       cause program to terminate early (disposing original frame 
-        //       will dispose of this frame as well (Maybe?))
+        addButtonComponent(button, 8, 0, 0.11, 0.33, 1, 0, frame);
     }
     
     // INCOMPLETE 
-    public static void usableButtonActionListeners()
+    public void addUsableButtons(JFrame frame)
     {
-        attack.addActionListener(
-            new ActionListener() 
-            {
-                @Override
-                public void actionPerformed(ActionEvent e)
+        exitBattleResults = newUsableButton("Exit Battle Results");
+            exitBattleResults.addActionListener(
+                new ActionListener() 
                 {
-                    // brings up external frame with all possible characters 
-                    // in battle that can be attacked via JList and attack
-                    // via JList popup menu with "target" command then show
-                    // text of move being used in center JTextArea and results
-                    
-                    // set other external frame variant to false 
-                    skillsFrameActive = false;
-                    itemsFrameActive = false;
-                    
-                    // prevents creation of infinite exteral frames by disposing 
-                    // of external frame if it is active before creating new one
-                    // and reset appropriate boolean indicators 
-                    externalFrame.dispose();
-                    
-                    // indicate frame style that should be active
-                    attackFrameActive = true;
-                    
-                    // set up new external frame according to view/equip boolean 
-                    externalFrameLocation();
-                }
-            }); 
+                    @Override
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        // signify that Gui is complete 
+                        guiComplete(true);
 
-        skills.addActionListener(
-            new ActionListener() 
-            {
-                @Override
-                public void actionPerformed(ActionEvent e)
-                {
-                    // brings up external frame with all moves available to 
-                    // character, and upon move selection show targets for 
-                    // move and data about move stuff (output, ect.) and show
-                    // result in JTextArea 
-                }
-            }); 
-
-        items.addActionListener(
-            new ActionListener() 
-            {
-                @Override
-                public void actionPerformed(ActionEvent e)
-                {
-                    // brings up external frame with items usable in battle
-                    // with brief info on what item does and item selection 
-                    // via popup command "use" brings up items targets in 
-                    // battle and allows character to use item 
-                }
-            }); 
+                        // release all native screen resources, subcomponents, and all 
+                        // of its owned children; in other words, close GUI and allow  
+                        // program to continue running IF other windows are available 
+                        frame.dispose();
+                    }
+                }); 
+        
+        usableButtonPlacement(exitBattleResults, frame);
     }
     
-    // ACTION LISTENERSAND EXTERNAL FRAME COMPONENT SET UP 
-    
-    // END: EXTERNAL FRAME STUF BELOW!!!!
+    // END: USABLE FRAME BUTTONS 
     /*******************************************************************************/
 
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    // START: BATTLE NESTED CLASS
-    /**/
-
-    // By default (without static), instances of B contain a hidden reference to 
-    // an instance of A (may need a different instance of Enum object per scope)
-    static class Battle extends CommonGUIMethods
+    // add ArrayList<GenericCharacter> defeatedCharacters as parameter 
+    public BattleResults(PlayerEntity entity)
     {
-        // keeps track of the number of rounds that have passed in battle 
-        private static double round;
-
-        // 
-        private static boolean turnComplete;
+        frame.setLayout(new GridBagLayout());
         
-        // denotes whether battle is winnable or not from the start
-        private boolean unwinnableBattle;
-
-        // variables denoting conditions for party win/loss/escape/ending battle early 
-        private static boolean playerGameOver, endBattleEarlyTrigger, partiesTied, partyTwoEscape, 
-            partyOneEscape, playerPartyEscape, partyTwoLoss, partyOneLoss, 
-            playerPartyLoss, partyTwoWin, partyOneWin, playerPartyWin;
-
-        // holds chaarcters that have fled from battle (no post battle reward)
-        private static final ArrayList<GenericCharacter> escapedCharacters = new ArrayList<>();
-
-        // holds characters defeated in battle (post battle reward if battle is won )
-        private static final ArrayList<GenericCharacter> defeatedCharacters = new ArrayList<>();
-
-        /* Note: priority queues contain comparator that sorts characters such 
-                 that characters with the highest battle dexterity comes first */
-
-        // priority queue representing the current round of a battle which consists 
-        // of characters belonging to the party objects supplied to battle method
-        private static final PriorityQueue<GenericCharacter> currentRound = new PriorityQueue<>( 
-            (a, b) -> (b.getGeneralFeatures().getBattleDexterity()) - (a.getGeneralFeatures().
-            getBattleDexterity()));
-
-        // priority queue representing the next round of a battle which is filled 
-        // with characters from priority queue currentRound as battle progresses 
-        private static final PriorityQueue<GenericCharacter> nextRound = new PriorityQueue<>( 
-            (a, b) -> (b.getGeneralFeatures().getBattleDexterity()) - (a.getGeneralFeatures().
-            getBattleDexterity()));
-
-        // priority queue allPqContents is meant to contain all characters stored 
-        // in priority queues currentRound and nextRound as battle progresses 
-        private static final PriorityQueue<GenericCharacter> allPqContents = new PriorityQueue<>(
-            (a, b) -> (b.getGeneralFeatures().getBattleDexterity()) - (a.getGeneralFeatures().
-            getBattleDexterity()));		
-
+        addBattleResultsMenuButton(frame);
+	//addGainedButtons(defeatedCharacters, frame);
+	addJListTitleButtons(frame);
         
-
-        // START: COUNTING ROUNDS IN BATTLE 
-        /*******************************************************************************/
-
-        public void setRoundCount(double round)
-        {
-            if(round < 1)
-            {
-                round = 1;
-            }
-            else if(round > 128)
-            {
-                round = 128;
-            }
-
-            this.round = round;
-        }
-
-        public void incrementRoundCount()
-        {
-            setRoundCount(getRoundCount() + 1);
-        }
-
-        public static double getRoundCount()
-        {
-            return round;
-        }
-
-        // END: END BATTLE CONDITIONS
-        /*******************************************************************************/
-
-
-
-        // START: UNWINNABLE BATTLE BOOLEANS 
-        /*******************************************************************************/
-
-        public void unwinnableBattle(boolean unwinnableBattle)
-        {
-            this.unwinnableBattle = unwinnableBattle;
-        }
-
-        public boolean unwinnableBattle()
-        {
-            return unwinnableBattle;
-        }
-
-        // START: UNWINNABLE BATTLE BOOLEANS 
-        /*******************************************************************************/
-
-
-
-        // START: END BATTLE CONDITIONS 
-        /*******************************************************************************/
-
-        public void playerPartyGameOver(boolean playerGameOver)
-        {
-            this.playerGameOver = playerGameOver;
-        }
-
-        public boolean playerPartyGameOver()
-        {
-            return playerGameOver;
-        }
-
-        public void endBattleEarlyTrigger(boolean endBattleEarlyTrigger)
-        {
-            this.endBattleEarlyTrigger = endBattleEarlyTrigger;
-        }
-
-        public boolean endBattleEarlyTrigger()
-        {
-            return endBattleEarlyTrigger;
-        }
-
-        public void partiesTied(boolean partiesTied)
-        {
-            this.partiesTied = partiesTied;
-        }
-
-        public boolean partiesTied()
-        {
-            return partiesTied;
-        }
-
-        public void partyTwoEscape(boolean partyTwoEscape)
-        {
-            this.partyTwoEscape = partyTwoEscape;
-        }
-
-        public boolean partyTwoEscape()
-        {
-            return partyTwoEscape;
-        }
-
-        public void partyOneEscape(boolean partyOneEscape)
-        {
-            this.partyOneEscape = partyOneEscape;
-        }
-
-        public boolean partyOneEscape()
-        {
-            return partyOneEscape;
-        }
-
-        public void playerPartyEscape(boolean playerPartyEscape)
-        {
-            this.playerPartyEscape = playerPartyEscape;
-        }
-
-        public boolean playerPartyEscape()
-        {
-            return playerPartyEscape;
-        }
-
-        public void partyTwoLoss(boolean partyTwoLoss)
-        {
-            this.partyTwoLoss = partyTwoLoss;
-        }
-
-        public boolean partyTwoLoss()
-        {
-            return partyTwoLoss;
-        }
-
-        public void partyOneLoss(boolean partyOneLoss)
-        {
-            this.partyOneLoss = partyOneLoss;
-        }
-
-        public boolean partyOneLoss()
-        {
-            return partyOneLoss;
-        }
-
-        public void playerPartyLoss(boolean playerPartyLoss)
-        {
-            this.playerPartyLoss = playerPartyLoss;
-        }
-
-        public boolean playerPartyLoss()
-        {
-            return playerPartyLoss;
-        }
-
-        public void partyTwoWin(boolean partyTwoWin)
-        {
-            this.partyTwoWin = partyTwoWin;
-        }
-
-        public boolean partyTwoWin()
-        {
-            return partyTwoWin;
-        }
-
-        public void partyOneWin(boolean partyOneWin)
-        {
-            this.partyOneWin = partyOneWin;
-        }
-
-        public boolean partyOneWin()
-        {
-            return partyOneWin;
-        }
-
-        public void playerPartyWin(boolean playerPartyWin)
-        {
-            this.playerPartyWin = playerPartyWin;
-        }
-
-        public boolean playerPartyWin()
-        {
-            return playerPartyWin;
-        }
-
-        // END: END BATTLE CONDITIONS 
-        /*******************************************************************************/
-
-
-
-        // START: DETERMINING EXISTENCE OF PLAYER PARTY AND GETTING PARTY OBJECTS 
-        /*******************************************************************************/
-
-        public boolean playerPartyExists(Party partyOne, Party partyTwo)
-        {
-            // if one party is the player party then return true 
-            boolean result = (partyOne.playerParty() || partyTwo.playerParty());
-                return result;
-        }
-
-        public Party getPlayerParty(Party partyOne, Party partyTwo)
-        {
-            Party result = null;
-
-            if(partyOne.playerParty())
-            {
-                result = partyOne;
-            }
-            else if(partyTwo.playerParty())
-            {
-                result = partyTwo;
-            }
-
-            return result;
-        }
-
-        public Party getPartyOpposingPlayer(Party partyOne, Party partyTwo)
-        {
-            Party result = null;
-
-            if(!partyOne.playerParty())
-            {
-                result = partyOne;
-            }
-            else if(!partyTwo.playerParty())
-            {
-                result = partyTwo;
-            }
-
-            return result;
-        }
-
-        public static Party getOpposingPlayer(GenericCharacter character, Party partyOne, 
-            Party partyTwo)
-        {
-            Party result = null;
-
-            if(partyOne.getPartyMembers().contains(character))
-            {
-                result = partyOne;
-            }
-            else if(partyTwo.getPartyMembers().contains(character))
-            {
-                result = partyTwo;
-            }
-
-            return result;
-        }
+	addBattleResultsJLists(frame);
         
-        // END: DETERMINING EXISTENCE OF PLAYER PARTY AND GETTING PARTY OBJECTS 
-        /*******************************************************************************/
-
-
-
-        // START: PRE-BATTLE SET UP 
-        /*******************************************************************************/
-
-        public void resetBattleLoopConditions()
-        {
-            unwinnableBattle = false;
-
-            boolean[] endBattleConditions = {playerGameOver, endBattleEarlyTrigger, 
-                partiesTied, partyTwoEscape, partyOneEscape, playerPartyEscape, partyTwoLoss, 
-                partyOneLoss, playerPartyLoss, partyTwoWin, partyOneWin, playerPartyWin};
-            
-            for(boolean element: endBattleConditions)
-            {
-                element = false;
-            }
-        }
+        partyMembersModel(entity.getParty());
         
-        public void resetAllInstanceVariables()
-        {
-            // reset booleans representing end battle conditions 
-            resetBattleLoopConditions();
-
-            // reset priority queues 
-            currentRound.clear();
-            nextRound.clear();
-
-            // reset ArrayLists 
-            escapedCharacters.clear();
-            defeatedCharacters.clear();
-        }
-
-        public void preparePartiesForBattle(Party partyOne, Party partyTwo)
-        {
-            partyOne.resetEndBattle();
-            partyOne.setBattleDexterity();
-
-            partyTwo.resetEndBattle();
-            partyTwo.setBattleDexterity();
-        }
-
-        public void putCharactersInCurrentRound(PriorityQueue<GenericCharacter> currentRound, 
-            Party partyOne, Party partyTwo)
-        {
-            for(GenericCharacter element : partyOne.getPartyMembers())
-            {
-                currentRound.add(element);
-            }
-
-            for(GenericCharacter element : partyTwo.getPartyMembers())
-            {
-                currentRound.add(element);
-            }
-        }
-
-        public void preBattleSetUp(PriorityQueue<GenericCharacter> currentRound, 
-            Party partyOne, Party partyTwo)
-        {
-            setRoundCount(1);
-
-            resetAllInstanceVariables();
-
-            preparePartiesForBattle(partyOne, partyTwo);
-
-            putCharactersInCurrentRound(currentRound, partyOne, partyTwo);
-        }
-
-        // END: SETTING UP BATTLE FOR ROUND ONE AND BEYOND 
-        /*******************************************************************************/
-
-
-
-        // START: APPLYING START/END OF TURN EFFECTS BY CHARACTER
-        /*******************************************************************************/
-
-        public void resetDamagedIfDamaged(GenericCharacter character)
-        {
-            if(character.getGeneralFeatures().damaged())
-            {
-                character.getGeneralFeatures().damaged(false);
-            }
-        }
-
-        public void startOfTurnEffects(GenericCharacter character)
-        {
-            if(!character.getGeneralFeatures().knockedOut())
-            {
-                resetDamagedIfDamaged(character);
-                character.getStatusEffectContainer().decrementStartOfTurnStatusEffectTurns();
-                character.getStatusEffectContainer().removeStatusEffectIfZeroTurns();
-            }
-        }
-
-        public static void effectOfStatusEffectsOnCurrentGauges(GenericCharacter character)
-        {
-            character.getGeneralFeatures().setCurrentHealth(character.getGeneralFeatures().
-                getCurrentHealth() + (character.getGeneralFeatures().getCurrentHealth() * 
-                character.getStatusEffectContainer().sumOfEffects("Current Health")));
-
-            character.getGeneralFeatures().setCurrentStamina(character.getGeneralFeatures().
-                getCurrentStamina() + (character.getGeneralFeatures().getCurrentStamina() * 
-                character.getStatusEffectContainer().sumOfEffects("Current Stamina")));
-
-            character.getGeneralFeatures().setCurrentNano(character.getGeneralFeatures().
-                getCurrentNano() + (character.getGeneralFeatures().getCurrentNano() * 
-                character.getStatusEffectContainer().sumOfEffects("Current Nano")));
+        // this is a model
+        //addObjectsToInventoryAndSetJListModel(defeatedCharacters, entityOne.
+          //  getPlayerEntityExample().getInventory());
+	
+      // need arraylist
+        //addInventoryInfoAndWalletInfoButtons(entity.getInventory(), entity.getPartyWallet(), 
+          //  defeatedCharacters, frame);
+	
+        addUsableButtons(frame);
+        
+        // set up JList models 
+        charactersThatReceivedExperience.setModel(partyMembersModel(entity.getParty()));
+        
+        //objectsDropped.setModel(addObjectsToInventoryAndSetJListModel(defeatedCharacters, 
+          //  entity.getInventory()));
+        
+        displayFrameWindow(frame);
     }
-
-        public static void endOfTurnEffects(GenericCharacter character)
-        {
-            if(!character.getGeneralFeatures().knockedOut())
-            {
-                effectOfStatusEffectsOnCurrentGauges(character);
-                character.getStatusEffectContainer().decrementEndOfTurnStatusEffectTurns();
-                character.getStatusEffectContainer().removeStatusEffectIfZeroTurns();
-                character.getEquippableOutfits().applyCorePenaltyToEquippedOutfits();
-            }	
-        }
-
-        // END: APPLYING START/END OF TURN EFFECTS BY CHARACTER 
-        /*******************************************************************************/
-
-
-
-        // START: MANAGING CURRENT/NEXT ROUND PRIORITY QUEUES AND ALLPQCONTENTS
-        /*******************************************************************************/
-
-        public static void storeSecondPqContentsInFirstPq(PriorityQueue<GenericCharacter> firstPq, 
-            PriorityQueue<GenericCharacter> secondPq)
-        {
-            for(GenericCharacter element : secondPq)
-            {
-                firstPq.add(element);
-            }
-        }
-
-        public static void fillCurrentRoundAndClearNextRound(PriorityQueue<GenericCharacter> currentRound, 
-            PriorityQueue<GenericCharacter> nextRound)
-        {
-            storeSecondPqContentsInFirstPq(currentRound, nextRound);
-            nextRound.clear();
-        }
-
-        public static void clearAndFillAllPqContents(PriorityQueue<GenericCharacter> allPqContents, 
-            PriorityQueue<GenericCharacter> currentRound, PriorityQueue<GenericCharacter> nextRound)
-        {
-            allPqContents.clear();
-            storeSecondPqContentsInFirstPq(allPqContents, currentRound);
-            storeSecondPqContentsInFirstPq(allPqContents, nextRound);
-        }
-
-        // END: MANAGING CURRENT/NEXT ROUND PRIORITY QUEUES AND ALLPQCONTENTS
-        /*******************************************************************************/
-
-
-
-        // START: BATTLE LOGIC
-        /*******************************************************************************/
-
-        // returns whether party is suitable for battle 
-        public boolean validParty(Party party)
-        {
-            boolean result = false;
-
-            if(party != null && !party.getPartyMembers().isEmpty())
-            {
-                result = true;
-            }
-
-            return result;
-        }
-
-        // sets up GUI meant to display battle to player
-        public void setUpBattleGUI(JFrame frame, Party partyOne, Party partyTwo)
-        {
-            frame.setLayout(new GridBagLayout());
-        
-            // party references used to easily access parties in battle  
-            referencePartyOne = partyOne;
-            referencePartyTwo = partyTwo;
-   
-            // set up frame for battle GUI
-            topLayoutButtons(frame);
-
-            bottomLayoutButtons(frame);
-
-            addUsableButtons(frame);
-
-            addUnusableTurnTrackingJListTitles(frame);
-
-            addPartyMemberJLists(frame);
-
-            // set up party JLists to show parties and their members in battle 
-            partyOneBottom.setModel(partyMembersModel(referencePartyOne));
-            partyTwoTop.setModel(partyMembersModel(referencePartyTwo));
-            
-            addTurnTrackingJLists(frame);
-
-            currentRoundJList.setModel(turnTrackingJListModel(currentRound));
-            
-            addBattleLogJTextArea(frame);
-
-            addJListJTextAreaButtonTitles(frame);
-
-            // designates buttons that allow player to perform actions in battle 
-            usableButtonActionListeners();
-
-            displayFrameWindow(frame);
-        }
-        
-        // allows characters from two different parties to battle one another 
-        // Note: Battle object is passed to get access to boolean conditions
-        public void standardBattle(Party partyOne, Party partyTwo, JFrame frame)
-        {
-            // proceed only if both parties supplied are considered valid 
-            if(validParty(partyOne) && validParty(partyTwo))
-            {
-                // reset end battle triggers, instance variables, and set up current round 
-                preBattleSetUp(currentRound, partyOne, partyTwo);
-
-                // set up battle gui before it is displayed 
-                setUpBattleGUI(frame, partyOne, partyTwo);
-   
-                // loop until an end battle loop condition is met 
-                while(true)
-                {
-                    // commence battle between two parties filled with characters 
-                    standardBattleLogic(allPqContents, currentRound, nextRound, getRoundCount(), 
-                        partyOne, partyTwo);
-                       
-                    // fill allPqContents with characters that have not escaped battle 
-                    clearAndFillAllPqContents(allPqContents, currentRound, nextRound);
-
-                    // check end battle loop variables to see if a condition was met 
-                    if(checkEndBattleLoopVariables(allPqContents, referencePartyOne, referencePartyTwo))
-                    {
-                        break;
-                    }
-                } 
-
-                System.out.println("Game Win :)");
-                
-                // signify that Gui is complete 
-                guiComplete(true);
-
-                // dipose of frame to end battle and use booleans tied to Battle
-                // object to determine outcome post battle via battleHandler 
-                frame.dispose();
-                
-                // after battle, perform appropriate action based on boolean priority 
-                // and whether a party under player control is involved in the battle 
-                    // Note: class should return value accessible to Battle Handler 
-            }
-        }
-
-        public void standardBattleLogic(PriorityQueue<GenericCharacter> allPqContents, PriorityQueue
-            <GenericCharacter> currentRound, PriorityQueue<GenericCharacter> nextRound, double 
-            roundCount, Party partyOne, Party partyTwo)
-        {
-            // proceed if currentRound is not empty 
-            if(!currentRound.isEmpty())
-            {
-                // fill allPqContents with characters that have not escaped battle 
-                clearAndFillAllPqContents(allPqContents, currentRound, nextRound);
-                
-                // execute turn logic for character at head of currentRound 
-                characterTurnLogic(allPqContents, currentRound, nextRound, 
-                    roundCount, partyOne, partyTwo);
-            } 
-            // else refill currentRound and reload turn tracking JLists 
-            else 
-            {
-                fillCurrentRoundAndClearNextRound(currentRound, nextRound);
-                
-                // update turn tracking JLists 
-                currentRoundJList.setModel(turnTrackingJListModel(currentRound));
-                nextRoundJList.setModel(turnTrackingJListModel(nextRound));
-                
-                System.out.println("Round: "+getRoundCount());
-            
-                // increment round count by one 
-                incrementRoundCount();
-            }
-        }
-
-        // END: BATTLE LOGIC
-        /*******************************************************************************/
-
-        
-        
-        // START: CHARACTER TURN LOGIC 
-        /*******************************************************************************/
-
-        public void characterTurnLogic(PriorityQueue<GenericCharacter> allPqContents, 
-            PriorityQueue<GenericCharacter> currentRound, PriorityQueue<GenericCharacter> 
-            nextRound, double roundCount, Party partyOne, Party partyTwo)
-        {
-            // determine which party character belongs to before character makes move 
-            if(partyOne.getPartyMembers().contains(currentRound.peek()))
-            {
-                // execute turn logic for character by passing character by reference 
-                // Note: first party object supplied is considered as character's party
-                executeTurnOrStoreForNextRound(allPqContents, currentRound, nextRound, 
-                    getRoundCount(), partyOne, partyTwo);
-            }
-            else
-            {
-                // execute turn logic for character by passing character by reference 
-                // Note: first party object supplied is considered as character's party
-                executeTurnOrStoreForNextRound(allPqContents, currentRound, nextRound, 
-                    getRoundCount(), partyTwo, partyOne);
-            }
-        }
-
-        // END: CHARACTER TURN LOGIC 
-        /*******************************************************************************/
-
-
-
-        // START: SELECTING CHARACTER THAT WILL MAKE MOVE 
-        /*******************************************************************************/
-
-        public void executeTurnOrStoreForNextRound(PriorityQueue<GenericCharacter> allPqContents, 
-            PriorityQueue<GenericCharacter> currentRound, PriorityQueue<GenericCharacter> 
-            nextRound, double roundCount, Party characterParty, Party opposingParty)
-        {
-            if(!currentRound.peek().getGeneralFeatures().knockedOut())
-            {
-                startOfTurnEffects(currentRound.peek()); 
-
-                executeCharacterTurn(allPqContents, currentRound, nextRound, roundCount, 
-                    characterParty, opposingParty);
-            }
-            else
-            {
-                currentRound.peek().getStatusEffectContainer().removeStatusEffectsAfterKnockOut();
-                currentRound.peek().getGeneralFeatures().setBattleDexterity(currentRound.peek()); 
-                nextRound.add(currentRound.poll());
-                
-                // update turn tracking JLists 
-                currentRoundJList.setModel(turnTrackingJListModel(currentRound));
-                nextRoundJList.setModel(turnTrackingJListModel(nextRound));
-            }
-        }
-
-            // INCOMPLETE********
-        // manage character behavior when it is time to make a turn based on character state 
-        public void executeCharacterTurn(PriorityQueue<GenericCharacter> allPqContents, 
-            PriorityQueue<GenericCharacter> currentRound, PriorityQueue<GenericCharacter> 
-            nextRound, double roundCount, Party characterParty, Party opposingParty) 
-        {
-            if(currentRound.peek().getStatusEffectContainer().behaviorStatusExists())
-            {
-                // have code for behavior that takes control away from player/AI script 
-                    // CONFUSED("Confused"), ENAMORED("Enamored"), BERSERK("Berserk");
-                        // consider switch case or something... 
-            }
-            else if(currentRound.peek().getStatusEffectContainer().turnBehaviorStatusExists())
-            {
-                // code checks object's status effects for skip turn status effects 
-                    // do nothing since turn is skipped 
-            }
-            else if(!currentRound.peek().getGeneralFeatures().playerControl())
-            {
-                // if character is not under player control then execute AI script 
-                    // currentRound.peek().getAiScript().executeAiPattern() 
-                
-                BattleMenu.disableUsableButtons();
-                
-                while(!turnComplete)
-                {
-                    System.out.print("");
-                }
-                
-            }
-            else // object is under player control
-            {
-                // at this point, character is deemed under player control so 
-                // player can make character perform actions by selecting any 
-                // enabled button that exist across bottom border of frame as
-                // soon as battle shifts to player control.
-                
-                // battle advances ONLY after player has selected option that
-                // character can perform. Once a move is performed, character 
-                // has battle dexterity set character.setBattleDexterity(move
-                // speed * character.getTotalDexterity()) and battle proceeds
-                // by calling postMoveBehavior(PriorityQueue<GenericCharacter> 
-                // currentRound, PriorityQueue <GenericCharacter> nextRound, 
-                // Party opposingParty)
-                
-                BattleMenu.enableUsableButtons();
-                
-                turnComplete = false;
-                
-                // set true elsewhere 
-                while(!turnComplete)
-                {
-                    System.out.print("");
-                }
-                
-                postMoveBehavior(currentRound, nextRound, opposingParty);
-            }
-        }
-
-        // END: SELECTING CHARACTER THAT WILL MAKE MOVE 
-        /*******************************************************************************/
-
-
-
-        // START: POST MOVE BEHAVIOR AND ESCAPE BEHAVIOR  
-        /*******************************************************************************/
-
-        public static boolean escapePossible(double originalPreventFlee, double reducedPreventFlee)
-        {
-            SecureRandom rand = new SecureRandom();
-
-            boolean result = false;
-
-            if((rand.nextInt((int)originalPreventFlee) + 1) > (rand.nextInt((int)reducedPreventFlee) + 1))
-            {
-                result = true;
-            }
-
-            return result;
-        }
-
-        public static boolean escapeOutcome(GenericCharacter character, Party opposingParty)
-        {
-            boolean result = false;
-
-            double escapeValue = 0.0;
-
-            if(!opposingParty.boss())
-            {
-                escapeValue = opposingParty.getAverageActiveChanceToPreventEscape(escapedCharacters);
-
-                if(character.getGeneralFeatures().getLevel() > opposingParty.getAverageActiveLevel(escapedCharacters))
-                {
-                    escapeValue -= (escapeValue / 4);
-                }
-                else
-                {
-                    escapeValue += (escapeValue / 5);
-                }
-
-                if(character.getTotalStats().getTotalDexterity() > opposingParty.getAverageActiveDexterity(escapedCharacters)){
-                    escapeValue -= (escapeValue / 3);
-                }
-                else
-                {
-                    escapeValue += (escapeValue / 4);
-                }
-
-                result = escapePossible(opposingParty.getAverageActiveChanceToPreventEscape(
-                    escapedCharacters), escapeValue);
-            }
-
-            return result;
-        }
-
-        public static void escapeAttemptBehavior(PriorityQueue<GenericCharacter> currentRound, 
-            PriorityQueue<GenericCharacter> nextRound, Party opposingParty)
-        {
-            if(escapeOutcome(currentRound.peek(), opposingParty))
-            {
-                escapedCharacters.add(currentRound.poll());
-                
-                escapedCharactersJList.setModel(escapedCharactersJListModel(escapedCharacters));
-            }
-            else
-            {
-                endOfTurnEffects(currentRound.peek());
-                currentRound.peek().getGeneralFeatures().setBattleDexterity(currentRound.peek()); 
-                nextRound.add(currentRound.poll());
-                
-                // update turn tracking JLists 
-                currentRoundJList.setModel(turnTrackingJListModel(currentRound));
-                nextRoundJList.setModel(turnTrackingJListModel(nextRound));
-            } 
-        }	
-
-        // account for character escape behavior or battle behavior POST MOVE 
-        public static void postMoveBehavior(PriorityQueue<GenericCharacter> currentRound, 
-            PriorityQueue<GenericCharacter> nextRound, Party opposingParty)
-        {
-            // if accounts for escape attempt and else accounts for non-escape behavior
-            if(currentRound.peek().getGeneralFeatures().getBattleDexterity() == Double.MAX_VALUE)
-            {
-                escapeAttemptBehavior(currentRound, nextRound, opposingParty);
-            }
-            else
-            {
-                // apply effects to non-knocked out characters ONLY 
-                if(!currentRound.peek().getGeneralFeatures().knockedOut())
-                {
-                    endOfTurnEffects(currentRound.peek());
-                }
-
-                currentRound.peek().getGeneralFeatures().setBattleDexterity(currentRound.peek()); 
-                nextRound.add(currentRound.poll());
-                
-                // update turn tracking JLists 
-                currentRoundJList.setModel(turnTrackingJListModel(currentRound));
-                nextRoundJList.setModel(turnTrackingJListModel(nextRound));
-            }
-        }
-
-        // END: POST MOVE BEHAVIOR AND ESCAPE BEHAVIOR 
-        /*******************************************************************************/
-
-
-
-        // START: BOOLEANS FOR SPECIAL CONDITIONS DETERMINING BATTLE OUTCOME 
-        /*******************************************************************************/
-
-        // end battle loop condition 
-        public boolean playerGameOverUponDeath(Party partyOne, Party partyTwo)
-        {
-            boolean result = false;
-            
-            if(playerPartyExists(partyOne, partyTwo))
-            {
-                result = getPlayerParty(partyOne, partyTwo).partyMemberDead();
-            }
-            
-            return result;
-        }
-
-        // end battle loop condition 
-        public boolean endBattleEarlyTrigger(Party partyOne, Party partyTwo)
-        {
-            boolean result = false;
-            
-            if(partyOne.endBattle() || partyTwo.endBattle())
-            {
-                result = true;
-            }
-            
-            return result;
-        }
-
-        // end battle loop condition 
-        public boolean partiesTied(Party partyOne, Party partyTwo)
-        {
-            boolean result = false;
-            
-            if(partyOne.partyKnockedOut() && partyTwo.partyKnockedOut())
-            {
-                result = true;
-            }
-            
-            return result;
-        }
-
-        /* Party Escape Logic (escaping is ONLY way out of priority queue)
-            Party with one member conditions:
-                must check against party that character belongs to 
-                    if all members of a party escape then priority queue must not 
-                    have any members of party in it 
-                        escape successful!
-            Party with many members conditions: 
-                must check against party that character belongs too 
-                    if all members of a party escape then priority queue must not 
-                    have any members of party in it 
-                        escape successful!
-                number of members for party must at least be 1 less than party size 
-                    (1 escaped so for party of 4 there are 3 members still in battle)
-                        if at least 1 escaped and rest of active combatants are KO or
-                        if all party members manage to escape 
-                            escape successful!
-        */
-
-        public enum SpecificCombatants
-        {
-            ALL_CHARACTERS_IN_BATTLE, ALL_KO_CHARACTERS_IN_BATTLE;
-        }
-
-        public int countSpecificPartyCombatants(PriorityQueue<GenericCharacter> allPqContents, 
-            Party party, SpecificCombatants choice)
-        {
-            int counter = 0;
-
-            for(GenericCharacter character : allPqContents)
-            {
-                for(GenericCharacter element : party.getPartyMembers())
-                {
-                    if(character == element)
-                    {
-                        switch(choice)
-                        {
-                            case ALL_CHARACTERS_IN_BATTLE: 
-                                counter++;
-                                    break; 
-                            case ALL_KO_CHARACTERS_IN_BATTLE: 
-                                if(element.getGeneralFeatures().knockedOut())
-                                { 
-                                    counter++;
-                                }
-                                    break;
-                        }
-                    }
-                }
-                
-                
-            }
-
-            return counter;
-        }
-
-        public int countCombatantsInBattle(PriorityQueue<GenericCharacter> allPqContents, Party party)
-        {
-            return countSpecificPartyCombatants(allPqContents, party, SpecificCombatants.
-                ALL_CHARACTERS_IN_BATTLE);
-        }
-
-        public int countCombatantsKnockedOut(PriorityQueue<GenericCharacter> allPqContents, Party party)
-        {
-            return countSpecificPartyCombatants(allPqContents, party, SpecificCombatants.
-                ALL_KO_CHARACTERS_IN_BATTLE);
-        }
-
-        public boolean remainingCombatantsKnockedOut(PriorityQueue<GenericCharacter> allPqContents, Party party)
-        {
-            return (countCombatantsInBattle(allPqContents, party) == countCombatantsKnockedOut(allPqContents, party));
-        }
-
-        public boolean successfulPartyEscape(PriorityQueue<GenericCharacter> allPqContents, Party party)
-        {
-            boolean result = false;
-
-            // if statement accounts for when at least one character escaped 
-            if(party.getPartyMembers().size() > countCombatantsInBattle(allPqContents, party))
-            {
-                /* Conditions for successful party escape: 
-                    if remaining combatants of party are knocked out in battle 
-                    if no more party combatants are in battle (all escaped) */
-                if(remainingCombatantsKnockedOut(allPqContents, party))
-                {
-                    result = true;
-                }
-            }
-
-            return result;
-        }
-
-        // end battle loop condition 
-        public boolean partyTwoEscape(PriorityQueue<GenericCharacter> allPqContents, Party partyOne)
-        {
-            return successfulPartyEscape(allPqContents, partyOne);
-        }
-
-        // end battle loop condition 
-        public boolean partyOneEscape(PriorityQueue<GenericCharacter> allPqContents, Party partyTwo)
-        {
-            return successfulPartyEscape(allPqContents, partyTwo);
-        }
-
-        // end battle loop condition 
-        public boolean playerPartyEscape(PriorityQueue<GenericCharacter> allPqContents, Party partyOne, Party partyTwo)
-        {
-            boolean result = false;
-            
-            if(playerPartyExists(partyOne, partyTwo))
-            {
-                result = successfulPartyEscape(allPqContents, getPlayerParty(partyOne, partyTwo));
-            }
-            
-            return result;
-        }
-
-        // Note: in order to determine whether a party wins/loses one needs to know
-        //       how many party members are still in battle as well as how many are
-        //       not knocked out 
-
-        public boolean partyLoss(PriorityQueue<GenericCharacter> allPqContents, Party party)
-        {
-            boolean result = false;
-            
-            if(remainingCombatantsKnockedOut(allPqContents, party))
-            {
-                result = true;
-            }
-            
-            return result;
-        }
-
-        // end battle loop condition 
-        public boolean partyTwoLoss(PriorityQueue<GenericCharacter> allPqContents, Party partyTwo)
-        {
-            return partyLoss(allPqContents, partyTwo);
-        }
-
-        // end battle loop condition 
-        public boolean partyOneLoss(PriorityQueue<GenericCharacter> allPqContents, Party partyOne)
-        {
-            return partyLoss(allPqContents, partyOne);
-        }
-
-        // end battle loop condition 
-        public boolean playerPartyLoss(PriorityQueue<GenericCharacter> allPqContents, Party partyOne, Party partyTwo)
-        {
-            boolean result = false;
-            
-            if(playerPartyExists(partyOne, partyTwo))
-            {
-                result = successfulPartyEscape(allPqContents, getPlayerParty(partyOne, partyTwo));
-            }
-            
-            return result;
-        }
-
-        // end battle loop condition 
-        public boolean partyTwoWin(boolean partyOneLoss, boolean partyTwoLoss)
-        {
-            boolean result = false;
-            
-            if(partyOneLoss && !partyTwoLoss)
-            {
-                result = true;
-            }
-            
-            return result;
-        }
-
-        // end battle loop condition 
-        public boolean partyOneWin(boolean partyOneLoss, boolean partyTwoLoss)
-        {
-            boolean result = false;
-            
-            if(!partyOneLoss && partyTwoLoss)
-            {
-                result = true;
-            }
-            
-            return result;
-        }
-
-        // end battle loop condition 
-        public boolean playerPartyWin(boolean partyOneWin, boolean partyTwoWin, Party partyOne, Party partyTwo)
-        {
-            boolean result = false;
-            
-            if((partyOneWin && partyOne.playerParty()) || (partyTwoWin && partyTwo.playerParty()))
-            {
-                result = true;
-            }
-            
-            return result;
-        }
-
-        // END: BOOLEANS FOR SPECIAL CONDITIONS DETERMINING BATTLE OUTCOME 
-        /*******************************************************************************/
-
-
-
-        // START: END BATTLE LOOP BOOLEAN MANAGEMENT 
-        /*******************************************************************************/
-
-        public boolean checkEndBattleLoopVariables(PriorityQueue<GenericCharacter> allPqContents, 
-            Party partyOne, Party partyTwo)
-        {
-            playerGameOver = playerGameOverUponDeath(partyOne, partyTwo);
-            endBattleEarlyTrigger = endBattleEarlyTrigger(partyOne, partyTwo);
-            partiesTied = partiesTied(partyOne, partyTwo);
-            partyTwoEscape = partyTwoEscape(allPqContents, partyTwo);
-            partyOneEscape = partyOneEscape(allPqContents, partyOne);
-            playerPartyEscape = playerPartyEscape(allPqContents, partyOne, partyTwo);
-            partyTwoLoss = partyTwoLoss(allPqContents, partyTwo);
-            partyOneLoss = partyOneLoss(allPqContents, partyOne);
-            playerPartyLoss = playerPartyLoss(allPqContents, partyOne, partyTwo);
-            partyTwoWin = partyTwoWin(partyOneLoss, partyTwoLoss);
-            partyOneWin = partyOneWin(partyOneWin, partyTwoLoss);
-            playerPartyWin = playerPartyWin(partyOneWin, partyTwoWin, partyOne, partyTwo);
-            
-            boolean result = false;
-            
-            // boolean array holds booleans that can end the battle if one of them is true 
-            boolean[] endBattleConditions = {playerGameOver, endBattleEarlyTrigger, 
-                partiesTied, partyTwoEscape, partyOneEscape, playerPartyEscape, partyTwoLoss, 
-                partyOneLoss, playerPartyLoss, partyTwoWin, partyOneWin, playerPartyWin};
-
-            
-            for(boolean element : endBattleConditions)
-            {
-                if(element)
-                {
-                    result = true;
-                        break;
-                }
-            }
-
-            return result;
-        }
-
-        // END: END BATTLE LOOP BOOLEAN MANAGEMENT 
-        /*******************************************************************************/
-        
-        public Battle()
-        {
-            BattleMenu.frame.setLayout(new GridBagLayout());
-            
-            PlayerEntityFactory entityOne = new PlayerEntityFactory();
-                referencePartyOne = entityOne.getPlayerEntityExample().getParty();
-        
-            PlayerEntityFactory entityTwo = new PlayerEntityFactory();
-                referencePartyTwo = entityTwo.getPlayerEntityExampleTwo().getParty();
-
-            standardBattle(entityOne.getPlayerEntityExample().getParty(), 
-                entityTwo.getPlayerEntityExampleTwo().getParty(), BattleMenu.frame);
-        }
-    }
-
-
-    static JFrame frame = new JFrame();
-
+    
 }
