@@ -65,7 +65,7 @@ public class TotalStats
         // validation must be performed before stress penalty can be applied to ensure 
         // that a value meant to be retrieved has stress penalty applied to it correctly
         double attribute = validateTotalAttribute(attributeWithOutfits + (attributeWithOutfits 
-            * getStatusEffectContainer().sumOfEffects(attributeName)));
+            * getStatusEffectContainer().sumOfStatusEffectEffects(attributeName)));
         
         return attribute;	
     }
@@ -95,7 +95,7 @@ public class TotalStats
         // validation must be performed before stress penalty can be applied to ensure 
         // that a value meant to be retrieved has stress penalty applied to it correctly
         double attribute = validateTotalAttribute(attributeWithOutfits + (attributeWithOutfits 
-            * getStatusEffectContainer().sumOfEffects(attributeName)));
+            * getStatusEffectContainer().sumOfStatusEffectEffects(attributeName)));
         
         return attribute;	
     }
@@ -163,7 +163,7 @@ public class TotalStats
     {
         // validation must be performed before stress penalty can be applied to ensure 
         // that a value meant to be retrieved has stress penalty applied to it correctly
-        double resistance = validateResistance(resistanceWithOutfits + getStatusEffectContainer().sumOfEffects(resistanceName));
+        double resistance = validateResistance(resistanceWithOutfits + getStatusEffectContainer().sumOfStatusEffectEffects(resistanceName));
             return resistance;	
     }
 
