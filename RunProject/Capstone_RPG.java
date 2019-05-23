@@ -89,24 +89,215 @@ public class Capstone_RPG extends JPanel
     {
         ArrayList<String> example = new ArrayList<>();
         
-        example.add("/Name");
-        example.add("I see doggy ha ha and i was like totally omg this cannot "
-            + "be happening since i ate french fries and waffkes which are supposed "
-            + "ti keep them things far away. Anyways I saw it and it saw me and I "
-            + "saw it again and it like growled super weirdly like an alien thing "
-            + "on t.v. or something. And that is why I am running for president. Bye "
-            + "Now haha!");
-        example.add("/Hype");
-        example.add("Nuh - -d1! !2e Uh");
-        example.add("Out of my way");
-        example.add("/Description");
-        example.add("like Uh huh!!! why say that apple loser!");
-        example.add("I see doggy ha ha and i was like totally omg this cannot "
-            + "be happening since i ate french fries and waffkes which are supposed "
-            + "ti keep them things far away. Anyways I saw it and it saw me and I "
-            + "saw it again and it like growled super weirdly like an alien thing "
-            + "on t.v. or something. And that is why I am running for president. Bye "
-            + "Now haha!");
+        example.add("/Some Guy");
+        example.add("A Tribute To the");
+        example.add("Declaration of myAppendex...");
+        example.add("/Uncle Slam");
+        example.add("When in the Course of human events it becomes necessary for "
+            + "one people to dissolve the political bands which have connected them "
+            + "with another and to assume among the powers of the earth, the separate "
+            + "and equal station to which the Laws of Nature and of Nature's God entitle "
+            + "them, a decent respect to the opinions of mankind requires that they "
+            + "should declare the causes which impel them to the separation. We hold "
+            + "these truths to be self-evident, that all men are created equal, that "
+            + "they are endowed by their Creator with certain unalienable Rights, that "
+            + "among these are Life, Liberty and the pursuit of Happiness. — That to "
+            + "secure these rights, Governments are instituted among Men, deriving their "
+            + "just powers from the consent of the governed, — That whenever any Form of "
+            + "Government becomes destructive of these ends, it is the Right of the People "
+            + "to alter or to abolish it, and to institute new Government, laying its "
+            + "foundation on such principles and organizing its powers in such form, as to "
+            + "them shall seem most likely to effect their Safety and Happiness. Prudence, "
+            + "indeed, will dictate that Governments long established should not be changed "
+            + "for light and transient causes; and accordingly all experience hath shewn "
+            + "that mankind are more disposed to suffer, while evils are sufferable than to "
+            + "right themselves by abolishing the forms to which they are accustomed. But "
+            + "when a long train of abuses and usurpations, pursuing invariably the same "
+            + "Object evinces a design to reduce them under absolute Despotism, it is their "
+            + "right, it is their duty, to throw off such Government, and to provide new Guards "
+            + "for their future security. — Such has been the patient sufferance of these "
+            + "Colonies; and such is now the necessity which constrains them to alter their "
+            + "former Systems of Government. The history of the present King of Great Britain "
+            + "is a history of repeated injuries and usurpations, all having in direct object "
+            + "the establishment of an absolute Tyranny over these States. To prove this, let "
+            + "Facts be submitted to a candid world. He has refused his Assent to Laws, the "
+            + "most wholesome and necessary for the public good. He has forbidden his Governors "
+            + "to pass Laws of immediate and pressing importance, unless suspended in their "
+            + "operation till his Assent should be obtained; and when so suspended, he has "
+            + "utterly neglected to attend to them. He has refused to pass other Laws for the "
+            + "accommodation of large districts of people, unless those people would relinquish "
+            + "the right of Representation in the Legislature, a right inestimable to them and "
+            + "formidable to tyrants only. When in the Course of human events it becomes necessary for "
+            + "one people to dissolve the political bands which have connected them "
+            + "with another and to assume among the powers of the earth, the separate "
+            + "and equal station to which the Laws of Nature and of Nature's God entitle "
+            + "them, a decent respect to the opinions of mankind requires that they "
+            + "should declare the causes which impel them to the separation. We hold "
+            + "these truths to be self-evident, that all men are created equal, that "
+            + "they are endowed by their Creator with certain unalienable Rights, that "
+            + "among these are Life, Liberty and the pursuit of Happiness. — That to "
+            + "secure these rights, Governments are instituted among Men, deriving their "
+            + "just powers from the consent of the governed, — That whenever any Form of "
+            + "Government becomes destructive of these ends, it is the Right of the People "
+            + "to alter or to abolish it, and to institute new Government, laying its "
+            + "foundation on such principles and organizing its powers in such form, as to "
+            + "them shall seem most likely to effect their Safety and Happiness. Prudence, "
+            + "indeed, will dictate that Governments long established should not be changed "
+            + "for light and transient causes; and accordingly all experience hath shewn "
+            + "that mankind are more disposed to suffer, while evils are sufferable than to "
+            + "right themselves by abolishing the forms to which they are accustomed. But "
+            + "when a long train of abuses and usurpations, pursuing invariably the same "
+            + "Object evinces a design to reduce them under absolute Despotism, it is their "
+            + "right, it is their duty, to throw off such Government, and to provide new Guards "
+            + "for their future security. — Such has been the patient sufferance of these "
+            + "Colonies; and such is now the necessity which constrains them to alter their "
+            + "former Systems of Government. The history of the present King of Great Britain "
+            + "is a history of repeated injuries and usurpations, all having in direct object "
+            + "the establishment of an absolute Tyranny over these States. To prove this, let "
+            + "Facts be submitted to a candid world. He has refused his Assent to Laws, the "
+            + "most wholesome and necessary for the public good. He has forbidden his Governors "
+            + "to pass Laws of immediate and pressing importance, unless suspended in their "
+            + "operation till his Assent should be obtained; and when so suspended, he has "
+            + "utterly neglected to attend to them. He has refused to pass other Laws for the "
+            + "accommodation of large districts of people, unless those people would relinquish "
+            + "the right of Representation in the Legislature, a right inestimable to them and "
+            + "formidable to tyrants only. When in the Course of human events it becomes necessary for "
+            + "one people to dissolve the political bands which have connected them "
+            + "with another and to assume among the powers of the earth, the separate "
+            + "and equal station to which the Laws of Nature and of Nature's God entitle "
+            + "them, a decent respect to the opinions of mankind requires that they "
+            + "should declare the causes which impel them to the separation. We hold "
+            + "these truths to be self-evident, that all men are created equal, that "
+            + "they are endowed by their Creator with certain unalienable Rights, that "
+            + "among these are Life, Liberty and the pursuit of Happiness. — That to "
+            + "secure these rights, Governments are instituted among Men, deriving their "
+            + "just powers from the consent of the governed, — That whenever any Form of "
+            + "Government becomes destructive of these ends, it is the Right of the People "
+            + "to alter or to abolish it, and to institute new Government, laying its "
+            + "foundation on such principles and organizing its powers in such form, as to "
+            + "them shall seem most likely to effect their Safety and Happiness. Prudence, "
+            + "indeed, will dictate that Governments long established should not be changed "
+            + "for light and transient causes; and accordingly all experience hath shewn "
+            + "that mankind are more disposed to suffer, while evils are sufferable than to "
+            + "right themselves by abolishing the forms to which they are accustomed. But "
+            + "when a long train of abuses and usurpations, pursuing invariably the same "
+            + "Object evinces a design to reduce them under absolute Despotism, it is their "
+            + "right, it is their duty, to throw off such Government, and to provide new Guards "
+            + "for their future security. — Such has been the patient sufferance of these "
+            + "Colonies; and such is now the necessity which constrains them to alter their "
+            + "former Systems of Government. The history of the present King of Great Britain "
+            + "is a history of repeated injuries and usurpations, all having in direct object "
+            + "the establishment of an absolute Tyranny over these States. To prove this, let "
+            + "Facts be submitted to a candid world. He has refused his Assent to Laws, the "
+            + "most wholesome and necessary for the public good. He has forbidden his Governors "
+            + "to pass Laws of immediate and pressing importance, unless suspended in their "
+            + "operation till his Assent should be obtained; and when so suspended, he has "
+            + "utterly neglected to attend to them. He has refused to pass other Laws for the "
+            + "accommodation of large districts of people, unless those people would relinquish "
+            + "the right of Representation in the Legislature, a right inestimable to them and "
+            + "formidable to tyrants only. When in the Course of human events it becomes necessary for "
+            + "one people to dissolve the political bands which have connected them "
+            + "with another and to assume among the powers of the earth, the separate "
+            + "and equal station to which the Laws of Nature and of Nature's God entitle "
+            + "them, a decent respect to the opinions of mankind requires that they "
+            + "should declare the causes which impel them to the separation. We hold "
+            + "these truths to be self-evident, that all men are created equal, that "
+            + "they are endowed by their Creator with certain unalienable Rights, that "
+            + "among these are Life, Liberty and the pursuit of Happiness. — That to "
+            + "secure these rights, Governments are instituted among Men, deriving their "
+            + "just powers from the consent of the governed, — That whenever any Form of "
+            + "Government becomes destructive of these ends, it is the Right of the People "
+            + "to alter or to abolish it, and to institute new Government, laying its "
+            + "foundation on such principles and organizing its powers in such form, as to "
+            + "them shall seem most likely to effect their Safety and Happiness. Prudence, "
+            + "indeed, will dictate that Governments long established should not be changed "
+            + "for light and transient causes; and accordingly all experience hath shewn "
+            + "that mankind are more disposed to suffer, while evils are sufferable than to "
+            + "right themselves by abolishing the forms to which they are accustomed. But "
+            + "when a long train of abuses and usurpations, pursuing invariably the same "
+            + "Object evinces a design to reduce them under absolute Despotism, it is their "
+            + "right, it is their duty, to throw off such Government, and to provide new Guards "
+            + "for their future security. — Such has been the patient sufferance of these "
+            + "Colonies; and such is now the necessity which constrains them to alter their "
+            + "former Systems of Government. The history of the present King of Great Britain "
+            + "is a history of repeated injuries and usurpations, all having in direct object "
+            + "the establishment of an absolute Tyranny over these States. To prove this, let "
+            + "Facts be submitted to a candid world. He has refused his Assent to Laws, the "
+            + "most wholesome and necessary for the public good. He has forbidden his Governors "
+            + "to pass Laws of immediate and pressing importance, unless suspended in their "
+            + "operation till his Assent should be obtained; and when so suspended, he has "
+            + "utterly neglected to attend to them. He has refused to pass other Laws for the "
+            + "accommodation of large districts of people, unless those people would relinquish "
+            + "the right of Representation in the Legislature, a right inestimable to them and "
+            + "formidable to tyrants only. When in the Course of human events it becomes necessary for "
+            + "one people to dissolve the political bands which have connected them "
+            + "with another and to assume among the powers of the earth, the separate "
+            + "and equal station to which the Laws of Nature and of Nature's God entitle "
+            + "them, a decent respect to the opinions of mankind requires that they "
+            + "should declare the causes which impel them to the separation. We hold "
+            + "these truths to be self-evident, that all men are created equal, that "
+            + "they are endowed by their Creator with certain unalienable Rights, that "
+            + "among these are Life, Liberty and the pursuit of Happiness. — That to "
+            + "secure these rights, Governments are instituted among Men, deriving their "
+            + "just powers from the consent of the governed, — That whenever any Form of "
+            + "Government becomes destructive of these ends, it is the Right of the People "
+            + "to alter or to abolish it, and to institute new Government, laying its "
+            + "foundation on such principles and organizing its powers in such form, as to "
+            + "them shall seem most likely to effect their Safety and Happiness. Prudence, "
+            + "indeed, will dictate that Governments long established should not be changed "
+            + "for light and transient causes; and accordingly all experience hath shewn "
+            + "that mankind are more disposed to suffer, while evils are sufferable than to "
+            + "right themselves by abolishing the forms to which they are accustomed. But "
+            + "when a long train of abuses and usurpations, pursuing invariably the same "
+            + "Object evinces a design to reduce them under absolute Despotism, it is their "
+            + "right, it is their duty, to throw off such Government, and to provide new Guards "
+            + "for their future security. — Such has been the patient sufferance of these "
+            + "Colonies; and such is now the necessity which constrains them to alter their "
+            + "former Systems of Government. The history of the present King of Great Britain "
+            + "is a history of repeated injuries and usurpations, all having in direct object "
+            + "the establishment of an absolute Tyranny over these States. To prove this, let "
+            + "Facts be submitted to a candid world. He has refused his Assent to Laws, the "
+            + "most wholesome and necessary for the public good. He has forbidden his Governors "
+            + "to pass Laws of immediate and pressing importance, unless suspended in their "
+            + "operation till his Assent should be obtained; and when so suspended, he has "
+            + "utterly neglected to attend to them. He has refused to pass other Laws for the "
+            + "accommodation of large districts of people, unless those people would relinquish "
+            + "the right of Representation in the Legislature, a right inestimable to them and "
+            + "formidable to tyrants only. When in the Course of human events it becomes necessary for "
+            + "one people to dissolve the political bands which have connected them "
+            + "with another and to assume among the powers of the earth, the separate "
+            + "and equal station to which the Laws of Nature and of Nature's God entitle "
+            + "them, a decent respect to the opinions of mankind requires that they "
+            + "should declare the causes which impel them to the separation. We hold "
+            + "these truths to be self-evident, that all men are created equal, that "
+            + "they are endowed by their Creator with certain unalienable Rights, that "
+            + "among these are Life, Liberty and the pursuit of Happiness. — That to "
+            + "secure these rights, Governments are instituted among Men, deriving their "
+            + "just powers from the consent of the governed, — That whenever any Form of "
+            + "Government becomes destructive of these ends, it is the Right of the People "
+            + "to alter or to abolish it, and to institute new Government, laying its "
+            + "foundation on such principles and organizing its powers in such form, as to "
+            + "them shall seem most likely to effect their Safety and Happiness. Prudence, "
+            + "indeed, will dictate that Governments long established should not be changed "
+            + "for light and transient causes; and accordingly all experience hath shewn "
+            + "that mankind are more disposed to suffer, while evils are sufferable than to "
+            + "right themselves by abolishing the forms to which they are accustomed. But "
+            + "when a long train of abuses and usurpations, pursuing invariably the same "
+            + "Object evinces a design to reduce them under absolute Despotism, it is their "
+            + "right, it is their duty, to throw off such Government, and to provide new Guards "
+            + "for their future security. — Such has been the patient sufferance of these "
+            + "Colonies; and such is now the necessity which constrains them to alter their "
+            + "former Systems of Government. The history of the present King of Great Britain "
+            + "is a history of repeated injuries and usurpations, all having in direct object "
+            + "the establishment of an absolute Tyranny over these States. To prove this, let "
+            + "Facts be submitted to a candid world. He has refused his Assent to Laws, the "
+            + "most wholesome and necessary for the public good. He has forbidden his Governors "
+            + "to pass Laws of immediate and pressing importance, unless suspended in their "
+            + "operation till his Assent should be obtained; and when so suspended, he has "
+            + "utterly neglected to attend to them. He has refused to pass other Laws for the "
+            + "accommodation of large districts of people, unless those people would relinquish "
+            + "the right of Representation in the Legislature, a right inestimable to them and "
+            + "formidable to tyrants only. ");
         
         return example;
     }
@@ -153,7 +344,7 @@ public class Capstone_RPG extends JPanel
         
         String location = "Grand Capital - Metro 31 - Plaza - Factory - Boiler Room - West";
         String eventEventLine = "The End - Last Surprise";
-        
+        /*
         pauseBetweenFrames(new ExpositionBox(entity, location, 
             eventEventLine, expositionTextArrayList()));
         
@@ -168,6 +359,7 @@ public class Capstone_RPG extends JPanel
                 System.out.println("hehe");
                     break;
         }
+*/
 
         switch(pauseBetweenFramesTraversalOptions(new TraversalBox(entity, 
             false, location, eventEventLine, textForTraversalBoxButtons())))
@@ -179,6 +371,7 @@ public class Capstone_RPG extends JPanel
                 System.out.println("hehe");
                     break;
         }
+        
         
         BattleMenu.Battle result = pauseBetweenFramesBattle(new BattleMenu.Battle(
             entity, opposingParty));
@@ -198,7 +391,7 @@ public class Capstone_RPG extends JPanel
         }
         else if(result.playerPartyWin())
         {
-            pauseBetweenFrames(new BattleResults(entity));
+            pauseBetweenFrames(new BattleResults(entity, result.getDefeatedEnemies()));
                 System.out.println("Dd");
         }
         else if(result.playerPartyLoss())
