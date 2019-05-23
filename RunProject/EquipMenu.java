@@ -140,8 +140,8 @@ public class EquipMenu
     
     
     
-    private JList partyMemberJList, canChangeOutfits, currentTotalStatsJList,
-        newTotalStatsJList, inventoryObjectsJList;
+    private JList partyMemberJList, canChangeOutfits, currentNewTotalStatsJList, 
+        inventoryObjectsJList;
     
     
     
@@ -149,6 +149,10 @@ public class EquipMenu
     private JButton equippedWeapon, equippedAccessoryOne, equippedAccessoryTwo,
         equippedBodyArmor, equippedLegArmor, equippedFootArmor;
 
+    private JButton equippedOutfitReference;
+    
+    
+    
     // buttons and text area used to updated external frame character panel
     private JButton characterName = new JButton();
     private JButton characterHealth = new JButton();
@@ -157,6 +161,15 @@ public class EquipMenu
     private JTextArea characterStatusEffects = new JTextArea();
     
     
+    private JFrame externalFrame = new JFrame();
+    
+    private boolean viewFrameActive, equipFrameActive;
+    
+    private JButton externalOutfitName, externalExperienceMultiplier, 
+        externalDurabilityInfo, externalSlotInfo, externalEquip;
+        
+    private JList externalOutfitNamesJList, externalEquippedCores, 
+        externalOutfitStats;
     
     
     
@@ -338,17 +351,15 @@ public class EquipMenu
         frame.add(statsScroll, gridBagConstraints);
     }
     
-    public void addTotalStatsJList(JList jList, int gridy, int gridx, JFrame frame)
+    public void addCurrentNewTotalStatsJList(JList jList, int gridy, int gridx, JFrame frame)
     {
-        addJListComponent(jList, gridy, gridx, 0.33, 0.33, 2, 1, frame);
+        addJListComponent(jList, gridy, gridx, 0.33, 0.33, 2, 2, frame);
     }
     
     public void addCharacterAttributeAndResistancesJLists(JFrame frame)
     {
-        currentTotalStatsJList = new JList();
-            addTotalStatsJList(currentTotalStatsJList, 8, 1, frame);
-        newTotalStatsJList = new JList();
-            addTotalStatsJList(newTotalStatsJList, 8, 2, frame);
+        currentNewTotalStatsJList = new JList();
+            addCurrentNewTotalStatsJList(currentNewTotalStatsJList, 8, 1, frame);
     }
     
     // ADDING CURRENT AND NEW TOTAL STATS JLIST COMPONENTS
@@ -439,10 +450,6 @@ public class EquipMenu
     {
         // set JList text font 
         changeOutfitsJList.setFont(JListFont);
-        
-        // allign view of JList such that text is displayed at its center 
-        DefaultListCellRenderer renderer = (DefaultListCellRenderer) changeOutfitsJList.getCellRenderer();
-        renderer.setHorizontalAlignment(SwingConstants.CENTER);
         
         // add JScrollPane to frame to enable vertical scrolling for JList  
         JScrollPane changeOutfitsScroll = new JScrollPane(changeOutfitsJList, 
@@ -711,15 +718,19 @@ public class EquipMenu
 
                             canChangeOutfits.setModel(canChangeOutfitsInJListFormat(partyMember));
                             
-                            // current stats model for character with current outfits 	
-                            currentTotalStatsJList.setModel(currentTotalStatsModel(partyMember));
-
+                            // update new total stats JList using character in focus 
+                            // to prevent info from previous character being shown 
                             if(inventoryObjectsJList.getSelectedValue() != null)
                             {
-                                // update new total stats JList using character in focus 
-                                // to prevent info from previous character being shown 
-                                newTotalStatsJList.setModel(newTotalStatsModel(partyMember, 
-                                    getInventoryOutfit(referenceInventory, inventoryObjectsJList.getSelectedValue())));
+                                currentNewTotalStatsJList.setModel(currentNewTotalStatsModelWithOutfit(
+                                    partyMember, getInventoryOutfit(referenceInventory, 
+                                    inventoryObjectsJList.getSelectedValue())));
+                            }
+                            else
+                            {
+                                // current stats model for character with current outfits 	
+                                currentNewTotalStatsJList.setModel(currentNewTotalStatsModelWithoutOutfit(
+                                    partyMember));
                             }
                         }
                     }
@@ -862,46 +873,6 @@ public class EquipMenu
     
     // METHODS USED IN TOTAL STAT DISPLAY JLISTS 
     
-    
-    
-    // CURRENT TOTAL STATS MODEL
-    
-    public void addCurrentAttributeObjects(Object[] array, DefaultListModel<String> model)
-    {
-        for(int i = 0; i < array.length; i+=2)
-        {
-            String elementAndValue = String.format("%-18s: %s", String.valueOf(array[i]), 
-                statValueSpacing(String.valueOf(checkAttribute((double)array[i + 1]))));
-            
-            model.addElement(elementAndValue);
-        }
-    }
-    
-    public void addCurrentResistanceObjects(Object[] array, DefaultListModel<String> model)
-    {
-        for(int i = 0; i < array.length; i+=2)
-        {
-            String elementAndValue = String.format("%-18s: %s", String.valueOf(array[i]), 
-                statValueSpacing(String.valueOf(checkResistance((double)array[i + 1]))));
-
-            model.addElement(elementAndValue);
-        }
-    }
-    
-    public DefaultListModel<String> currentTotalStatsModel(GenericCharacter character)
-    {
-        DefaultListModel<String> currentTotalStats = new DefaultListModel<>();
-        
-        addCurrentAttributeObjects(character.getTotalStats().getAllTotalAttributesWithNames(), 
-            currentTotalStats);
-        addCurrentResistanceObjects(character.getTotalStats().getAllTotalResistances().toArray( new Object[0]), 
-            currentTotalStats);
-        
-        return currentTotalStats;
-    }
-    
-    // CURRENT TOTAL STATS MODEL
-    
     // END: PARTY MEMBER JLIST, JPANEL, OUTFIT BUTTONS, AND CURRENT JLISTS
     /*******************************************************************************/
 
@@ -926,7 +897,7 @@ public class EquipMenu
     }
     
     // description button has width of 0 to allow button to cover whole row 
-    public void addObjectDescriptionAndActionTakenButtons(JFrame frame)
+    public void addOutfitOverviewAndDescription(JFrame frame)
     {
         outfitOverview = newUnusableOutfitDescriptionButton("Overview:");
             addButtonComponent(outfitOverview, 10, 0, 0.11, 1, 1, 0, frame);
@@ -942,9 +913,6 @@ public class EquipMenu
         
         String currentStatsTitle = String.format("%-26s", "Current And New Total Stats");
             addTitleButton(currentStatsTitle, 7, 1, 2, frame);
-            
-        //String newStatsWithOutfitJListTitle = String.format("%s", "New Stats");
-          //  addTitleButton(newStatsWithOutfitJListTitle, 7, 2, 1, frame);
     }
     
     // END: OBJECT DESCRITPION BUTTON 
@@ -979,10 +947,6 @@ public class EquipMenu
         
         // make JList use monospaced font so all characters have the same width
         inventoryObjectsJList.setFont(JListFont);
-
-        // allign view of JList such that text is displayed at its center 
-        DefaultListCellRenderer renderer = (DefaultListCellRenderer) inventoryObjectsJList.getCellRenderer();
-        renderer.setHorizontalAlignment(SwingConstants.CENTER);
         
         // do not allow for multiple selection (i.e. selecting more than 1 row)
         inventoryObjectsJList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); 
@@ -1038,67 +1002,229 @@ public class EquipMenu
     // START: UPDATING OUTFIT DESCRIPTION AND NEW STATS JLIST
     /*******************************************************************************/
     
-    // NEW TOTAL STATS USING CURRENT TOTAL STATS AND OUTFIT (AND ARMOR) MODEL
+    // NEW CURRENT NEW TOTAL STATS MODEL USING CHARACTER, OUTFIT (AND ARMOR) 
     
-    public void addNewAttributeObjects(Object[] characterAttributes, Object[] outfitAttributes, 
-        DefaultListModel<String> model)
+    public String currentNewTotalStatWithOutfit(int counter, String statName, double 
+        checkedCurrentValue, double checkedNewValue)
     {
+        String currentNewValue = String.format("%-2d) %-18s: (CUR) %-10s (NEW) %-10s", counter, 
+            statName, statValueSpacing(String.valueOf(checkedCurrentValue)), 
+            statValueSpacing(String.valueOf(checkedNewValue)));
+                return currentNewValue;
+    }
+    
+    public String currentNewTotalStatWithoutOutfit(int counter, String statName, double 
+        checkedCurrentValue)
+    {
+        String currentNewValue = String.format("%-2d) %-18s: (CUR) %-10s (NEW) %-10s", counter, 
+            statName, statValueSpacing(String.valueOf(checkedCurrentValue)), (desiredSpaces(1) + "<NA>"));
+                return currentNewValue;
+    }
+    
+    public void addCurrentNewAttributeObjectsWithOutfit(GenericCharacter character, 
+        OutfitMethods outfit, DefaultListModel<String> model)
+    {
+        Object[] characterAttributes = character.getTotalStats().getAllTotalAttributesWithNames();
+        
+        Object[] outfitAttributes = outfit.getAllTotalAttributesWithNames();
+        
+        model.addElement("Attributes");
+        
+        model.addElement(" ");
+        
+        int counter = 1;
+        
         for(int i = 0; i < characterAttributes.length; i+=2)
         {
-            double result = (double)characterAttributes[i + 1] + (double)outfitAttributes[i + 1];
+            double currentValue = (double)characterAttributes[i + 1];
             
-            String elementAndValue = String.format("%-18s: %s", String.valueOf(characterAttributes[i]), 
-                statValueSpacing(String.valueOf(checkAttribute(result))));
+            double newValue = currentValue + (double)outfitAttributes[i + 1];
             
-            model.addElement(elementAndValue);
+            model.addElement(currentNewTotalStatWithOutfit(counter, (String)characterAttributes[i],  
+                checkAttribute(currentValue), checkAttribute(newValue)));
+
+            counter++;
         }
     }
     
-    public void addNewResistanceObjects(GenericCharacter character, Armor outfit, 
+    public void addCurrentNewAttributeObjectsWithoutOutfit(GenericCharacter character, 
+        DefaultListModel<String> model)
+    {
+        Object[] characterAttributes = character.getTotalStats().getAllTotalAttributesWithNames();
+        
+        model.addElement("Attributes");
+        
+        model.addElement(" ");
+        
+        int counter = 1;
+        
+        for(int i = 0; i < characterAttributes.length; i+=2)
+        {
+            double currentValue = (double)characterAttributes[i + 1];
+            
+            model.addElement(currentNewTotalStatWithoutOutfit(counter, (String)characterAttributes[i],  
+                checkAttribute(currentValue)));
+            
+            counter++;
+        }
+    }
+    
+    public void addCurrentNewEnchantmentResistanceObjectsWithArmor(GenericCharacter character, 
+        Armor armor, DefaultListModel<String> model)
+    {
+        Object[] characterEnchantmentResistances = character.getTotalStats().
+            getAllTotalEnchantmentResistancesWithNames();
+        
+        Object[] armorEnchantmentResistances = armor.
+            getAllTotalEnchantmentResistancesWithNames();
+        
+        model.addElement(" ");
+        
+        model.addElement("Enchantment Resistances");
+        
+        model.addElement(" ");
+        
+        int counter = 1;
+        
+        for(int i = 0; i < characterEnchantmentResistances.length; i+=2)
+        {
+            double currentValue = (double)characterEnchantmentResistances[i + 1];
+            
+            double newValue = currentValue + (double)armorEnchantmentResistances[i + 1];
+            
+            model.addElement(currentNewTotalStatWithOutfit(counter, (String)characterEnchantmentResistances[i],  
+                checkResistance(currentValue), checkResistance(newValue)));
+
+            counter++;
+        }
+    }
+    
+    public void addCurrentNewEnchantmentResistanceObjectsWithoutArmor(GenericCharacter character, 
+        DefaultListModel<String> model)
+    {
+        Object[] characterEnchantmentResistances = character.getTotalStats().
+            getAllTotalEnchantmentResistancesWithNames();
+        
+        model.addElement(" ");
+        
+        model.addElement("Enchantment Resistances");
+        
+        model.addElement(" ");
+        
+        int counter = 1;
+        
+        for(int i = 0; i < characterEnchantmentResistances.length; i+=2)
+        {
+            double currentValue = (double)characterEnchantmentResistances[i + 1];
+            
+            model.addElement(currentNewTotalStatWithoutOutfit(counter, (String)characterEnchantmentResistances[i],  
+                checkResistance(currentValue)));
+
+            counter++;
+        }
+    }
+    
+    public void addCurrentNewStatusEffectResistanceObjectsWithArmor(GenericCharacter character, Armor armor, 
         DefaultListModel<String> model)
     {
         Object[] characterResistances = character.getTotalStats().getAllTotalResistances().toArray( new Object[0]);
         
-        Object[] outfitResistance = outfit.getAllResistances().toArray(new Object[0]);
+        Object[] armorResistances = armor.getAllResistances().toArray(new Object[0]);
+        
+        model.addElement(" ");
+        
+        model.addElement("Status Effect Resistances");
+        
+        model.addElement(" ");
+        
+        int counter = 1;
         
         for(int i = 0; i < characterResistances.length; i+=2)
         {
-            double result = (double)characterResistances[i + 1] + (double)outfitResistance[i + 1];
+            double currentValue = (double)characterResistances[i + 1];
             
-            String elementAndValue = String.format("%-18s: %s", String.valueOf(characterResistances[i]), 
-                statValueSpacing(String.valueOf(checkResistance(result))));
+            double newValue = currentValue + (double)armorResistances[i + 1];
             
-            model.addElement(elementAndValue);
+            model.addElement(currentNewTotalStatWithOutfit(counter, (String)characterResistances[i],  
+                checkResistance(currentValue), checkResistance(newValue)));
+
+            counter++;
         }
     }
     
-    public DefaultListModel<String> newTotalStatsModel(GenericCharacter character,
+    public void addCurrentNewStatusEffectResistanceObjectsWithoutArmor(GenericCharacter character, 
+        DefaultListModel<String> model)
+    {
+        Object[] characterResistances = character.getTotalStats().getAllTotalResistances().toArray( new Object[0]);
+        
+        model.addElement(" ");
+        
+        model.addElement("Status Effect Resistances");
+        
+        model.addElement(" ");
+        
+        int counter = 1;
+        
+        for(int i = 0; i < characterResistances.length; i+=2)
+        {
+            double currentValue = (double)characterResistances[i + 1];
+            
+            model.addElement(currentNewTotalStatWithoutOutfit(counter, (String)characterResistances[i],  
+                checkResistance(currentValue)));
+
+            counter++;
+        }
+    }
+    
+    public DefaultListModel<String> currentNewTotalStatsModelWithOutfit(GenericCharacter character,
         OutfitMethods outfit)
     {
-        DefaultListModel<String> newTotalStats = new DefaultListModel<>();
+        DefaultListModel<String> currentNewTotalStats = new DefaultListModel<>();
         
         // add character and outfit attributes for attribute portion of model
-        addNewAttributeObjects(character.getTotalStats().getAllTotalAttributesWithNames(), 
-            outfit.getAllTotalAttributesWithNames(), newTotalStats);
+        addCurrentNewAttributeObjectsWithOutfit(character, outfit, currentNewTotalStats);
         
         // if outfit is not a piece of armor, keep resistances the same 
         if(outfit.getClass() != Armor.class)
         {
-            addCurrentResistanceObjects(character.getTotalStats().getAllTotalEnchantmentResistancesWithNames(), 
-                newTotalStats);
-            addCurrentResistanceObjects(character.getTotalStats().getAllTotalResistances().toArray( new Object[0]), 
-                newTotalStats);
+            addCurrentNewEnchantmentResistanceObjectsWithoutArmor(character, 
+                currentNewTotalStats);
+            
+            addCurrentNewStatusEffectResistanceObjectsWithoutArmor(character, 
+                currentNewTotalStats);
         }
-        // else accound for resistances of armor piece on current stats of character 
+        // else account for resistances of armor piece on current stats of character 
         else
         {
-            addNewResistanceObjects(character, (Armor)outfit, newTotalStats);
+            Armor armor = (Armor)outfit;
+            
+            addCurrentNewEnchantmentResistanceObjectsWithArmor(character, armor, 
+                currentNewTotalStats);
+            
+            addCurrentNewStatusEffectResistanceObjectsWithArmor(character, armor, 
+                currentNewTotalStats);
         }
         
-        return newTotalStats;
+        return currentNewTotalStats;
     }
     
-    // NEW TOTAL STATS USING CURRENT TOTAL STATS AND OUTFIT (AND ARMOR) MODEL
+    public DefaultListModel<String> currentNewTotalStatsModelWithoutOutfit(GenericCharacter character)
+    {
+        DefaultListModel<String> currentNewTotalStats = new DefaultListModel<>();
+        
+        // add character and outfit attributes for attribute portion of model
+        addCurrentNewAttributeObjectsWithoutOutfit(character, currentNewTotalStats);
+        
+        addCurrentNewEnchantmentResistanceObjectsWithoutArmor(character, 
+            currentNewTotalStats);
+
+        addCurrentNewStatusEffectResistanceObjectsWithoutArmor(character, 
+            currentNewTotalStats);
+        
+        return currentNewTotalStats;
+    }
+    
+    // NEW CURRENT NEW TOTAL STATS MODEL USING CHARACTER, OUTFIT (AND ARMOR) 
 
     
     
@@ -1127,6 +1253,13 @@ public class EquipMenu
         
         outfitDescription.setText(formatDescriptionString("Description", 
             object.getBriefDescription()));
+    }
+    
+    public void resetOutfitOverviewAndDescription()
+    {
+        outfitOverview.setText("Overview:");
+        
+        outfitDescription.setText("Description:");
     }
     
     public OutfitMethods getInventoryOutfit(Inventory inventory, Object jListObjectName)
@@ -1191,8 +1324,8 @@ public class EquipMenu
                         updateOutfitOverviewAndDescription(outfit);
 
                         // update new toal stats JList using character in focus 
-                        newTotalStatsJList.setModel((newTotalStatsModel(getPartyMember(
-                            partyMemberJList.getSelectedValue()), outfit)));
+                        currentNewTotalStatsJList.setModel((currentNewTotalStatsModelWithOutfit(
+                            getPartyMember(partyMemberJList.getSelectedValue()), outfit)));
                     }
                 }
             }
@@ -1205,7 +1338,798 @@ public class EquipMenu
     /*******************************************************************************/
 
     
-    // do not do core stuff, ONLY equip stuff
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    // START: VIEW AND EQUIP ACTIONLISTENERS FOR POPUPMENU OPTIONS 
+    /*******************************************************************************/
+    
+    // SELECTED OBJECT JLIST WITH JSCROLLPANE FUNCTIONALITY
+    
+    /* idea
+        find objectin treemap inventory and get its VALUE (ArrayList<GenericObject>)
+        for loop through ArrayList retreived (0 to n)
+        info displayed:
+            Buttons (col 2)
+                name
+                cur/max durability
+                number of filled slots / number of slots
+            JLists 
+                outfits displayed via JList (col 1)
+                equipped core types with core info (size and tier ONLY) (col 3)
+                stats (col 4)
+                    Weapon, Accessory 
+                        Attributes JList
+                    Armor
+                        Attributes JList, 
+                        Enchantment Resistance JList, 
+                        Status Effect Resistance JList
+    */
+    
+    // METHODS FOR ADDING COMPONENTS TO EXTERNAL FRAME 
+    
+    public void addJListToExternalFrame(JList jList, int gridy, int gridx, 
+        JFrame externalFrame)
+    {
+        // set JList text font 
+        jList.setFont(JListFont);
+        
+        // add text area with horizontal scroll capability only 
+        JScrollPane jListScroll = new JScrollPane(jList, 
+            JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+            JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        
+        GridBagConstraints gridBagConstraints = new GridBagConstraints();
+        
+        // button will expand horizontally and vertically to fill empty space 
+        gridBagConstraints.fill = GridBagConstraints.BOTH;
+        
+        // row position 
+        gridBagConstraints.gridy = gridy;
+        
+        // column of specified row position
+        gridBagConstraints.gridx = gridx;
+        
+        // specified column length component takes up (2/10 of frame if no 
+        // other components are in the way)
+        gridBagConstraints.weighty = 0.25;
+        
+        // specified row length component takes up (2/10 of frame if no 
+        // other components are in the way)
+        gridBagConstraints.weightx = 0.25;
+        
+        // width is 1 column 
+        gridBagConstraints.gridwidth = 1;
+
+        externalFrame.add(jListScroll, gridBagConstraints);
+    }
+    
+    public JButton newExternalButton(JButton button)
+    {
+        button = new JButton();
+        
+        button.setFont(buttonFont);
+        
+        return button;
+    }
+    
+    public void addButtonToExternalFrame(JButton button, int gridy, int gridx,
+        JFrame frame)
+    {
+        addButtonComponent(newExternalButton(button), gridy, gridx, 0.11, 0.11, 1, 1, frame);
+    }
+    
+    public void addExternalButtons(int gridy, JFrame frame)
+    {
+        addButtonToExternalFrame(externalOutfitName, 0, gridy, frame);
+        
+        addButtonToExternalFrame(externalExperienceMultiplier, 1, gridy, frame);
+        
+        addButtonToExternalFrame(externalDurabilityInfo, 2, gridy, frame);
+        
+        addButtonToExternalFrame(externalSlotInfo, 3, gridy, frame);
+    }
+    
+    // METHODS FOR ADDING COMPONENTS TO EXTERNAL FRAME 
+    
+    
+
+    public ArrayList<GenericObject> outfitArrayList()
+    {
+        ArrayList<GenericObject> outfitArrayList = new ArrayList<>();
+        
+        GenericObject outfit = getInventoryOutfit(referenceInventory, 
+            inventoryObjectsJList.getSelectedValue());
+        
+        for(Map.Entry<GenericObject, ArrayList<GenericObject>> entry : referenceInventory.
+            getInventory().entrySet())
+        {
+            if(outfit.equals(entry.getKey()))
+            {
+                outfitArrayList = entry.getValue();
+                    break;
+            }
+        }
+        
+        return outfitArrayList;
+    }
+
+    public DefaultListModel<String> equipFrameOutfitModel(ArrayList<GenericObject> arrayList)
+    {
+        DefaultListModel<String> outfits = new DefaultListModel<>();
+        
+        for(GenericObject object : arrayList)
+        {
+            outfits.addElement(object.getName());
+        }
+        
+        return outfits;
+    }
+    
+// set up button format stuff here...
+    c
+    
+    public String coreInformationFormat(int counter, Core core)
+    {
+        String coreFormat = String.format("%d Core -> Type:%-14s\tSize: %-12s\t Tier: %-6s",
+            counter, core.getCoreType(), core.getCoreSizeString(), core.getCoreTierString());
+        
+        return coreFormat;
+    }
+    
+    public DefaultListModel<String> equipFrameEquippedCoresModel(OutfitMethods outfit)
+    {
+        DefaultListModel<String> equippedCoresModel = new DefaultListModel<>();
+        
+        Core[] cores = outfit.getExistingCores();
+        
+        equippedCoresModel.addElement("Equipped Cores");
+        
+        equippedCoresModel.addElement(" ");
+        
+        int counter = 1;
+        
+        for(int i = 0; i < cores.length; i++)
+        {
+            if(cores[i] != null)
+            {
+                equippedCoresModel.addElement(coreInformationFormat(counter, cores[i]));
+            }
+        }
+        
+        return equippedCoresModel;
+    }
+    
+    public String totalOutfitStats(int counter, String statName, double checkedCurrentValue)
+    {
+        String currentNewValue = String.format("%-2d) %-18s: %-5s", counter, 
+            statName, statValueSpacing(String.valueOf(checkedCurrentValue)));
+                return currentNewValue;
+    }
+    
+    public void addOutfitAttributes(OutfitMethods outfit, DefaultListModel<String> model)
+    {
+        Object[] outfitAttributes = outfit.getAllTotalAttributesWithNames();
+        
+        model.addElement("Attributes");
+        
+        model.addElement(" ");
+        
+        int counter = 1;
+        
+        for(int i = 0; i < outfitAttributes.length; i+=2)
+        {
+            double currentValue = (double)outfitAttributes[i + 1];
+            
+            model.addElement(totalOutfitStats(counter, (String)outfitAttributes[i], 
+                checkAttribute(currentValue)));
+            
+            counter++;
+        }
+    }
+    
+    public void addArmorEnchantmentResistance(Armor armor, DefaultListModel<String> model)
+    {
+        Object[] armorEnchantmentResistances = armor.getAllTotalEnchantmentResistancesWithNames();
+        
+        model.addElement(" ");
+        
+        model.addElement("Enchantment Resistances");
+        
+        model.addElement(" ");
+        
+        int counter = 1;
+        
+        for(int i = 0; i < armorEnchantmentResistances.length; i+=2)
+        {
+            double currentValue = (double)armorEnchantmentResistances[i + 1];
+            
+            model.addElement(totalOutfitStats(counter, (String)armorEnchantmentResistances[i],  
+                checkResistance(currentValue)));
+
+            counter++;
+        }
+    }
+    
+    public void addArmorStatusEffectResistance(Armor armor, DefaultListModel<String> model)
+    {
+        Object[] armorStatusEffectResistances = armor.getAllResistances().toArray(new Object[0]);
+        
+        model.addElement(" ");
+        
+        model.addElement("Status Effect Resistances");
+        
+        model.addElement(" ");
+        
+        int counter = 1;
+        
+        for(int i = 0; i < armorStatusEffectResistances.length; i+=2)
+        {
+            double currentValue = (double)armorStatusEffectResistances[i + 1];
+            
+            model.addElement(totalOutfitStats(counter, (String)armorStatusEffectResistances[i],  
+                checkResistance(currentValue)));
+
+            counter++;
+        }
+    }
+    
+    public DefaultListModel<String> outfitStatsModel(OutfitMethods outfit)
+    {
+        DefaultListModel<String> outfitStats = new DefaultListModel<>();
+        
+        // add character and outfit attributes for attribute portion of model
+        addOutfitAttributes(outfit, outfitStats);
+        
+        // if outfit is a piece of armor, add resistances to model 
+        if(outfit.getClass() == Armor.class)
+        {
+            addArmorEnchantmentResistance((Armor)outfit, outfitStats);
+            
+            addArmorStatusEffectResistance((Armor)outfit, outfitStats);
+        }
+        
+        return outfitStats;
+    }
+    
+    
+    
+    
+    // boolean instance variables viewFrameActive and equipFrameActive determine
+    // how external frame is set up as well as functionality it provides 
+    public void externalFrameByBoolean(JFrame externalFrame)
+    {
+            // outfitArrayListJList model 
+    // outfitNamesJList = new JList(equipFrameOutfitModel(outfitArrayList()));
+        // equippedCoresJList model 
+    // equippedCoresJList = new JList(equipFrameEquippedCoresModel());
+    // outfitStatsJList model 
+    // equippedCoresJList = new JList(equipFrameEquippedCoresModel(outfitStatsModel(outfit)));
+        // note: outfit received from jlist listener for outfitArrayListJList 
+    
+        
+        if()
+        {
+            
+        }
+        
+        
+        // store party members as values for character displaying JList
+        JList partyMemberJList = new JList(partyMembersInJListFormat(entity));
+        
+        // add JList to external frame
+        addPartyMemberJList(partyMemberJList, 0, 0, externalFrame);
+        
+        panelPlacementInExternalFrame(externalFrame, addSingleTargetPanelForCharacterInfo());
+        
+        // listener updates panel and has a popup menu display on click
+        addCharacterJListUpdatePopupListener(externalFrame, entity, partyMemberJList);
+
+        // make panel display information about character in first slot
+        partyMemberJList.setSelectedIndex(1);
+        partyMemberJList.setSelectedIndex(0);
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    x
+    
+    
+    
+    
+    
+    // update object overview/description and inventory object group count upon equip 
+    public void shiftToNextExistingObject(JList inventoryJList, int lastObjectGroupPosition)
+    {
+        // account for when no object exists first
+        if(inventoryJList.getModel().getSize() == 0)
+        {
+            resetOutfitOverviewAndDescription();
+        }
+        // move forward or backward until another object is found FROM position last
+        // occupied by tossed object group (if possible)
+        else
+        {
+            // if attempts to update object info using object at supplied position
+            if(lastObjectGroupPosition < inventoryJList.getModel().getSize())
+            {
+                // get object at designated location and update object information
+                updateOutfitOverviewAndDescription(getInventoryOutfit(referenceInventory,
+                    inventoryJList.getModel().getElementAt(lastObjectGroupPosition)));
+                
+                // set selected index to be position of last object group - 1 since 
+                // inventory positions range from 0 to (inventory.size() - 1)
+                inventoryJList.setSelectedIndex(lastObjectGroupPosition - 1);
+            }
+            // move backward to position (inventoryJList.getModel().getSize() - 1) to 
+            // display next object that exists to account for when an object at position 
+            // inventoryJList.getModel().getSize() is removed 
+            else
+            {
+                // get object at designated location and update object information
+                updateOutfitOverviewAndDescription(getInventoryOutfit(referenceInventory,
+                    inventoryJList.getModel().getElementAt(inventoryJList.getModel().getSize() - 1)));
+                
+                // set selected index to be position of inventoryJList.getModel().getSize() - 1 since 
+                // inventory positions range from 0 to (inventory.size() - 1)
+                inventoryJList.setSelectedIndex(inventoryJList.getModel().getSize() - 1);
+            }
+        }
+    }
+    
+    public void externalFrameLocation()
+    {
+        // external frame is reset each time option is selected (better than 
+        // creating new JFrames each time option is selected)
+        externalFrame = new JFrame();
+
+        // frame has components set up according to GridBagLayout scheme 
+        externalFrame.getContentPane().setLayout(new GridBagLayout());
+        
+        // use location properties of original frame to position use frame
+        Rectangle bounds = frame.getBounds();
+
+        // calculation makes frame have location starting from bottom left 
+        // of outer frame with y-axis position based on bounds.y multiplier 
+        // (in this case 1.75) and outer multiplier (in this case 0.58); 
+        externalFrame.setLocation(bounds.x, (int)((bounds.y * 1.75 + frame.
+            getHeight()) * 0.58));
+
+        // set up components for external frame so player can use it 
+        setUpExternalFrame(referencePlayerEntity, externalFrame);
+
+        // external frame width equal to width of original frame and while height 
+        // is calculated using original frame height as point of reference 
+        externalFrame.setSize(frame.getWidth(), (int)(0.42 * frame.getHeight()));
+        externalFrame.setVisible(true);
+
+        // Note: externalFrame is NOT set to exit on close since doing so will 
+        //       cause program to terminate early (disposing original frame 
+        //       will dispose of this frame as well (Maybe?))
+    }
+    
+    // FOR BUTTON THAT DISPLAYS EQUIPPED OUTFITS POPUP MENU  
+    public void addViewActionListener(JMenuItem menuItem)
+    {
+        menuItem.addActionListener(
+            new ActionListener() 
+            {
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    // set other external frame variant to false 
+                    equipFrameActive = false;
+                    
+                    // prevents creation of infinite exteral frames by disposing 
+                    // of external frame if it is active before creating new one
+                    // and reset appropriate boolean indicators 
+                    externalFrame.dispose();
+                    
+                    // indicate frame style that should be active
+                    viewFrameActive = true;
+                    
+                    // set up new external frame according to view/equip boolean 
+                    externalFrameLocation();
+                }
+            }); 
+    }
+    
+    // FOR INVENTORY JLIST POPUP MENU 
+    public void addEquipActionListener(JMenuItem menuItem)
+    {
+        menuItem.addActionListener(
+            new ActionListener() 
+            {
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    // set other external frame variant to false 
+                    viewFrameActive = false;
+                    
+                    // prevents creation of infinite exteral frames by disposing 
+                    // of external frame if it is active before creating new one
+                    // and reset appropriate boolean indicators 
+                    externalFrame.dispose();
+                    
+                    // indicate frame style that should be active
+                    equipFrameActive = true;
+                    
+                    // set up new external frame according to view/equip boolean 
+                    externalFrameLocation();                }
+            }); 
+    }
+    
+    // END: VIEW AND EQUIP ACTIONLISTENERS FOR POPUPMENU OPTIONS 
+    /*******************************************************************************/
+
+    
+    
+    // START: UNEQUIP ACTIONLISTENER FOR EQUIPPED OUTFITS BUTTONS 
+    /*******************************************************************************/
+
+    // method needs equippedOutfitReference reference set upon buttoon click
+    public OutfitMethods getEquippedOutfit()
+    {
+        GenericCharacter character = getPartyMember(partyMemberJList.getSelectedValue());
+        
+        // meant to store object of OutfitMethods subclass after implicit casting 
+        OutfitMethods outfit = null;
+        
+        // equippedOutfitReference uses JButton reference to retrive certain outfit 
+        if(equippedOutfitReference == equippedWeapon)
+        {
+            outfit = character.getEquippableOutfits().getWeapon();
+        }
+        else if(equippedOutfitReference == equippedBodyArmor)
+        {
+            outfit = character.getEquippableOutfits().getBodyArmor();
+        }
+        else if(equippedOutfitReference == equippedLegArmor)
+        {
+            outfit = character.getEquippableOutfits().getLegArmor();
+        }
+        else if(equippedOutfitReference == equippedFootArmor)
+        {
+            outfit = character.getEquippableOutfits().getFootArmor();
+        }
+        else if(equippedOutfitReference == equippedAccessoryOne)
+        {
+            outfit = character.getEquippableOutfits().getAccessoryOne();
+        }
+        else if(equippedOutfitReference == equippedAccessoryTwo)
+        {
+            outfit = character.getEquippableOutfits().getAccessoryTwo();
+        }
+        
+        return outfit;
+    }
+    
+    // determines whether outfit can be equipped or unequipped
+    public boolean canAlterOutfitLocation()
+    {
+        GenericCharacter character = getPartyMember(partyMemberJList.getSelectedValue());
+        
+        boolean result = false;
+        
+        // equippedOutfitReference uses JButton reference to retrive certain outfit 
+        if(equippedOutfitReference == equippedWeapon)
+        {
+            result = character.getEquippableOutfits().getWeaponChangeState();
+        }
+        else if(equippedOutfitReference == equippedBodyArmor)
+        {
+            result = character.getEquippableOutfits().getBodyArmorChangeState();
+        }
+        else if(equippedOutfitReference == equippedLegArmor)
+        {
+            result = character.getEquippableOutfits().getLegArmorChangeState();
+        }
+        else if(equippedOutfitReference == equippedFootArmor)
+        {
+            result = character.getEquippableOutfits().getFootArmorChangeState();
+        }
+        else if(equippedOutfitReference == equippedAccessoryOne)
+        {
+            result = character.getEquippableOutfits().getAccessoryOneChangeState();
+        }
+        else if(equippedOutfitReference == equippedAccessoryTwo)
+        {
+            result = character.getEquippableOutfits().getAccessoryTwoChangeState();
+        }
+        
+        return result;
+    }
+    
+    public void removeEquippedOutfit()
+    {
+        GenericCharacter character = getPartyMember(partyMemberJList.getSelectedValue());
+        
+        // equippedOutfitReference uses JButton reference to retrive certain outfit 
+        if(equippedOutfitReference == equippedWeapon)
+        {
+            character.getEquippableOutfits().setWeapon(null);
+        }
+        else if(equippedOutfitReference == equippedBodyArmor)
+        {
+            character.getEquippableOutfits().setBodyArmor(null);
+        }
+        else if(equippedOutfitReference == equippedLegArmor)
+        {
+            character.getEquippableOutfits().setLegArmor(null);
+        }
+        else if(equippedOutfitReference == equippedFootArmor)
+        {
+            character.getEquippableOutfits().setFootArmor(null);
+        }
+        else if(equippedOutfitReference == equippedAccessoryOne)
+        {
+            character.getEquippableOutfits().setAccessoryOne(null);
+        }
+        else if(equippedOutfitReference == equippedAccessoryTwo)
+        {
+            character.getEquippableOutfits().setAccessoryTwo(null);
+        }
+    }
+    
+    public void postUnequipTasks()
+    {
+        referenceInventory.addObject(getEquippedOutfit());
+        
+        removeEquippedOutfit();
+        
+        GenericCharacter character = getPartyMember(partyMemberJList.getSelectedValue());
+        
+        updateCharacterInfo(character);
+        
+	updateEquippedOutfitsButtons(character);
+        
+        resetOutfitOverviewAndDescription();
+        
+        inventoryObjectsJList.setModel(inventoryOutfitsInJListFormat(referenceInventory));
+    }
+    
+    // FOR BUTTON THAT DISPLAYS EQUIPPED OUTFITS POPUP MENU ONLY 
+    public void addUnequipActionListener(JMenuItem menuItem)
+    {
+        menuItem.addActionListener(
+            new ActionListener() 
+            {
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    if(getEquippedOutfit() != null)
+                    {
+                        if(canAlterOutfitLocation())
+                        {
+                            if(referenceInventory.canAddObject(getEquippedOutfit()))
+                            {
+                                postUnequipTasks();
+                            }
+                        }
+                    }
+                }
+            }); 
+    }
+    
+    // END: UNEQUIP ACTIONLISTENER FOR EQUIPPED OUTFITS BUTTONS 
+    /*******************************************************************************/
+
+    
+    
+    
+    // ADDING JMENUITEM OBJECTS REPRESENTING OBJECT OPTIONS TO POPUPMENU 
+    
+    // holds types of action listeners JMenuItems can have for popupMenu
+    public enum ActionListeners
+    {
+        VIEW, EQUIP, UNEQUIP;
+    }
+    
+    // switch case is used to add appropriate action listener to JMenuItem 
+    public void addActionListenerToJMenuItem(ActionListeners choice, JMenuItem menuItem)
+    {
+        switch(choice)
+        {
+            case VIEW:
+                viewActionListener(menuItem);
+                    break;
+            case EQUIP:
+                equipActionListener(menuItem);
+                    break;
+            case UNEQUIP:
+                unequipAllActionListener(menuItem);
+                    break;
+        }
+    }
+    
+    // add JMenuItem to popup menu 
+    public void addPopupMenuJMenuItem(JPopupMenu popupMenu, String jMenuItemName,
+        ActionListeners choice)
+    {
+        JMenuItem option = new JMenuItem(jMenuItemName);
+        
+        addActionListenerToJMenuItem(choice, option);
+        
+        popupMenu.add(option);
+    }
+    
+    // Note: each popup menu needs its own object because if each popup menu
+    //       refers to same object, last popup menu to add object is the only 
+    //       popup menu that will have access to object 
+    public void setUpPopupMenusByObject(JPopupMenu usableItem, JPopupMenu unusableItem,
+        JPopupMenu keyItem, JPopupMenu nonItem)
+    {
+        // using item functionality 
+        addPopupMenuJMenuItem(popupMenu, "View", ActionListeners.VIEW);
+        
+        
+    }
+    
+    // shows a different popup menu filled with choices for object based on its class 
+    // upon left clicking JList value with mouse 
+    public void addJListObjectOptionsListener(Inventory inventory, JList jList, JPopupMenu 
+        usableItem, JPopupMenu unusableItem, JPopupMenu keyItem, JPopupMenu nonItem)
+    {
+        jList.addMouseListener(
+            new MouseAdapter() 
+            {
+                @Override
+                public void mouseClicked(MouseEvent me)
+                {
+                    // proceed only if left mouse button clicked, list selection is 
+                    // not empty, and clicked point is inside selected object bounds 
+                    if (SwingUtilities.isLeftMouseButton(me) && !jList.isSelectionEmpty()
+                        && jList.locationToIndex(me.getPoint()) == jList.getSelectedIndex()) 
+                    {
+                        // store inventory object selected via JList as object in focus 
+                        GenericObject object = getInventoryObject(inventory, jList.getSelectedValue());
+                        
+                        // differen popup menus appear depending on class of object 
+                        if(object.getClass() == Generic_Object.Item.class)
+                        {
+                            // cast GenericObject as an Item object since it is one  
+                            Generic_Object.Item item = (Generic_Object.Item)object;
+                            
+                            // different popup menu appears based on key item state 
+                            if(item.getItemSuperTypeEnum() != Generic_Object.Item.
+                                ItemSuperTypes.KEY_ITEM && item.getItemSuperTypeEnum() 
+                                != Generic_Object.Item.ItemSuperTypes.MISCELLANEOUS)
+                            {
+                                usableItem.show(jList, me.getX(), me.getY());
+                            }
+                            else if(item.getItemSuperTypeEnum() == Generic_Object.Item.
+                                ItemSuperTypes.KEY_ITEM)
+                            {
+                                keyItem.show(jList, me.getX(), me.getY());
+                            }
+                            else
+                            {
+                                // miscellaneous objects are unusable 
+                                unusableItem.show(jList, me.getX(), me.getY());
+                            }
+                        }
+                        else
+                        {
+                            nonItem.show(jList, me.getX(), me.getY());
+                        }
+                    }
+                }
+            }
+        );
+    }
+    
+    // ADDING JMENUITEM OBJECTS REPRESENTING OBJECT OPTIONS TO POPUPMENU
+    
+    // END: INVENTORY JLIST (OUTFITS ONLY), OBJECT DESCRIPTION, AND NEW JLISTS 
+    /*******************************************************************************/
+
+    
+    // START: VIEW FRAME SET UP
+    /*******************************************************************************/
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    // PARTY MEMBER JLIST WITH JSCROLLPANE FUNCTIONALITY
+    
+    
+    
+    
+    // CHARACTER JLIST LISTENERS UPDATE PANEL AND DISPLAY POPUP MENU
+    
+    // update character panel in external frame using JList selected value 
+    public void characterJListValueChanged(JFrame externalFrame, PlayerEntity 
+        entity, JList jList, ListSelectionEvent evt) 
+    {
+        if (!evt.getValueIsAdjusting()) 
+        {
+            updateCharacterPanel(getPartyMember(jList.getSelectedValue()));
+        }
+    }
+    
+    // listener used for single target items ONLY
+    public void addCharacterJListUpdatePopupListener(JFrame externalFrame, PlayerEntity 
+        entity, JList jList)
+    {
+        jList.addListSelectionListener(
+            new ListSelectionListener() 
+            {
+                @Override
+                public void valueChanged(ListSelectionEvent evt) 
+                {
+                    // update character information displayed on JList selection change 
+                    characterJListValueChanged(externalFrame, entity, jList, evt);
+                    
+                    // get popup menu for character with use item option 
+                    addCharacterJListUseItemListener(jList, setUpUseItemPopupMenu
+                        (jList, externalFrame));
+                }
+            }
+        );
+    }
+
+    // CHARACTER JLIST LISTENERS UPDATE PANEL AND DISPLAY POPUP MENU
+
+        // END: PARTY MEMBER JLIST, JPANEL, OUTFIT BUTTONS, AND CURRENT JLISTS
+    /*******************************************************************************/
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
@@ -1249,7 +2173,7 @@ public class EquipMenu
         
         addEquippedOutfitsButtons(frame);
         
-        addObjectDescriptionAndActionTakenButtons(frame);
+        addOutfitDescriptionAndActionTakenButtons(frame);
         
         addUnusableBottomTitles(frame);
         
