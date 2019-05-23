@@ -60,8 +60,8 @@ import java.awt.event.KeyListener;
 
 public class ExpositionBox extends CommonGUIMethods
 {
-    // set frame for exposition box (final version has frame passed from outside)
-    private JFrame frame = new JFrame("Exposition Box");
+    // set frame for exposition box 
+    private JFrame frame = new JFrame("Capstone RPG");
 
     // font size used for text of all componenets 
     private Font font = new Font(Font.MONOSPACED, Font.PLAIN, 14);
@@ -350,7 +350,7 @@ public class ExpositionBox extends CommonGUIMethods
             
             // if length of StringBuilder object and word to be added does not
             // exceed character limit then append word to StringBuilder 
-            if((fragment.toString().length() + element.length()) < characterLimit)
+            if((fragment.toString().length() + element.length()) <= characterLimit)
             {
                 fragment.append(element).append(" "); 
             }
@@ -996,16 +996,16 @@ public class ExpositionBox extends CommonGUIMethods
                     arrayPositionWithNames += 1;
                         moveTextForward(arrayList, speakerOrDescription, 
                             lineOne, lineTwo, lineThree);
-                        
-                        if(arrayPositionWithNames == arrayPositionNoNames)
-                        {
-                            // release all native screen resources, subcomponents, and all 
-                            // of its owned children; in other words, close GUI and allow  
-                            // program to continue running IF other windows are available 
-                            frame.dispose();
+                }
+                else
+                {
+                    // signify that Gui is complete 
+                    guiComplete(true);
 
-                            System.out.print("k");
-                        }
+                    // release all native screen resources, subcomponents, and all 
+                    // of its owned children; in other words, close GUI and allow  
+                    // program to continue running IF other windows are available 
+                    frame.dispose();
                 }
             }
         }); 
@@ -1027,35 +1027,36 @@ public class ExpositionBox extends CommonGUIMethods
         // set frame layou signifying component positioning style 
         frame.setLayout(new GridBagLayout());
         
-        // set color for panel bydecoding string of hexadecimal color 
+        // set color for panel by decoding string of hexadecimal color 
         frame.getContentPane().setBackground(Color.decode("#4d5461"));
 	
+        // add components to frame 
         topRightComponents(location, eventEventLine);
         speakerComponent();
         textDisplayingComponents(); 
-        
         usableButtonsComponents();
+        
+        // enable movement between buttons 
         usableButtonNavigation();
         
-            // arraylist
+        // break down supplied String arrayList into valid exposition fragments 
         exposition = breakdownExposition(arrayList);
 
-        //ArrayList<String> cleanArrayList = cleanArrayList(breakdownExposition(initializeArrayList()));
-
+        // determine number of lines that exist for exposition with speaker roles  
         totalLines = totalLines(exposition);
         
-        String result = Integer.toString(totalLines(exposition));
-        currentAndFinalLines.setText(result);
+        // set the current and final lines of text without names using exposition 
+        currentAndFinalLines.setText(Integer.toString(totalLines(exposition)));
         
+        // display and give access of exposition text to text displaying buttons 
         displayExpositionBoxLines(exposition);
         
-            // text stuff
+        // set text displaying buttons to update as exposition is traversed 
         usableButtonsActionListeners(exposition, speakerOrDescription, lineOne, 
             lineTwo, lineThree);
         
         // add appropriate mouse handlers to compoenents 
-        attachHandlersToComponents(frame, backward, forward, 
-            altNav, settings, mainMenu);
+        attachHandlersToComponents(frame, backward, forward, altNav, settings, mainMenu);
         
         // display frame window with components 
         CommonGUIMethods.displayFrameWindow(frame);

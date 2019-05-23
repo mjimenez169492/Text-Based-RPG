@@ -1,65 +1,49 @@
 package RunProject;
 
+import java.awt.Font;
+import java.awt.Color;
+import java.awt.Insets;
 import java.awt.GridBagConstraints;
-import javax.swing.JButton;
 import java.awt.event.ActionListener; 
 import java.awt.event.ActionEvent; 
-import javax.swing.Box; 
-import javax.swing.JFrame; 
-import javax.swing.JTextArea;
-import javax.swing.JButton;
-import javax.swing.JScrollPane;
-import java.awt.*;
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.JTextArea;
-
-import java.awt.Component;
 import java.awt.GridBagLayout;
-
-import java.awt.*;
 import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.border.EmptyBorder;
-import javax.swing.text.DefaultCaret;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.text.AbstractDocument;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DocumentFilter;
-import java.awt.Point; 
-import java.awt.Graphics;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter; 
-import java.util.ArrayList;
 import javax.swing.JPanel; 
 import java.util.ArrayList;
-import java.awt.Toolkit;
-import java.awt.Dimension;
 
-public class TraversalBox 
-{    
-    // font size used for text of all componenets 
-    private Font font = new Font("Serif", Font.PLAIN, 18);
+public class TraversalBox extends CommonGUIMethods
+{
+    // set frame for TraversalBox 
+    private JFrame frame = new JFrame("Capstone RPG");
     
+    // font size used for text of all componenets 
+    private Font font = new Font(Font.MONOSPACED, Font.PLAIN, 14);
+    
+    // top buttons containing important environment information
     private JButton safeZoneNotice, currentLocation, safeZoneState, eventAndEventLine;
     
+    // left hand vertical column of buttons signifying options available to player 
     private JButton save, load, mainMenu, comms, settings, activities, interactions, exitGame;
 
+    // panel meant for holding an image representing a map for the given location 
     private JPanel map = new JPanel();
     
+    // titles for text areas 
     private JButton textAreaOneTitle, textAreaTwoTitle;
     
+    // text areas meant to hold information regarding the environmane to player party 
     private JTextArea textAreaOne, textAreaTwo;
     
+    // vertical padding for buttons in pixels 
     private int buttonVerticalPadding = 15;
     
+    // meant to store result of choice selected for switch case 
     private int optionChoice = 0;
     
-    private int characterLimit = 86;
+    private int characterLimit = 14;
 
     
     
@@ -87,12 +71,7 @@ public class TraversalBox
     public void addTopLeftButtonComponent(JButton button, String text, int gridy, 
         JFrame frame)
     {
-        GridBagConstraints gridBagConstraints = new GridBagConstraints();
-        
         button = new JButton(text);
-        
-        // allow text resize for button text upon frame resize 
-        textResizesUponButtonResize(frame, button);
         
         // set font for button text 
         button.setFont(new Font("Serif", Font.BOLD, 18));
@@ -103,6 +82,8 @@ public class TraversalBox
         // set foreground color (i.e., text color) of button to yellow 
         button.setForeground(Color.YELLOW);
         
+        GridBagConstraints gridBagConstraints = new GridBagConstraints();
+        
         // button will expand horizontally to fill empty space 
         gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
         
@@ -112,12 +93,10 @@ public class TraversalBox
         // column of specified row position
         gridBagConstraints.gridx = 0;
         
-        // specified column length component takes up (1/10 of frame if no 
-        // other components are in the way)
+        // specified column length component takes up 
         gridBagConstraints.weighty = 0.07;
         
-        // specified row length component takes up (1/10 of frame if no 
-        // other components are in the way)
+        // specified row length component takes up 
         gridBagConstraints.weightx = 0.2;
         
         // width of component in given row 
@@ -138,12 +117,7 @@ public class TraversalBox
     public void addTopRightButtonComponent(JButton button, String text, int gridy, 
         JFrame frame)
     {
-        GridBagConstraints gridBagConstraints = new GridBagConstraints();
-        
         button = new JButton(text);
-        
-        // allow text resize for button text upon frame resize 
-        textResizesUponButtonResize(frame, button);
         
         // set font for button text 
         button.setFont(new Font("Serif", Font.ITALIC, 18));
@@ -153,6 +127,8 @@ public class TraversalBox
         
         // set foreground color (i.e., text color) of button to white 
         button.setForeground(Color.WHITE);
+        
+        GridBagConstraints gridBagConstraints = new GridBagConstraints();
         
         // button will expand horizontally to fill empty space 
         gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
@@ -238,117 +214,105 @@ public class TraversalBox
         frame.add(button, gridBagConstraints);
     }
     
-    public void usableButtonsActionsListeners()
+    // INCOMPLETE 
+    public void usableButtonsWithActionsListeners()
     {
-        mainMenu.addActionListener(
-        new ActionListener() 
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                
-            }
-        }); 
+        mainMenu = newUsableButton(mainMenu, "Main Menu");
+            mainMenu.addActionListener(
+                new ActionListener() 
+                {
+                    @Override
+                    public void actionPerformed(ActionEvent e)
+                    {
+
+                    }
+                }); 
+                    mainMenu.setEnabled(false);
         
-        comms.addActionListener(
-        new ActionListener() 
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                
-            }
-        }); 
+        comms = newUsableButton(comms, "Comms");
+            comms.addActionListener(
+                new ActionListener() 
+                {
+                    @Override
+                    public void actionPerformed(ActionEvent e)
+                    {
+
+                    }
+                }); 
+                    comms.setEnabled(false);
+                 
+        settings = newUsableButton(settings, "Settings");
+            settings.addActionListener(
+                new ActionListener() 
+                {
+                    @Override
+                    public void actionPerformed(ActionEvent e)
+                    {
+
+                    }
+                }); 
+                    settings.setEnabled(false);
         
-        settings.addActionListener(
-        new ActionListener() 
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                
-            }
-        }); 
+        activities = newUsableButton(activities, "Activities");
+            activities.addActionListener(
+                new ActionListener() 
+                {
+                    @Override
+                    public void actionPerformed(ActionEvent e)
+                    {
+
+                    }
+                }); 
+                    activities.setEnabled(false);
         
-        activities.addActionListener(
-        new ActionListener() 
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                
-            }
-        }); 
+        interactions = newUsableButton(interactions, "Interactions");
+            interactions.addActionListener(
+                new ActionListener() 
+                {
+                    @Override
+                    public void actionPerformed(ActionEvent e)
+                    {
+
+                    }
+                }); 
+                    interactions.setEnabled(false);
+            
+        save = newUsableButton(save, "Save");
+            save.addActionListener(
+                new ActionListener() 
+                {
+                    @Override
+                    public void actionPerformed(ActionEvent e)
+                    {
+
+                    }
+                }); 
+                    save.setEnabled(false);
         
-        interactions.addActionListener(
-        new ActionListener() 
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                
-            }
-        }); 
+        load = newUsableButton(load, "Load");
+            load.addActionListener(
+                new ActionListener() 
+                {
+                    @Override
+                    public void actionPerformed(ActionEvent e)
+                    {
+
+                    }
+                }); 
+                    load.setEnabled(false);
         
-        save.addActionListener(
-        new ActionListener() 
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                
-            }
-        }); 
-        
-        load.addActionListener(
-        new ActionListener() 
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                
-            }
-        }); 
-        
-        exitGame.addActionListener(
-        new ActionListener() 
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                System.exit(0);
-            }
-        }); 
+        exitGame= newUsableButton(exitGame, "Exit Game");
+            exitGame.addActionListener(
+                new ActionListener() 
+                {
+                    @Override
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        System.exit(0);
+                    }
+                }); 
+                    exitGame.setEnabled(true);
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     
     // END: LEFT SIDE USABLE BUTTONS
     /*******************************************************************************/
@@ -357,7 +321,7 @@ public class TraversalBox
     
     // START: JPANEL FOR DISPLAYING MAP 
     /*******************************************************************************/
-
+    
     public void addJPanelForMap(JPanel panel, JFrame frame)
     {
         //JPanel map = new JPanel();
@@ -392,7 +356,7 @@ public class TraversalBox
         // top, int left, int bottom, int right) Insets(0, -225, 0, -125);
         gridBagConstraints.insets = new Insets(10, -215, 10, -60);
         
-        frame.add(map, gridBagConstraints);
+        frame.add(panel, gridBagConstraints);
     }
     
     // END: JPANEL FOR DISPLAYING MAP 
@@ -403,56 +367,27 @@ public class TraversalBox
     // START: TESTING METHODS STUFF 
     /*******************************************************************************/
 
-    // TESTING STUFF 
-    
-    public ArrayList<String> testArrayList()
-    {
-        ArrayList<String> example = new ArrayList<>();
-
-        example.add("/Name");
-        example.add("I see doggy ha ha and i was like totally omg this cannot "
-            + "be happening since i ate french fries and waffkes which are supposed "
-            + "ti keep them things far away. Anyways I saw it and it saw me and I "
-            + "saw it again and it like growled super weirdly like an alien thing "
-            + "on t.v. or something. And that is why I am running for president. Bye "
-            + "Now haha!");
-        example.add("/Hype");
-        example.add("Nuh - -d1! !2e Uh");
-        example.add("Out of my way");
-        example.add("/Description");
-        example.add("like Uh huh!!! why say that \"\\ apple \"\\loser!");
-        example.add("I see doggy ha ha and i was like totally omg this cannot "
-            + "be happening since i ate french fries and waffkes which are supposed "
-            + "ti keep them things far away. Anyways I saw it and it saw me and I "
-            + "saw it again and it like growled super weirdly like an alien thing "
-            + "on t.v. or something. And that is why I am running for president. Bye "
-            + "Now haha!");
-
-        return example;
-    }
-    
-    public ArrayList<String> textForButtons()
+    // Note: 14 characeter limit for options 
+    public ArrayList<String> textForTraversalBoxButtons()
     {
         ArrayList<String> example = new ArrayList<>();
 
         example.add("text for button 1");
         example.add("text for button 2");
         example.add("text for button 3");
-        //example.add("This is the text for button 4");
-        //example.add("This is the text for button 5");
-        //example.add("This is the text for button 6");
+        //example.add("text for button 4");
+        //example.add("text for button 5");
+        //example.add("text for button 6");
 
         return example;
     }
-    
-    // TESTING STUFF
     
     // END: TESTING METHODS STUFF 
     /*******************************************************************************/
 
     
     
-    // START: MAKING BUTTONS WITH TEXT
+    // START: MAKING BUTTONS USING STRINGS FROM SUPPLIED OPTIONS ARRAYLIST
     /*******************************************************************************/
 
     public JButton newVariableButton(String text, int loopCount)
@@ -492,20 +427,27 @@ public class TraversalBox
             @Override
             public void actionPerformed(ActionEvent e)
             {
+                // set option selected by player for switch case
                 setOptionChoice(result);
-                    System.out.println("choice is: "+getOptionChoice());
-                        //frame.dipose();
+
+                // signify that Gui is complete 
+                guiComplete(true);
+
+                // release all native screen resources, subcomponents, and all 
+                // of its owned children; in other words, close GUI and allow  
+                // program to continue running IF other windows are available 
+                frame.dispose();
             }
         }); 
     }
 
     public void addUsableRightButtonComponent(JButton button, int loopCount, JFrame frame)
     {
-        GridBagConstraints gridBagConstraints = new GridBagConstraints();
-        
-	// set font for button text 
+        // set font for button text 
 	button.setFont(font);
-	
+        
+        GridBagConstraints gridBagConstraints = new GridBagConstraints();
+
 	// button will expand horizontally to fill empty space 
 	gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
 	
@@ -549,23 +491,6 @@ public class TraversalBox
         return buttonsArrayList;
     }
     
-    
-        // left off editing for new button stuff here...
-        // add left and right buttons separately... 
-        // modify to add components once other side buttons are down (for movement)
-    
-    // allow for text to resize (somewhat) upon change in frame size...
-    public void textResizesUponButtonResize(JFrame frame, JButton...array)
-    {
-        for(JButton element : array)
-        {
-            if(element != null)
-            {
-                CommonGUIMethods.resizeButtonTextUsingFrameSize(frame, element);
-            }
-        }
-    }
-    
     public void keyboardMouseWheelColumnFunctionality(JFrame frame, ArrayList<JButton> 
         buttonsArrayList, JButton[] privateButtons)
     {
@@ -583,9 +508,6 @@ public class TraversalBox
         // add button column functionality for keyboard and mouse wheel 
         CommonGUIMethods.buttonColumnKeyboardNavigation(columnButtonsAsArray);
         CommonGUIMethods.frameMouseWheel(frame, columnButtonsAsArray);
-        
-        // allow button text to resize upon frame resize 
-        textResizesUponButtonResize(frame, columnButtonsAsArray);
     }
     
     // determine ordering of JButton container based on container size 
@@ -660,7 +582,7 @@ public class TraversalBox
         CommonGUIMethods.buttonRowKeyboardNavigation(buttonsAsArray);
     }
     
-    public void addComponentsToTheirLocations(JFrame frame, ArrayList<JButton> buttonsArrayList, 
+    public void addButtonComponentsToTheirLocations(JFrame frame, ArrayList<JButton> buttonsArrayList, 
         JButton[] privateButtons)
     {
         for(int i = 0; i < privateButtons.length; i++)
@@ -682,7 +604,7 @@ public class TraversalBox
         
         keyboardRowFunctionality(frame, buttonsArrayList, privateButtons);
         
-        addComponentsToTheirLocations(frame, buttonsArrayList, privateButtons);
+        addButtonComponentsToTheirLocations(frame, buttonsArrayList, privateButtons);
     }
     
     // Note: number of buttons made depend on size of String ArrayList supplied 
@@ -693,7 +615,7 @@ public class TraversalBox
             buttons);
     }
     
-    // END: MAKING BUTTONS WITH TEXT
+    // END: MAKING BUTTONS USING STRINGS FROM SUPPLIED OPTIONS ARRAYLIST
     /*******************************************************************************/
 
     
@@ -701,16 +623,13 @@ public class TraversalBox
     
     // START: TEXT AREAS 
     /*******************************************************************************/
-
+d
     public void titlesForTextAreas(JButton buttonOne, JButton buttonTwo, JFrame frame)
     {
         // title one
         buttonOne = new JButton("Environmental Description");
 
         buttonOne.setFont(new Font("Serif", Font.BOLD, 12));
-        
-        // allow text resize for button text upon frame resize 
-        textResizesUponButtonResize(frame, buttonOne);
         
         GridBagConstraints gridBagConstraints = new GridBagConstraints();
         
@@ -734,9 +653,6 @@ public class TraversalBox
         buttonTwo = new JButton("Effects On Party");
         
         buttonTwo.setFont(new Font("Serif", Font.BOLD, 16));
-        
-        // allow text resize for button text upon frame resize 
-        textResizesUponButtonResize(frame, buttonTwo);
         
         gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
@@ -850,27 +766,11 @@ public class TraversalBox
 
     
     
-    // START: DISPLAYING FRAME 
+    // START: CONSTRUCTOR 
     /*******************************************************************************/
-    
-    // display frame window 
-    public void displayFrameWindow(JFrame frame)
-    {
-        frame.pack();
-        frame.setSize(640, 480);
-        frame.setVisible(true);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    }
-    
-    // END: DISPLAYING FRAME 
-    /*******************************************************************************/
-
-    
     
     public TraversalBox()
     {
-        JFrame frame = new JFrame();
-        
         frame.getContentPane().setBackground(Color.BLACK);
         
         frame.getContentPane().setLayout(new GridBagLayout());
@@ -881,26 +781,7 @@ public class TraversalBox
         addTopLeftButtonComponent(safeZoneState, "TRUE", 1, frame);
         addTopRightButtonComponent(eventAndEventLine, "event", 1, frame);
         
-        // Need to make button first and then add to frame 
-        // options available to player 
-        mainMenu = newUsableButton(mainMenu, "Main Menu");
-            mainMenu.setEnabled(false);
-        comms = newUsableButton(comms, "Comms");
-            comms.setEnabled(false);
-        settings = newUsableButton(settings, "Settings");
-            settings.setEnabled(false);
-        activities = newUsableButton(activities, "Activities");
-            activities.setEnabled(false);
-        interactions = newUsableButton(interactions, "Interactions");
-            interactions.setEnabled(false);
-        save = newUsableButton(save, "Save");
-            save.setEnabled(false);
-        load = newUsableButton(load, "Load");
-            load.setEnabled(false);
-        exitGame= newUsableButton(exitGame, "Exit Game");
-            exitGame.setEnabled(true);
-        
-        usableButtonsActionsListeners();
+        usableButtonsWithActionsListeners();
         
         JButton[] privateButtons = {mainMenu, comms, settings, activities,
             interactions, save, load, exitGame};

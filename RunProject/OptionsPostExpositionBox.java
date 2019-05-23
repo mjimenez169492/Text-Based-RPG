@@ -1,83 +1,36 @@
 package RunProject;
 
-import java.awt.event.ActionListener; 
-import java.awt.event.ActionEvent; 
-import javax.swing.Box; 
-import javax.swing.JFrame; 
-import javax.swing.JTextArea;
-import javax.swing.JButton;
-import javax.swing.JScrollPane;
-import java.awt.*;
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.JTextArea;
-
-import java.awt.Component;
-import java.awt.GridBagLayout;
-
-import java.awt.*;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.border.EmptyBorder;
-import javax.swing.text.DefaultCaret;
-import javax.swing.JFrame;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.text.AbstractDocument;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DocumentFilter;
-import java.awt.Point; 
-import java.awt.Graphics;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter; 
+import java.awt.Color;
+import java.awt.Font;
 import java.util.ArrayList;
-import javax.swing.JPanel; 
-import java.util.ArrayList;
-import java.awt.Toolkit;
-import java.awt.Dimension;
-import java.awt.Component;
-import java.awt.Container;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-  
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
-  
-import java.awt.Dimension;
 import javax.swing.JScrollPane;
+import javax.swing.SwingConstants;
 
-
-import javax.swing.event.*; 
-import java.awt.TextArea; 
-import javax.swing.*; 
-
-
-
-public class OptionsPostExpositionBox extends JFrame
+// box is designed to return a number from 0 -> # of buttons that exist 
+public class OptionsPostExpositionBox extends CommonGUIMethods
 {
-    // box is designed to return a number from 0 -> # of buttons that exist 
-    int optionChoice = 0;
-    
+    // set frame for options post exposition box 
     private JFrame frame = new JFrame("Capstone RPG");
     
+    // text area displays text supplied from String ArrayList supplied to constructor
     private JTextArea textArea = new JTextArea();
     
-    private JScrollPane scroll = new JScrollPane();
-    
     // used to determine max number of characters button can display with text 
-    private final int characterLimit = 86;
+    // Note: character limim should be the same as that of ExpositionBox
+    private final int characterLimit = 70;
     
     // font size used for text of all componenets 
-    private Font font = new Font("Serif", Font.PLAIN, 18);
+    private Font font = new Font(Font.MONOSPACED, Font.PLAIN, 14);
+    
+    // meant to store result of choice selected for switch case 
+    private int optionChoice = 0;
     
     
     
@@ -102,36 +55,7 @@ public class OptionsPostExpositionBox extends JFrame
     // START: TEXT AREA WITH SCROLL FUNCTIONALITY 
     /*******************************************************************************/
     
-    public void textAreaSetUp()
-    {
-        // set font for text that will be displayed in text area 
-        textArea.setFont(font);
-        
-        // set color of text to white 
-        textArea.setForeground(Color.WHITE);
-        
-        // set color of background to black 
-        textArea.setBackground(Color.BLACK);
-        
-        // text area where text is displayed cannot be editted 
-        textArea.setEditable(false);
-        
-        // sentences "wrap" or go to next line if text area boundary is reached 
-        textArea.setLineWrap(true);
-        
-        // sentences wrap to next line if word touches boundary 
-        textArea.setWrapStyleWord(true);
-    }
-    
-    public void scrollForTextAreaSetUp()
-    {
-        // create scroll pane for text area with scollability requirements 
-        // Note: JScrollPane object contains text area with scroll functionality 
-        scroll = new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-            JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-    }
-    
-    public void addTextToTextArea(ArrayList<String> arrayList)
+    public void addTextToTextArea(JTextArea textArea, ArrayList<String> arrayList)
     {
         // Note: since String is immutable (cannot be changed after assigment), 
         //       need to create new String object with character(s) replaced 
@@ -187,8 +111,40 @@ public class OptionsPostExpositionBox extends JFrame
         }
     }
     
-    public void addTextAreaComponent()
+    public void setUpTextArea(JTextArea textArea)
     {
+        // set font for text displayed in text area 
+        textArea.setFont(font);
+        
+        // set color of text to white 
+        textArea.setForeground(Color.WHITE);
+        
+        // set color of background to black 
+        textArea.setBackground(Color.BLACK);
+        
+        // text area where text is displayed cannot be editted 
+        textArea.setEditable(false);
+        
+        // sentences "wrap" or goes to next line if text area boundary is reached 
+        textArea.setLineWrap(true);
+        
+        // sentences wrap to next line if word touches boundary 
+        textArea.setWrapStyleWord(true);
+    }
+    
+    public void addTextAreaComponent(JTextArea textArea, ArrayList<String> arrayList)
+    {
+        // add text to text area
+        addTextToTextArea(textArea, arrayList);
+        
+        // prepare text area properties 
+        setUpTextArea(textArea);
+        
+        // create scroll pane for text area with scollability requirements 
+        // Note: JScrollPane object contains text area with scroll functionality 
+        JScrollPane scroll = new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+            JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        
         GridBagConstraints textAreaConstraints = new GridBagConstraints();
         
         // text area will expand horizontally and vertically to fill empty space 
@@ -200,12 +156,10 @@ public class OptionsPostExpositionBox extends JFrame
         // column 0 for the column 
         textAreaConstraints.gridx = 0;
         
-        // specified column length component takes up (half of frame if no 
-        // other components are in the way)
+        // specified column length component takes up 
         textAreaConstraints.weighty = 0.50;
         
-        // specified row length component takes up (half of frame if no other
-        // components are in the way)
+        // specified row length component takes up 
         textAreaConstraints.weightx = 0.50;
         
         // set vertical padding in pixels for component
@@ -213,14 +167,6 @@ public class OptionsPostExpositionBox extends JFrame
         
         // add scroll (with text area inside it) to frame with positioning 
         frame.add(scroll, textAreaConstraints);
-    }
-    
-    public void textAreaComponent(ArrayList<String> arrayList)
-    {
-        textAreaSetUp();
-        scrollForTextAreaSetUp();
-        addTextToTextArea(arrayList);
-        addTextAreaComponent();
     }
     
     // END: TEXT AREA WITH SCROLL FUNCTIONALITY 
@@ -233,6 +179,7 @@ public class OptionsPostExpositionBox extends JFrame
 
     // TESTING STUFF 
     
+    // Note: exposition arrayList passed should be same as one passed to ExpositionBox
     public ArrayList<String> testArrayList()
     {
         ArrayList<String> example = new ArrayList<>();
@@ -259,14 +206,15 @@ public class OptionsPostExpositionBox extends JFrame
         return example;
     }
     
+    // Note: number of Strings in ArrayList determines number of buttons created 
     public ArrayList<String> textForButtons()
     {
         ArrayList<String> example = new ArrayList<>();
 
         example.add("This is the text for button 1");
         example.add("This is the text for button 2");
-        //example.add("This is the text for button 3");
-        //example.add("This is the text for button 4");
+        example.add("This is the text for button 3");
+        example.add("This is the text for button 4");
         //example.add("This is the text for button 5");
         //example.add("This is the text for button 6");
 
@@ -275,9 +223,13 @@ public class OptionsPostExpositionBox extends JFrame
     
     // TESTING STUFF
     
+    
+    
+    // MAKING BUTTONS BASED ON OPTIONS STRING ARRAYLIST SIZE 
+    
     public JButton newButton(String text, int loopCount)
     {
-        JButton newButton = new JButton(text);
+        JButton button = new JButton(text);
         
         // parse int into String and add "." and space for appearance: "#. "
         // followed by text (loopCount is +1 since loop count starts at 0)
@@ -285,7 +237,7 @@ public class OptionsPostExpositionBox extends JFrame
             builder.append(". ");
         
         // attempt to add text to builder by appending it to the end 
-        if(text.length() < characterLimit)
+        if(text.length() <= characterLimit)
         {
             builder.append(text);
         }
@@ -294,32 +246,41 @@ public class OptionsPostExpositionBox extends JFrame
             builder.append("ERROR: Text Too Long >:)");
         }
         
-        newButton.setText(builder.toString());
+        button.setHorizontalAlignment(SwingConstants.LEADING);
         
-        newButton.setFont(font);
+        button.setText(builder.toString());
         
-        return newButton;
+        button.setFont(font);
+        
+        return button;
     }
     
+    // action listener gives button a number representing player choice 
     public void buttonActionUponClick(JButton button, int loopCount)
     {
-        // action listener gives button a number representing player choice 
         button.addActionListener(
-        new ActionListener() 
-        {
-            int result = loopCount;
-            
-            @Override
-            public void actionPerformed(ActionEvent e)
+            new ActionListener() 
             {
-                setOptionChoice(result);
-                    System.out.println("choice is: "+getOptionChoice());
-                        //frame.dipose();
-            }
-        }); 
+                int result = loopCount;
+
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    // set option selected by player for switch case
+                    setOptionChoice(result);
+                    
+                    // signify that Gui is complete 
+                    guiComplete(true);
+
+                    // release all native screen resources, subcomponents, and all 
+                    // of its owned children; in other words, close GUI and allow  
+                    // program to continue running IF other windows are available 
+                    frame.dispose();
+                }
+            }); 
     }
     
-    public void addButtonComponent(JButton button, int loopCount)
+    public void addButtonComponent(int loopCount, JButton button, JFrame frame)
     {
         GridBagConstraints gridBagConstraints = new GridBagConstraints();
         
@@ -332,18 +293,17 @@ public class OptionsPostExpositionBox extends JFrame
         // row position dependent on loop count and add 1 to accomodate text area 
         gridBagConstraints.gridy = loopCount + 1;
         
-        // specified column length component takes up (1/10 of frame if no 
-        // other components are in the way)
+        // specified column length component takes up 
         gridBagConstraints.weighty = 0.07;
         
-        // specified row length component takes up (1/10 of frame if no 
-        // other components are in the way)
+        // specified row length component takes up 
         gridBagConstraints.weightx = 0.1;
         
         // add button to frame with positioning 
         frame.add(button, gridBagConstraints);
     }
     
+    // create buttons according to number of Strings in supplied String ArrayList
     public ArrayList<JButton> buttonsUsingButtonTextArrayList(ArrayList<String> 
         buttonChoicesText)
     {
@@ -359,76 +319,46 @@ public class OptionsPostExpositionBox extends JFrame
         return buttonsArrayList;
     }
     
-    public void addButtonComponents(ArrayList<JButton> buttonsArrayList)
+    public void addVariableButtonComponents(ArrayList<String> variableOptionsStrings,
+        JFrame frame)
     {
         // convert ArrayList to array starting from first position of Arrat
-        JButton[] buttonsAsArray = buttonsArrayList.toArray(new JButton[0]);
+        JButton[] buttonsAsArray = buttonsUsingButtonTextArrayList(variableOptionsStrings).
+            toArray(new JButton[0]);
         
         // add button column functionality for keyboard and mouse wheel 
         CommonGUIMethods.buttonColumnKeyboardNavigation(buttonsAsArray);
         CommonGUIMethods.frameMouseWheel(frame, buttonsAsArray);
         
-        // add ability for text to resize upon frame resize 
-        textResizesUponButtonResize(buttonsAsArray);
-        
         // add button as components for layout GridBagLayout of the frame 
         for(int i = 0; i < buttonsAsArray.length; i++)
         {
-            addButtonComponent(buttonsAsArray[i], i);
+            addButtonComponent(i, buttonsAsArray[i], frame);
         }
     }
     
-    // Note: number of buttons made depend on size of String ArrayList supplied 
-    public void variableNumberOfButtonChoiceComponents(ArrayList<String> arrayList)
-    {
-        addButtonComponents(buttonsUsingButtonTextArrayList(arrayList));
-    }
+    // MAKING BUTTONS BASED ON OPTIONS STRING ARRAYLIST SIZE    
     
     // END: MAKING BUTTONS WITH TEXT
     /*******************************************************************************/
 
-    
-    
-    // START: RESIZE COMPONENT BASED ON FRAME RESIZE AND DISPLAYING FRAME 
-    /*******************************************************************************/
-
-    // allow for text to resize (somewhat) upon change in frame size...
-    public void textResizesUponButtonResize(JButton...array)
-    {
-        for(JButton element : array)
-        {
-            if(element != null)
-            {
-                CommonGUIMethods.resizeButtonTextUsingFrameSize(frame, element);
-            }
-        }
-    }
-    
-    // display frame window 
-    public void displayFrameWindow(JFrame frame)
-    {
-        frame.pack();
-        frame.setSize(640, 480);
-        frame.setVisible(true);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    }
-    
-    // END: RESIZE COMPONENT BASED ON FRAME RESIZE AND DISPLAYING FRAME 
-    /*******************************************************************************/
 
     
     // Note: exposition text with boundary "/" is supplied 
     // number of buttons (options) varies depending on text supplied for buttons 
-    public OptionsPostExpositionBox()
+    public OptionsPostExpositionBox(ArrayList<String> expositionBoxText, 
+        ArrayList<String> variableOptionsStrings)
     { 
+        // set color and layout for frame 
         frame.getContentPane().setBackground(Color.BLACK);
-        
         frame.getContentPane().setLayout(new GridBagLayout());
         
-        textAreaComponent(testArrayList());
+        // add text to text area before text area is added to frame 
+        addTextAreaComponent(textArea, expositionBoxText);
         
-        variableNumberOfButtonChoiceComponents(textForButtons());
-
+        // add a variable number buttons (options) depending on ArrayList size
+        addVariableButtonComponents(variableOptionsStrings, frame);
+        
         displayFrameWindow(frame);
     } 
 }
