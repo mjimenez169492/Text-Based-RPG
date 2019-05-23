@@ -536,8 +536,11 @@ public class BattleResults extends CommonGUIMethods
 
     
     // add ArrayList<GenericCharacter> defeatedCharacters as parameter 
-    public BattleResults(PlayerEntity entity)
+    public BattleResults(PlayerEntity entity, ArrayList<GenericCharacter> defeatedEnemies)
     {
+        // left off here!
+        
+        
         frame.setLayout(new GridBagLayout());
         
         addBattleResultsMenuButton(frame);
