@@ -14,8 +14,14 @@ public class PlayerEntityFactory
         GenericCharacterFactory characterOne = new GenericCharacterFactory();
         GenericCharacter charOne = characterOne.getExampleCharacter();
         charOne.getGeneralFeatures().setName("dv");
+        
+        WeaponFactory weapon = new WeaponFactory();
+        
+        //charOne.getEquippableOutfits().setWeapon(weapon.getTrainingSword());
+        //charOne.getEquippableOutfits().setWeaponChangeState(false);
             charOne.getStats().setFireResistance(10);
             playerEntity.getParty().addToParty(charOne);
+            playerEntity.getParty().playerParty(true);
         /*
         GenericCharacterFactory characterTwo = new GenericCharacterFactory();
         GenericCharacter charTwo = characterTwo.getExampleCharacter();
@@ -97,10 +103,16 @@ public class PlayerEntityFactory
         PlayerEntity playerEntity = new PlayerEntity();
         
         GenericCharacterFactory characterTwo = new GenericCharacterFactory();
-        characterTwo.getExampleCharacter().getGeneralFeatures().setName("ppp dwwd");
-        characterTwo.getExampleCharacter().getStats().setFireResistance(100);
-        characterTwo.getExampleCharacter().getGeneralFeatures().playerControl(false);
-            playerEntity.getParty().addToParty(characterTwo.getExampleCharacter());
+        GenericCharacter char2 = characterTwo.getExampleCharacter();
+        char2.getGeneralFeatures().setName("ppp dwwd");
+        char2.getOppositionMethods().setDefeatExp(100);
+        char2.getOppositionMethods().setDefeatMoney(1000);
+        char2.getOppositionMethods().addDroppableObject(new WeaponFactory().getTrainingSword());
+        char2.getStats().setFireResistance(100);
+        
+        // MAKE AI SCRIPT
+        char2.getGeneralFeatures().playerControl(true);
+            playerEntity.getParty().addToParty(char2);
         
         /*
         GenericCharacterFactory characterFour = new GenericCharacterFactory();
