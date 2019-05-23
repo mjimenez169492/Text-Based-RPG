@@ -634,6 +634,26 @@ System.out.println(e.getWheelRotation());
     
     
     
+    // START: UNSORTED METHODS 
+    /*******************************************************************************/
+    
+    public String desiredSpaces(int spaces)
+    {
+        StringBuilder builder = new StringBuilder();
+        
+        for(int i = 0; i < spaces; i++)
+        {
+            builder.append(" ");
+        }
+        
+        return builder.toString();
+    }
+    
+    // END: UNSORTED METHODS 
+    /*******************************************************************************/
+
+    
+    
     // START: FRAME RELATED METHODS
     /*******************************************************************************/
 
