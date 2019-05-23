@@ -182,10 +182,6 @@ public class BattleMenu
     
     private static JButton attackChoice;
     
-    // signify in Battle inner class whether turn has been complete 
-    private static boolean turnComplete = false;
-    
-    
     
     /*
     private JButton overview, description;
@@ -754,7 +750,7 @@ public class BattleMenu
         return model;
     }
     
-    public static DefaultListModel<String> escapedCharacterJListModel(ArrayList
+    public static DefaultListModel<String> escapedCharactersJListModel(ArrayList
         <GenericCharacter> escapedCharacters)
     {
         DefaultListModel<String> model = new DefaultListModel<>();
@@ -992,9 +988,12 @@ public class BattleMenu
                     // reload party JLists to display results of action 
                     partyOneBottom.setModel(partyMembersModel(referencePartyOne));
                     partyTwoTop.setModel(partyMembersModel(referencePartyTwo));
+                    
+                    externalFrame.dispose();
    
                     // turn complete upon selecting attack
-                    turnComplete = true;
+                    Battle.postMoveBehavior(Battle.currentRound, Battle.nextRound, 
+                        Battle.getOpposingPlayer(user, referencePartyOne, referencePartyTwo));
                 }
             }); 
     }
@@ -1161,10 +1160,10 @@ public class BattleMenu
             partyOneLoss, playerPartyLoss, partyTwoWin, partyOneWin, playerPartyWin};
 
         // holds chaarcters that have fled from battle (no post battle reward)
-        private final ArrayList<GenericCharacter> escapedCharacters = new ArrayList<>();
+        private static final ArrayList<GenericCharacter> escapedCharacters = new ArrayList<>();
 
         // holds characters defeated in battle (post battle reward if battle is won )
-        private final ArrayList<GenericCharacter> defeatedCharacters = new ArrayList<>();
+        private static final ArrayList<GenericCharacter> defeatedCharacters = new ArrayList<>();
 
         /* Note: priority queues contain comparator that sorts characters such 
                  that characters with the highest battle dexterity comes first */
@@ -1414,6 +1413,23 @@ public class BattleMenu
             return result;
         }
 
+        public static Party getOpposingPlayer(GenericCharacter character, Party partyOne, 
+            Party partyTwo)
+        {
+            Party result = null;
+
+            if(partyOne.getPartyMembers().contains(character))
+            {
+                result = partyOne;
+            }
+            else if(partyTwo.getPartyMembers().contains(character))
+            {
+                result = partyTwo;
+            }
+
+            return result;
+        }
+        
         // END: DETERMINING EXISTENCE OF PLAYER PARTY AND GETTING PARTY OBJECTS 
         /*******************************************************************************/
 
@@ -1435,11 +1451,12 @@ public class BattleMenu
             return result;
         }
 
+        // sets up GUI meant to display battle to player
         public void setUpBattleGUI(JFrame frame, Party partyOne, Party partyTwo)
         {
             frame.setLayout(new GridBagLayout());
         
-            // party references used to easily access party 
+            // party references used to easily access parties in battle  
             referencePartyOne = partyOne;
             referencePartyTwo = partyTwo;
    
@@ -1466,7 +1483,7 @@ public class BattleMenu
 
             addJListJTextAreaButtonTitles(frame);
 
-            // action stuff with external frames 
+            // designates buttons that allow player to perform actions in battle 
             usableButtonActionListeners();
 
             displayFrameWindow();
@@ -1483,17 +1500,8 @@ public class BattleMenu
                 // reset end battle triggers, instance variables, and set up current round 
                 preBattleSetUp(currentRound, partyOne, partyTwo);
 
-                // set up battle gui
+                // set up battle gui before it is displayed 
                 setUpBattleGUI(frame, partyOne, partyTwo);
-                
-                
-                
-                
-                
-                
-                
-                
-                
                 
                 // loop until an end battle loop condition is met 
                 while(!endBattleLoop())
@@ -1507,7 +1515,7 @@ public class BattleMenu
                 
                 // after battle, perform appropriate action based on boolean priority 
                 // and whether a party under player control is involved in the battle 
-                    // battleResults(battle, partyOne, partyTwo);
+                    // Note: class should return value accessible to Battle Handler 
             }
         }
 
@@ -1515,7 +1523,7 @@ public class BattleMenu
             <GenericCharacter> currentRound, PriorityQueue<GenericCharacter> nextRound, double 
             roundCount, Party partyOne, Party partyTwo)
         {
-            // proceed if currentRound is not empty else refill currentRound
+            // proceed if currentRound is not empty 
             if(!currentRound.isEmpty())
             {
                 // fill allPqContents with characters that have not escaped battle 
@@ -1525,9 +1533,14 @@ public class BattleMenu
                 characterTurnLogic(allPqContents, currentRound, nextRound, 
                     roundCount, partyOne, partyTwo);
             } 
+            // else refill currentRound and reload turn tracking JLists 
             else 
             {
                 fillCurrentRoundAndClearNextRound(currentRound, nextRound);
+                
+                // update turn tracking JLists 
+                currentRoundJList.setModel(turnTrackingJListModel(currentRound));
+                nextRoundJList.setModel(turnTrackingJListModel(nextRound));
             }
 
             // fill allPqContents with characters that have not escaped battle 
@@ -1649,7 +1662,7 @@ public class BattleMenu
 
         public void startOfTurnEffects(GenericCharacter character)
         {
-            if(character != null && !character.getGeneralFeatures().knockedOut())
+            if(!character.getGeneralFeatures().knockedOut())
             {
                 resetDamagedIfDamaged(character);
                 character.getStatusEffectContainer().decrementStartOfTurnStatusEffectTurns();
@@ -1657,7 +1670,7 @@ public class BattleMenu
             }
         }
 
-        public void effectOfStatusEffectsOnCurrentGauges(GenericCharacter character)
+        public static void effectOfStatusEffectsOnCurrentGauges(GenericCharacter character)
         {
             character.getGeneralFeatures().setCurrentHealth(character.getGeneralFeatures().
                 getCurrentHealth() + (character.getGeneralFeatures().getCurrentHealth() * 
@@ -1672,9 +1685,9 @@ public class BattleMenu
                 character.getStatusEffectContainer().sumOfEffects("Current Nano")));
     }
 
-        public void endOfTurnEffects(GenericCharacter character)
+        public static void endOfTurnEffects(GenericCharacter character)
         {
-            if(character != null && !character.getGeneralFeatures().knockedOut())
+            if(!character.getGeneralFeatures().knockedOut())
             {
                 effectOfStatusEffectsOnCurrentGauges(character);
                 character.getStatusEffectContainer().decrementEndOfTurnStatusEffectTurns();
@@ -1768,6 +1781,10 @@ public class BattleMenu
                 currentRound.peek().getStatusEffectContainer().removeStatusEffectsAfterKnockOut();
                 currentRound.peek().getGeneralFeatures().setBattleDexterity(currentRound.peek()); 
                 nextRound.add(currentRound.poll());
+                
+                // update turn tracking JLists 
+                currentRoundJList.setModel(turnTrackingJListModel(currentRound));
+                nextRoundJList.setModel(turnTrackingJListModel(nextRound));
             }
         }
 
@@ -1797,21 +1814,21 @@ public class BattleMenu
             }
             else // object is under player control
             {
-                // set battle dexterity for character using character AND move speed 
-                // character.setBattleDexterity(currentRound.peek().getCommandList(allPqContents, 
-                //      roundCount, characterParty, opposingParty, currentRound.peek()));
+                // at this point, character is deemed under player control so 
+                // player can make character perform actions by selecting any 
+                // enabled button that exist across bottom border of frame as
+                // soon as battle shifts to player control.
                 
-                /* idea 
-                    at this time, character is known to be under player control 
-                        therefore, buttons to perform move should be ENABLED
-                */
+                // battle advances ONLY after player has selected option that
+                // character can perform. Once a move is performed, character 
+                // has battle dexterity set character.setBattleDexterity(move
+                // speed * character.getTotalDexterity()) and battle proceeds
+                // by calling postMoveBehavior(PriorityQueue<GenericCharacter> 
+                // currentRound, PriorityQueue <GenericCharacter> nextRound, 
+                // Party opposingParty)
                 
                 BattleMenu.enableUsableButtons();
-                
-                
             }
-
-            // setBattleDexterity as last opion BEFORE executing post move behavior 
         }
 
         // END: SELECTING CHARACTER THAT WILL MAKE MOVE 
@@ -1822,7 +1839,7 @@ public class BattleMenu
         // START: POST MOVE BEHAVIOR AND ESCAPE BEHAVIOR  
         /*******************************************************************************/
 
-        public boolean escapePossible(double originalPreventFlee, double reducedPreventFlee)
+        public static boolean escapePossible(double originalPreventFlee, double reducedPreventFlee)
         {
             SecureRandom rand = new SecureRandom();
 
@@ -1836,7 +1853,7 @@ public class BattleMenu
             return result;
         }
 
-        public boolean escapeOutcome(GenericCharacter character, Party opposingParty)
+        public static boolean escapeOutcome(GenericCharacter character, Party opposingParty)
         {
             boolean result = false;
 
@@ -1870,24 +1887,30 @@ public class BattleMenu
             return result;
         }
 
-        public void escapeAttemptBehavior(PriorityQueue<GenericCharacter> currentRound, 
+        public static void escapeAttemptBehavior(PriorityQueue<GenericCharacter> currentRound, 
             PriorityQueue<GenericCharacter> nextRound, Party opposingParty)
         {
             if(escapeOutcome(currentRound.peek(), opposingParty))
             {
                 escapedCharacters.add(currentRound.poll());
+                
+                escapedCharactersJList.setModel(escapedCharactersJListModel(escapedCharacters));
             }
             else
             {
                 endOfTurnEffects(currentRound.peek());
                 currentRound.peek().getGeneralFeatures().setBattleDexterity(currentRound.peek()); 
                 nextRound.add(currentRound.poll());
+                
+                // update turn tracking JLists 
+                currentRoundJList.setModel(turnTrackingJListModel(currentRound));
+                nextRoundJList.setModel(turnTrackingJListModel(nextRound));
             } 
         }	
 
-        // account for character escape behavior or general move behavior 
-        public void postMoveBehavior(PriorityQueue<GenericCharacter> currentRound, PriorityQueue
-            <GenericCharacter> nextRound, Party opposingParty)
+        // account for character escape behavior or battle behavior POST MOVE 
+        public static void postMoveBehavior(PriorityQueue<GenericCharacter> currentRound, 
+            PriorityQueue<GenericCharacter> nextRound, Party opposingParty)
         {
             // if accounts for escape attempt and else accounts for non-escape behavior
             if(currentRound.peek().getGeneralFeatures().getBattleDexterity() == Double.MAX_VALUE)
@@ -1904,6 +1927,10 @@ public class BattleMenu
 
                 currentRound.peek().getGeneralFeatures().setBattleDexterity(currentRound.peek()); 
                 nextRound.add(currentRound.poll());
+                
+                // update turn tracking JLists 
+                currentRoundJList.setModel(turnTrackingJListModel(currentRound));
+                nextRoundJList.setModel(turnTrackingJListModel(nextRound));
             }
         }
 
