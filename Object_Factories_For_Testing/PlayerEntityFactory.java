@@ -22,7 +22,7 @@ public class PlayerEntityFactory
         
         SecureRandom rand = new SecureRandom();
         
-        playerEntity.getInventory().setObjectGroupsLimit((rand.nextInt(30)+1));
+        playerEntity.getInventory().setObjectGroupsLimit((rand.nextInt(30)+15));
         playerEntity.getInventory().setItemGroupMaxSize((rand.nextInt(30)+1));
         playerEntity.getInventory().setCoreGroupMaxSize((rand.nextInt(30)+1));
         playerEntity.getInventory().setWeaponGroupMaxSize((rand.nextInt(30)+1));
