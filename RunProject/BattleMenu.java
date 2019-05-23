@@ -723,20 +723,6 @@ public class BattleMenu
         return character;
     }
     
-    // determine whether user object is the same as target object based on name 
-    public static boolean userSameAsTarget(Object userName, Object targetName)
-    {
-        boolean result = false;
-        
-        // null check for same object being referenced (user == target)
-        if(getCharacter(userName) != null && getCharacter(targetName) == null)
-        {
-            result = true;
-        }
-        
-        return result;
-    }
-    
     // END: GETTING CHARACTER DISPLAYED IN JLIST 
     /*******************************************************************************/
 
@@ -876,7 +862,7 @@ public class BattleMenu
         {
             if(!element.getGeneralFeatures().knockedOut())
             {
-                String name = String.format("%-26s", element.getGeneralFeatures().
+                String name = String.format("%s", element.getGeneralFeatures().
                     getName());
                 
                 model.addElement(name);
@@ -981,29 +967,14 @@ public class BattleMenu
 
                     // create object meant for calculating outcome of move 
                     MoveCalculations calculation = new MoveCalculations();
-                    
-                    // account for when target is the same! (null if the same 
-                    // due to referencing same character object from party)
-                    if(userSameAsTarget(userName, targetName))
-                    {
-                        calculation.singleTargetMoveLogic(getCharacter(userName), 
-                            getCharacter(userName), factory.getStandardAttack());
+             
+                    // perform attack move on desired target 
+                    calculation.singleTargetMoveLogic(getCharacter(userName), 
+                        getCharacter(targetName), factory.getStandardAttack());
                         
-                        // attack text is appended to battle log 
-                        attackBattleLogEvent((String)userName, (String)userName,  
-                            calculation, battleLog);
-                    }
-                    // else search for user and target character references within
-                    // either party and perform attack calculation 
-                    else
-                    {
-                        calculation.singleTargetMoveLogic(getCharacter(userName), 
-                            getCharacter(targetName), factory.getStandardAttack());
-                        
-                        // attack text is appended to battle log 
-                        attackBattleLogEvent((String)userName, (String)targetName,  
-                            calculation, battleLog);
-                    }
+                    // attack text is appended to battle log 
+                    attackBattleLogEvent((String)userName, (String)targetName,  
+                        calculation, battleLog);
                     
                     // reload party JLists to display results of action 
                     partyOneBottom.setModel(partyMembersModel(referencePartyOne));
