@@ -1,5 +1,6 @@
-package RunProject;
+package GUI_Collection;
 
+import GUI_Collection.CommonGUIMethods;
 import Player_Entity.PlayerEntity;
 
 import java.awt.event.ActionListener; 
@@ -60,7 +61,7 @@ import java.awt.event.KeyListener;
                 FORGET: TO RESET IPADY SO button2 IS STRETCHED VERTICALLY 30 PIXELS!!!
 */
 
-public class ExpositionBox extends CommonGUIMethods
+public class TextBox extends CommonGUIMethods
 {
     // set frame for exposition box 
     private JFrame frame = new JFrame("Capstone RPG");
@@ -1029,7 +1030,7 @@ public class ExpositionBox extends CommonGUIMethods
     // START: CONSTRUCTOR 
     /*******************************************************************************/
     
-    public ExpositionBox(PlayerEntity entity, String location, String eventEventLine, 
+    public TextBox(PlayerEntity entity, String location, String eventEventLine, 
         ArrayList<String> arrayList)
     {
         // set frame layou signifying component positioning style 
