@@ -1,134 +1,55 @@
-
-
-
-
-
-
-
-
-
-
 package RunProject;
 
 import Player_Entity.PlayerEntity;
 import Generic_Character.GenericCharacter;
-import Battle_Feature.LevelMechanics;
 import Object_Factories.PlayerEntityFactory;
-import Player_Entity.PartyWallet;
 import Move_Creation.StatusEffect;
 import Generic_Object.GenericObject;
 import Player_Entity.Inventory;
 import Generic_Object.Item;
 import Move_Creation.Moves;
-import Move_Creation.MoveCalculations;
 
+import java.awt.Rectangle;
+import java.awt.event.MouseAdapter;
+import javax.swing.DefaultListModel;
+import javax.swing.SwingUtilities;
+import java.awt.Color;
+import java.awt.GridBagConstraints;
 import java.security.SecureRandom;
-import java.awt.event.ActionListener; 
-import java.awt.event.ActionEvent; 
-import javax.swing.Box; 
-import javax.swing.JFrame; 
-import javax.swing.JTextArea;
-import javax.swing.JButton;
-import javax.swing.JScrollPane;
-import java.awt.*;
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.JTextArea;
-
-import java.awt.Component;
 import java.awt.GridBagLayout;
-
-import java.awt.*;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.border.EmptyBorder;
-import javax.swing.text.DefaultCaret;
-import javax.swing.JFrame;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.text.AbstractDocument;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DocumentFilter;
-import java.awt.Point; 
-import java.awt.Graphics;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter; 
 import java.util.ArrayList;
-import javax.swing.JPanel; 
-import java.util.ArrayList;
-import java.awt.Toolkit;
-import java.awt.Dimension;
 import java.util.Map;
-import java.util.LinkedHashMap;
-import java.util.HashMap;
-import java.util.Map;
-import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
-import javax.swing.DefaultListSelectionModel;
-import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
-import javax.swing.AbstractAction;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JRadioButtonMenuItem;
-import javax.swing.ButtonGroup;
 import javax.swing.JMenuBar;
-import javax.swing.KeyStroke;
-import javax.swing.ImageIcon;
-
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.JScrollPane;
-import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JRadioButtonMenuItem;
-import javax.swing.ButtonGroup;
-import javax.swing.JMenuBar;
-import javax.swing.KeyStroke;
-import javax.swing.ImageIcon;
-
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.JScrollPane;
-import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JRadioButtonMenuItem;
-import javax.swing.ButtonGroup;
-import javax.swing.JMenuBar;
-import javax.swing.KeyStroke;
-import javax.swing.ImageIcon;
-
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JScrollPane;
 import javax.swing.JFrame;
 import javax.swing.JPopupMenu;
-import javax.swing.JInternalFrame;
+import java.awt.Font;
+import java.awt.Insets;
+import javax.swing.SwingConstants;
 
-
-public class ItemsMenu 
+public class ItemsMenu extends CommonGUIMethods
 {
+    // frame meant to store components in a desired layout 
+    private JFrame frame = new JFrame("Capstone RPG");
+    
+    // store JFrame that originally called frame of this class to return to it later 
+    private JFrame callingFrame = new JFrame();
+    
+    
+    
+    
     // When formatting text displayed under certain fonts, it is possible for 
     // text to be displayed "incorrectly" or in an unintended fashion since 
     // characters may not have the same width. Font "Monospaced" alleviates 
@@ -2109,16 +2030,6 @@ public class ItemsMenu
 
     
     
-    public void displayFrameWindow()
-    {
-        frame.pack();
-        frame.setSize(640, 480);
-        frame.setVisible(true);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    }
-    
-    JFrame frame = new JFrame();
-    
     public ItemsMenu()
     {
         frame.setLayout(new GridBagLayout());
@@ -2166,6 +2077,6 @@ public class ItemsMenu
         inventoryObjectsJList.setSelectedIndex(0);
         
         // display frame window accordingly 
-        displayFrameWindow();
+        displayFrameWindow(frame);
     }
 }
