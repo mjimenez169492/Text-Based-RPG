@@ -926,6 +926,38 @@ public class BattleMenu
         addExternalAttackChoiceComponent(button, gridy, gridx, 0.11, 0.33, 3, 1, frame);
     }
     
+    public static void attackBattleLogEvent(String userName, String targetName, MoveCalculations 
+        calculations, JTextArea battleLog)
+    {
+        String event = String.format("%s attacked %s!\n", userName, targetName);
+            battleLog.append(event);
+        
+        // proceed if attack did not miss the target 
+        if(!calculations.missed())
+        {
+            String result = String.format("%s dealt %d damage!\n", userName, 
+                (int)calculations.getOutput());
+                    battleLog.append(result);
+            
+            // account for knock out after attack is made against target 
+            if(getCharacter(targetName).getGeneralFeatures().knockedOut())
+            {
+                String knockedOut = String.format("%s was knocked out!\n", targetName);
+                    battleLog.append(knockedOut);
+            }
+            else
+            {
+                battleLog.append("\n");
+            }
+        }
+        // else account for move missing 
+        else
+        {
+            String result = String.format("%s\n\n", "But the attack missed!");
+                battleLog.append(result);
+        }
+    }
+    
     public static void addConfirmAttackActionListener(JButton button)
     {
         button.addActionListener(
@@ -934,17 +966,6 @@ public class BattleMenu
                 @Override
                 public void actionPerformed(ActionEvent e)
                 {
-                    /* idea 
-                        get selection value of allAvailableCombatantsJList and 
-                        use string to go through both parties in battle until 
-                        character to perform move on is found 
-                            store character temporarily 
-                        perform move such that character performing move is the
-                        passed as user (characer at head of current round) and 
-                        character retrieved via allAvailableCombatantsJList as 
-                        move target 
-                    */
-                    
                     // since user is character at head of current round, make 
                     // sure that character is treated as move user 
                     currentRoundJList.setSelectedIndex(0);
@@ -967,20 +988,22 @@ public class BattleMenu
                     {
                         calculation.singleTargetMoveLogic(getCharacter(userName), 
                             getCharacter(userName), factory.getStandardAttack());
+                        
+                        // attack text is appended to battle log 
+                        attackBattleLogEvent((String)userName, (String)userName,  
+                            calculation, battleLog);
                     }
-                    // else proceed as normal 
+                    // else search for user and target character references within
+                    // either party and perform attack calculation 
                     else
                     {
                         calculation.singleTargetMoveLogic(getCharacter(userName), 
                             getCharacter(targetName), factory.getStandardAttack());
+                        
+                        // attack text is appended to battle log 
+                        attackBattleLogEvent((String)userName, (String)targetName,  
+                            calculation, battleLog);
                     }
-                    
-                // display attack info 
-                // round number, user name, hit/miss/fail text, target name
-                // 
-                    battleLog.append(String.valueOf(calculation.getOutput()));
-                    
-                    
                     
                     // reload party JLists to display results of action 
                     partyOneBottom.setModel(partyMembersModel(referencePartyOne));
@@ -1181,7 +1204,7 @@ public class BattleMenu
         private static final ArrayList<GenericCharacter> escapedCharacters = new ArrayList<>();
 
         // holds characters defeated in battle (post battle reward if battle is won )
-        private static final ArrayList<GenericCharacter> defeatedCharacters = new ArrayList<>();
+        private static final ArrayList<GenericCharacter> defeatedEnemies = new ArrayList<>();
 
         /* Note: priority queues contain comparator that sorts characters such 
                  that characters with the highest battle dexterity comes first */
@@ -1437,6 +1460,27 @@ public class BattleMenu
             return result;
         }
         
+        // store enemies defeated in battle (as in those that have not fled)
+        public static void storeDefeatedEnemies(PriorityQueue<GenericCharacter> allCombatants,
+            Party opposingParty, ArrayList<GenericCharacter> arrayList)
+        {
+            for(GenericCharacter element : allCombatants)
+            {
+                for(GenericCharacter innerElement : opposingParty.getPartyMembers())
+                {
+                    if(element.getGeneralFeatures().getName().equals(innerElement.getGeneralFeatures().getName()))
+                    {
+                        arrayList.add(element);
+                    }
+                }
+            }
+        }
+        
+        public static ArrayList<GenericCharacter> getDefeatedEnemies()
+        {
+            return defeatedEnemies;
+        }
+        
         // END: DETERMINING EXISTENCE OF PLAYER PARTY AND GETTING PARTY OBJECTS 
         /*******************************************************************************/
 
@@ -1470,7 +1514,7 @@ public class BattleMenu
 
             // reset ArrayLists 
             escapedCharacters.clear();
-            defeatedCharacters.clear();
+            defeatedEnemies.clear();
         }
 
         public void preparePartiesForBattle(Party partyOne, Party partyTwo)
@@ -1664,6 +1708,11 @@ public class BattleMenu
                 // set up battle gui before it is displayed 
                 setUpBattleGUI(frame, partyOne, partyTwo);
    
+                // account for current round in battle log
+                String round = String.format("%s %s: %d\n\n", desiredSpaces(5),
+                    "Round", (int)getRoundCount());
+                        battleLog.append(round);
+                
                 // loop until an end battle loop condition is met 
                 while(true)
                 {
@@ -1680,8 +1729,13 @@ public class BattleMenu
                         break;
                     }
                 } 
-
-                System.out.println("Game Win :)");
+                
+                // add KO'ed opposition to defeated characters if player party exist
+                if(playerPartyExists(referencePartyOne, referencePartyTwo))
+                {
+                    storeDefeatedEnemies(allPqContents, getPartyOpposingPlayer(referencePartyOne, 
+                        referencePartyTwo), defeatedEnemies);
+                }
                 
                 // signify that Gui is complete 
                 guiComplete(true);
@@ -1719,10 +1773,13 @@ public class BattleMenu
                 currentRoundJList.setModel(turnTrackingJListModel(currentRound));
                 nextRoundJList.setModel(turnTrackingJListModel(nextRound));
                 
-                System.out.println("Round: "+getRoundCount());
-            
                 // increment round count by one 
                 incrementRoundCount();
+                
+                // account for current round in battle log
+                String newRound = String.format("%s %s: %d\n\n", desiredSpaces(5),
+                    "Round", (int)getRoundCount());
+                        battleLog.append(newRound);
             }
         }
 
@@ -1831,7 +1888,8 @@ public class BattleMenu
                 // currentRound, PriorityQueue <GenericCharacter> nextRound, 
                 // Party opposingParty)
                 
-                BattleMenu.enableUsableButtons();
+                //BattleMenu.enableUsableButtons();
+                attack.setEnabled(true);
                 
                 turnComplete = false;
                 
