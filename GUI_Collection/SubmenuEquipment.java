@@ -186,12 +186,12 @@ public class SubmenuEquipment extends CommonGUIMethods
                     @Override
                     public void actionPerformed(ActionEvent e)
                     {
-                        // dispose of Equips Menu frame and external frame
+                        // dispose of Equips Menu frame and external frame in case its open
                         frame.dispose();
                         externalFrame.dispose();
 
-                        // return focus to frame that orginally called Main Menu 
-                        displayFrameWindow(callingFrame);
+                        // call main menu frame and pass calling frame to it 
+                        new MainMenu(callingFrame, referencePlayerEntity);
                     }
                 }); 
         
@@ -443,7 +443,7 @@ public class SubmenuEquipment extends CommonGUIMethods
                 builder.append(words[i]);
             }
             // add word since last word so no space after 
-            else if(i < words.length - 1)
+            else if(i == words.length - 1)
             {
                 builder.append(words[i]);
             }
@@ -557,7 +557,7 @@ public class SubmenuEquipment extends CommonGUIMethods
         }
         else
         {
-            builder.append(desiredSpaces(5)).append("<NA>");
+            builder.append(desiredSpaces(4)).append("<NA>");
         }
         
         return builder.toString();
@@ -2357,7 +2357,7 @@ public class SubmenuEquipment extends CommonGUIMethods
         }
     }
     
-    public void postUnequipTasks()
+    public void unequipAndPostUnequipTasks()
     {
         // add outfit tied to button reference to inventory 
         referenceInventory.addObject(getEquippedOutfit());
@@ -2397,7 +2397,7 @@ public class SubmenuEquipment extends CommonGUIMethods
                         {
                             if(referenceInventory.canAddObject(getEquippedOutfit()))
                             {
-                                postUnequipTasks();
+                                unequipAndPostUnequipTasks();
                             }
                         }
                     }
@@ -2572,10 +2572,10 @@ public class SubmenuEquipment extends CommonGUIMethods
     // START: CONSTRUCTOR 
     /*******************************************************************************/
 
-    public SubmenuEquipment(JFrame mainMenuFrame, PlayerEntity entity)
+    public SubmenuEquipment(JFrame callingFrame, PlayerEntity entity)
     {
         // store main menu frame to call it later 
-        callingFrame = mainMenuFrame;
+        this.callingFrame = callingFrame;
         
         // set layout frame will use to organize components 
         frame.getContentPane().setLayout(new GridBagLayout());
