@@ -1,4 +1,4 @@
-package Object_Factories;
+package Object_Factories_For_Testing;
 
 import Move_Creation.StatusEffect;
 
@@ -28,7 +28,4 @@ public class StatusEffectFactory
         
         return status;
     }
-    
-    
-    
 }
