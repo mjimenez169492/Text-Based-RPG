@@ -649,6 +649,87 @@ System.out.println(e.getWheelRotation());
         return builder.toString();
     }
     
+    // Note: spaces are used to make value Strings appear aligned 
+    public void appendGaugeValueToStringBuilder(StringBuilder builder, double valueAsDouble,
+        String valueAsString)
+    {
+        if(valueAsDouble < 10)
+        {
+            builder.append(desiredSpaces(3));
+        }
+        else if(valueAsDouble < 100)
+        {
+            builder.append(desiredSpaces(2));
+        }
+        else if(valueAsDouble < 1000)
+        {
+            builder.append(desiredSpaces(1));
+        }
+        
+        builder.append(valueAsString);
+    }
+    
+    public String formatCurrentMaxGauges(double currentValue, double maximumValue)
+    {
+        String curValue = String.valueOf(currentValue);
+        
+        String maxValue = String.valueOf(maximumValue);
+        
+        StringBuilder builder = new StringBuilder();
+        
+        appendGaugeValueToStringBuilder(builder, currentValue, curValue);
+        
+        builder.append(" / ");
+        
+        appendGaugeValueToStringBuilder(builder, maximumValue, maxValue);
+        
+        return builder.toString();
+    }
+    
+    public String formatExperience(double suppliedValue)
+    {
+        String value = String.valueOf(suppliedValue);
+        
+        StringBuilder builder = new StringBuilder();
+        
+        if(suppliedValue < 10)
+        {
+            builder.append(desiredSpaces(8));
+        }
+        else if(suppliedValue < 100)
+        {
+            builder.append(desiredSpaces(7));
+        }
+        else if(suppliedValue < 1000)
+        {
+            builder.append(desiredSpaces(6));
+        }
+        else if(suppliedValue < 10000)
+        {
+            builder.append(desiredSpaces(5));
+        }
+        else if(suppliedValue < 100000)
+        {
+            builder.append(desiredSpaces(4));
+        }
+        else if(suppliedValue < 1000000)
+        {
+            builder.append(desiredSpaces(3));
+        }
+        else if(suppliedValue < 10000000)
+        {
+            builder.append(desiredSpaces(1));
+        }
+        else if(suppliedValue < 100000000)
+        {
+            builder.append(desiredSpaces(1));
+        }
+        
+        builder.append(value);
+        
+        return builder.toString();
+    }
+    
     // END: UNSORTED METHODS 
     /*******************************************************************************/
 

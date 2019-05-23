@@ -47,9 +47,6 @@ public class ItemsMenu extends CommonGUIMethods
     // store JFrame that originally called frame of this class to return to it later 
     private JFrame callingFrame = new JFrame();
     
-    
-    
-    
     // When formatting text displayed under certain fonts, it is possible for 
     // text to be displayed "incorrectly" or in an unintended fashion since 
     // characters may not have the same width. Font "Monospaced" alleviates 
@@ -64,8 +61,8 @@ public class ItemsMenu extends CommonGUIMethods
     private JButton objectDescription, buttonGroupTitle, inventoryJListTitle;
     
     // inventory information about current and max number of specified groups 
-    private JButton itemGroupInfo, coreGroupInfo, weaponGroupInfo,
-	armorGroupInfo, accessoryGroupInfo;
+    private JButton itemGroupInfo, coreGroupInfo, weaponGroupInfo, armorGroupInfo, 
+        accessoryGroupInfo;
     
     // buttons used for presenting object details to player 
     private JButton mainClass, category, superType, subType, useSpeed, buyPrice, 
@@ -98,7 +95,6 @@ public class ItemsMenu extends CommonGUIMethods
     //       cannot be properly displayed in a frame/panel using GridBagLayout for
     //       the components already in place may obscure it 
     private JFrame useFrame;
-    
 
     // indicates whether customize option is on or off 
     // Note: if private instance variable customizeOn did not exist, each popup 
@@ -194,7 +190,11 @@ public class ItemsMenu extends CommonGUIMethods
                     @Override
                     public void actionPerformed(ActionEvent e)
                     {
-                        // return to main menu (may need method to hold frame before disposal)
+                        // dispose of Items Menu frame 
+                        frame.dispose();
+
+                        // return focus to frame that orginally called Main Menu 
+                        displayFrameWindow(callingFrame);
                     }
                 }); 
         
@@ -449,18 +449,6 @@ public class ItemsMenu extends CommonGUIMethods
     // START: DESCRIPTION AND FRAME AREA TITLE COMPONENTS (DEFAULT VALUES)
     /*******************************************************************************/
 
-    public String desiredSpaces(int spaces)
-    {
-        StringBuilder builder = new StringBuilder();
-        
-        for(int i = 0; i < spaces; i++)
-        {
-            builder.append(" ");
-        }
-        
-        return builder.toString();
-    }
-    
     public String formatCurrentMaxValues(int currentValue, int maximumValue,
         String specialCharacter)
     {
@@ -1275,49 +1263,6 @@ public class ItemsMenu extends CommonGUIMethods
     
     // UPDATE CHARACTER PANEL FOR EXTERNAL FRAME USING JLIST VALUE
     
-    public String formatCurrentMaxValues(double currentValue, double maximumValue)
-    {
-        String curValue = String.valueOf(currentValue);
-        
-        String maxValue = String.valueOf(maximumValue);
-        
-        StringBuilder builder = new StringBuilder();
-        
-        // spaces are used to make current value Strings appear alligned 
-        if(currentValue < 10)
-        {
-            builder.append(desiredSpaces(3));
-        }
-        else if(currentValue < 100)
-        {
-            builder.append(desiredSpaces(2));
-        }
-        else if(currentValue < 1000)
-        {
-            builder.append(desiredSpaces(1));
-        }
-        
-        builder.append(curValue).append(" / ");
-        
-        // spaces are used to make max value Strings appear alligned 
-        if(maximumValue < 10)
-        {
-            builder.append(desiredSpaces(3));
-        }
-        else if(maximumValue < 100)
-        {
-            builder.append(desiredSpaces(2));
-        }
-        else if(maximumValue < 1000)
-        {
-            builder.append(desiredSpaces(1));
-        }
-        
-        builder.append(maxValue);
-        
-        return builder.toString();
-    }
-    
     public void updateCharacterPanel(GenericCharacter character)
     {
         // format so all names up to 26 characters are correctly structured 
@@ -1325,17 +1270,17 @@ public class ItemsMenu extends CommonGUIMethods
             characterName.setText(formatName);
         
         // add Health Points (HP) and current/max points 
-        String health = String.format("%-6s: %s", "HP", formatCurrentMaxValues(character.
+        String health = String.format("%-6s: %s", "HP", formatCurrentMaxGauges(character.
             getGeneralFeatures().getCurrentHealth(), character.getTotalStats().getTotalMaxHealth()));
                 characterHealth.setText(health);
 
         // add Stamina Points (SP) and current/max points 
-        String stamina = String.format("%-6s: %s", "SP", formatCurrentMaxValues(character.
+        String stamina = String.format("%-6s: %s", "SP", formatCurrentMaxGauges(character.
             getGeneralFeatures().getCurrentStamina(), character.getTotalStats().getTotalMaxStamina()));
                 characterStamina.setText(stamina);
            
         // add Nanomachine Points (NP) and current/max points
-        String nano = String.format("%-6s: %s", "NP", formatCurrentMaxValues(character.
+        String nano = String.format("%-6s: %s", "NP", formatCurrentMaxGauges(character.
             getGeneralFeatures().getCurrentNano(), character.getTotalStats().getTotalMaxNano()));
                 characterNano.setText(nano);
         
@@ -2030,14 +1975,17 @@ public class ItemsMenu extends CommonGUIMethods
 
     
     
-    public ItemsMenu()
+    public ItemsMenu(JFrame mainMenuFrame, PlayerEntity entity)
     {
+        // store main menu frame to call it later 
+        callingFrame = mainMenuFrame;
+        
+        // designate layout used for Items menu frame 
         frame.setLayout(new GridBagLayout());
         
         // use party entity to store references to player entity and inventory
-        PlayerEntityFactory entity = new PlayerEntityFactory();
-            referencePlayerEntity = entity.getPlayerEntityExample();
-                referenceInventory = entity.getPlayerEntityExample().getInventory();
+        referencePlayerEntity = entity;
+        referenceInventory = entity.getInventory();
         
         // buttons that do something upon click (go to main menu)
         addUsableButtons(frame);

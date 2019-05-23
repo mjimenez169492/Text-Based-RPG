@@ -1,5 +1,7 @@
 package RunProject;
 
+import Player_Entity.PlayerEntity;
+
 import java.awt.event.ActionListener; 
 import java.awt.event.ActionEvent; 
 import javax.swing.SwingConstants;
@@ -914,104 +916,120 @@ public class ExpositionBox extends CommonGUIMethods
     }
     
     public void usableButtonsActionListeners(ArrayList<String> arrayList, JButton 
-        speakerOrDescription, JButton lineOne, JButton lineTwo, JButton lineThree)
+        speakerOrDescription, JButton lineOne, JButton lineTwo, JButton lineThree,
+        PlayerEntity entity)
     {
         // action listener gives button ability to go through text quickly with mouse wheel 
         altNav.addActionListener(
-        new ActionListener() 
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
+            new ActionListener() 
             {
-                // if altNavState is true then deactivate it 
-                if(altNavState)
+                @Override
+                public void actionPerformed(ActionEvent e)
                 {
-                    // enable all disabled interactable buttons 
-                    JButton[] array = {backward, forward, settings, mainMenu};
-
-                    for(JButton element : array)
+                    // if altNavState is true then deactivate it 
+                    if(altNavState)
                     {
-                        element.setEnabled(true);
+                        // enable all disabled interactable buttons 
+                        JButton[] array = {backward, forward, settings, mainMenu};
+
+                        for(JButton element : array)
+                        {
+                            element.setEnabled(true);
+                        }
+
+                        // need to remove listeners to avoid movement "stacking"
+                        altNav.removeKeyListener(keyBoard);
+                        frame.removeMouseWheelListener(mouseWheel);
+
+                        // reset alt nav state to false to indicate state exit 
+                        altNavState = false;
                     }
-                    
-                    // need to remove listeners to avoid movement "stacking"
-                    altNav.removeKeyListener(keyBoard);
-                    frame.removeMouseWheelListener(mouseWheel);
-
-                    // reset alt nav state to false to indicate state exit 
-                    altNavState = false;
-                }
-                // else altNavState is false so activate it 
-                else
-                {
-                    // disable all buttons except altNav
-                    JButton[] array = {backward, forward, settings, mainMenu};
-
-                    for(JButton element : array)
+                    // else altNavState is false so activate it 
+                    else
                     {
-                        element.setEnabled(false);
+                        // disable all buttons except altNav
+                        JButton[] array = {backward, forward, settings, mainMenu};
+
+                        for(JButton element : array)
+                        {
+                            element.setEnabled(false);
+                        }
+
+                        // activate keyboard arrow functionality 
+                        AltNavKeyBoard keyHandler = new AltNavKeyBoard();
+                            keyBoard = keyHandler;
+                                altNav.addKeyListener(keyBoard);
+
+                        // add mouse wheel listener to frame for fast text movement 
+                        AltNavMouseWheel mouseHandler = new AltNavMouseWheel();
+                            mouseWheel = mouseHandler;
+                                frame.addMouseWheelListener(mouseWheel);
+
+                        // set to true to enable fast mouse wheel text movement 
+                        altNavState = true;
                     }
-                    
-                    // activate keyboard arrow functionality 
-                    AltNavKeyBoard keyHandler = new AltNavKeyBoard();
-                        keyBoard = keyHandler;
-                            altNav.addKeyListener(keyBoard);
-                        
-                    // add mouse wheel listener to frame for fast text movement 
-                    AltNavMouseWheel mouseHandler = new AltNavMouseWheel();
-                        mouseWheel = mouseHandler;
-                            frame.addMouseWheelListener(mouseWheel);
-                    
-                    // set to true to enable fast mouse wheel text movement 
-                    altNavState = true;
                 }
-            }
-        }); 
+            }); 
         
         // action listener gives button backward ability to move text backward  
         backward.addActionListener(
-        new ActionListener() 
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
+            new ActionListener() 
             {
-                if((arrayPositionNoNames - 1) > 0)
+                @Override
+                public void actionPerformed(ActionEvent e)
                 {
-                    arrayPositionWithNames -= 1;
-                        moveTextBackward(arrayList, speakerOrDescription, 
-                            lineOne, lineTwo, lineThree);
+                    if((arrayPositionNoNames - 1) > 0)
+                    {
+                        arrayPositionWithNames -= 1;
+                            moveTextBackward(arrayList, speakerOrDescription, 
+                                lineOne, lineTwo, lineThree);
+                    }
                 }
-            }
-        }); 
+            }); 
         
         // action listener gives button forward ability to move text forward  
         forward.addActionListener(
-        new ActionListener() 
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
+            new ActionListener() 
             {
-                if((arrayPositionNoNames + 1) <= totalLines)
+                @Override
+                public void actionPerformed(ActionEvent e)
                 {
-                    arrayPositionWithNames += 1;
-                        moveTextForward(arrayList, speakerOrDescription, 
-                            lineOne, lineTwo, lineThree);
-                }
-                else
-                {
-                    // signify that Gui is complete 
-                    guiComplete(true);
+                    if((arrayPositionNoNames + 1) <= totalLines)
+                    {
+                        arrayPositionWithNames += 1;
+                            moveTextForward(arrayList, speakerOrDescription, 
+                                lineOne, lineTwo, lineThree);
+                    }
+                    else
+                    {
+                        // signify that Gui is complete 
+                        guiComplete(true);
 
-                    // release all native screen resources, subcomponents, and all 
-                    // of its owned children; in other words, close GUI and allow  
-                    // program to continue running IF other windows are available 
+                        // release all native screen resources, subcomponents, and all 
+                        // of its owned children; in other words, close GUI and allow  
+                        // program to continue running IF other windows are available 
+                        frame.dispose();
+                    }
+                }
+            }); 
+        
+        // disable button since setting option is not available in this build 
+        settings.setEnabled(false);
+        
+        // action listener gives button  ability to call main menu for party evaluation
+        mainMenu.addActionListener(
+            new ActionListener() 
+            {
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    // shift focus to MainMenu frame 
+                    new MainMenu(frame, entity);
+
+                    // dispose of Main menu frame 
                     frame.dispose();
                 }
-            }
-        }); 
-        
-        settings.setEnabled(false);
-        mainMenu.setEnabled(false);
+            }); 
     }
     
     // END: HANDLERS AND ACTION LISTENERS
@@ -1022,7 +1040,8 @@ public class ExpositionBox extends CommonGUIMethods
     // START: CONSTRUCTOR 
     /*******************************************************************************/
     
-    public ExpositionBox(String location, String eventEventLine, ArrayList<String> arrayList)
+    public ExpositionBox(PlayerEntity entity, String location, String eventEventLine, 
+        ArrayList<String> arrayList)
     {
         // set frame layou signifying component positioning style 
         frame.setLayout(new GridBagLayout());
@@ -1053,7 +1072,7 @@ public class ExpositionBox extends CommonGUIMethods
         
         // set text displaying buttons to update as exposition is traversed 
         usableButtonsActionListeners(exposition, speakerOrDescription, lineOne, 
-            lineTwo, lineThree);
+            lineTwo, lineThree, entity);
         
         // add appropriate mouse handlers to compoenents 
         attachHandlersToComponents(frame, backward, forward, altNav, settings, mainMenu);
