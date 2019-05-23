@@ -191,12 +191,12 @@ public class SubmenuItems extends CommonGUIMethods
                     @Override
                     public void actionPerformed(ActionEvent e)
                     {
-                        // dispose of Items Menu frame and external frame
+                        // dispose of SubmenuItems frame and external frame in case its open
                         frame.dispose();
                         useFrame.dispose();
 
-                        // return focus to frame that orginally called Main Menu 
-                        displayFrameWindow(callingFrame);
+                        // call main menu frame and pass calling frame to it 
+                        new MainMenu(callingFrame, referencePlayerEntity);
                     }
                 }); 
         
@@ -1257,6 +1257,33 @@ public class SubmenuItems extends CommonGUIMethods
     
     // UPDATE CHARACTER PANEL FOR EXTERNAL FRAME USING JLIST VALUE
     
+    public String trimCharacterName(String name)
+    {
+        String[] words = name.split(" ");
+        
+        StringBuilder builder = new StringBuilder();
+        
+        for(int i = 0; i < words.length; i++)
+        {
+            if(words.length == 1)
+            {
+                builder.append(words[i]);
+            }
+            else if(i == words.length - 1)
+            {
+                // add word since last word has so no space after 
+                builder.append(words[i]);
+            }
+            else
+            {
+                String element = String.format("%s ", words[i]);
+                    builder.append(element);
+            }
+        }
+        
+        return builder.toString();
+    }
+    
     public void updateCharacterPanel(GenericCharacter character)
     {
         // format so all names up to 26 characters are correctly structured 
@@ -1284,7 +1311,7 @@ public class SubmenuItems extends CommonGUIMethods
     
     public GenericCharacter getPartyMember(Object JListPartyMemberName)
     {
-        GenericCharacter character = new GenericCharacter();
+        GenericCharacter character = null;
         
         String partyMemberName = trimCharacterName((String)JListPartyMemberName);
         
@@ -1297,33 +1324,6 @@ public class SubmenuItems extends CommonGUIMethods
         }
         
         return character;
-    }
-    
-    public String trimCharacterName(String name)
-    {
-        String[] words = name.split(" ");
-        
-        StringBuilder builder = new StringBuilder();
-        
-        for(int i = 0; i < words.length; i++)
-        {
-            if(words.length == 1)
-            {
-                builder.append(words[i]);
-            }
-            else if(i < words.length - 1)
-            {
-                // add word since last word so no space after 
-                builder.append(words[i]);
-            }
-            else
-            {
-                builder.append(words[i]);
-                    builder.append(" ");
-            }
-        }
-        
-        return builder.toString();
     }
     
     // UPDATE CHARACTER PANEL FOR EXTERNAL FRAME USING JLIST VALUE
@@ -1385,18 +1385,24 @@ public class SubmenuItems extends CommonGUIMethods
                             (referenceInventory));
 
                         // if object group is removed upon use shift to next object 
+                        // and close external frame 
                         if(inventorySizePreRemoval != referenceInventory.getInventory()
                             .size())
                         {
                             shiftToNextExistingObject(inventoryObjectsJList, 
                                 lastObjectGroupPosition);
+                            
+                            // dispose of external frame and shift focus to original frame 
+                            externalFrame.dispose();
+
+                            // Note: dispose closes program if no window frame comes after 
+                            frame.requestFocus();
                         }
-                        
-                        // dispose of external frame and shift focus to original frame 
-                        externalFrame.dispose();
-                        
-                        // Note: dispose closes program if no window frame comes after 
-                        frame.requestFocus();
+                        // else update character information in buttons to see results 
+                        else
+                        {
+                            updateCharacterPanel(user);
+                        }
                     }
                     else
                     {
@@ -1849,20 +1855,24 @@ public class SubmenuItems extends CommonGUIMethods
                             (referenceInventory));
 
                         // if object group is removed upon use shift to next object 
+                        // and close external frame 
                         if(inventorySizePreRemoval != referenceInventory.getInventory()
-                            .size())
+                                .size())
                         {
                             shiftToNextExistingObject(inventoryObjectsJList, 
                                 lastObjectGroupPosition);
-                        }
-                        
-                        // dispose of external frame and shift focus to original frame 
-                        externalFrame.dispose();
 
-                        // Note: dispose closes program if no window frame comes after 
-                        frame.setVisible(true);
-                        frame.toFront();
-                        frame.requestFocus();
+                            // dispose of external frame and shift focus to original frame 
+                            externalFrame.dispose();
+
+                            // Note: dispose closes program if no window frame comes after 
+                            frame.requestFocus();
+                        }
+                        // else update character information in buttons to see results 
+                        else
+                        {
+                            updateCharacterPanel(getPartyMember(characterJList.getSelectedValue()));
+                        }
                     }
                     else
                     {
@@ -1969,10 +1979,10 @@ public class SubmenuItems extends CommonGUIMethods
 
     
     
-    public SubmenuItems(JFrame mainMenuFrame, PlayerEntity entity)
+    public SubmenuItems(JFrame callingFrame, PlayerEntity entity)
     {
-        // store main menu frame to call it later 
-        callingFrame = mainMenuFrame;
+        // store frame that called main menu to call it later 
+        this.callingFrame = callingFrame;
         
         // designate layout used for Items menu frame 
         frame.setLayout(new GridBagLayout());
