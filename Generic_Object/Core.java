@@ -255,7 +255,7 @@ public class Core extends GenericObject
         this.coreTier = CoreTiers.valueOf(StaticMethods.stringToEnum(coreTier)).getEnumAsString();
     }
 
-    public String getCoreTier()
+    public String getCoreTierString()
     {
         return coreTier;
     }
