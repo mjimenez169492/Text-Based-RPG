@@ -58,13 +58,13 @@ import java.awt.event.KeyListener;
                 FORGET: TO RESET IPADY SO button2 IS STRETCHED VERTICALLY 30 PIXELS!!!
 */
 
-public class ExpositionBox 
+public class ExpositionBox extends CommonGUIMethods
 {
     // set frame for exposition box (final version has frame passed from outside)
     private JFrame frame = new JFrame("Exposition Box");
 
     // font size used for text of all componenets 
-    private Font font = new Font("Serif", Font.PLAIN, 18);
+    private Font font = new Font(Font.MONOSPACED, Font.PLAIN, 14);
     
     // set vertical padding in pixels for components on top right of GUI 
     private final int topRightComponentPixelPadding = 62;
@@ -87,7 +87,7 @@ public class ExpositionBox
     
     // used to determine the max number of characters that a sentence fragment
     // can display in a button (can be changed with no issue)
-    private final int characterLimit = 86;
+    private final int characterLimit = 70;
     
     // Note: number BEFORE - 1 (in this case number 3) signifies buttons that 
     //       can be used to store text meant to be displayed to players. The
@@ -167,50 +167,81 @@ public class ExpositionBox
     // START: UNUSABLE GRIDBAGLAYOUT COMPONENTS
     /*******************************************************************************/
 
-    public JButton unusableButton(JButton newButton, String newButtonName, Font font)
+    public JButton unusableTopRightButton(JButton button, String newButtonName)
     {
-        newButton = new JButton(newButtonName);
+        button = new JButton(newButtonName);
         
-        newButton.setFont(font);
+        button.setBackground(Color.BLACK);
         
-        newButton.setBackground(Color.BLACK);
+        button.setForeground(Color.WHITE);
         
-        newButton.setForeground(Color.WHITE);
+        button.setHorizontalAlignment(SwingConstants.TRAILING);
         
-        return newButton;
+        button.setFont(font);
+        
+        return button;
     }
     
-    public void topRightComponents()
+    public void topRightComponents(String location, String eventEventLine)
     {
-        // buttons located on the top right of GUI
-        currentLocation = unusableButton(currentLocation, "Nothing Place - Nothing City - Nothing Plaza - Nothing Bar - Nothing Chair", font);
+        // Ex: "Nothing Place - Nothing City - Nothing Plaza - Nothing Bar - Nothing Chair"
+        currentLocation = unusableTopRightButton(currentLocation, location);
             expositionBoxComponent(currentLocation, topRightComponentPixelPadding, 0, 0, 5, frame);
         
-        eventAndEventLine = unusableButton(eventAndEventLine, "The Tale Of Nothing - Nothing Nowhere", font);
+        // Ex: "The Tale Of Nothing - Nothing Nowhere" 
+        eventAndEventLine = unusableTopRightButton(eventAndEventLine, eventEventLine);
             expositionBoxComponent(eventAndEventLine, topRightComponentPixelPadding, 1, 2, 3, frame);
 
-        currentAndFinalLines = unusableButton(currentAndFinalLines, "Number Here / Number There", font);
+        currentAndFinalLines = unusableTopRightButton(currentAndFinalLines, "");
             expositionBoxComponent(currentAndFinalLines, topRightComponentPixelPadding, 2, 4, 1, frame);
+    }
+    
+    public JButton unusableSpeakerButton(JButton button)
+    {
+        button = new JButton();
+        
+        button.setBackground(Color.BLACK);
+        
+        button.setForeground(Color.WHITE);
+        
+        button.setHorizontalAlignment(SwingConstants.CENTER);
+        
+        button.setFont(font);
+        
+        return button;
+    }
+    
+    public void speakerComponent()
+    {
+        speakerOrDescription = unusableSpeakerButton(speakerOrDescription);
+            expositionBoxComponent(speakerOrDescription, textDisplayingComponentPixelPadding, 4, 0, 2, frame);
+    }
+    
+    public JButton unusableTextDisplayingButton(JButton button)
+    {
+        button = new JButton();
+        
+        button.setBackground(Color.BLACK);
+        
+        button.setForeground(Color.WHITE);
+        
+        button.setHorizontalAlignment(SwingConstants.LEADING);
+        
+        button.setFont(font);
+        
+        return button;
     }
     
     public void textDisplayingComponents()
     {
-        // button located just above first line denoting speaker (if there is one)
-        speakerOrDescription = unusableButton(speakerOrDescription, "ERROR", font);
-            expositionBoxComponent(speakerOrDescription, textDisplayingComponentPixelPadding, 4, 0, 2, frame);
+        lineOne = unusableTextDisplayingButton(lineOne);
+            expositionBoxComponent(lineOne, textDisplayingComponentPixelPadding, 5, 0, 6, frame);
         
-        // lines meant for holding text meant to be displayed to player 
-        lineOne = unusableButton(lineOne, "ERROR", font);
-            lineOne.setHorizontalAlignment(SwingConstants.LEADING);
-                expositionBoxComponent(lineOne, textDisplayingComponentPixelPadding, 5, 0, 6, frame);
+        lineTwo = unusableTextDisplayingButton(lineTwo);
+            expositionBoxComponent(lineTwo, textDisplayingComponentPixelPadding, 6, 0, 6, frame);
         
-        lineTwo = unusableButton(lineTwo, "ERROR", font);
-            lineTwo.setHorizontalAlignment(SwingConstants.LEADING);
-                expositionBoxComponent(lineTwo, textDisplayingComponentPixelPadding, 6, 0, 6, frame);
-        
-        lineThree = unusableButton(lineThree, "A ROAR", font);
-            lineThree.setHorizontalAlignment(SwingConstants.LEADING);
-                expositionBoxComponent(lineThree, textDisplayingComponentPixelPadding, 7, 0, 6, frame);
+        lineThree = unusableTextDisplayingButton(lineThree);
+            expositionBoxComponent(lineThree, textDisplayingComponentPixelPadding, 7, 0, 6, frame);
     }
     
     // END: UNUSABLE GRIDBAGLAYOUT COMPONENTS
@@ -232,7 +263,6 @@ public class ExpositionBox
     
     public void usableButtonsComponents()
     {
-        // SELECTABLE buttons varying in affect sorted in order from left to right 
         mainMenu = usableButton(mainMenu, "Main Menu", font);
             expositionBoxComponent(mainMenu, usableButtonComponentPixelPadding, 9, 0, 1, frame);
 
@@ -254,39 +284,11 @@ public class ExpositionBox
 
     
     
-    // START: RESIZE COMPONENT BASED ON FRAME RESIZE AND DISPLAYING FRAME 
-    /*******************************************************************************/
-
-    // allow for text to resize (somewhat) upon change in frame size...
-    public void textResizesUponComponentResize(JButton...array)
-    {
-        for(JButton element : array)
-        {
-            if(element != null)
-            {
-                CommonGUIMethods.resizeButtonTextUsingFrameSize(frame, element);
-            }
-        }
-    }
-    
-    // display frame window 
-    public void displayFrameWindow()
-    {
-        frame.pack();
-        frame.setSize(640, 480);
-        frame.setVisible(true);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    }
-    
-    // END: RESIZE COMPONENT BASED ON FRAME RESIZE AND DISPLAYING FRAME 
-    /*******************************************************************************/
-
-    
-    
     // START: BREAKING DOWN LARGE PIECES OF TEXT FOR EXPOSITION BOX
     /*******************************************************************************/
     
-            // Note: method serves as an example of String ArrayList relaying text 
+    /*
+    // Note: method serves as an example of String ArrayList relaying text for GUI
     public ArrayList<String> textArrayList()
     {
         ArrayList<String> example = new ArrayList<>();
@@ -312,13 +314,17 @@ public class ExpositionBox
         
         return example;
     }
+    */
     
+    // display speaker and exposition text on GUI
     public void displayExpositionBoxLines(ArrayList arrayList)
     {
         arrayPositionWithNames += 1;
             moveTextForward(arrayList, speakerOrDescription, 
                 lineOne, lineTwo, lineThree);
     }
+    
+    
     
     // BREAKING DOWN LARGE PIECES OF TEXT
     
@@ -587,11 +593,19 @@ public class ExpositionBox
     /*******************************************************************************/
 
     // clear all lines used for displaying spoken text   
-    public void clearLines(JButton lineOne, JButton lineTwo, JButton lineThree)
+    public void clearLines(JButton...array)
     {
-        lineOne.setText(" ");
-        lineTwo.setText(" ");
-        lineThree.setText(" ");
+        for(JButton button : array)
+        {
+            button.setText(" ");
+        }
+    }
+    
+    // Note: value after %- MUST be the same as characterLimit value 
+    public String formatExpositionText(String text)
+    {
+        String result = String.format("%-70s", text);
+            return result;
     }
     
     // set sentence fragments as button text for all buttons provided 
@@ -616,13 +630,13 @@ public class ExpositionBox
             switch(i)
             {
                 case 0:
-                    lineOne.setText(cleanedArrayList.get(i));
+                    lineOne.setText(formatExpositionText(cleanedArrayList.get(i)));
                         break;
                 case 1:
-                    lineTwo.setText(cleanedArrayList.get(i));
+                    lineTwo.setText(formatExpositionText(cleanedArrayList.get(i)));
                         break;
                 case 2:
-                    lineThree.setText(cleanedArrayList.get(i));
+                    lineThree.setText(formatExpositionText(cleanedArrayList.get(i)));
                         break;
             }
         }
@@ -634,6 +648,7 @@ public class ExpositionBox
         // create ArrayList to properly "clean" speakerName
         ArrayList<String> uncleanArrayList = new ArrayList<>();
         
+        // use existing ArrayList methods to reuse code 
         uncleanArrayList.add(speakerName);
         
         ArrayList<String> cleanArrayList = cleanArrayList(uncleanArrayList);
@@ -734,24 +749,24 @@ public class ExpositionBox
     /*******************************************************************************/
     
     public void usableButtonNavigation()
-    {
-        // Note: since buttons are in a row x column format and therfore NOT 
-        //       in column format, buttons must be supplied in reverse order 
-        //       of that specified for column format which requires that all
-        //       buttons be ordered such that the first button of the column
-        //       is supplied first nad the last button supplied last.
-        
+    { 
         JButton buttons[] = {forward, backward, altNav, settings, mainMenu};
         
         // account for arrow key movement up or down
         CommonGUIMethods.buttonColumnKeyboardNavigation(buttons);
         
+        // account for mouse wheel movement for frame 
+        CommonGUIMethods.frameMouseWheel(frame, buttons);
+        
+        // Note: since buttons are in a row x column format and therfore NOT 
+        //       in column format, buttons must be supplied in reverse order 
+        //       of that specified for column format which requires that all
+        //       buttons be ordered such that the first button of the column
+        //       is supplied first nad the last button supplied last.
+
         // account for arrow key movement left or right
         CommonGUIMethods.buttonRowKeyboardNavigation(forward, backward, altNav,
             settings, mainMenu);
-        
-        // account for mouse wheel movement for frame (move while outside frame)
-        CommonGUIMethods.frameMouseWheel(frame, buttons);
     }
     
     // MouseAdapter extended to avoid overriding unused methods 
@@ -767,8 +782,7 @@ public class ExpositionBox
             }
             else
             {
-                JButton button = (JButton)event.getSource();
-                button.requestFocus();
+                ((JButton)event.getSource()).requestFocus();
             }
         }
     
@@ -782,11 +796,9 @@ public class ExpositionBox
             }
             else
             {
-                JButton button = (JButton)event.getSource();
-                button.requestFocus();
+                ((JButton)event.getSource()).requestFocus();
             }
         }
-        
     }
     
     // END: BUTTON STATES AND BUTTON NAVIGATION 
@@ -808,7 +820,7 @@ public class ExpositionBox
             if(altNavState)
             {
                 // move up else move down
-                if(CommonGUIMethods.getMouseWheelRotationChoice(e.getWheelRotation()) < 0)
+                if(e.getWheelRotation() < 0)
                 {
                     // Note: since mouse wheel moves too fast, do not account
                     //       for window transfer/exit via mouse wheel movement 
@@ -984,31 +996,22 @@ public class ExpositionBox
                     arrayPositionWithNames += 1;
                         moveTextForward(arrayList, speakerOrDescription, 
                             lineOne, lineTwo, lineThree);
-                }
-                else
-                {
-                    // terminates program currently running on Java Virtual Machine
-                    // and return all memory used by program back to OS
-                        // System.exit.(0);
+                        
+                        if(arrayPositionWithNames == arrayPositionNoNames)
+                        {
+                            // release all native screen resources, subcomponents, and all 
+                            // of its owned children; in other words, close GUI and allow  
+                            // program to continue running IF other windows are available 
+                            frame.dispose();
 
-                    // Note: dispose() can be used to close a single window if a
-                    //       program has many windows displayed
-
-                    // release all native screen resources, subcomponents, and all 
-                    // of its owned children; in other words, close GUI and allow  
-                    // program to continue running IF other windows are available 
-                    frame.dispose();
-
-                    // this would play afterwards (for example) 
-                    System.out.println("hahah");
+                            System.out.print("k");
+                        }
                 }
             }
         }); 
         
-        // settings 
-        // main menu 
-        
-        
+        settings.setEnabled(false);
+        mainMenu.setEnabled(false);
     }
     
     // END: HANDLERS AND ACTION LISTENERS
@@ -1016,9 +1019,10 @@ public class ExpositionBox
 
     
     
-        
+    // START: CONSTRUCTOR 
+    /*******************************************************************************/
     
-    public void expositionBox()
+    public ExpositionBox(String location, String eventEventLine, ArrayList<String> arrayList)
     {
         // set frame layou signifying component positioning style 
         frame.setLayout(new GridBagLayout());
@@ -1026,20 +1030,15 @@ public class ExpositionBox
         // set color for panel bydecoding string of hexadecimal color 
         frame.getContentPane().setBackground(Color.decode("#4d5461"));
 	
-        topRightComponents();
+        topRightComponents(location, eventEventLine);
+        speakerComponent();
         textDisplayingComponents(); 
-        
-        // text resizes within buttons according to frame size itself
-        // Note: this is done since buttons are designed to resize on their onw 
-        textResizesUponComponentResize(currentLocation, eventAndEventLine, 
-            currentAndFinalLines, speakerOrDescription, lineOne, lineTwo, 
-            lineThree, backward, forward, altNav, settings, mainMenu);
         
         usableButtonsComponents();
         usableButtonNavigation();
         
             // arraylist
-        exposition = breakdownExposition(textArrayList());
+        exposition = breakdownExposition(arrayList);
 
         //ArrayList<String> cleanArrayList = cleanArrayList(breakdownExposition(initializeArrayList()));
 
@@ -1058,6 +1057,10 @@ public class ExpositionBox
         attachHandlersToComponents(frame, backward, forward, 
             altNav, settings, mainMenu);
         
-        displayFrameWindow(); 
+        // display frame window with components 
+        CommonGUIMethods.displayFrameWindow(frame);
     }
+    
+    // END: CONSTRUCTOR 
+    /*******************************************************************************/
 }
