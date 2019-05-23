@@ -214,8 +214,8 @@ public class GeneralFeatures
     
     public void setCurrentHealth(double currentHealth)
     {
-        this.currentHealth = validateCurrentGauges(currentHealth, 
-            getTotalAttributesAndResistancesObject().getTotalMaxHealth());
+        this.currentHealth = Math.floor(validateCurrentGauges(currentHealth, 
+            getTotalAttributesAndResistancesObject().getTotalMaxHealth()));
     }
 
     public double getCurrentHealth()
@@ -225,8 +225,8 @@ public class GeneralFeatures
 
     public void setCurrentStamina(double currentStamina)
     {
-        this.currentStamina = validateCurrentGauges(currentStamina, 
-            getTotalAttributesAndResistancesObject().getTotalMaxStamina());
+        this.currentStamina = Math.floor(validateCurrentGauges(currentStamina, 
+            getTotalAttributesAndResistancesObject().getTotalMaxStamina()));
     }
 
     public double getCurrentStamina()
@@ -236,8 +236,8 @@ public class GeneralFeatures
 
     public void setCurrentNano(double currentNano)
     {
-        this.currentNano = validateCurrentGauges(currentNano, 
-            getTotalAttributesAndResistancesObject().getTotalMaxNano());
+        this.currentNano = Math.floor(validateCurrentGauges(currentNano, 
+            getTotalAttributesAndResistancesObject().getTotalMaxNano()));
     }
 
     public double getCurrentNano()
