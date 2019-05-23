@@ -41,14 +41,12 @@ public class OutfitMethods extends GenericObject
     
     // stores "Any _ Core" slot type for outfit based on subclassName 
     private String anyCoreType;
-        
+    
     // variables store type of core a slot can take 
-    private String slotOneType, slotTwoType, slotThreeType, slotFourType, 
-        slotFiveType, slotSixType, slotSevenType;
+    private String slotOneType, slotTwoType, slotThreeType, slotFourType;
 
     // variables store Cores object in specified slot 
-    private Core slotOneCore, slotTwoCore, slotThreeCore, slotFourCore, 
-        slotFiveCore, slotSixCore, slotSevenCore;
+    private Core slotOneCore, slotTwoCore, slotThreeCore, slotFourCore;
 
     // denotes how many slots an outfit can have at any one time (can be expanded)
     private int maxNumberOfOutfitSlots;
@@ -765,66 +763,6 @@ public class OutfitMethods extends GenericObject
     {
         return slotFourCore;
     }
-
-    public void setSlotFiveType(String slotFiveType)
-    {
-        this.slotFiveType = validateSlotCoreType(slotFiveType);
-    }
-
-    public String getSlotFiveType()
-    {
-        return slotFiveType;
-    }
-
-    public void setSlotFiveCore(Core slotFiveCore)
-    {
-        this.slotFiveCore = validateCore(slotFiveCore, slotFiveType);
-    }
-
-    public Core getSlotFiveCore()
-    {
-        return slotFiveCore;
-    }
-    
-    public void setSlotSixType(String slotSixType)
-    {
-        this.slotSixType = validateSlotCoreType(slotSixType);
-    }
-
-    public String getSlotSixType()
-    {
-        return slotSixType;
-    }
-
-    public void setSlotSixCore(Core slotSixCore)
-    {
-        this.slotFiveCore = validateCore(slotSixCore, slotSixType);
-    }
-
-    public Core getSlotSixCore()
-    {
-        return slotSixCore;
-    }
-    
-    public void setSlotSevenType(String slotSevenType)
-    {
-        this.slotSevenType = validateSlotCoreType(slotSevenType);
-    }
-
-    public String getSlotSevenType()
-    {
-        return slotSevenType;
-    }
-
-    public void setSlotSevenCore(Core slotFiveCore)
-    {
-        this.slotFiveCore = validateCore(slotSevenCore, slotSevenType);
-    }
-
-    public Core getSlotSevenCore()
-    {
-        return slotSevenCore;
-    }
     
     // END: SLOT TYPES AND SLOT CORES WITH VALIDATION
     /*******************************************************************************/
@@ -854,7 +792,7 @@ public class OutfitMethods extends GenericObject
     public String[] getAllOutfitSlotTypes()
     {
         String[] allSlots = {getSlotOneType(), getSlotTwoType(), getSlotThreeType(),
-            getSlotFourType(), getSlotFiveType(), getSlotSixType(), getSlotSevenType()};
+            getSlotFourType()};
                 return allSlots;
     }
     
@@ -912,7 +850,7 @@ public class OutfitMethods extends GenericObject
     public Core[] getAllOutfitSlotCores()
     {
         Core[] allSlotCores = {getSlotOneCore(), getSlotTwoCore(), getSlotThreeCore(), 
-            getSlotFourCore(), getSlotFiveCore(), getSlotSixCore(), getSlotSevenCore()};
+            getSlotFourCore()};
                 return allSlotCores;
     }
     
@@ -1068,7 +1006,7 @@ public class OutfitMethods extends GenericObject
             {
                 if(coreType.equals(element.getCoreType()))
                 {
-                    if(getCoreTierEnum(tier) == getCoreTierEnum(element.getCoreTier()))
+                    if(getCoreTierEnum(tier) == getCoreTierEnum(element.getCoreTierString()))
                     {
                         counter++;
                     }
@@ -1243,12 +1181,12 @@ public class OutfitMethods extends GenericObject
     
     public double getTotalMaxStamina()
     {
-        return totalOutfitValue(getMaxStamina(), "Stamina");
+        return totalOutfitValue(getMaxStamina(), "Max Stamina");
     }
 	
     public double getTotalMaxNano()
     {
-        return totalOutfitValue(getMaxNano(), "Nano"); 
+        return totalOutfitValue(getMaxNano(), "Max Nano"); 
     }
 	
     // MAX GAUGES
