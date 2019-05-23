@@ -21,6 +21,9 @@ import java.util.Scanner;
 
 public class MoveCalculations 
 {
+    // meant to store result of accuracy calculation
+    private boolean missed;
+    
     // meant to store output of move
     private double output;
     
@@ -30,6 +33,16 @@ public class MoveCalculations
     
     // START: MOVE RELATED METHODS
     /*******************************************************************************/
+    
+    public void missed(boolean missed)
+    {
+        this.missed = missed;
+    }
+    
+    public boolean missed()
+    {
+        return missed;
+    }
     
     public void setOutput(double output)
     {
@@ -808,17 +821,17 @@ public class MoveCalculations
     public double totalOutput(GenericCharacter user, GenericCharacter target, 
         Moves move, double output, double critical)
     {
-        System.out.println("1: "+output);
+        
         output = totalEnchantment(user, target, move, output);
-System.out.println("2: "+output);
+
         output = applyCritical(user, target, critical, output);
-System.out.println("3: "+output);
+
         output = applyOutputVariance(move.getOutputVariance(), output); 
-    System.out.println("4: "+output);
+    
         output = immuneTosReducingOutput(target, move, output);
-    System.out.println("5: "+output);
+    
         output = positiveOrNegativeOutput(move, output);
-    System.out.println("6: "+output);
+    
         return output;
     }
     
@@ -838,7 +851,6 @@ System.out.println("3: "+output);
             switch(choice)
             {
                 case CURRENT_HEALTH:
-                    System.out.println("output apply: "+ output);
                     character.getGeneralFeatures().setCurrentHealth(character.getGeneralFeatures().getCurrentHealth() + output);
                         break;
                 case CURRENT_STAMINA:
@@ -864,7 +876,6 @@ System.out.println("3: "+output);
         {
             for(Moves.Gauges element : move.getGaugesTargeted())
             {
-                System.out.println("out is: "+output);
                 applyValueToGauge(target, output, element);
             }
         }
@@ -1047,6 +1058,7 @@ System.out.println("3: "+output);
         }
         else
         {
+            missed(true);
             output = 0.0;
         }
 
@@ -1147,15 +1159,14 @@ System.out.println("3: "+output);
     public double itemTotalOutput(GenericCharacter user, GenericCharacter target, 
         Moves move, double output, double critical)
     {
-        System.out.println("start1: "+output);
         output = addItemMoveEnchantment(user, move, output);
-        System.out.println("start2: "+output);
+        
         output = applyCritical(user, target, critical, output);
-        System.out.println("start3: "+output);
+        
         output = applyOutputVariance(move.getOutputVariance(), output); 
-        System.out.println("start4: "+output);
+        
         output = positiveOrNegativeOutput(move, output);
-        System.out.println("start5: "+output);
+        
         return output;
     }
     
@@ -1171,6 +1182,7 @@ System.out.println("3: "+output);
         }
         else
         {
+            missed(true);
             output = 0.0;
         }
 
@@ -1234,7 +1246,6 @@ System.out.println("3: "+output);
                 
                 setOutput(output);
                 
-System.out.println("out is: "+output);
                 postItemOutputTasks(user, target, move, output);
             }
         }
@@ -1243,7 +1254,7 @@ System.out.println("out is: "+output);
     // END: ITEM MOVE METHODS 
     /*******************************************************************************/
     
-    /* move selection and application
+    /* move selection and application (Consider?)
         move is chosen from move set
             user prompted to select target(s) that are NOT knocked out ("KO")or 
             not (can exit move selection here) based off of move.ValidTargets 
@@ -1298,8 +1309,9 @@ System.out.println("out is: "+output);
     public void singleTargetMoveLogic(GenericCharacter user, GenericCharacter target, 
         Moves move)
     {
-        // reset output meant to be displayed in battle log to 0
+        // reset output and accuracy to 0
         setOutput(0);
+        missed(false);
         
         double accuracy, output, critical;
         
@@ -1339,752 +1351,5 @@ System.out.println("out is: "+output);
     }
     
     // END: MOVE LOGIC BY NUMBER OF TARGETS 
-    /*******************************************************************************/
-
-    
-    
-    // START: COMPARATOR SORTING STRINGS
-    /*******************************************************************************/
-    
-    // method used in comparators for TreeMaps involving string comparison between keys
-    public int compareStrings(String argumentOne, String arguementTwo)
-    {
-        // code compares names without regard to case and stores result of comparison 
-        // (1, 0, -1) in stringComparisonResult (1 & -1 is different while 0 is same)
-        int stringComparisonResult = String.CASE_INSENSITIVE_ORDER.compare(argumentOne, arguementTwo);
-
-        // if strings are identical, set stringComparisonResult to 1 in order to place 
-        // entry after the entry it is being compared to since order does not matter
-        if(stringComparisonResult == 0)
-        {
-            stringComparisonResult = 1;
-        }
-
-        return stringComparisonResult;
-    }
-    
-    public Comparator<GenericCharacter> sortByName = (GenericCharacter characterOne, 
-        GenericCharacter characterTwo) -> compareStrings(characterOne.getGeneralFeatures().getName(), 
-        characterTwo.getGeneralFeatures().getName()); 
-    
-    // START: COMPARATOR SORTING STRINGS
-    /*******************************************************************************/
-
-
-    
-    // START: SORT NON-KO COMBATANTS BY PARTY AND BY NAME USING MOVE EFFECT 
-    /*******************************************************************************/
-    
-    public void divideCharactersByParty(PriorityQueue<GenericCharacter> charactersInBattle, 
-        Party userParty, ArrayList<GenericCharacter> partyOne, ArrayList<GenericCharacter> 
-        partyTwo, Moves move)
-    {
-        for(GenericCharacter element : charactersInBattle)
-        {
-            if(move.getClassificationEnum() == Moves.Classifications.DAMAGE)
-            {
-                if(!element.getGeneralFeatures().knockedOut())
-                {
-                    if(userParty.partyMemberExists(element))
-                    {
-                        partyOne.add(element);
-                    }
-                    else
-                    {
-                        partyTwo.add(element);
-                    }
-                }
-            }
-            else
-            {
-                if(userParty.partyMemberExists(element))
-                {
-                    partyOne.add(element);
-                }
-                else
-                {
-                    partyTwo.add(element);
-                }
-            }
-        }
-    }
-    
-    public void sortArrayListByName(PriorityQueue<GenericCharacter> priorityQueue, 
-        ArrayList<GenericCharacter> arrayList)
-    {
-        for(GenericCharacter element : arrayList)
-        {
-            priorityQueue.add(element);
-        }
-        
-        arrayList.clear();
-        
-        for(GenericCharacter element : priorityQueue)
-        {
-            arrayList.add(element);
-        }
-    }
-    
-    public void addContents(ArrayList<GenericCharacter> receiver, ArrayList
-        <GenericCharacter> sender)
-    {
-        for(GenericCharacter element : sender)
-        {
-            receiver.add(element);
-        }
-    }
-    
-    public ArrayList<GenericCharacter> orderByMoveClassification(ArrayList<GenericCharacter> 
-        userParty, ArrayList<GenericCharacter> opposingParty, ArrayList<GenericCharacter> 
-        charactersSortedByName, Moves move)
-    {
-        if(move.getClassificationEnum() == Moves.Classifications.DAMAGE)
-        {
-            addContents(charactersSortedByName, opposingParty);
-            addContents(charactersSortedByName, userParty);
-        }
-        else
-        {
-            addContents(charactersSortedByName, userParty);
-            addContents(charactersSortedByName, opposingParty);
-        }
-        
-        return charactersSortedByName;
-    }
-    
-    public ArrayList<GenericCharacter> returnPqContentsSortedByPartyByName(PriorityQueue
-        <GenericCharacter> priorityQueue, Party userParty, Moves move)
-    {
-        // knowing that pq will always be even (at least 1 user & 1 opposing party) 
-        // we need to cut pq contents in half so that we can sort each half by name 
-        // before characters are brought togther as dictated by move classification
-
-        ArrayList<GenericCharacter> tempUserParty = new ArrayList<>();
-
-        ArrayList<GenericCharacter> tempOpposingParty = new ArrayList<>();
-
-        divideCharactersByParty(priorityQueue, userParty, tempUserParty, tempOpposingParty, move);
-        
-        PriorityQueue<GenericCharacter> pqSortsByName = new PriorityQueue<>(sortByName);
-
-        sortArrayListByName(pqSortsByName, tempUserParty);
-        
-        sortArrayListByName(pqSortsByName, tempOpposingParty);
-        
-        ArrayList<GenericCharacter> bothParties = new ArrayList<>();
-
-        return orderByMoveClassification(tempUserParty, tempOpposingParty, bothParties, move);
-    }
-    
-    // END: SORT NON-KO COMBATANTS BY PARTY AND BY NAME USING MOVE EFFECT 
-    /*******************************************************************************/
-
-    
-    
-    // START: SINGLE TARGET SELECTION FOR MOVE
-    /*******************************************************************************/
-
-    public void displaySingleTargetOptions(ArrayList<GenericCharacter> 
-        activeCharacters)
-    {
-        for(int i = 0; i < activeCharacters.size() + 1; i++)
-        {
-            if(i != activeCharacters.size())
-            {
-                if((i % 2 == 0))
-                {
-                    System.out.printf("%-26s\t", activeCharacters.get(i).getGeneralFeatures().getName());
-                }
-                else if((i % 2 == 1))
-                {
-                    System.out.printf("%-26s\n", activeCharacters.get(i).getGeneralFeatures().getName());
-                }
-            }
-            else
-            {
-                System.out.printf("-26%s", "Cancel Move");
-            }
-        }
-    }
-    
-    public int checkTargetChoice(int maxNumberOfTargets, int choice)
-    {
-        if(choice < 0)
-        {
-            choice = 0;
-        }
-        else if(choice > maxNumberOfTargets)
-        {
-            choice = maxNumberOfTargets;
-        }
-        
-        return choice;
-    }
-    
-    public GenericCharacter singleTargetChoice(ArrayList<GenericCharacter> activeCharacters)
-    {
-        Scanner sc = new Scanner(System.in);
-        
-        GenericCharacter result = null;        
-        
-        int option = checkTargetChoice(activeCharacters.size() + 1, sc.nextInt());
-        
-        if(option <= activeCharacters.size())
-        {
-            result = activeCharacters.get(option);
-        }
-        
-        return result;
-    }
-    
-    // account for cancelMove!!! after move execution
-    public void postSingleTargetChoiceBehavior(GenericCharacter user, GenericCharacter 
-        target, Moves move)
-    {
-        if(target == null)
-        {
-            cancelMove(true);
-                return;
-        }
-        else
-        {
-            singleTargetMoveLogic(user, target, move);
-        }
-    } 
-        
-    public void userSelection(GenericCharacter user, Moves move)
-    {
-        ArrayList<GenericCharacter> activeCharacters = new ArrayList<>();
-        
-        activeCharacters.add(user);
-        
-        displaySingleTargetOptions(activeCharacters);
-        
-        GenericCharacter target = singleTargetChoice(activeCharacters);
-        
-        postSingleTargetChoiceBehavior(user, target, move);
-    } 
-    
-    public void anySelection(PriorityQueue<GenericCharacter> charactersInBattle, 
-        Party userParty, GenericCharacter user, Moves move)
-    {
-        ArrayList<GenericCharacter> activeCharacters = returnPqContentsSortedByPartyByName
-            (charactersInBattle, userParty, move);
-        
-        displaySingleTargetOptions(activeCharacters);
-        
-        GenericCharacter target = singleTargetChoice(activeCharacters);
-        
-        postSingleTargetChoiceBehavior(user, target, move);
-    } 
-        
-    public void anyExceptUserSelection(PriorityQueue<GenericCharacter> charactersInBattle, 
-        Party userParty, GenericCharacter user, Moves move)
-    {
-        ArrayList<GenericCharacter> activeCharacters = returnPqContentsSortedByPartyByName
-            (charactersInBattle, userParty, move);
-        
-        activeCharacters.remove(user);
-        
-        displaySingleTargetOptions(activeCharacters);
-        
-        GenericCharacter target = singleTargetChoice(activeCharacters);
-        
-        postSingleTargetChoiceBehavior(user, target, move);
-    } 
-
-    public void removeDuplicates(ArrayList<GenericCharacter> arrayList, Party party)
-    {
-        for(GenericCharacter element : arrayList)
-        {
-            if(party.partyMemberExists(element))
-            {
-                arrayList.remove(element);
-            }
-        }
-    }
-    
-    public void anyPartyMemberSelection(PriorityQueue<GenericCharacter> charactersInBattle, 
-        Party userParty, Party opposingParty, GenericCharacter user, Moves move)
-    {
-        ArrayList<GenericCharacter> activeCharacters = returnPqContentsSortedByPartyByName
-            (charactersInBattle, userParty, move);
-        
-        removeDuplicates(activeCharacters, opposingParty);
-        
-        displaySingleTargetOptions(activeCharacters);
-        
-        GenericCharacter target = singleTargetChoice(activeCharacters);
-        
-        postSingleTargetChoiceBehavior(user, target, move);
-    } 
-    
-    public void anyOpposingPartyMemberSelection(PriorityQueue<GenericCharacter> charactersInBattle, 
-        Party userParty, Party opposingParty, GenericCharacter user, Moves move)
-    {
-        ArrayList<GenericCharacter> activeCharacters = returnPqContentsSortedByPartyByName
-            (charactersInBattle, userParty, move);
-        
-        removeDuplicates(activeCharacters, userParty);
-        
-        displaySingleTargetOptions(activeCharacters);
-        
-        GenericCharacter target = singleTargetChoice(activeCharacters);
-        
-        postSingleTargetChoiceBehavior(user, target, move);
-    } 
-    
-    // END: SINGLE TARGET SELECTION FOR MOVE
-    /*******************************************************************************/
-    
-    
-    
-    // START: SINGLE PARTY TARGET SELECTION FOR MOVE
-    /*******************************************************************************/
-    
-    public void displayAnyPartySelection(Moves move)
-    {
-        if(move.getClassificationEnum() == Moves.Classifications.DAMAGE)
-        {
-            System.out.printf("%-26s\t%-26s\n%-26s", "Opposing Party", "User Party", "Cancel Move");
-        }
-        else
-        {
-            System.out.printf("%-26s\t%-26s\n%-26s", "User Party", "Opposing Party", "Cancel Move");
-        }
-    }
-    
-    public Party anyPartyTargetChoice(Party userParty, Party targetParty,
-        Moves move)
-    {
-        Scanner sc = new Scanner(System.in);
-        
-        Party result = null;
-        
-        if(move.getClassificationEnum() == Moves.Classifications.DAMAGE)
-        {
-            switch(checkTargetChoice(2, sc.nextInt()))
-            {
-                case 0:
-                    result = targetParty;
-                        break;
-                case 1:
-                    result = userParty;
-                        break;
-                default:
-                    break;
-            }
-        }
-        else
-        {
-            switch(checkTargetChoice(2, sc.nextInt()))
-            {
-                case 0:
-                    result = userParty;
-                        break;
-                case 1:
-                    result = targetParty;
-                        break;
-                default:
-                    break;
-            }
-        }
-        
-        return result;
-    }
-    
-    public void activePartyMembers(PriorityQueue<GenericCharacter> charactersInBattle, 
-        Party suppliedParty, ArrayList<GenericCharacter> arrayList, Moves move)
-    {
-        for(GenericCharacter element : charactersInBattle)
-        {
-            if(suppliedParty.partyMemberExists(element))
-            {
-                if(move.getClassificationEnum() == Moves.Classifications.DAMAGE)
-                {
-                    if(!element.getGeneralFeatures().knockedOut())
-                    {
-                        arrayList.add(element);
-                    }
-                }
-                else
-                {
-                    arrayList.add(element);
-                }
-            }
-        }
-    }
-    
-    // account for cancelMove!!! after move execution
-    public void postSinglePartyTargetChoiceBehavior(GenericCharacter user, ArrayList
-        <GenericCharacter> activeTargetCharacters, Moves move)
-    {
-        if(activeTargetCharacters == null)
-        {
-            cancelMove(true);
-                return;
-        }
-        else
-        {
-            singlePartyMoveLogic(user, activeTargetCharacters, move);
-        }
-    }
-    
-    public void anyPartySelection(PriorityQueue<GenericCharacter> charactersInBattle, 
-        Party userParty, Party targetParty, GenericCharacter user, Moves move)
-    {
-        displayAnyPartySelection(move);
-        
-        Party target = anyPartyTargetChoice(userParty, targetParty, move);
-        
-        ArrayList<GenericCharacter> activeTargetCombatants = new ArrayList<>();
-        
-        activePartyMembers(charactersInBattle, target, activeTargetCombatants, move);
-        
-        postSinglePartyTargetChoiceBehavior(user, activeTargetCombatants, move);
-    } 
-    
-    public void displayPartyOwnershipSelection(String partyOwnership)
-    {
-        System.out.printf("%-26s\t%-26s", partyOwnership, "Cancel Move");
-    }
-    
-    public Party singlePartyTargetChoice(Party party)
-    {
-        Scanner sc = new Scanner(System.in);
-        
-        Party result = null;
-        
-        if(checkTargetChoice(1, sc.nextInt()) == 0)
-        {
-            result = party;
-        }
-        
-        return result;
-    }
-    
-    public void userPartySelection(PriorityQueue<GenericCharacter> charactersInBattle, 
-        Party userParty, GenericCharacter user, Moves move)
-    {
-        displayPartyOwnershipSelection("User Party");
-        
-        Party target = singlePartyTargetChoice(userParty);
-        
-        ArrayList<GenericCharacter> activeTargetCombatants = new ArrayList<>();
-        
-        activePartyMembers(charactersInBattle, target, activeTargetCombatants, move);
-        
-        postSinglePartyTargetChoiceBehavior(user, activeTargetCombatants, move);
-    } 
-
-    public void opposingPartySelection(PriorityQueue<GenericCharacter> charactersInBattle, 
-        Party opposingParty, GenericCharacter user, Moves move)
-    {
-        displayPartyOwnershipSelection("Opposing Party");
-        
-        Party target = singlePartyTargetChoice(opposingParty);
-        
-        ArrayList<GenericCharacter> activeTargetCombatants = new ArrayList<>();
-        
-        activePartyMembers(charactersInBattle, target, activeTargetCombatants, move);
-        
-        postSinglePartyTargetChoiceBehavior(user, activeTargetCombatants, move);
-    } 
-    
-    // END: SINGLE PARTY TARGET SELECTION FOR MOVE
-    /*******************************************************************************/
-    
-    
-    
-    // START: RANDOM SINGLE TARGET
-    /*******************************************************************************/
-
-    public GenericCharacter selectCharacterAtRandom(ArrayList<GenericCharacter> 
-        activeCombatants, Moves move)
-    {
-        SecureRandom rand = new SecureRandom();
-        
-        int result = rand.nextInt(activeCombatants.size());
-        
-        GenericCharacter character = null;
-        
-        for(int i = 0; i < activeCombatants.size(); i++)
-        {
-            if(result == i)
-            {
-                if(move.getClassificationEnum() == Moves.Classifications.DAMAGE)
-                {
-                    if(!activeCombatants.get(i).getGeneralFeatures().knockedOut())
-                    {
-                        character = activeCombatants.get(i);
-                    }
-                }
-                else
-                {
-                    character = activeCombatants.get(i);
-                }
-            }
-        }
-        
-        if(character == null)
-        {
-            selectCharacterAtRandom(activeCombatants, move);
-        }
-        
-        return character;
-    }
-    
-    public void randomAnyTarget(PriorityQueue<GenericCharacter> charactersInBattle, 
-        GenericCharacter user, Moves move)
-    {
-        ArrayList<GenericCharacter> activeCombatants = new ArrayList<>(charactersInBattle);
-        
-        GenericCharacter target = selectCharacterAtRandom(activeCombatants, move);
-        
-        singleTargetMoveLogic(user, target, move);
-    } 
-    
-    public void randomAnyExceptUserTarget(PriorityQueue<GenericCharacter> charactersInBattle, 
-        GenericCharacter user, Moves move)
-    {
-        ArrayList<GenericCharacter> activeCombatants = new ArrayList<>(charactersInBattle);
-        
-        activeCombatants.remove(user);
-        
-        GenericCharacter target = selectCharacterAtRandom(activeCombatants, move);
-        
-        singleTargetMoveLogic(user, target, move);
-    } 
-    
-    public void randomAnyPartyMemberTarget(PriorityQueue<GenericCharacter> charactersInBattle, 
-        Party opposingParty, GenericCharacter user, Moves move)
-    {
-        ArrayList<GenericCharacter> activeCombatants = new ArrayList<>(charactersInBattle);
-        
-        removeDuplicates(activeCombatants, opposingParty);
-        
-        GenericCharacter target = selectCharacterAtRandom(activeCombatants, move);
-        
-        singleTargetMoveLogic(user, target, move);
-    } 
-
-    public void randomAnyOpposingPartyMemberTarget(PriorityQueue<GenericCharacter> charactersInBattle, 
-        Party userParty, GenericCharacter user, Moves move)
-    {
-        ArrayList<GenericCharacter> activeCombatants = new ArrayList<>(charactersInBattle);
-        
-        removeDuplicates(activeCombatants, userParty);
-        
-        GenericCharacter target = selectCharacterAtRandom(activeCombatants, move);
-        
-        singleTargetMoveLogic(user, target, move);
-    } 
-    
-    // END: RANDOM SINGLE TARGET
-    /*******************************************************************************/
-
-    
-    
-    // START: RANDOM SINGLE PARTY AND RANDOM ALL
-    /*******************************************************************************/
-
-    public Party selectPartyAtRandom(Party userParty, Party targetParty)
-    {
-        SecureRandom rand = new SecureRandom();
-        
-        Party target = null;
-        
-        if(rand.nextInt(2) == 0)
-        {
-            target = userParty;
-        }
-        else
-        {
-            target = targetParty;
-        }
-        
-        return target;
-    }
-    
-    public void randomSingleParty(PriorityQueue<GenericCharacter> charactersInBattle, 
-        Party userParty, Party opposingParty, GenericCharacter user, Moves move)
-    {
-        Party target = selectPartyAtRandom(userParty, opposingParty);
-        
-        ArrayList<GenericCharacter> activeTargetCombatants = new ArrayList<>();
-        
-        activePartyMembers(charactersInBattle, target, activeTargetCombatants, move);
-        
-        singlePartyMoveLogic(user, activeTargetCombatants, move);
-    } 
-    
-    public void randomAll(PriorityQueue<GenericCharacter> charactersInBattle, 
-        Party userParty, GenericCharacter user, Moves move)
-    {
-        SecureRandom rand = new SecureRandom();
-        
-        for(GenericCharacter element : charactersInBattle)
-        {
-            if(move.getClassificationEnum() == Moves.Classifications.DAMAGE)
-            {
-                if(!element.getGeneralFeatures().knockedOut())
-                {
-                    if(userParty.partyMemberExists(element))
-                    {
-                        if((rand.nextInt(100) + 1) <= 45)
-                        {
-                            singleTargetMoveLogic(user, element, move);
-                        }
-                    }
-                    else
-                    {
-                        if((rand.nextInt(100) + 1) <= 75)
-                        {
-                            singleTargetMoveLogic(user, element, move);
-                        }
-                    }
-                }
-            }
-            else
-            {
-                if(userParty.partyMemberExists(element))
-                {
-                    if((rand.nextInt(100) + 1) <= 80)
-                    {
-                        singleTargetMoveLogic(user, element, move);
-                    }
-                }
-                else
-                {
-                    if((rand.nextInt(100) + 1) <= 40)
-                    {
-                        singleTargetMoveLogic(user, element, move);
-                    }
-                }
-            }
-        }
-    } 
-    
-    // END: RANDOM SINGLE PARTY AND RANDOM ALL
-    /*******************************************************************************/
-
-    
-    
-    // START: TARGET ALL VARIANTS
-    /*******************************************************************************/
-
-    public void allTargets(PriorityQueue<GenericCharacter> charactersInBattle, 
-        GenericCharacter user, Moves move)
-    {
-        for(GenericCharacter element : charactersInBattle)
-        {
-            if(move.getClassificationEnum() == Moves.Classifications.DAMAGE)
-            {
-                if(!element.getGeneralFeatures().knockedOut())
-                {
-                    singleTargetMoveLogic(user, element, move);
-                }
-            }
-            else
-            {
-                singleTargetMoveLogic(user, element, move);
-            }
-        }
-    } 
-
-    public void allTargetsExceptUser(PriorityQueue<GenericCharacter> charactersInBattle, 
-        GenericCharacter user, Moves move)
-    {
-        for(GenericCharacter element : charactersInBattle)
-        {
-            if(move.getClassificationEnum() == Moves.Classifications.DAMAGE)
-            {
-                if(!element.equals(user) && !element.getGeneralFeatures().knockedOut())
-                {
-                    singleTargetMoveLogic(user, element, move);
-                }
-            }
-            else
-            {
-                if(!element.equals(user))
-                {
-                    singleTargetMoveLogic(user, element, move);
-                }
-            }
-        }
-    } 
-    
-    // END: TARGET ALL VARIANTS
-    /*******************************************************************************/
-
-    
-    
-    // START: EXECUTE MOVE
-    /*******************************************************************************/
-    
-    public void executeMove(PriorityQueue<GenericCharacter> charactersInBattle, Party 
-        userParty, Party opposingParty, GenericCharacter user, Moves move)
-    {
-        switch(move.getTargetEnum())
-        {
-            case USER: 
-                userSelection(user, move);
-                    break;
-            case ANY: 
-                anySelection(charactersInBattle, userParty, user, move);
-                    break;
-            case ANY_EXCEPT_USER:
-                anyExceptUserSelection(charactersInBattle, userParty, user, move); 
-                    break;
-            case ANY_PARTY_MEMBER:
-                anyPartyMemberSelection(charactersInBattle, userParty, opposingParty, 
-                    user, move);
-                        break;
-            case ANY_OPPOSING_PARTY_MEMBER:
-                anyOpposingPartyMemberSelection(charactersInBattle, userParty, 
-                    opposingParty, user, move);
-                        break;
-            case ANY_PARTY:
-                anyPartySelection(charactersInBattle, userParty, opposingParty, 
-                    user, move);
-                        break;
-            case USER_PARTY:
-                userPartySelection(charactersInBattle, userParty, user, move);
-                    break;
-            case OPPOSING_PARTY:
-                opposingPartySelection(charactersInBattle, opposingParty, user, 
-                    move);
-                        break;
-            case RANDOM_ANY:
-                randomAnyTarget(charactersInBattle, user, move);
-                    break;
-            case RANDOM_ANY_EXCEPT_USER:
-                randomAnyExceptUserTarget(charactersInBattle, user, move);
-                    break;
-            case RANDOM_ANY_PARTY_MEMBER: 
-                randomAnyPartyMemberTarget(charactersInBattle, opposingParty, 
-                    user, move);
-                        break;
-            case RANDOM_ANY_OPPOSING_PARTY_MEMBER: 
-                randomAnyOpposingPartyMemberTarget(charactersInBattle, userParty, 
-                    user, move); 
-                        break;
-            case RANDOM_ANY_PARTY:
-                randomSingleParty(charactersInBattle, userParty, opposingParty, 
-                    user, move);
-                        break;
-            case RANDOM_ALL: 
-                randomAll(charactersInBattle, userParty, user, move);
-                    break;
-            case ALL: 
-                allTargets(charactersInBattle, user, move);
-                    break;
-            case ALL_EXCEPT_USER: 
-                allTargetsExceptUser(charactersInBattle, user, move);
-                    break;
-        }
-    }
-    
-    // END: EXECUTE MOVE
     /*******************************************************************************/
 }
