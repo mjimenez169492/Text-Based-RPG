@@ -1,66 +1,49 @@
 package RunProject;
 
-import Player_Entity.PlayerEntity;
+import Player_Entity.Party;
 import Generic_Character.GenericCharacter;
 import Battle_Feature.LevelMechanics;
 import Object_Factories.PlayerEntityFactory;
 import Player_Entity.PartyWallet;
 import Move_Creation.StatusEffect;
-
 import java.awt.event.ActionListener; 
 import java.awt.event.ActionEvent; 
-import javax.swing.Box; 
-import javax.swing.JFrame; 
-import javax.swing.JTextArea;
-import javax.swing.JButton;
-import javax.swing.JScrollPane;
-import java.awt.*;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Font;
+import java.awt.Color;
+import java.awt.Insets;
+import java.awt.GridBagConstraints;
 import javax.swing.*;
-import javax.swing.JTextArea;
-
-import java.awt.Component;
 import java.awt.GridBagLayout;
-
-import java.awt.*;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.border.EmptyBorder;
-import javax.swing.text.DefaultCaret;
-import javax.swing.JFrame;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.text.AbstractDocument;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DocumentFilter;
-import java.awt.Point; 
-import java.awt.Graphics;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter; 
-import java.util.ArrayList;
-import javax.swing.JPanel; 
-import java.util.ArrayList;
-import java.awt.Toolkit;
-import java.awt.Dimension;
 
-
-public class MainMenu 
+public class MainMenu extends CommonGUIMethods
 {
-    private JButton items, equip, moves, stats, status, settings, datalog, exitMenu;
+    // frame meant to store components in a desired layout 
+    private JFrame frame = new JFrame("Capstone RPG");
+    
+    // store JFrame that originally called frame of this class to return to it later 
+    private JFrame callingFrame = new JFrame();
+    
+    // usable buttons that provide different results upon click 
+    private JButton items, equip, moves, status, settings, datalog, exitMenu;
 
     // font size used for text of all componenets 
-    private Font font = new Font("Serif", Font.PLAIN, 18);
+    private Font font = new Font(Font.MONOSPACED, Font.PLAIN, 14);
     
+    // vertical padding in pixels for buttons 
     private int buttonVerticalPadding = 45;
+    
+    // JList storing all party members for easy viewing
+    private JList partyMemberJList;
     
     
     
     // START: CREATING USABLE BUTTONS
     /*******************************************************************************/
     
-    private JButton newButton(String text)
+    private JButton usableButton(String text)
     {
         JButton button = new JButton(text);
         
@@ -69,8 +52,7 @@ public class MainMenu
         return button;
     }
     
-    public void buttonComponentPlacement(JButton button, int loopCount, 
-        JFrame frame)
+    public void buttonComponentPlacement(JButton button, int loopCount, JFrame frame)
     {
         GridBagConstraints gridBagConstraints = new GridBagConstraints();
         
@@ -83,12 +65,10 @@ public class MainMenu
         // column of specified row position
         gridBagConstraints.gridx = 0;
         
-        // specified column length component takes up (1/10 of frame if no 
-        // other components are in the way)
+        // specified column length component takes up 
         gridBagConstraints.weighty = 0.11;
         
-        // specified row length component takes up (1/10 of frame if no 
-        // other components are in the way)
+        // specified row length component takes up 
         gridBagConstraints.weightx = 0.10;
         
         // width of component in given row 
@@ -99,179 +79,142 @@ public class MainMenu
         
         // specifies space component must leave at each edges; (Insets(int 
         // top, int left, int bottom, int right) Insets(0, -225, 0, -125);
-        gridBagConstraints.insets = new Insets(5, 0, 0, 0);
+        gridBagConstraints.insets = new Insets(5, 0, 0, 150);
         
         // add button to frame with positioning 
         frame.add(button, gridBagConstraints);
     }
     
-    public void addButtonComponents(JFrame frame, JButton[] buttons, String[] buttonNames)
+    public void addUsableButtonsWithActionListeners(JFrame frame)
     {
-        for(int i = 0; i < buttons.length; i++)
-        {
-            buttons[i] = newButton(buttonNames[i]);
-                buttonComponentPlacement(buttons[i], i, frame);
-        }
+        items = usableButton("Items");
+            items.addActionListener(
+                new ActionListener() 
+                {
+                    @Override
+                    public void actionPerformed(ActionEvent e)
+                    {
+
+                    }
+                }); 
+                    items.setEnabled(true);
+                        buttonComponentPlacement(items, 0, frame);
+        
+        equip = usableButton("Equips");
+            equip.addActionListener(
+                new ActionListener() 
+                {
+                    @Override
+                    public void actionPerformed(ActionEvent e)
+                    {
+
+                    }
+                }); 
+                    equip.setEnabled(true);
+                        buttonComponentPlacement(equip, 1, frame);
+              
+        moves = usableButton("Moves");
+            moves.addActionListener(
+                new ActionListener() 
+                {
+                    @Override
+                    public void actionPerformed(ActionEvent e)
+                    {
+
+                    }
+                }); 
+                    moves.setEnabled(false);
+                        buttonComponentPlacement(moves, 2, frame);
+
+        status = usableButton("Status");
+            status.addActionListener(
+                new ActionListener() 
+                {
+                    @Override
+                    public void actionPerformed(ActionEvent e)
+                    {
+
+                    }
+                }); 
+                    status.setEnabled(false);
+                        buttonComponentPlacement(status, 3, frame);
+        
+        settings = usableButton("Settings");
+            settings.addActionListener(
+                new ActionListener() 
+                {
+                    @Override
+                    public void actionPerformed(ActionEvent e)
+                    {
+
+                    }
+                }); 
+                    settings.setEnabled(false);
+                        buttonComponentPlacement(settings, 4, frame);
+        
+        datalog = usableButton("Datalogs");
+            datalog.addActionListener(
+                new ActionListener() 
+                {
+                    @Override
+                    public void actionPerformed(ActionEvent e)
+                    {
+
+                    }
+                }); 
+                    datalog.setEnabled(false);
+                        buttonComponentPlacement(datalog, 5, frame);
+        
+        exitMenu = usableButton("Exit Menu");
+            exitMenu.addActionListener(
+                new ActionListener() 
+                {
+                    @Override
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        // dispose of Main menu frame and 
+                        frame.dispose();
+
+                        // return focus to frame that orginally called Main Menu 
+                        displayFrameWindow(callingFrame);
+                    }
+                }); 
+                    exitMenu.setEnabled(true);
+                        buttonComponentPlacement(exitMenu, 6, frame);
+        
+        JButton[] privateButtons = {items, equip, moves, status, settings, 
+            datalog, exitMenu};
+        
+        // add button column functionality for keyboard and mouse wheel 
+        CommonGUIMethods.buttonColumnKeyboardNavigation(privateButtons);
+        CommonGUIMethods.frameMouseWheel(frame, privateButtons);
     }
     
     // END: CREATING USABLE BUTTONS
     /*******************************************************************************/
 
     
-    
-    // START: USABLE BUTTON NAVIGATION AND ACTION LISTENERS 
-    /*******************************************************************************/
 
-    // allow for text to resize (somewhat) upon change in frame size...
-    public void textResizesUponButtonResize(JButton...array)
-    {
-        for(JButton element : array)
-        {
-            if(element != null)
-            {
-                CommonGUIMethods.resizeButtonTextUsingFrameSize(frame, element);
-            }
-        }
-    }
-    
-    public void usableButtonColumnNavigation(JFrame frame, JButton[] buttons)
-    {
-        // add button column functionality for keyboard and mouse wheel 
-        CommonGUIMethods.buttonColumnKeyboardNavigation(buttons);
-        CommonGUIMethods.frameMouseWheel(frame, buttons);
-        
-        // add ability for text to resize upon frame resize 
-        textResizesUponButtonResize(buttons);
-    }
-    
-    public void usableButtonsActionsListeners()
-    {
-        items.addActionListener(
-        new ActionListener() 
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                
-            }
-        }); 
-        
-        equip.addActionListener(
-        new ActionListener() 
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                
-            }
-        }); 
-        
-        moves.addActionListener(
-        new ActionListener() 
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                
-            }
-        }); 
-        
-        stats.addActionListener(
-        new ActionListener() 
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                
-            }
-        }); 
-        
-        status.addActionListener(
-        new ActionListener() 
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                
-            }
-        }); 
-        
-        settings.addActionListener(
-        new ActionListener() 
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                
-            }
-        }); 
-        
-        datalog.addActionListener(
-        new ActionListener() 
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                
-            }
-        }); 
-        
-        exitMenu.addActionListener(
-        new ActionListener() 
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                System.exit(0);
-            }
-        }); 
-    }
-    
-    
-    // END: USABLE BUTTON NAVIGATION AND ACTION LISTENERS
-    /*******************************************************************************/
-
-    
-    
     // START: PARTY WALLET INFORMATION 
     /*******************************************************************************/
 
-    public String spacesBetweenWords(int desiredSpaces)
-    {
-        StringBuilder builder = new StringBuilder();
-        
-        for(int i = 0; i < desiredSpaces; i++)
-        {
-            builder.append(" ");
-        }
-        
-        return builder.toString();
-    }
-    
     public String walletDescription(PartyWallet wallet)
     {
-        String spacesBetweenWords = spacesBetweenWords(8);
+        String walletSize = String.format("Size: %-6s", wallet.getSizeString());
         
-        // money portion of wallet 
-        StringBuilder money = new StringBuilder();
-        money.append("Wallet Money: ").append(String.valueOf(wallet.getCurrentMoney())).
-            append(" / ").append(String.valueOf(wallet.getWalletCapacity()));
+        String walletTier = String.format("Tier: %s", wallet.getTierString().charAt(
+            wallet.getTierString().length() - 1));
         
-        // money portion of wallet 
-        StringBuilder size = new StringBuilder();
-        size.append("Wallet Size: ").append(wallet.getSizeString());
-
-        // money portion of wallet 
-        StringBuilder tier = new StringBuilder();
-        tier.append("Wallet Tier: ").append(wallet.getTierString());
+        String walletMoney = String.format("Money: %s / %s", String.valueOf(
+            wallet.getCurrentMoney()), String.valueOf(wallet.getWalletCapacity()));
         
-        StringBuilder walletDescription = new StringBuilder();
-        walletDescription.append(money.toString()).append(spacesBetweenWords).
-            append(size.toString()).append(spacesBetweenWords).append(tier.toString());
-                return walletDescription.toString();
+        String walletInfo = String.format("%-16s %-14s %-10s %s", "Wallet Info:", 
+            walletSize, walletTier, walletMoney);
+        
+        return walletInfo;
     }
     
-    public void addWalletInformationButton(JFrame frame, PartyWallet wallet)
+    public JButton walletButton(PartyWallet wallet)
     {
         JButton button = new JButton(walletDescription(wallet));
         
@@ -279,10 +222,17 @@ public class MainMenu
         
         button.setForeground(Color.WHITE);
         
+        button.setHorizontalAlignment(SwingConstants.LEADING);
+        
         button.setFont(font);
         
-        textResizesUponButtonResize(button);
-        
+        return button;
+    }
+    
+    public void addWalletInformationButton(PartyWallet wallet, JFrame frame)
+    {
+        JButton button = walletButton(wallet);
+
         GridBagConstraints gridBagConstraints = new GridBagConstraints();
         
         // button will expand horizontally to fill empty space 
@@ -294,12 +244,10 @@ public class MainMenu
         // column of specified row position
         gridBagConstraints.gridx = 0;
         
-        // specified column length component takes up (1/10 of frame if no 
-        // other components are in the way)
+        // specified column length component takes up 
         gridBagConstraints.weighty = 0.11;
         
-        // specified row length component takes up (1/10 of frame if no 
-        // other components are in the way)
+        // specified row length component takes up 
         gridBagConstraints.weightx = 0.20;
         
         // width of component in given row 
@@ -324,89 +272,125 @@ public class MainMenu
     // START: PANEL DISPLAYING CHARACTER PARTY INFORMATION
     /*******************************************************************************/
     
-    public void addJPanelForCharacterDisplay(JPanel panel, JFrame frame)
+    // Note: spaces are used to make value Strings appear aligned 
+    public void appendGaugeValueToStringBuilder(StringBuilder builder, double valueAsDouble,
+        String valueAsString)
     {
-        GridBagConstraints gridBagConstraints = new GridBagConstraints();
+        if(valueAsDouble < 10)
+        {
+            builder.append(desiredSpaces(3));
+        }
+        else if(valueAsDouble < 100)
+        {
+            builder.append(desiredSpaces(2));
+        }
+        else if(valueAsDouble < 1000)
+        {
+            builder.append(desiredSpaces(1));
+        }
         
-        // button will expand horizontally and vertically to fill empty space 
-        gridBagConstraints.fill = GridBagConstraints.BOTH;
-        
-        // row position 
-        gridBagConstraints.gridy = 0;
-        
-        // column of specified row position
-        gridBagConstraints.gridx = 1;
-        
-        // specified column length component takes up (1/10 of frame if no 
-        // other components are in the way)
-        gridBagConstraints.weighty = 0.50;
-        
-        // specified row length component takes up (1/10 of frame if no 
-        // other components are in the way)
-        gridBagConstraints.weightx = 0.70;
-        
-        // extend downward 8 rows from gridy placement 
-        gridBagConstraints.gridheight = 8;
-        
-        // extend component width 2 columns 
-        gridBagConstraints.gridwidth = 2;
-        
-        // specifies space component must leave at each edges; (Insets(int 
-        // top, int left, int bottom, int right) Insets(0, -225, 0, -125);
-        gridBagConstraints.insets = new Insets(0, 5, 5, 0);
-        
-        frame.add(panel, gridBagConstraints);
+        builder.append(valueAsString);
     }
     
-    // END: PANEL DISPLAYING CHARACTER PARTY INFORMATION
-    /*******************************************************************************/
-
-    
-    
-    // START: INTERNAL PANELS FOR DISPLAYING CHARACTER PARTY INFORMATION
-    /*******************************************************************************/
-
-    public void buttonForInternalPanelPlacement(String buttonText, int gridy, int gridx, 
-        JPanel panel)
+    public String formatCurrentMaxGauges(double currentValue, double maximumValue)
     {
-        // create new button to attach to internal panel 
-        JButton button = new JButton(buttonText);
+        String curValue = String.valueOf(currentValue);
         
-        // text will be displayed starting at furthest left of button text area 
-        button.setHorizontalAlignment(SwingConstants.LEADING);
+        String maxValue = String.valueOf(maximumValue);
         
-        button.setBackground(Color.BLACK);
+        StringBuilder builder = new StringBuilder();
         
-        button.setForeground(Color.WHITE);
+        appendGaugeValueToStringBuilder(builder, currentValue, curValue);
         
-        // set button font 
-        button.setFont(font);
+        builder.append(" / ");
         
-        textResizesUponButtonResize(button);
+        appendGaugeValueToStringBuilder(builder, maximumValue, maxValue);
         
-        GridBagConstraints gridBagConstraints = new GridBagConstraints();
-        
-        // button will expand horizontally and vertically to fill empty space 
-        gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
-        
-        // row position 
-        gridBagConstraints.gridy = gridy;
-        
-        // column of specified row position
-        gridBagConstraints.gridx = gridx;
-        
-        // specified column length component takes up (1/10 of frame if no 
-        // other components are in the way)
-        gridBagConstraints.weighty = 0.10;
-        
-        // specified row length component takes up (1/10 of frame if no 
-        // other components are in the way)
-        gridBagConstraints.weightx = 0.10;
-        
-        panel.add(button, gridBagConstraints);
+        return builder.toString();
     }
     
-    public String setUpStatusEffectTextArea(GenericCharacter character)
+    public String formatExperience(double suppliedValue)
+    {
+        String value = String.valueOf(suppliedValue);
+        
+        StringBuilder builder = new StringBuilder();
+        
+        if(suppliedValue < 10)
+        {
+            builder.append(desiredSpaces(8));
+        }
+        else if(suppliedValue < 100)
+        {
+            builder.append(desiredSpaces(7));
+        }
+        else if(suppliedValue < 1000)
+        {
+            builder.append(desiredSpaces(6));
+        }
+        else if(suppliedValue < 10000)
+        {
+            builder.append(desiredSpaces(5));
+        }
+        else if(suppliedValue < 100000)
+        {
+            builder.append(desiredSpaces(4));
+        }
+        else if(suppliedValue < 1000000)
+        {
+            builder.append(desiredSpaces(3));
+        }
+        else if(suppliedValue < 10000000)
+        {
+            builder.append(desiredSpaces(1));
+        }
+        else if(suppliedValue < 100000000)
+        {
+            builder.append(desiredSpaces(1));
+        }
+        
+        builder.append(value);
+        
+        return builder.toString();
+    }
+    
+    public String nameWithMemberNumber(GenericCharacter character, int counter)
+    {
+        // format so all names up to 26 characters are correctly structured 
+        String formattedName = String.format("%-52s %s: %-2s", character.getGeneralFeatures().getName(),
+            "Member", String.valueOf(counter));
+                return formattedName;
+    }
+    
+    public String healthAndLevel(GenericCharacter character)
+    {
+        String formattedHealthAndLevel = String.format("%-3s: %-25s %-13s: %s", "HP", 
+            formatCurrentMaxGauges(character.getGeneralFeatures().getCurrentHealth(), 
+            character.getTotalStats().getTotalMaxHealth()), "Lv", character.
+            getGeneralFeatures().getLevel());
+                return formattedHealthAndLevel;
+    }
+    
+    public String staminaAndCurrentExperience(GenericCharacter character)
+    {
+        String formattedStaminaAndCurrentExperience = String.format("%-3s: %-25s %-13s: %s", 
+            "SP", formatCurrentMaxGauges(character.getGeneralFeatures().getCurrentStamina(), 
+            character.getTotalStats().getTotalMaxStamina()), "Current EXP", String.valueOf(
+            character.getGeneralFeatures().getExperience()));
+                return formattedStaminaAndCurrentExperience;
+    }
+    
+    public String nanoAndNextLevelExperience(GenericCharacter character)
+    {
+        LevelMechanics level = new LevelMechanics();
+        
+        String formattedStaminaAndCurrentExperience = String.format("%-3s: %-25s %-13s: %s", 
+            "SP", formatCurrentMaxGauges(character.getGeneralFeatures().getCurrentNano(), 
+            character.getTotalStats().getTotalMaxNano()), "To Next Level", String.valueOf(
+            level.nextLevelExp(character)));
+                return formattedStaminaAndCurrentExperience;
+    }
+    
+    public String statusEffectString(GenericCharacter character)
     {
         StringBuilder builder = new StringBuilder("Status Effects: ");
         
@@ -414,14 +398,17 @@ public class MainMenu
         
         for(StatusEffect status : character.getStatusEffectContainer().getStatusEffects())
         {
-            if(1 == character.getStatusEffectContainer().getStatusEffects().size())
+            // account for when one status effect exists (no , after it)
+            if(character.getStatusEffectContainer().getStatusEffects().size() == 1)
             {
                 builder.append(status.getName());
             }
+            // account for last status effect (no , after it)
             else if(counter == (character.getStatusEffectContainer().getStatusEffects().size() - 1))
             {
                 builder.append(status.getName());
             }
+            // account for next status effect ( , after it)
             else
             {
                 builder.append(status.getName());
@@ -433,225 +420,130 @@ public class MainMenu
         return builder.toString();
     }
     
-    public void statusEffectTextArea(GenericCharacter character, int gridy, 
-        int gridx, JPanel panel)
+    // Note: new line is called AFTER element is added to model 
+    public void addPartyMemberDetails(DefaultListModel<String> partyMemberModel, 
+        GenericCharacter character, int counter)
     {
-        JTextArea textArea = new JTextArea(setUpStatusEffectTextArea(character));
-        
-        textArea.setBackground(Color.BLACK);
-        
-        textArea.setForeground(Color.WHITE);
-        
-        textArea.setEditable(true);
-        
-        textArea.setFont(font);
-        
-        // add first text area 
-        JScrollPane scroll = new JScrollPane(textArea, 
-            JScrollPane.VERTICAL_SCROLLBAR_NEVER,
-            JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        
-        GridBagConstraints gridBagConstraints = new GridBagConstraints();
-        
-        gridBagConstraints = new GridBagConstraints();
-        gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.gridy = gridy;
-        gridBagConstraints.gridx = gridx;
-        gridBagConstraints.weighty = 0.1;
-        gridBagConstraints.weightx = 0.5;
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.ipady = 15;
-        
-        // specifies space component must leave at each edges; (Insets(int 
-        // top, int left, int bottom, int right) (- value incrases border)
-        gridBagConstraints.insets = new Insets(0, 0, 0, 0);
-        
-        panel.add(scroll, gridBagConstraints);
+        // counter is used to identify number of party members 
+        partyMemberModel.addElement(nameWithMemberNumber(character, counter));
+        partyMemberModel.addElement(healthAndLevel(character));
+        partyMemberModel.addElement(staminaAndCurrentExperience(character));
+        partyMemberModel.addElement(nanoAndNextLevelExperience(character));
+        partyMemberModel.addElement(statusEffectString(character));
     }
     
-    public JPanel internalJPanelCharacterInformation(GenericCharacter character)
+    public DefaultListModel<String> partyMembersModel(Party party)
     {
-        // panel will hold several buttons 
-        JPanel internalPanel = new JPanel();
+        DefaultListModel<String> partyMembers = new DefaultListModel<>();
+       
+        int counter = 1;
         
-        // set layout for internal panel as GridBagLayout 
-        internalPanel.setLayout(new GridBagLayout());
+        partyMembers.addElement("Party Info");
+        partyMembers.addElement(" ");
         
-        // StringBuilder object used for creating text passed to button 
-        StringBuilder builder = new StringBuilder();
-        
-        // add name of character  
-        buttonForInternalPanelPlacement(character.getGeneralFeatures().getName(), 
-            0, 0, internalPanel);
-        
-        // add level of character 
-        builder.append("LV: ").append(String.valueOf(character.getGeneralFeatures().
-            getLevel()));
-        
-        buttonForInternalPanelPlacement(builder.toString(), 0, 1, internalPanel);
-        
-        // add stress value of character 
-        builder = new StringBuilder("Remodel");
-        
-        //builder.append("Stress: ").append(String.valueOf(character.getStress().
-        //    getCurrentStress())).append(" / ").append(String.valueOf(character.
-        //    getStress().getMaxStress()));
-        
-        buttonForInternalPanelPlacement(builder.toString(), 1, 0, internalPanel);
-        
-        // add "Current EXP:" label
-        buttonForInternalPanelPlacement("Current EXP:", 1, 1, internalPanel);
-        
-        // add Health Points (HP) and current/max points 
-        builder = new StringBuilder();
-        
-        builder.append("HP:     ").append(String.valueOf(character.getGeneralFeatures().
-            getCurrentHealth())).append(" / ").append(String.valueOf(character.
-            getTotalStats().getTotalMaxHealth()));
-        
-        buttonForInternalPanelPlacement(builder.toString(), 2, 0, internalPanel);
-        
-        // add experience value accrued by character 
-        builder = new StringBuilder();
-        
-        builder.append("      ").append(String.valueOf(character.getGeneralFeatures().
-            getExperience()));
-        
-        buttonForInternalPanelPlacement(builder.toString(), 2, 1, internalPanel);
-        
-        // add Stamina Points (SP) and current/max points 
-        builder = new StringBuilder();
-        
-        builder.append("SP:     ").append(String.valueOf(character.getGeneralFeatures().
-            getCurrentStamina())).append(" / ").append(String.valueOf(character.
-            getTotalStats().getTotalMaxStamina()));
-        
-        buttonForInternalPanelPlacement(builder.toString(), 3, 0, internalPanel);
-        
-        // add "Next Level:" label
-        buttonForInternalPanelPlacement("Next Level:", 3, 1, internalPanel);
-        
-        // add Nanomachine Points (NP) and current/max points 
-        builder = new StringBuilder();
-        
-        builder.append("NP:     ").append(String.valueOf(character.getGeneralFeatures().
-            getCurrentNano())).append(" / ").append(String.valueOf(character.
-            getTotalStats().getTotalMaxNano()));
-        
-        buttonForInternalPanelPlacement(builder.toString(), 4, 0, internalPanel);
-        
-        // add value needed for next level for character 
-        LevelMechanics level = new LevelMechanics();
-        
-        builder = new StringBuilder();
-        
-        builder.append("      ").append(String.valueOf(level.nextLevelExp(character)));
-        
-        buttonForInternalPanelPlacement(builder.toString(), 4, 1, internalPanel);
-        
-        // add text area meant for showing status effects tied to character 
-        statusEffectTextArea(character, 5, 0, internalPanel);
-        
-        return internalPanel;
-    }
-    
-    public void internalJPanelPlacement(JPanel panel, JPanel internalPanel,
-        int loopCount)
-    {
-        GridBagConstraints gridBagConstraints = new GridBagConstraints();
-        
-        // button will expand horizontally and vertically to fill empty space 
-        gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
-        
-        // row position 
-        gridBagConstraints.gridy = loopCount;
-        
-        // column of specified row position
-        gridBagConstraints.gridx = 0;
-        
-        // specified column length component takes up (1/10 of frame if no 
-        // other components are in the way)
-        gridBagConstraints.weighty = 0.20;
-        
-        // specified row length component takes up (1/10 of frame if no 
-        // other components are in the way)
-        gridBagConstraints.weightx = 0.20;
-        
-        // specifies space component must leave at each edges; (Insets(int 
-        // top, int left, int bottom, int right) Insets(0, -225, 0, -125);
-        gridBagConstraints.insets = new Insets(5, 25, 5, 25);
-        
-        panel.add(internalPanel, gridBagConstraints);
-    }
-    
-    public void addPanelsForCharacterInformation(PlayerEntity playerEntity, JFrame frame)
-    {
-        JPanel panel = new JPanel();
-        
-        panel.setBackground(Color.BLACK);
-        
-        panel.setLayout(new GridBagLayout());
-        
-        int counter = 0;
-        
-        for(GenericCharacter character : playerEntity.getParty().getPartyMembers())
+        for(GenericCharacter character : party.getPartyMembers())
         {
-            internalJPanelPlacement(panel, internalJPanelCharacterInformation(character), 
-                counter);
+            if(party.getPartyMembers().size() == 1)
+            {
+                addPartyMemberDetails(partyMembers, character, counter);
+            }
+            else if(counter == party.getPartyMembers().size())
+            {
+                addPartyMemberDetails(partyMembers, character, counter);
+            }
+            else
+            {
+                addPartyMemberDetails(partyMembers, character, counter);
+                partyMembers.addElement("\n\n");
+            }
+            
             counter++;
-                    if(counter ==3){break;}
-                    //break;
         }
         
-        addJPanelForCharacterDisplay(panel, frame);
+        return partyMembers;
     }
     
-    // END: INTERNAL PANELS FOR DISPLAYING CHARACTER PARTY INFORMATION
-    /*******************************************************************************/
-
-    
-    
-    // START: DISPLAY FRAME WINDOW 
-    /*******************************************************************************/
-
-    public void displayFrameWindow()
+    public static void addPartyMemberJListComponent(JList jList, int gridy, int gridx, 
+        int gridheight, int gridwidth, JFrame frame)
     {
-        frame.pack();
-        frame.setSize(640, 480);
-        frame.setVisible(true);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        jList.setForeground(Color.WHITE);
+        
+        jList.setBackground(Color.BLACK);
+        
+        jList.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+        
+        GridBagConstraints gridBagConstraints = new GridBagConstraints();
+        
+        // add JScrollPane to frame to enable vertical scrolling for JList  
+        JScrollPane statsScroll = new JScrollPane(jList, 
+            JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+            JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        
+        // button will expand horizontally to fill empty space 
+        gridBagConstraints.fill = GridBagConstraints.BOTH;
+        
+        // row position 
+        gridBagConstraints.gridy = 0;
+        
+        // column of specified row position
+        gridBagConstraints.gridx = 1;
+        
+        // specified column length component takes up of frame height
+        gridBagConstraints.weighty = 0.60;
+        
+        // specified row length component takes up of frame width
+        gridBagConstraints.weightx = 0.60;
+        
+        // height of component in given column 
+        gridBagConstraints.gridheight = 8;
+        
+        // width of component in given row 
+        gridBagConstraints.gridwidth = 0;
+        
+        // vertical padding in pixels for component in given row 
+	//gridBagConstraints.ipady = 150;
+        
+        // specifies space component must leave at each edges; (Insets(int 
+        // top, int left, int bottom, int right)
+        gridBagConstraints.insets = new Insets(0, -145, 5, 0);
+        
+        // add button to frame with positioning 
+        frame.add(statsScroll, gridBagConstraints);
     }
     
-    // END: DISPLAY FRAME WINDOW 
+    public void addPartyMemberJLists(Party party, JFrame frame)
+    {
+        partyMemberJList = new JList(partyMembersModel(party));
+            addPartyMemberJListComponent(partyMemberJList, 11, 0, 4, 6, frame);
+    }
+    
+    // END: PANEL DISPLAYING CHARACTER PARTY INFORMATION
     /*******************************************************************************/
 
     
-    private JFrame frame = new JFrame("Capstone RPG");
     
+    // START: CONSTRUCTOR 
+    /*******************************************************************************/
+
     public MainMenu()
     {
+        // set properties for frame for GUI consistency 
         frame.getContentPane().setBackground(Color.WHITE);
-        
         frame.getContentPane().setLayout(new GridBagLayout());
         
-        JButton[] privateButtons = {items, equip, moves, stats, status, settings, 
-            datalog, exitMenu};
-        
-        String[] buttonNames = {"Items", "Equipment", "Moves", "Stats", "Status", 
-            "Settings", "Datalogs", "Exit Menu"};
+        // add usable buttons that perform an action upon click to frame 
+        addUsableButtonsWithActionListeners(frame);
 
-        addButtonComponents(frame, privateButtons, buttonNames);
-        
-        // enable mouse wheel and keyboard navigation for usable buttons 
-        usableButtonColumnNavigation(frame, privateButtons);
-        
         // get fake player entity 
         PlayerEntityFactory factory = new PlayerEntityFactory();
-        addWalletInformationButton(frame, factory.getPlayerEntityExample().getPartyWallet());
+        addWalletInformationButton(factory.getPlayerEntityExample().getPartyWallet(), frame);
         
-        // panel stuff 
-        addPanelsForCharacterInformation(factory.getPlayerEntityExample(), frame);
+        // JList presents all party members to player 
+        addPartyMemberJLists(factory.getPlayerEntityExample().getParty(), frame);
 
-        displayFrameWindow();
+        displayFrameWindow(frame);
     }
+    
+    // END: CONSTRUCTOR 
+    /*******************************************************************************/
 }
