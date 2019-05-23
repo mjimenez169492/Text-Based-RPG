@@ -1,16 +1,16 @@
 package Generic_Object;
 
 /*
-    Armors extends OutfitMethods meaning that Armors is a subclass of superclass 
-    OutfitMethods. Armors defines methods relating to armor creation. 
+    Armors extends Outfit meaning that Armors is a subclass of superclass 
+    Outfit. Armors defines methods relating to armor creation. 
 */
 
-import Generic_Object.OutfitMethods;
+import Generic_Object.Outfit;
 import Commonly_Used_Methods.StaticMethods;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Armor extends OutfitMethods
+public class Armor extends Outfit
 {
     // enchantment related resistances (as in they reduce damage received from attacks of that resistance type)
     private double fireResistance, waterResistance, iceResistance, electricityResistance, 
