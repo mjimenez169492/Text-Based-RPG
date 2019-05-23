@@ -21,7 +21,7 @@ public class LevelMechanics
     public double nextLevelExpCalculation(double experience, double expScale)
     {
         double expTotal = (experience * 1.17) + (expScale + (expScale * 0.94));
-            return expTotal;
+            return Math.floor(expTotal);
     }
 
     public double nextLevelExp(GenericCharacter character)
