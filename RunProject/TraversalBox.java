@@ -31,11 +31,8 @@ public class TraversalBox extends CommonGUIMethods
     // panel meant for holding an image representing a map for the given location 
     private JPanel map = new JPanel();
     
-    // titles for text areas 
-    private JButton textAreaOneTitle, textAreaTwoTitle;
-    
-    // text areas meant to hold information regarding the environmane to player party 
-    private JTextArea textAreaOne, textAreaTwo;
+    // text areas meant to hold information regarding the environment to player party 
+    private JTextArea observations, effectsOnParty;
     
     // vertical padding for buttons in pixels 
     private int buttonVerticalPadding = 15;
@@ -43,7 +40,7 @@ public class TraversalBox extends CommonGUIMethods
     // meant to store result of choice selected for switch case 
     private int optionChoice = 0;
     
-    private int characterLimit = 14;
+    private int characterLimit = 18;
 
     
     
@@ -68,13 +65,12 @@ public class TraversalBox extends CommonGUIMethods
     // START: TOP ORIENTED BUTTON COMPONENTS 
     /*******************************************************************************/
 
-    public void addTopLeftButtonComponent(JButton button, String text, int gridy, 
-        JFrame frame)
+    public JButton topLeftButtons(JButton button, String text)
     {
         button = new JButton(text);
         
         // set font for button text 
-        button.setFont(new Font("Serif", Font.BOLD, 18));
+        button.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
         
         // set background color of button to black 
         button.setBackground(Color.BLACK);
@@ -82,6 +78,96 @@ public class TraversalBox extends CommonGUIMethods
         // set foreground color (i.e., text color) of button to yellow 
         button.setForeground(Color.YELLOW);
         
+        return button;
+    }
+    
+    public JButton topCenterRightButtons(JButton button, String text)
+    {
+        button = new JButton(text);
+        
+        // set font for button text 
+        button.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+        
+        // set background color of button to black 
+        button.setBackground(Color.BLACK);
+        
+        // set foreground color (i.e., text color) of button to white 
+        button.setForeground(Color.WHITE);
+        
+        return button;
+    }
+    
+    public void addButtonComponent(JButton button, int gridy, int gridx, int gridheight, 
+        int gridwidth, int shrinkRight, int boostLeft, JFrame frame)
+    {
+        // create object meant to hold positioning constraints for component
+        GridBagConstraints gridBagConstraints = new GridBagConstraints();
+        
+        // determine how components will stretch (in this case horizontally)
+	gridBagConstraints.fill = GridBagConstraints.BOTH; 
+        
+        // specifies component horizontal space distribution (how much row space
+        // is taken up by component if more than one component is present)
+        // ex: code below has component take up 1/10 of total row space 
+        gridBagConstraints.weightx = 0.1;
+        
+        // specifies component vertical space distribution (how much column space
+        // is taken up by component if more than one component is present)
+        // ex: code below has component take up 1/10 of total column space 
+        gridBagConstraints.weighty = 0.1;
+        
+        // determine how tall component should be in pixels 
+        gridBagConstraints.ipady = buttonVerticalPadding; 
+        
+        // specifies row position of component within a container
+        gridBagConstraints.gridy = gridy;
+        
+        // specifies column position of component in a given row of a container
+	gridBagConstraints.gridx = gridx;
+        
+        // how tall a component should be in a given column
+        gridBagConstraints.gridheight = gridheight;
+        
+        // how wide (long) a component should be in a given row from left to right
+        gridBagConstraints.gridwidth = gridwidth;
+        
+        // specifies space component must leave at each edges; (Insets(int 
+        // top, int left, int bottom, int right)
+        // Note: positive shrinks, negative expands...
+        gridBagConstraints.insets = new Insets(0, boostLeft, 0, shrinkRight);
+        
+        // add new button to location specified by gridBagConstraints
+        frame.add(button, gridBagConstraints);
+    }
+    
+    public void addTopButtonComponent(JButton button, int gridy, int gridx, int gridwidth, 
+        int shrinkRight, int boostLeft, JFrame frame)
+    {
+        addButtonComponent(button, gridy, gridx, 1, gridwidth, shrinkRight, boostLeft, frame);
+    }
+    
+    public void addTopButtons(String location, String eventEventLine)
+    {
+        // top left buttons 
+        safeZoneNotice = topLeftButtons(safeZoneNotice, "Safe Zone");
+            addTopButtonComponent(safeZoneNotice, 0, 0, 1, 225, 0, frame);
+        
+        safeZoneState = topLeftButtons(safeZoneState, "?");
+            addTopButtonComponent(safeZoneState, 1, 0, 1, 225, 0, frame);
+        
+        // top center right buttons 
+        String formatLocation = String.format("%-65s", location);
+            currentLocation = topCenterRightButtons(currentLocation, formatLocation);
+                addTopButtonComponent(currentLocation, 0, 1, 3, 0, -225, frame);
+        
+        String formatEventEventLine = String.format("%-10s", eventEventLine);
+            eventAndEventLine = topCenterRightButtons(eventAndEventLine, formatEventEventLine);
+                addTopButtonComponent(eventAndEventLine, 1, 1, 3, 0, -225, frame);
+    }
+    
+    public void addTopLeftButtonComponent(JButton button, String text, int gridy, 
+        JFrame frame)
+    {
         GridBagConstraints gridBagConstraints = new GridBagConstraints();
         
         // button will expand horizontally to fill empty space 
@@ -117,17 +203,6 @@ public class TraversalBox extends CommonGUIMethods
     public void addTopRightButtonComponent(JButton button, String text, int gridy, 
         JFrame frame)
     {
-        button = new JButton(text);
-        
-        // set font for button text 
-        button.setFont(new Font("Serif", Font.ITALIC, 18));
-        
-        // set background color of button to black 
-        button.setBackground(Color.BLACK);
-        
-        // set foreground color (i.e., text color) of button to white 
-        button.setForeground(Color.WHITE);
-        
         GridBagConstraints gridBagConstraints = new GridBagConstraints();
         
         // button will expand horizontally to fill empty space 
@@ -215,7 +290,7 @@ public class TraversalBox extends CommonGUIMethods
     }
     
     // INCOMPLETE 
-    public void usableButtonsWithActionsListeners()
+    public void usableButtonsActionsListeners()
     {
         mainMenu = newUsableButton(mainMenu, "Main Menu");
             mainMenu.addActionListener(
@@ -354,7 +429,7 @@ public class TraversalBox extends CommonGUIMethods
         
         // specifies space component must leave at each edges; (Insets(int 
         // top, int left, int bottom, int right) Insets(0, -225, 0, -125);
-        gridBagConstraints.insets = new Insets(10, -215, 10, -60);
+        gridBagConstraints.insets = new Insets(10, -215, 10, -10);
         
         frame.add(panel, gridBagConstraints);
     }
@@ -367,7 +442,8 @@ public class TraversalBox extends CommonGUIMethods
     // START: TESTING METHODS STUFF 
     /*******************************************************************************/
 
-    // Note: 14 characeter limit for options 
+    /*
+    // Note: 18 characeter limit for options 
     public ArrayList<String> textForTraversalBoxButtons()
     {
         ArrayList<String> example = new ArrayList<>();
@@ -381,6 +457,7 @@ public class TraversalBox extends CommonGUIMethods
 
         return example;
     }
+    */
     
     // END: TESTING METHODS STUFF 
     /*******************************************************************************/
@@ -392,60 +469,58 @@ public class TraversalBox extends CommonGUIMethods
 
     public JButton newVariableButton(String text, int loopCount)
     {
-        JButton newButton = new JButton(text);
+        JButton button = new JButton(text);
         
-        // parse int into String and add "." and space for appearance: "#. "
-        // followed by text (loopCount is +1 since loop count starts at 0)
-        StringBuilder builder = new StringBuilder(String.valueOf(loopCount + 1));
-            builder.append(". ");
+        // StringBuilder object holds text meant to be supplied to button 
+        StringBuilder builder = new StringBuilder();
         
         // attempt to add text to builder by appending it to the end 
-        if(text.length() < characterLimit)
+        if(text.length() <= characterLimit)
         {
-            builder.append(text);
+            // parse int into String and add "." and space for appearance: "#. "
+            // followed by text (loopCount is + 1 since loop count starts at 0)
+            String formatted = String.format("%s. %-18s", String.valueOf(loopCount + 1), text);
+                builder.append(formatted);
         }
         else
         {
             builder.append("ERROR: Too Long");
         }
         
-        newButton.setText(builder.toString());
+        button.setText(builder.toString());
         
-        newButton.setFont(font);
+        button.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
         
-        return newButton;
+        return button;
     }
     
     public void buttonActionUponClick(JButton button, int loopCount)
     {
         // action listener gives button a number representing player choice 
         button.addActionListener(
-        new ActionListener() 
-        {
-            int result = loopCount;
-            
-            @Override
-            public void actionPerformed(ActionEvent e)
+            new ActionListener() 
             {
-                // set option selected by player for switch case
-                setOptionChoice(result);
+                int result = loopCount;
 
-                // signify that Gui is complete 
-                guiComplete(true);
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    // set option selected by player for switch case
+                    setOptionChoice(result);
 
-                // release all native screen resources, subcomponents, and all 
-                // of its owned children; in other words, close GUI and allow  
-                // program to continue running IF other windows are available 
-                frame.dispose();
-            }
-        }); 
+                    // signify that Gui is complete 
+                    guiComplete(true);
+
+                    // release all native screen resources, subcomponents, and all 
+                    // of its owned children; in other words, close GUI and allow  
+                    // program to continue running IF other windows are available 
+                    frame.dispose();
+                }
+            }); 
     }
-
+    
     public void addUsableRightButtonComponent(JButton button, int loopCount, JFrame frame)
     {
-        // set font for button text 
-	button.setFont(font);
-        
         GridBagConstraints gridBagConstraints = new GridBagConstraints();
 
 	// button will expand horizontally to fill empty space 
@@ -470,7 +545,7 @@ public class TraversalBox extends CommonGUIMethods
         
 	// specifies space component must leave at each edges; (Insets(int 
 	// top, int left, int bottom, int right)
-	gridBagConstraints.insets = new Insets(0, 70, 0, 0);
+	gridBagConstraints.insets = new Insets(0, 20, 0, 0);
 	
 	// add button to frame with positioning 
 	frame.add(button, gridBagConstraints);
@@ -608,8 +683,7 @@ public class TraversalBox extends CommonGUIMethods
     }
     
     // Note: number of buttons made depend on size of String ArrayList supplied 
-    public void buttonChoices(ArrayList<String> buttonTextArrayList,
-        JFrame frame, JButton[] buttons)
+    public void buttonChoices(ArrayList<String> buttonTextArrayList, JFrame frame, JButton...buttons)
     {
         addButtonComponents(frame, makeButtonsUsingButtonTextArrayList(buttonTextArrayList), 
             buttons);
@@ -620,16 +694,39 @@ public class TraversalBox extends CommonGUIMethods
 
     
     
+    // START: SAFE ZONE STATE AFFECTING OTHER COMPONENTS 
+    /*******************************************************************************/
+
+    public void updateSafeZoneConditions(boolean safeZone)
+    {
+        if(safeZone)
+        {
+            safeZoneState.setText("TRUE");
+                save.setEnabled(true);
+                load.setEnabled(true);
+        }
+        else
+        {
+            safeZoneState.setText("FALSE");
+                save.setEnabled(false);
+                load.setEnabled(false);
+        }
+    }
+    
+    // END: SAFE ZONE STATE AFFECTING OTHER COMPONENTS 
+    /*******************************************************************************/
+
+    
     
     // START: TEXT AREAS 
     /*******************************************************************************/
-d
-    public void titlesForTextAreas(JButton buttonOne, JButton buttonTwo, JFrame frame)
-    {
-        // title one
-        buttonOne = new JButton("Environmental Description");
 
-        buttonOne.setFont(new Font("Serif", Font.BOLD, 12));
+    public void titlesForBottomLeftAndRightTextAreas(JFrame frame)
+    {
+        // title for bottom left text area 
+        JButton observationsTitle = new JButton("Observations");
+
+        observationsTitle.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
         
         GridBagConstraints gridBagConstraints = new GridBagConstraints();
         
@@ -639,20 +736,18 @@ d
         gridBagConstraints.weighty = 0.1;
         gridBagConstraints.weightx = 0.7;
         gridBagConstraints.gridwidth = 2;
-        
-        // vertical padding in pixels for component in given row 
 	gridBagConstraints.ipady = buttonVerticalPadding;
         
         // specifies space component must leave at each edges; (Insets(int 
         // top, int left, int bottom, int right) (- value incrases border)
         gridBagConstraints.insets = new Insets(0, 0, 0, -15);
         
-        frame.add(buttonOne, gridBagConstraints);
+        frame.add(observationsTitle, gridBagConstraints);
         
-        // title two
-        buttonTwo = new JButton("Effects On Party");
+        // title for bottom right text area 
+        JButton effectsOnPartyTitle = new JButton("Effects On Party");
         
-        buttonTwo.setFont(new Font("Serif", Font.BOLD, 16));
+        effectsOnPartyTitle.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
         
         gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
@@ -661,18 +756,16 @@ d
         gridBagConstraints.weighty = 0.1;
         gridBagConstraints.weightx = 0.3;
         gridBagConstraints.gridwidth = 2;
-        
-        // vertical padding in pixels for component in given row 
 	gridBagConstraints.ipady = buttonVerticalPadding;
         
         // specifies space component must leave at each edges; (Insets(int 
         // top, int left, int bottom, int right)
         gridBagConstraints.insets = new Insets(0, 20, 0, 0);
         
-        frame.add(buttonTwo, gridBagConstraints);
+        frame.add(effectsOnPartyTitle, gridBagConstraints);
     }
     
-    public JTextArea textAreaSetUp(JTextArea textArea)
+    public JTextArea setUpTextArea(JTextArea textArea)
     {
         textArea = new JTextArea();
         
@@ -697,11 +790,17 @@ d
         return textArea;
     }
     
-    public void textAreasForBox(JTextArea textAreaOneType, JTextArea textAreaTwoType,
+    public void addJTextAreasToTraversalBox(JTextArea textAreaObservations, JTextArea textAreaEffectsOnParty,
         JFrame frame)
     {
+        // set vertical padding in pixels for JTextArea objects 
+        int verticalPadding = 120;
+        
+        // set up text area 
+        setUpTextArea(textAreaObservations);
+        
         // add first text area 
-        JScrollPane textAreaOneScroll = new JScrollPane(textAreaOneType, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+        JScrollPane textAreaObservationsScroll = new JScrollPane(textAreaObservations, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
             JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         
         GridBagConstraints gridBagConstraints = new GridBagConstraints();
@@ -714,18 +813,19 @@ d
         gridBagConstraints.gridheight = 3;
         gridBagConstraints.weighty = 0.1;
         gridBagConstraints.weightx = 0.6;
-        
-        // vertical padding in pixels for component in given row 
-	gridBagConstraints.ipady = 160;
+	gridBagConstraints.ipady = verticalPadding;
         
         // specifies space component must leave at each edges; (Insets(int 
         // top, int left, int bottom, int right) (- value incrases border)
         gridBagConstraints.insets = new Insets(0, 0, 0, -15);
         
-        frame.add(textAreaOneScroll, gridBagConstraints);
+        frame.add(textAreaObservationsScroll, gridBagConstraints);
+        
+        // set up text area 
+        setUpTextArea(textAreaEffectsOnParty);
         
         // add second text area 
-        JScrollPane textAreaTwoScroll = new JScrollPane(textAreaTwoType, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+        JScrollPane textAreaEffectsOnPartyScroll = new JScrollPane(textAreaEffectsOnParty, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
             JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         
         gridBagConstraints = new GridBagConstraints();
@@ -736,29 +836,27 @@ d
         gridBagConstraints.gridheight = 3;
         gridBagConstraints.weighty = 0.1;
         gridBagConstraints.weightx = 0.6;
-        
-        // vertical padding in pixels for component in given row 
-	gridBagConstraints.ipady = 160;
+	gridBagConstraints.ipady = verticalPadding;
         
         // specifies space component must leave at each edges; (Insets(int 
         // top, int left, int bottom, int right)
         gridBagConstraints.insets = new Insets(0, 20, 0, 0);
         
-        frame.add(textAreaTwoScroll, gridBagConstraints);
+        frame.add(textAreaEffectsOnPartyScroll, gridBagConstraints);
     }
     
-    public void appendTextToEnvironmentDescription(String text)
+    public void appendTextToObservations(String text)
     {
         StringBuilder builder = new StringBuilder(text);
             builder.append("\n\n");
-                textAreaOne.append(builder.toString());
+                observations.append(builder.toString());
     }
     
     public void appendTextToEffectOnParty(String text)
     {
         StringBuilder builder = new StringBuilder(text);
             builder.append("\n\n");
-                textAreaTwo.append(builder.toString());
+                effectsOnParty.append(builder.toString());
     }
     
     // END: TEXT AREAS 
@@ -769,36 +867,36 @@ d
     // START: CONSTRUCTOR 
     /*******************************************************************************/
     
-    public TraversalBox()
+    // Note: text per String of supplied ArrayList cannot exceed 14 characters 
+    public TraversalBox(boolean safeZone, String location, String eventEventLine, 
+        ArrayList<String> textForButtons)
     {
+        // set up properties of frame for GUI consistency 
         frame.getContentPane().setBackground(Color.BLACK);
-        
         frame.getContentPane().setLayout(new GridBagLayout());
         
-        // top button components 
-        addTopLeftButtonComponent(safeZoneNotice, "Safe Zone", 0, frame);
-        addTopRightButtonComponent(currentLocation, "current Location", 0, frame);
-        addTopLeftButtonComponent(safeZoneState, "TRUE", 1, frame);
-        addTopRightButtonComponent(eventAndEventLine, "event", 1, frame);
+        // at buttons to top of frame 
+        addTopButtons(location, eventEventLine);
         
-        usableButtonsWithActionsListeners();
+        // set up left hand usable buttons and add action listeners them 
+        usableButtonsActionsListeners();
         
-        JButton[] privateButtons = {mainMenu, comms, settings, activities,
-            interactions, save, load, exitGame};
+        // add left hand usable buttons to frame and add right hand buttons to frame
+        // based on number of Strings that exist in supplied ArrayList
+        buttonChoices(textForButtons, frame, mainMenu, comms, settings, activities,
+            interactions, save, load, exitGame);
         
-        buttonChoices(textForButtons(), frame, privateButtons);
+        // update which buttons are enabled based on Safe Zone state
+        updateSafeZoneConditions(safeZone);
         
-        // panel for displaying map for easier movement 
+        // panel for displaying map meant to ease movement in game world 
         addJPanelForMap(map, frame);
 
         // titles for text area buttons indicating type of text area 
-        titlesForTextAreas(textAreaOneTitle, textAreaTwoTitle, frame);
+        titlesForBottomLeftAndRightTextAreas(frame);
         
-        textAreaOne = textAreaSetUp(textAreaOne);
-        textAreaTwo = textAreaSetUp(textAreaTwo);
-        
-        // text areas for different kinds of information 
-        textAreasForBox(textAreaOne, textAreaTwo, frame);
+        // text areas for different kinds of information relevant to player 
+        addJTextAreasToTraversalBox(observations, effectsOnParty, frame);
         
         displayFrameWindow(frame);
     }
