@@ -900,4 +900,7 @@ public class TraversalBox extends CommonGUIMethods
         
         displayFrameWindow(frame);
     }
+    
+    // END: CONSTRUCTOR 
+    /*******************************************************************************/
 }
