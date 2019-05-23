@@ -6,17 +6,21 @@ import Battle_Feature.LevelMechanics;
 import Object_Factories.PlayerEntityFactory;
 import Player_Entity.PartyWallet;
 import Move_Creation.StatusEffect;
+import Player_Entity.PlayerEntity;
+
 import java.awt.event.ActionListener; 
 import java.awt.event.ActionEvent; 
 import java.awt.Font;
 import java.awt.Color;
 import java.awt.Insets;
 import java.awt.GridBagConstraints;
-import javax.swing.*;
 import java.awt.GridBagLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
+import javax.swing.JList;
+import javax.swing.DefaultListModel;
+import javax.swing.SwingConstants;
 
 public class MainMenu extends CommonGUIMethods
 {
@@ -85,7 +89,7 @@ public class MainMenu extends CommonGUIMethods
         frame.add(button, gridBagConstraints);
     }
     
-    public void addUsableButtonsWithActionListeners(JFrame frame)
+    public void addUsableButtonsWithActionListeners(JFrame frame, PlayerEntity entity)
     {
         items = usableButton("Items");
             items.addActionListener(
@@ -94,7 +98,11 @@ public class MainMenu extends CommonGUIMethods
                     @Override
                     public void actionPerformed(ActionEvent e)
                     {
-
+                        // shift focus to ItemsMenu frame 
+                        new ItemsMenu(frame, entity);
+                        
+                        // dispose of Main menu frame 
+                        frame.dispose();
                     }
                 }); 
                     items.setEnabled(true);
@@ -107,7 +115,11 @@ public class MainMenu extends CommonGUIMethods
                     @Override
                     public void actionPerformed(ActionEvent e)
                     {
-
+                        // shift focus to EquipsMenu frame 
+                        new EquipMenu(frame, entity);
+                        
+                        // dispose of Main menu frame 
+                        frame.dispose();
                     }
                 }); 
                     equip.setEnabled(true);
@@ -172,7 +184,7 @@ public class MainMenu extends CommonGUIMethods
                     @Override
                     public void actionPerformed(ActionEvent e)
                     {
-                        // dispose of Main menu frame and 
+                        // dispose of Main menu frame 
                         frame.dispose();
 
                         // return focus to frame that orginally called Main Menu 
@@ -271,87 +283,6 @@ public class MainMenu extends CommonGUIMethods
     
     // START: PANEL DISPLAYING CHARACTER PARTY INFORMATION
     /*******************************************************************************/
-    
-    // Note: spaces are used to make value Strings appear aligned 
-    public void appendGaugeValueToStringBuilder(StringBuilder builder, double valueAsDouble,
-        String valueAsString)
-    {
-        if(valueAsDouble < 10)
-        {
-            builder.append(desiredSpaces(3));
-        }
-        else if(valueAsDouble < 100)
-        {
-            builder.append(desiredSpaces(2));
-        }
-        else if(valueAsDouble < 1000)
-        {
-            builder.append(desiredSpaces(1));
-        }
-        
-        builder.append(valueAsString);
-    }
-    
-    public String formatCurrentMaxGauges(double currentValue, double maximumValue)
-    {
-        String curValue = String.valueOf(currentValue);
-        
-        String maxValue = String.valueOf(maximumValue);
-        
-        StringBuilder builder = new StringBuilder();
-        
-        appendGaugeValueToStringBuilder(builder, currentValue, curValue);
-        
-        builder.append(" / ");
-        
-        appendGaugeValueToStringBuilder(builder, maximumValue, maxValue);
-        
-        return builder.toString();
-    }
-    
-    public String formatExperience(double suppliedValue)
-    {
-        String value = String.valueOf(suppliedValue);
-        
-        StringBuilder builder = new StringBuilder();
-        
-        if(suppliedValue < 10)
-        {
-            builder.append(desiredSpaces(8));
-        }
-        else if(suppliedValue < 100)
-        {
-            builder.append(desiredSpaces(7));
-        }
-        else if(suppliedValue < 1000)
-        {
-            builder.append(desiredSpaces(6));
-        }
-        else if(suppliedValue < 10000)
-        {
-            builder.append(desiredSpaces(5));
-        }
-        else if(suppliedValue < 100000)
-        {
-            builder.append(desiredSpaces(4));
-        }
-        else if(suppliedValue < 1000000)
-        {
-            builder.append(desiredSpaces(3));
-        }
-        else if(suppliedValue < 10000000)
-        {
-            builder.append(desiredSpaces(1));
-        }
-        else if(suppliedValue < 100000000)
-        {
-            builder.append(desiredSpaces(1));
-        }
-        
-        builder.append(value);
-        
-        return builder.toString();
-    }
     
     public String nameWithMemberNumber(GenericCharacter character, int counter)
     {
@@ -525,21 +456,22 @@ public class MainMenu extends CommonGUIMethods
     // START: CONSTRUCTOR 
     /*******************************************************************************/
 
-    public MainMenu()
+    public MainMenu(JFrame callingFrame, PlayerEntity entity)
     {
+        // store former frame to call it later 
+        this.callingFrame = callingFrame;
+        
         // set properties for frame for GUI consistency 
         frame.getContentPane().setBackground(Color.WHITE);
         frame.getContentPane().setLayout(new GridBagLayout());
         
         // add usable buttons that perform an action upon click to frame 
-        addUsableButtonsWithActionListeners(frame);
+        addUsableButtonsWithActionListeners(frame, entity);
 
-        // get fake player entity 
-        PlayerEntityFactory factory = new PlayerEntityFactory();
-        addWalletInformationButton(factory.getPlayerEntityExample().getPartyWallet(), frame);
+        addWalletInformationButton(entity.getPartyWallet(), frame);
         
         // JList presents all party members to player 
-        addPartyMemberJLists(factory.getPlayerEntityExample().getParty(), frame);
+        addPartyMemberJLists(entity.getParty(), frame);
 
         displayFrameWindow(frame);
     }
