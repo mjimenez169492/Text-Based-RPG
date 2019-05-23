@@ -623,9 +623,12 @@ public class Moves
 
     public void addStatusMoveAdds(StatusEffect status)
     {
-        if(StaticMethods.getStatusEffectEnum(status.getName()) != null)
+        if(status != null)
         {
-            statusesMoveAdds.add(status);
+            if(StaticMethods.getStatusEffectEnum(status.getName()) != null)
+            {
+                statusesMoveAdds.add(status);
+            }
         }
     }
     
@@ -901,16 +904,6 @@ public class Moves
     public double getCriticalModifier()
     {
         return criticalModifier;
-    }
-    
-    public void setStressEffect(double stressEffect)
-    {
-        this.stressEffect = lowerUpperBounds(-100.0, 100.0, stressEffect);
-    }
-    
-    public double getStressEffect()
-    {
-        return stressEffect;
     }
     
     public void setMoveSpeed(double moveSpeed)
