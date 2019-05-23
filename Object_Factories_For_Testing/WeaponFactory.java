@@ -1,4 +1,4 @@
-package Object_Factories;
+package Object_Factories_For_Testing;
 
 import Generic_Object.Weapon;
 import Move_Creation.StatusEffect;
@@ -65,13 +65,6 @@ public class WeaponFactory
     // START: TUTORIAL AREA WEAPONS (ASSUME LV 1)
     /*******************************************************************************/
 
-    /*
-        Training Sword
-        Rusty Sword 
-        Small Dagger
-        Broken Spear
-    */
-    
     public Weapon getTrainingSword()
     {
         Weapon weapon = new Weapon();
@@ -186,6 +179,4 @@ public class WeaponFactory
     
     // END: TUTORIAL AREA WEAPONS (ASSUME LV 1)
     /*******************************************************************************/
-
-    
 }

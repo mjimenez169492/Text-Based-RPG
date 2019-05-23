@@ -1144,6 +1144,19 @@ public class BattleGUI
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     // START: NESTED CLASS BATTLE
     /*******/
     /***************/

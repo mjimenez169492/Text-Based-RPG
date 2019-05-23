@@ -1,34 +1,18 @@
-package Demo;
+package GUI_Collection;
 
-import GUI_Collection.Game_Test;
+import Object_Factories_For_Testing.PlayerEntityFactory;
+import Player_Entity.Party;
+import Player_Entity.PlayerEntity;
 import javax.swing.JPanel;
-
-public class Capstone_RPG extends JPanel 
-{
-    public static void main(String args[]) 
-    {
-        //new GUI_Collection.Game_Test();
-        
-        
-
-
-
-
-package Demo;
-
-import GUI_Collection.*;
-import GUI_Collection.OptionsBox;
-import GUI_Collection.CommonGUIMethods;
 import Object_Factories_For_Testing.PlayerEntityFactory;
 import Player_Entity.PlayerEntity;
 import Player_Entity.Party;
-import javax.swing.JPanel;
 import java.util.ArrayList;
 
-public class Capstone_RPG extends JPanel 
+public class Game_Test  
 {
     // do not proceed until gui has terminated
-    public static void pauseBetweenFrames(CommonGUIMethods gui)
+    public void pauseBetweenFrames(CommonGUIMethods gui)
     {
         ((CommonGUIMethods)gui).guiComplete(false);
         
@@ -45,29 +29,8 @@ public class Capstone_RPG extends JPanel
         }
     }
     
-    /*
     // do not proceed until gui has terminated
-    public static int pauseBetweenFramesOptionsPostExposition(OptionsBox gui)
-    {
-        ((CommonGUIMethods)gui).guiComplete(false);
-        
-        boolean result = false;
-        
-        while(!result)
-        {
-            // need something to make while loop operate correctly
-            System.out.print("");
-            
-            // while loop breaks when GUI itself is considered complete 
-            // Note: remember to signify Gui is complete with guiComplete(true);
-            result = ((CommonGUIMethods)gui).guiComplete();
-        }
-        
-        return gui.getOptionChoice();
-    }
-    
-    // do not proceed until gui has terminated
-    public static int pauseBetweenFramesTraversalOptions(TraversalBox gui)
+    public int pauseBetweenFramesOptionsPostExposition(OptionsBox gui)
     {
         ((CommonGUIMethods)gui).guiComplete(false);
         
@@ -87,7 +50,27 @@ public class Capstone_RPG extends JPanel
     }
     
     // do not proceed until gui has terminated
-    public static BattleMenu.Battle pauseBetweenFramesBattle(BattleMenu.Battle gui)
+    public int pauseBetweenFramesTraversalOptions(TraversalBox gui)
+    {
+        ((CommonGUIMethods)gui).guiComplete(false);
+        
+        boolean result = false;
+        
+        while(!result)
+        {
+            // need something to make while loop operate correctly
+            System.out.print("");
+            
+            // while loop breaks when GUI itself is considered complete 
+            // Note: remember to signify Gui is complete with guiComplete(true);
+            result = ((CommonGUIMethods)gui).guiComplete();
+        }
+        
+        return gui.getOptionChoice();
+    }
+    
+    // do not proceed until gui has terminated
+    public BattleGUI.Battle pauseBetweenFramesBattle(BattleGUI.Battle gui)
     {
         boolean result = false;
 
@@ -105,7 +88,7 @@ public class Capstone_RPG extends JPanel
     }
     
     // Note: method serves as an example of String ArrayList relaying text 
-    public static ArrayList<String> expositionTextArrayList()
+    public ArrayList<String> expositionTextArrayList()
     {
         ArrayList<String> example = new ArrayList<>();
         
@@ -330,7 +313,7 @@ public class Capstone_RPG extends JPanel
     }
     
     // Note: number of Strings in ArrayList determines number of buttons created 
-    public static ArrayList<String> optionsStringsForButtonsPostExposition()
+    public ArrayList<String> optionsStringsForButtonsPostExposition()
     {
         ArrayList<String> example = new ArrayList<>();
 
@@ -345,7 +328,7 @@ public class Capstone_RPG extends JPanel
     }
     
     // Note: 18 characeter limit for options 
-    public static ArrayList<String> textForTraversalBoxButtons()
+    public ArrayList<String> textForTraversalBoxButtons()
     {
         ArrayList<String> example = new ArrayList<>();
 
@@ -358,9 +341,8 @@ public class Capstone_RPG extends JPanel
 
         return example;
     }
-    */
 
-    public static void main(String args[]) 
+    public Game_Test()
     {
         PlayerEntityFactory factory = new PlayerEntityFactory();
             PlayerEntity entity = factory.getPlayerEntityExample();
@@ -368,12 +350,13 @@ public class Capstone_RPG extends JPanel
         PlayerEntityFactory opposition = new PlayerEntityFactory();
             Party opposingParty = opposition.getPlayerEntityExampleTwo().getParty();
     
-        pauseBetweenFrames(new GUI_Collection.IntroBox());
+        
+        pauseBetweenFrames(new IntroBox());
         
         String location = "Grand Capital - Metro 31 - Plaza - Factory - Boiler Room - West";
         String eventEventLine = "The End - Last Surprise";
         
-        pauseBetweenFrames(new ExpositionBox(entity, location, 
+        pauseBetweenFrames(new TextBox(entity, location, 
             eventEventLine, expositionTextArrayList()));
         
         
@@ -400,10 +383,8 @@ public class Capstone_RPG extends JPanel
                     break;
         }
         
-        
-        
-        BattleMenu.Battle result = pauseBetweenFramesBattle(new BattleMenu.Battle(
-            entity, opposingParty));
+        BattleGUI.Battle result = pauseBetweenFramesBattle(new 
+            BattleGUI.Battle(entity, opposingParty));
 
         // if ladder by battle result priority 
         if(result.playerPartyGameOver())

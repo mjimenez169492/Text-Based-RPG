@@ -1,4 +1,4 @@
-package Object_Factories;
+package Object_Factories_For_Testing;
 
 import Generic_Object.Core;
 
@@ -31,7 +31,4 @@ public class CoreFactory
         
         return core;
     }
-    
-    
-    
 }
