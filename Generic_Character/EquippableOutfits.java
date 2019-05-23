@@ -1,7 +1,7 @@
 package Generic_Character;
 
 import Move_Creation.StatusEffect;
-import Generic_Object.OutfitMethods;
+import Generic_Object.Outfit;
 import Generic_Object.Accessory;
 import Generic_Object.Armor;
 import Generic_Object.Weapon;
@@ -249,7 +249,7 @@ public class EquippableOutfits
         GET_TOTAL_NANO_ATTACK, GET_TOTAL_NANO_DEFENSE;
     }
     
-    public double allOutfitsEffectSwitch(AllOutfitSwitches choice, OutfitMethods object)
+    public double allOutfitsEffectSwitch(AllOutfitSwitches choice, Outfit object)
     {
         double result = 0;
         
