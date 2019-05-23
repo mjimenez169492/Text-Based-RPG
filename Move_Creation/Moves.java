@@ -233,7 +233,7 @@ public class Moves
 
         private String technique;
         
-        Techniques(String skill)
+        Techniques(String technique)
         {
             this.technique = technique;
         }
