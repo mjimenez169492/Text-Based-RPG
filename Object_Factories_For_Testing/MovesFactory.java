@@ -1,10 +1,77 @@
-package Object_Factories;
+package Object_Factories_For_Testing;
 
 import Move_Creation.Moves;
 
 public class MovesFactory 
 {
-    public Moves getItemMoveHealExample()
+    public Moves getItemMoveHealOneExample()
+    {
+        Moves move = new Moves();
+        
+        move.setName("exampleMove");
+        move.setDescription("What move description should look like");
+        
+        move.setApproach("Item");
+        move.setStyle("Other Moves");
+        move.setTechnique("Other Moves");
+        
+        move.setGaugeUsed("None");
+        move.addGaugeTargeted("Current Health");
+        
+        move.setEnchantment("None");
+        move.setMoveAvailabilityStatus("None");
+        
+        move.usableFromMainMenu(true);
+        move.usableInBattle(true);
+        move.usableIfKnockedDown(false);
+        move.usableIfGrabbed(false);
+        move.usableIfAirborne(false);
+        
+        move.setTarget("Any");
+        move.setTimesMoveAffectsTarget(1);
+        
+        move.setMoveUsedText(" used item!");
+        move.setMoveMissedText(" item missed!");
+        move.setMoveFailedText(" item failed!");
+        
+        move.parryable(false);
+        move.counterable(false);
+        move.guardable(false);
+        move.grabBlockable(false);
+        
+        move.addStatusMoveAdds(new StatusEffectFactory().getStatusEffectExample());
+        move.addStatusNegatingMove("None");
+        move.addStatusesMoveRemoves("None");
+        
+        move.setUserWeaponDurabilityEffect(0);
+        move.setWeaponDurabilityEffect(0);
+        move.setBodyArmorDurabilityEffect(0);
+        move.setLegArmorDurabilityEffect(0);
+        move.setFootArmorDurabilityEffect(0);
+        move.setAccessoryOneDurabilityEffect(0);
+        move.setAccessoryTwoDurabilityEffect(0);
+        
+        move.setClassification("Item");
+        
+        move.setCustomAccuracy(100);
+        move.setCustomOutput(15);
+        move.setCustomCritical(1);
+        
+        move.setMoveCost(0);
+        move.setOutputVariance(0);
+        move.setAccuracyModifier(0);
+        move.setOutputModifier(0);
+        move.setCriticalModifier(0);
+        move.setMoveSpeed(0);
+        
+        move.setMasteryValue(0);
+        move.setCurrentValue(0);
+        move.setMoveMasteryState(false);
+        
+        return move;
+    }
+    
+    public Moves getItemMoveHealManyExample()
     {
         Moves move = new Moves();
         
@@ -71,7 +138,7 @@ public class MovesFactory
         return move;
     }
     
-    public Moves getItemMoveDamageExample()
+    public Moves getItemMoveDamageOneExample()
     {
         Moves move = new Moves();
         
@@ -121,7 +188,7 @@ public class MovesFactory
         move.setClassification("Item");
         
         move.setCustomAccuracy(100);
-        move.setCustomOutput(-12);
+        move.setCustomOutput(-6);
         move.setCustomCritical(1);
         
         move.setMoveCost(0);
@@ -138,7 +205,73 @@ public class MovesFactory
         return move;
     }
     
-    // see "new 46" for moves object creation data
+    public Moves getItemMoveDamageManyExample()
+    {
+        Moves move = new Moves();
+        
+        move.setName("exampleMove");
+        move.setDescription("What move description should look like");
+        
+        move.setApproach("Item");
+        move.setStyle("Other Moves");
+        move.setTechnique("Other Moves");
+        
+        move.setGaugeUsed("None");
+        move.addGaugeTargeted("Current Health");
+        
+        move.setEnchantment("None");
+        move.setMoveAvailabilityStatus("None");
+        
+        move.usableFromMainMenu(true);
+        move.usableInBattle(true);
+        move.usableIfKnockedDown(false);
+        move.usableIfGrabbed(false);
+        move.usableIfAirborne(false);
+        
+        move.setTarget("All");
+        move.setTimesMoveAffectsTarget(1);
+        
+        move.setMoveUsedText(" used item!");
+        move.setMoveMissedText(" item missed!");
+        move.setMoveFailedText(" item failed!");
+        
+        move.parryable(false);
+        move.counterable(false);
+        move.guardable(false);
+        move.grabBlockable(false);
+        
+        move.addStatusMoveAdds(new StatusEffectFactory().getStatusEffectExample());
+        move.addStatusNegatingMove("None");
+        move.addStatusesMoveRemoves("None");
+        
+        move.setUserWeaponDurabilityEffect(0);
+        move.setWeaponDurabilityEffect(0);
+        move.setBodyArmorDurabilityEffect(0);
+        move.setLegArmorDurabilityEffect(0);
+        move.setFootArmorDurabilityEffect(0);
+        move.setAccessoryOneDurabilityEffect(0);
+        move.setAccessoryTwoDurabilityEffect(0);
+        
+        move.setClassification("Item");
+        
+        move.setCustomAccuracy(100);
+        move.setCustomOutput(-6);
+        move.setCustomCritical(1);
+        
+        move.setMoveCost(0);
+        move.setOutputVariance(0);
+        move.setAccuracyModifier(0);
+        move.setOutputModifier(0);
+        move.setCriticalModifier(0);
+        move.setMoveSpeed(0);
+        
+        move.setMasteryValue(0);
+        move.setCurrentValue(0);
+        move.setMoveMasteryState(false);
+        
+        return move;
+    }
+    
     public Moves getStandardAttack()
     {
         Moves move = new Moves();
@@ -205,5 +338,4 @@ public class MovesFactory
         
         return move;
     }
-    
 }
