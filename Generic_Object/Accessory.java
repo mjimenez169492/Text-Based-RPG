@@ -1,8 +1,8 @@
 package Generic_Object;
 
 /*
-    Accessories extends OutfitMethods meaning that Accessories is a subclass of 
-    superclass OutfitMethods. Accessories defines methods relating to accessory 
+    Accessories extends Outfit meaning that Accessories is a subclass of 
+    superclass Outfit. Accessories defines methods relating to accessory 
     creation.  
 
     Accessories can provide a variety of effects once equipped which can range 
@@ -17,7 +17,7 @@ import Move_Creation.StatusEffect;
 import java.util.ArrayList;  
 import java.util.HashMap;
 
-public class Accessory extends OutfitMethods
+public class Accessory extends Outfit
 {
     // value denoting maximum number of status effects that accessory can negate 
     int maxNumberOfStatusEffectsThatCanBeNegated;
