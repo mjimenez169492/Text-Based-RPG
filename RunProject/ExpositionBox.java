@@ -124,7 +124,7 @@ public class ExpositionBox extends CommonGUIMethods
     // START: GRIDBAGLAYOUT COMPONENT SET UP 
     /*******************************************************************************/
     
-    public void expositionBoxComponent(JButton button, int ipady, int gridy, int gridx, 
+    public void addButtonComponent(JButton button, int ipady, int gridy, int gridx, 
         int gridwidth, JFrame frame)
     {
         // create object meant to hold positioning constraints for component
@@ -186,14 +186,14 @@ public class ExpositionBox extends CommonGUIMethods
     {
         // Ex: "Nothing Place - Nothing City - Nothing Plaza - Nothing Bar - Nothing Chair"
         currentLocation = unusableTopRightButton(currentLocation, location);
-            expositionBoxComponent(currentLocation, topRightComponentPixelPadding, 0, 0, 5, frame);
+            addButtonComponent(currentLocation, topRightComponentPixelPadding, 0, 0, 5, frame);
         
         // Ex: "The Tale Of Nothing - Nothing Nowhere" 
         eventAndEventLine = unusableTopRightButton(eventAndEventLine, eventEventLine);
-            expositionBoxComponent(eventAndEventLine, topRightComponentPixelPadding, 1, 2, 3, frame);
+            addButtonComponent(eventAndEventLine, topRightComponentPixelPadding, 1, 2, 3, frame);
 
         currentAndFinalLines = unusableTopRightButton(currentAndFinalLines, "");
-            expositionBoxComponent(currentAndFinalLines, topRightComponentPixelPadding, 2, 4, 1, frame);
+            addButtonComponent(currentAndFinalLines, topRightComponentPixelPadding, 2, 4, 1, frame);
     }
     
     public JButton unusableSpeakerButton(JButton button)
@@ -214,7 +214,7 @@ public class ExpositionBox extends CommonGUIMethods
     public void speakerComponent()
     {
         speakerOrDescription = unusableSpeakerButton(speakerOrDescription);
-            expositionBoxComponent(speakerOrDescription, textDisplayingComponentPixelPadding, 4, 0, 2, frame);
+            addButtonComponent(speakerOrDescription, textDisplayingComponentPixelPadding, 4, 0, 2, frame);
     }
     
     public JButton unusableTextDisplayingButton(JButton button)
@@ -235,13 +235,13 @@ public class ExpositionBox extends CommonGUIMethods
     public void textDisplayingComponents()
     {
         lineOne = unusableTextDisplayingButton(lineOne);
-            expositionBoxComponent(lineOne, textDisplayingComponentPixelPadding, 5, 0, 6, frame);
+            addButtonComponent(lineOne, textDisplayingComponentPixelPadding, 5, 0, 6, frame);
         
         lineTwo = unusableTextDisplayingButton(lineTwo);
-            expositionBoxComponent(lineTwo, textDisplayingComponentPixelPadding, 6, 0, 6, frame);
+            addButtonComponent(lineTwo, textDisplayingComponentPixelPadding, 6, 0, 6, frame);
         
         lineThree = unusableTextDisplayingButton(lineThree);
-            expositionBoxComponent(lineThree, textDisplayingComponentPixelPadding, 7, 0, 6, frame);
+            addButtonComponent(lineThree, textDisplayingComponentPixelPadding, 7, 0, 6, frame);
     }
     
     // END: UNUSABLE GRIDBAGLAYOUT COMPONENTS
@@ -264,19 +264,19 @@ public class ExpositionBox extends CommonGUIMethods
     public void usableButtonsComponents()
     {
         mainMenu = usableButton(mainMenu, "Main Menu", font);
-            expositionBoxComponent(mainMenu, usableButtonComponentPixelPadding, 9, 0, 1, frame);
+            addButtonComponent(mainMenu, usableButtonComponentPixelPadding, 9, 0, 1, frame);
 
         settings = usableButton(settings, "Settings", font);
-            expositionBoxComponent(settings, usableButtonComponentPixelPadding, 9, 1, 1, frame);
+            addButtonComponent(settings, usableButtonComponentPixelPadding, 9, 1, 1, frame);
 
         altNav = usableButton(altNav, "Alt Nav", font);
-            expositionBoxComponent(altNav, usableButtonComponentPixelPadding, 9, 2, 1, frame);
+            addButtonComponent(altNav, usableButtonComponentPixelPadding, 9, 2, 1, frame);
         
         backward = usableButton(backward, "Backward", font);
-            expositionBoxComponent(backward, usableButtonComponentPixelPadding, 9, 3, 1, frame);
+            addButtonComponent(backward, usableButtonComponentPixelPadding, 9, 3, 1, frame);
                 
         forward = usableButton(forward, "Forward", font);
-            expositionBoxComponent(forward, usableButtonComponentPixelPadding, 9, 4, 1, frame);
+            addButtonComponent(forward, usableButtonComponentPixelPadding, 9, 4, 1, frame);
     }
     
     // END: GRIDBAGLAYOUT COMPONENT PLACEMENT
