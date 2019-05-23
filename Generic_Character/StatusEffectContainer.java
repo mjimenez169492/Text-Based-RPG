@@ -163,31 +163,6 @@ public class StatusEffectContainer
         return specificStatusExists(StaticMethods.turnBehaviorStatusEffectValueStrings());
     }
     
-    // print the contents of statusEffectContainer (must decide style upon GUI creation)
-    /*
-    public void printStatusEffects()
-    {
-        int counter = 0;
-        
-        if(statusEffectContainer != null && statusEffectContainer.size() != 0)
-        {
-            for(int i = 0; i < statusEffectContainer.size(); i++)
-            {
-                if(i != statusEffectContainer.size() - 1)
-                {
-                    System.out.printf("%s, ", statusEffectContainer[i].getName());
-                }
-                else
-                {
-                    System.out.printf("%s", element.getName());
-                }
-                
-                
-            }
-        }
-    }
-    */
-
     // END: USEFUL STATUS EFFECT CONTAINER METHODS 
     /*******************************************************************************/
 
@@ -338,7 +313,7 @@ public class StatusEffectContainer
     // returns sum of doubles associated with attribute/resistance specified
     // Ex: status effect "Poison" affects Attack by 0.06 and status effect "Bleed"
     //     affects Attack by 0.08 so sum up double values and return that (0.14)
-    public double sumOfEffects(String argument)
+    public double sumOfStatusEffectEffects(String argument)
     {
         double sumOfEffectsOfStatusEffects = 0.0;
 
