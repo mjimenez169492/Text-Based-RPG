@@ -1,134 +1,40 @@
 package RunProject;
 
-    import Generic_Character.*;
-    import java.security.SecureRandom;
-    import java.util.PriorityQueue;	
-    import Player_Entity.Party;
-    import java.util.ArrayList;
-
+import Generic_Character.*;
+import java.security.SecureRandom;
+import java.util.PriorityQueue;	
+import Player_Entity.Party;
+import java.util.ArrayList;
 import Battle_Feature.LevelMechanics;
 import Player_Entity.PlayerEntity;
 import Generic_Character.GenericCharacter;
 import Battle_Feature.LevelMechanics;
 import Object_Factories.PlayerEntityFactory;
 import Player_Entity.PartyWallet;
-import Move_Creation.StatusEffect;
 import Generic_Object.GenericObject;
 import Player_Entity.Inventory;
-import Generic_Object.Item;
-import Move_Creation.Moves;
-import Move_Creation.MoveCalculations;
 import Player_Entity.Party;
-import Object_Factories.MovesFactory;
 
-import java.util.PriorityQueue;
-import java.security.SecureRandom;
-import java.awt.event.ActionListener; 
-import java.awt.event.ActionEvent; 
-import javax.swing.Box; 
-import javax.swing.JFrame; 
-import javax.swing.JTextArea;
-import javax.swing.JButton;
-import javax.swing.JScrollPane;
-import java.awt.*;
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.JTextArea;
-
-import java.awt.Component;
 import java.awt.GridBagLayout;
-
-import java.awt.*;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.border.EmptyBorder;
-import javax.swing.text.DefaultCaret;
-import javax.swing.JFrame;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.text.AbstractDocument;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DocumentFilter;
-import java.awt.Point; 
-import java.awt.Graphics;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter; 
 import java.util.ArrayList;
-import javax.swing.JPanel; 
-import java.util.ArrayList;
-import java.awt.Toolkit;
-import java.awt.Dimension;
-import java.util.Map;
-import java.util.LinkedHashMap;
-import java.util.HashMap;
-import java.util.Map;
-import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
-import javax.swing.DefaultListSelectionModel;
-import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
-import javax.swing.AbstractAction;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JRadioButtonMenuItem;
-import javax.swing.ButtonGroup;
-import javax.swing.JMenuBar;
-import javax.swing.KeyStroke;
-import javax.swing.ImageIcon;
-
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
 import javax.swing.JScrollPane;
 import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JRadioButtonMenuItem;
-import javax.swing.ButtonGroup;
-import javax.swing.JMenuBar;
-import javax.swing.KeyStroke;
-import javax.swing.ImageIcon;
+import java.awt.GridBagConstraints;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Insets;
+import javax.swing.DefaultListModel;
+import javax.swing.SwingConstants;
 
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.JScrollPane;
-import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JRadioButtonMenuItem;
-import javax.swing.ButtonGroup;
-import javax.swing.JMenuBar;
-import javax.swing.KeyStroke;
-import javax.swing.ImageIcon;
-
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.JScrollPane;
-import javax.swing.JFrame;
-import javax.swing.JPopupMenu;
-import javax.swing.JInternalFrame;
-
-
-public class BattleResults 
+public class BattleResults extends CommonGUIMethods
 {
+    // frame meant to store components in a desired layout 
+    private JFrame frame = new JFrame("Capstone RPG");
+    
     // When formatting text displayed under certain fonts, it is possible for 
     // text to be displayed "incorrectly" or in an unintended fashion since 
     // characters may not have the same width. Font "Monospaced" alleviates 
@@ -136,12 +42,14 @@ public class BattleResults
     private Font buttonFont = new Font(Font.MONOSPACED, Font.PLAIN, 14);
     private Font JListFont = new Font(Font.MONOSPACED, Font.PLAIN, 12);
 
+    // vertical and horizontal padding for button and JList components 
     private int buttonVerticalPadding = 75;
-    
     private int jListVerticalPadding = 0;
     
+    // JLists showing characters that received experience and objects dropped by foes 
     private JList charactersThatReceivedExperience, objectsDropped;
     
+    // allows player to exit battle results by disposing of battle results frame 
     private JButton exitBattleResults;
     
     
@@ -271,6 +179,7 @@ public class BattleResults
         return money;
     }
     
+// NEED TO ADD EXP AND MONEY TO WALLET 
     public void addGainedButtons(ArrayList<GenericCharacter> defeatedCharacters, JFrame frame)
     {
         String expGainedText = String.format("%14s: %s", "EXP Gained", String.valueOf(
@@ -387,63 +296,6 @@ public class BattleResults
     // START: ADDING CHARACTERS TO CHARACTERS RECEIVING EXP JLIST
     /*******************************************************************************/
     
-    public String desiredSpaces(int spaces)
-    {
-        StringBuilder builder = new StringBuilder();
-        
-        for(int i = 0; i < spaces; i++)
-        {
-            builder.append(" ");
-        }
-        
-        return builder.toString();
-    }
-    
-    public String formatValue(double suppliedValue)
-    {
-        String value = String.valueOf(suppliedValue);
-        
-        StringBuilder builder = new StringBuilder();
-        
-        // spaces are used to make current value Strings appear alligned 
-        if(suppliedValue < 10)
-        {
-            builder.append(desiredSpaces(8));
-        }
-        else if(suppliedValue < 100)
-        {
-            builder.append(desiredSpaces(7));
-        }
-        else if(suppliedValue < 1000)
-        {
-            builder.append(desiredSpaces(6));
-        }
-        else if(suppliedValue < 10000)
-        {
-            builder.append(desiredSpaces(5));
-        }
-        else if(suppliedValue < 100000)
-        {
-            builder.append(desiredSpaces(4));
-        }
-        else if(suppliedValue < 1000000)
-        {
-            builder.append(desiredSpaces(3));
-        }
-        else if(suppliedValue < 10000000)
-        {
-            builder.append(desiredSpaces(2));
-        }
-        else if(suppliedValue < 100000000)
-        {
-            builder.append(desiredSpaces(1));
-        }
-        
-        builder.append(value);
-        
-        return builder.toString();
-    }
-    
     public ArrayList<GenericCharacter> nonKoPartyMembers(Party party)
     {
         ArrayList<GenericCharacter> partyMembers = new ArrayList<>();
@@ -469,7 +321,7 @@ public class BattleResults
     
     public String level(GenericCharacter character)
     {
-        String formatLevel = String.format("%-13s: %s", "LV:", formatValue(character.
+        String formatLevel = String.format("%-13s: %s", "LV:", formatExperience(character.
             getGeneralFeatures().getLevel()));
                 return formatLevel;
     }
@@ -477,7 +329,7 @@ public class BattleResults
     public String currentExpPostBattle(GenericCharacter character)
     {
         String formatCurrentExpPostBattle = String.format("%-13s: %s", "Current EXP", 
-            formatValue(character.getGeneralFeatures().getExperience()));
+            formatExperience(character.getGeneralFeatures().getExperience()));
                 return formatCurrentExpPostBattle;
     }
     
@@ -485,7 +337,7 @@ public class BattleResults
     {
         LevelMechanics level = new LevelMechanics();
         
-        String formatNano = String.format("%-13s: %s", "Next Level", formatValue(level.
+        String formatNano = String.format("%-13s: %s", "Next Level", formatExperience(level.
             nextLevelExp(character)));
                 return formatNano;
     }
@@ -666,8 +518,13 @@ public class BattleResults
                     @Override
                     public void actionPerformed(ActionEvent e)
                     {
-                        // dispose of frame and continue through game 
-                        
+                        // signify that Gui is complete 
+                        guiComplete(true);
+
+                        // release all native screen resources, subcomponents, and all 
+                        // of its owned children; in other words, close GUI and allow  
+                        // program to continue running IF other windows are available 
+                        frame.dispose();
                     }
                 }); 
         
@@ -678,58 +535,36 @@ public class BattleResults
     /*******************************************************************************/
 
     
-    
-    public void displayFrameWindow()
-    {
-        frame.pack();
-        frame.setSize(640, 480);
-        frame.setVisible(true);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    }
-    
-    private JFrame frame = new JFrame();
-    
-    public BattleResults()
+    // add ArrayList<GenericCharacter> defeatedCharacters as parameter 
+    public BattleResults(PlayerEntity entity)
     {
         frame.setLayout(new GridBagLayout());
         
-        
-        PlayerEntityFactory entityOne = new PlayerEntityFactory();
-        
-        PlayerEntityFactory entityTwo = new PlayerEntityFactory();
-        
-        ArrayList<GenericCharacter> defeatedCharacters = new ArrayList<>();
-            
-        for(GenericCharacter character : entityTwo.getPlayerEntityExampleTwo().getParty().getPartyMembers())
-        {
-            defeatedCharacters.add(character);
-        }
-        
         addBattleResultsMenuButton(frame);
-	addGainedButtons(defeatedCharacters, frame);
+	//addGainedButtons(defeatedCharacters, frame);
 	addJListTitleButtons(frame);
         
 	addBattleResultsJLists(frame);
         
-        partyMembersModel(entityOne.getPlayerEntityExample().getParty());
+        partyMembersModel(entity.getParty());
         
-        addObjectsToInventoryAndSetJListModel(defeatedCharacters, entityOne.
-            getPlayerEntityExample().getInventory());
+        // this is a model
+        //addObjectsToInventoryAndSetJListModel(defeatedCharacters, entityOne.
+          //  getPlayerEntityExample().getInventory());
 	
-        addInventoryInfoAndWalletInfoButtons(entityOne.getPlayerEntityExample().
-            getInventory(), entityOne.getPlayerEntityExample().getPartyWallet(), 
-            defeatedCharacters, frame);
+      // need arraylist
+        //addInventoryInfoAndWalletInfoButtons(entity.getInventory(), entity.getPartyWallet(), 
+          //  defeatedCharacters, frame);
 	
         addUsableButtons(frame);
         
         // set up JList models 
-        charactersThatReceivedExperience.setModel(partyMembersModel(entityOne.
-            getPlayerEntityExample().getParty()));
+        charactersThatReceivedExperience.setModel(partyMembersModel(entity.getParty()));
         
-        objectsDropped.setModel(addObjectsToInventoryAndSetJListModel(defeatedCharacters, 
-            entityOne.getPlayerEntityExample().getInventory()));
+        //objectsDropped.setModel(addObjectsToInventoryAndSetJListModel(defeatedCharacters, 
+          //  entity.getInventory()));
         
-        displayFrameWindow();
+        displayFrameWindow(frame);
     }
     
 }
