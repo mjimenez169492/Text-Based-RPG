@@ -1,39 +1,76 @@
 package RunProject;
 
-import java.awt.Font;
-import java.awt.FontMetrics;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import javax.swing.JButton;
-import javax.swing.JPanel;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import java.awt.Toolkit;
 import java.awt.Dimension;
-import java.awt.Rectangle;
+import java.awt.Font;
 
-
-
-
-/**
- *
- * @author Miguel
- */
 public class CommonGUIMethods 
 {
-    // START: JBUTTON ARRAY TRAVERSAL 
-    // Note: code can be modified to traverse things besides JButton objects 
+    // signifies whether GUI has terminated successfully
+    private boolean guiComplete = false;
+    
+    // When formatting text displayed under certain fonts, it is possible for 
+    // text to be displayed "incorrectly" or in an unintended fashion since 
+    // characters may not have the same width. Font "Monospaced" alleviates 
+    // this problem by making letters the same width-wise
+    private static Font buttonFont = new Font(Font.MONOSPACED, Font.PLAIN, 14);
+    private static Font JListFont = new Font(Font.MONOSPACED, Font.PLAIN, 12);
+
+    
+    
+    // START: TRACKING GUI COMPLETE STATE
     /*******************************************************************************/
 
-    // MOVE FORWARD (from last array element to first)
+    public void guiComplete(boolean guiComplete)
+    {
+        this.guiComplete = guiComplete;
+    }
     
-    public static void fromFirstToLastButton(JButton[] buttons)
+    public boolean guiComplete()
+    {
+        return guiComplete;
+    }
+    
+    // END: TRACKING GUI COMPLETE STATE
+    /*******************************************************************************/
+
+    
+    
+    // START: GETTING FONT FOR COMPONENTS
+    /*******************************************************************************/
+
+    public Font getButtonFont()
+    {
+        return buttonFont;
+    }
+    
+    public Font getJListFont()
+    {
+        return JListFont;
+    }
+    
+    // END: GETTING FONT FOR COMPONENTS
+    /*******************************************************************************/
+
+    
+    
+    // START: JBUTTON ARRAY TRAVERSAL 
+    // Note: code can be modified to traverse components besides JButton objects 
+    /*******************************************************************************/
+
+    // MOVE BACKWARD (from last array element to first)
+    
+    // move from last button at position n - 1 to first button at position 0
+    public static void fromLastToFirstButton(JButton[] buttons)
     {
         for(int i = buttons.length - 1; i >= 0; i--)
         {
@@ -45,16 +82,15 @@ public class CommonGUIMethods
         }
     }
     
-    public static boolean nextEnabledForwardButton(JButton tempCurrentButton, int currentButton, 
+    // determine if an enabled button exists while traversing to array head 
+    public static boolean nextButtonTowardHead(JButton tempCurrentButton, int currentButton, 
         JButton[] buttons)
     {
         boolean nextEnabledButtonExists = false;
 
-        // determine if an enabled button exists further down
         for(int i = currentButton; i <= 0; i--)
         {
-            if(!tempCurrentButton.equals(buttons[i]) && 
-                buttons[i].isEnabled())
+            if(!tempCurrentButton.equals(buttons[i]) && buttons[i].isEnabled())
             {
                 nextEnabledButtonExists = true;
                     break;
@@ -64,14 +100,13 @@ public class CommonGUIMethods
         return nextEnabledButtonExists;
     }
     
-    public static void headToNextForwardButton(JButton tempCurrentButton, int currentButton, 
+    // move from current button to next enabled button while traversing to array head 
+    public static void headToNextButtonTowardHead(JButton tempCurrentButton, int currentButton, 
         JButton[] buttons)
     {
-        // loop backward until next enabled button is found 
         for(int i = currentButton; i >= 0; i--)
         {
-            if(!tempCurrentButton.equals(buttons[i]) && 
-                buttons[i].isEnabled())
+            if(!tempCurrentButton.equals(buttons[i]) && buttons[i].isEnabled())
             {
                 buttons[i].requestFocus();
                     break;
@@ -79,14 +114,13 @@ public class CommonGUIMethods
         }
     }
     
-    public static void fromLastToNextForwardButton(JButton tempCurrentButton, int currentButton, 
+    // loop from end of array to first button of array and move backward until next enabled button is found 
+    public static void fromLastToNextButtonFromHead(JButton tempCurrentButton, int currentButton, 
         JButton[] buttons)
     {
-        // loop from end until next enabled button is found 
         for(int i = buttons.length - 1; i >= 0; i--)
         {
-            if(!tempCurrentButton.equals(buttons[i]) && 
-                buttons[i].isEnabled())
+            if(!tempCurrentButton.equals(buttons[i]) && buttons[i].isEnabled())
             {
                 buttons[i].requestFocus();
                     break;
@@ -94,28 +128,32 @@ public class CommonGUIMethods
         }
     }
     
-    public static void moveForward(int currentButton, JButton[] buttons)
+    // move from current button position to head of array
+    public static void moveTowardStartOfButtonArray(int currentButton, JButton[] buttons)
     {
-        // move from top button to bottom button 
-        if (currentButton == 0)
+        // move from first button to last button (start moving from end of array)
+        if(currentButton == 0)
         {
-            fromFirstToLastButton(buttons);
+            fromLastToFirstButton(buttons);
         }
-        // button traversal in upward direction  
+        // button traversal toward head of array 
         else if(currentButton > 0)
         {
             // if next button is disabled, find next enabled button 
             if(!buttons[currentButton - 1].isEnabled())
             {
+                // use location of current button to store current button 
                 JButton tempCurrentButton = buttons[currentButton];
                 
-                if(nextEnabledForwardButton(tempCurrentButton, currentButton, buttons))
+                // Note: tempCurrentButton and its position currentButton are needed 
+                //       to ensure that program does not step out of array bounds 
+                if(nextButtonTowardHead(tempCurrentButton, currentButton, buttons))
                 {
-                    headToNextForwardButton(tempCurrentButton, currentButton, buttons);
+                    headToNextButtonTowardHead(tempCurrentButton, currentButton, buttons);
                 }
                 else
                 {
-                    fromLastToNextForwardButton(tempCurrentButton, currentButton, buttons);
+                    fromLastToNextButtonFromHead(tempCurrentButton, currentButton, buttons);
                 }
             }
             // head to next enabled button 
@@ -126,12 +164,13 @@ public class CommonGUIMethods
         }
     }
     
-    // MOVE FORWARD (from last array element to first)
+    // MOVE BACKWARD (from last array element to first)
     
     
-    // MOVE BACKWARD (from first array element to last)
+    // MOVE Forward (from first array element to last)
     
-    public static void fromLastToFirstButton(JButton[] buttons)
+    // move from first button at position 0 to last button at position n - 1
+    public static void fromFirstToLastButton(JButton[] buttons)
     {
         for(int i = 0; i <= buttons.length - i; i++)
         {
@@ -143,16 +182,15 @@ public class CommonGUIMethods
         }
     }
     
-    public static boolean nextEnabledBackwardButton(JButton tempCurrentButton, int currentButton, 
+    // determine if an enabled button exists while traversing from array head 
+    public static boolean nextButtonFromHead(JButton tempCurrentButton, int currentButton, 
         JButton[] buttons)
     {
         boolean nextEnabledButtonExists = false;
 
-        // determine if an enabled button exists further down
         for(int i = currentButton; i <= buttons.length - 1; i++)
         {
-            if(!tempCurrentButton.equals(buttons[i]) && 
-                buttons[i].isEnabled())
+            if(!tempCurrentButton.equals(buttons[i]) && buttons[i].isEnabled())
             {
                 nextEnabledButtonExists = true;
                     break;
@@ -162,10 +200,10 @@ public class CommonGUIMethods
         return nextEnabledButtonExists;
     }
     
-    public static void headToNextBackwardButton(JButton tempCurrentButton, int currentButton, 
+    // move from current button to next enabled button while traversing away from array head 
+    public static void headToNextButtonFromHead(JButton tempCurrentButton, int currentButton, 
         JButton[] buttons)
     {
-        // loop forward until next enabled button is found 
         for(int i = currentButton; i <= buttons.length - 1; i++)
         {
             if(!tempCurrentButton.equals(buttons[i]) && buttons[i].isEnabled())
@@ -176,10 +214,10 @@ public class CommonGUIMethods
         }
     }
     
-    public static void fromFirstToNextBackwardButton(JButton tempCurrentButton, int currentButton, 
+    // loop from start of array to last element of array and move forward until next enabled button is found 
+    public static void fromFirstToNextButtonAwayFromHead(JButton tempCurrentButton, int currentButton, 
         JButton[] buttons)
     {
-        // loop from start until next enabled button is found 
         for(int i = 0; i <= buttons.length - 1; i++)
         {
             if(!tempCurrentButton.equals(buttons[i]) && buttons[i].isEnabled())
@@ -190,28 +228,31 @@ public class CommonGUIMethods
         }
     }
     
-    public static void moveBackward(int currentButton, JButton[] buttons)
+    public static void moveTowardEndOfButtonArray(int currentButton, JButton[] buttons)
     {
-        // move from bottom button to top button 
+        // move from last button to first button (start moving from start of array)
         if(currentButton == buttons.length - 1)
         {
-            fromLastToFirstButton(buttons);
+            fromFirstToLastButton(buttons);
         }
-        // button traversal in downward direction  
+        // button traversal from head of array 
         else if(currentButton < buttons.length - 1)
         {
             // if next button is disabled, find next enabled button 
             if(!buttons[currentButton + 1].isEnabled())
             {
+                // use location of current button to store current button 
                 JButton tempCurrentButton = buttons[currentButton];
                 
-                if(nextEnabledBackwardButton(tempCurrentButton, currentButton, buttons))
+                // Note: tempCurrentButton and its position currentButton are needed 
+                //       to ensure that program does not step out of array bounds 
+                if(nextButtonFromHead(tempCurrentButton, currentButton, buttons))
                 {
-                    headToNextBackwardButton(tempCurrentButton, currentButton, buttons);
+                    headToNextButtonFromHead(tempCurrentButton, currentButton, buttons);
                 }
                 else
                 {
-                    fromFirstToNextBackwardButton(tempCurrentButton, currentButton, buttons);
+                    fromFirstToNextButtonAwayFromHead(tempCurrentButton, currentButton, buttons);
                 }
             }
             // head next enabled button 
@@ -269,10 +310,10 @@ public class CommonGUIMethods
                     switch (e.getKeyCode()) 
                     {
                         case KeyEvent.VK_UP:
-                            moveForward(currentButton, buttons);
+                            moveTowardStartOfButtonArray(currentButton, buttons);
                                 break;
                         case KeyEvent.VK_DOWN:
-                            moveBackward(currentButton, buttons);
+                            moveTowardEndOfButtonArray(currentButton, buttons);
                                 break;
                         default:
                             break;
@@ -303,10 +344,10 @@ public class CommonGUIMethods
                     switch (e.getKeyCode()) 
                     {
                         case KeyEvent.VK_RIGHT:
-                            moveForward(currentButton, buttons);
+                            moveTowardStartOfButtonArray(currentButton, buttons);
                                 break;
                         case KeyEvent.VK_LEFT:
-                            moveBackward(currentButton, buttons);
+                            moveTowardEndOfButtonArray(currentButton, buttons);
                                 break;
                         default:
                             break;
@@ -320,23 +361,6 @@ public class CommonGUIMethods
     
     
     // MOUSE WHEEL BUTTON NAVIGATION 
-    
-    // Note: mouse wheel rotation results in a series of -1 if moved up and 
-    //       a series of 1 if moved down. If mouse rotation is  not checked,
-    //       options may be scrolled over several times with a SINGLE mouse 
-    //       wheel rotation making comfortable button navigation impossible.
-    //       This method is NEEDED to get only one of these series of values 
-    public static int getMouseWheelRotationChoice(int...mouseWheelRoatation)
-    {
-        int[] array = new int[mouseWheelRoatation.length];
-        
-        for(int i = 0; i <  mouseWheelRoatation.length; i++)
-        {
-            array[i] = mouseWheelRoatation[i];
-        }
-        
-        return array[0];
-    }
     
     public static int getButtonInFocusArrayPosition(JButton...buttons)
     {
@@ -361,14 +385,16 @@ public class CommonGUIMethods
             @Override
             public void mouseWheelMoved(MouseWheelEvent e) 
             {
+System.out.println(e.getWheelRotation());
+                
                 // move up else move down
-                if(getMouseWheelRotationChoice(e.getWheelRotation()) < 0)
+                if(e.getWheelRotation() < 0)
                 {
-                    moveForward(getButtonInFocusArrayPosition(buttons), buttons);
+                    moveTowardStartOfButtonArray(getButtonInFocusArrayPosition(buttons), buttons);
                 }
                 else
                 {
-                    moveBackward(getButtonInFocusArrayPosition(buttons), buttons);
+                    moveTowardEndOfButtonArray(getButtonInFocusArrayPosition(buttons), buttons);
                 }
            }
         });
@@ -589,6 +615,37 @@ public class CommonGUIMethods
         );
     }
     
+    // allow for text to resize (somewhat) upon change in frame size...
+    // text resizes within buttons according to frame size itself
+    // Note: this is done since buttons are designed to resize on their onw 
+    public void textResizesUponComponentResize(JFrame frame, JButton...array)
+    {
+        for(JButton element : array)
+        {
+            if(element != null)
+            {
+                CommonGUIMethods.resizeButtonTextUsingFrameSize(frame, element);
+            }
+        }
+    }
+    
     // END: RESIZE COMPONENT TEXT BASED ON COMPONENT RESIZE EVENT
+    /*******************************************************************************/
+    
+    
+    
+    // START: FRAME RELATED METHODS
+    /*******************************************************************************/
+
+    // display frame window with functionalities designated below 
+    public static void displayFrameWindow(JFrame frame)
+    {
+        frame.pack();
+        frame.setSize(640, 480);
+        frame.setVisible(true);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+    
+    // END: FRAME RELATED METHODS
     /*******************************************************************************/
 }
