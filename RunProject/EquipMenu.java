@@ -720,33 +720,29 @@ public class EquipMenu
                 @Override
                 public void valueChanged(ListSelectionEvent evt) 
                 {
-                    // prevent passing null upon JList initialization phase 
-                    if(evt != null)
+                    // update character information displayed on JList selection change 
+                    if (!evt.getValueIsAdjusting()) 
                     {
-                        // update character information displayed on JList selection change 
-                        if (!evt.getValueIsAdjusting()) 
+                        GenericCharacter partyMember = getPartyMember(jList.getSelectedValue());
+
+                        updateCharacterInfo(partyMember);
+                        updateEquippedOutfitsButtons(partyMember);
+
+                        canChangeOutfits.setModel(canChangeOutfitsInJListFormat(partyMember));
+
+                        // update new total stats JList using character in focus 
+                        // to prevent info from previous character being shown 
+                        if(inventoryObjectsJList.getSelectedValue() != null)
                         {
-                            GenericCharacter partyMember = getPartyMember(jList.getSelectedValue());
-
-                            updateCharacterInfo(partyMember);
-                            updateEquippedOutfitsButtons(partyMember);
-
-                            canChangeOutfits.setModel(canChangeOutfitsInJListFormat(partyMember));
-                            
-                            // update new total stats JList using character in focus 
-                            // to prevent info from previous character being shown 
-                            if(inventoryObjectsJList.getSelectedValue() != null)
-                            {
-                                currentNewTotalStatsJList.setModel(currentNewTotalStatsModelWithOutfit(
-                                    partyMember, getInventoryOutfit(referenceInventory, 
-                                    inventoryObjectsJList.getSelectedValue())));
-                            }
-                            else
-                            {
-                                // current stats model for character with current outfits 	
-                                currentNewTotalStatsJList.setModel(currentNewTotalStatsModelWithoutOutfit(
-                                    partyMember));
-                            }
+                            currentNewTotalStatsJList.setModel(currentNewTotalStatsModelWithOutfit(
+                                partyMember, getInventoryOutfit(referenceInventory, 
+                                inventoryObjectsJList.getSelectedValue())));
+                        }
+                        else
+                        {
+                            // current stats model for character with current outfits 	
+                            currentNewTotalStatsJList.setModel(currentNewTotalStatsModelWithoutOutfit(
+                                partyMember));
                         }
                     }
                 }
@@ -1016,24 +1012,7 @@ public class EquipMenu
     // START: UPDATING OUTFIT DESCRIPTION AND NEW STATS JLIST
     /*******************************************************************************/
     
-    // NEW CURRENT NEW TOTAL STATS MODEL USING CHARACTER, OUTFIT (AND ARMOR) 
-    
-    public String currentNewTotalStatWithOutfit(int counter, String statName, double 
-        checkedCurrentValue, double checkedNewValue)
-    {
-        String currentNewValue = String.format("%-2d) %-18s: (CUR) %-10s (NEW) %-10s", counter, 
-            statName, statValueSpacing(String.valueOf(checkedCurrentValue)), 
-            statValueSpacing(String.valueOf(checkedNewValue)));
-                return currentNewValue;
-    }
-    
-    public String currentNewTotalStatWithoutOutfit(int counter, String statName, double 
-        checkedCurrentValue)
-    {
-        String currentNewValue = String.format("%-2d) %-18s: (CUR) %-10s (NEW) %-10s", counter, 
-            statName, statValueSpacing(String.valueOf(checkedCurrentValue)), (desiredSpaces(1) + "<NA>"));
-                return currentNewValue;
-    }
+    // GETTING NEW VALUE THAT ACCOUNTS FOR SELECTED OUTFIT
     
     public OutfitMethods getEquippedOutfitUsingSelectedOutfit(OutfitMethods outfit, 
         GenericCharacter character)
@@ -1042,21 +1021,30 @@ public class EquipMenu
         
         if(outfit.getClass() == Weapon.class)
         {
-            equippedOutfit = character.getEquippableOutfits().getWeapon();
-                character.getEquippableOutfits().setWeapon(null);
+            if(character.getEquippableOutfits().getWeapon() != null)
+            {
+                equippedOutfit = character.getEquippableOutfits().getWeapon();
+                    character.getEquippableOutfits().setWeapon(null);
+            }
         }
         else if(outfit.getClass() == Accessory.class)
         {
             switch(((Accessory)outfit).getAccessoryCategoryEnum())
             {
                 case SLOT_ONE:
-                    equippedOutfit = character.getEquippableOutfits().getAccessoryOne();
+                    if(character.getEquippableOutfits().getAccessoryOne() != null)
+                    {
+                        equippedOutfit = character.getEquippableOutfits().getAccessoryOne();
                         character.getEquippableOutfits().setAccessoryOne(null);
-                            break;
+                    }
+                        break;
                 case SLOT_TWO:
-                    equippedOutfit = character.getEquippableOutfits().getAccessoryTwo();
+                    if(character.getEquippableOutfits().getAccessoryTwo() != null)
+                    {
+                        equippedOutfit = character.getEquippableOutfits().getAccessoryTwo();
                         character.getEquippableOutfits().setAccessoryTwo(null);
-                            break;
+                    }
+                        break;
             }
         }
         else if(outfit.getClass() == Armor.class)
@@ -1064,24 +1052,33 @@ public class EquipMenu
             switch(((Armor)outfit).getArmorCategoryEnum())
             {
                 case BODY_ARMOR:
-                    equippedOutfit = character.getEquippableOutfits().getBodyArmor();
+                    if(character.getEquippableOutfits().getBodyArmor() != null)
+                    {
+                        equippedOutfit = character.getEquippableOutfits().getBodyArmor();
                         character.getEquippableOutfits().setBodyArmor(null);
-                            break;
+                    }
+                        break;
                 case LEG_ARMOR:
-                    equippedOutfit = character.getEquippableOutfits().getLegArmor();
+                    if(character.getEquippableOutfits().getLegArmor() != null)
+                    {
+                        equippedOutfit = character.getEquippableOutfits().getLegArmor();
                         character.getEquippableOutfits().setLegArmor(null);
-                            break;
+                    }
+                        break;
                 case FOOT_ARMOR:
-                    equippedOutfit = character.getEquippableOutfits().getFootArmor();
+                    if(character.getEquippableOutfits().getFootArmor() != null)
+                    {
+                        equippedOutfit = character.getEquippableOutfits().getFootArmor();
                         character.getEquippableOutfits().setFootArmor(null);
-                            break;
+                    }
+                        break;
             }
         }
         
         return equippedOutfit;
     }
     
-    public void addBackEquippedOutfit(OutfitMethods outfit, GenericCharacter character)
+    public void equipOutfit(OutfitMethods outfit, GenericCharacter character)
     {
         if(outfit.getClass() == Weapon.class)
         {
@@ -1116,22 +1113,123 @@ public class EquipMenu
         }
     }
     
+    public void removeOutfit(OutfitMethods outfit, GenericCharacter character)
+    {
+        if(outfit.getClass() == Weapon.class)
+        {
+            character.getEquippableOutfits().setWeapon(null);
+        }
+        else if(outfit.getClass() == Accessory.class)
+        {
+            switch(((Accessory)outfit).getAccessoryCategoryEnum())
+            {
+                case SLOT_ONE:
+                    character.getEquippableOutfits().setAccessoryOne(null);
+                        break;
+                case SLOT_TWO:
+                    character.getEquippableOutfits().setAccessoryTwo(null);
+                        break;
+            }
+        }
+        else if(outfit.getClass() == Armor.class)
+        {
+            switch(((Armor)outfit).getArmorCategoryEnum())
+            {
+                case BODY_ARMOR:
+                    character.getEquippableOutfits().setBodyArmor(null);
+                        break;
+                case LEG_ARMOR:
+                    character.getEquippableOutfits().setLegArmor(null);
+                        break;
+                case FOOT_ARMOR:
+                    character.getEquippableOutfits().setFootArmor(null);
+                        break;
+            }
+        }
+    }
     
-// ACCOUNT FOR NO EQUIPPED OUTFIT!!!
+    public enum StatType
+    {
+        ATTRIBUTE, ENCHANTMENT_RESISTANCE, STATUS_EFFECT_RESISTANCE;
+    }
     
+    public double getDesiredStatValue(StatType statType, int loopCount, GenericCharacter character)
+    {
+        double result = 0;
+        
+        switch(statType)
+        {
+            case ATTRIBUTE:
+                result = (double)character.getTotalStats().getAllTotalAttributesWithNames()
+                    [loopCount + 1];
+                    break;
+            case ENCHANTMENT_RESISTANCE:
+                result = (double)character.getTotalStats().getAllTotalEnchantmentResistancesWithNames()
+                    [loopCount + 1];
+                    break;
+            case STATUS_EFFECT_RESISTANCE:
+                Object[] array = character.getTotalStats().getAllTotalStatusEffectResistances().toArray(new Object[0]);
+                    result = (double)array[loopCount + 1];
+                    break;
+        }
+        
+        return result;
+    }
+    
+    public double newValueWithSelectedOutfit(StatType statType, int loopCount, 
+        OutfitMethods selectedOutfit, GenericCharacter character)
+    {
+        OutfitMethods equippedOutfit = getEquippedOutfitUsingSelectedOutfit(selectedOutfit, 
+            character);
+        
+        double result = 0;
+        
+        // if character had an outfit equipped then proceed with "hot swap"
+        if(equippedOutfit != null)
+        {
+            equipOutfit(selectedOutfit, character);
+            result = getDesiredStatValue(statType, loopCount, character);
+            removeOutfit(selectedOutfit, character);
+            equipOutfit(equippedOutfit, character);
+        }
+        // else return value for character with outfit equipped at location 
+        // specified by loopCount  
+        else
+        {
+            equipOutfit(selectedOutfit, character);
+            result = getDesiredStatValue(statType, loopCount, character);
+            removeOutfit(selectedOutfit, character);
+        }
+        
+        return result;
+    }
+    
+    // GETTING NEW VALUE THAT ACCOUNTS FOR SELECTED OUTFIT
+    
+    
+    // NEW CURRENT NEW TOTAL STATS MODEL USING CHARACTER, OUTFIT (AND ARMOR) 
+    
+    public String currentNewTotalStatWithOutfit(int counter, String statName, double 
+        checkedCurrentValue, double checkedNewValue)
+    {
+        String currentNewValue = String.format("%-2d) %-18s: (CUR) %-10s (NEW) %-10s", counter, 
+            statName, statValueSpacing(String.valueOf(checkedCurrentValue)), 
+            statValueSpacing(String.valueOf(checkedNewValue)));
+                return currentNewValue;
+    }
+    
+    public String currentNewTotalStatWithoutOutfit(int counter, String statName, double 
+        checkedCurrentValue)
+    {
+        String currentNewValue = String.format("%-2d) %-18s: (CUR) %-10s (NEW) %-10s", counter, 
+            statName, statValueSpacing(String.valueOf(checkedCurrentValue)), (desiredSpaces(1) + "<NA>"));
+                return currentNewValue;
+    }
     
     public void addCurrentNewAttributeObjectsWithOutfit(GenericCharacter character, 
         OutfitMethods outfit, DefaultListModel<String> model)
     {
-        Object[] characterAttributesWithEquip = character.getTotalStats().getAllTotalAttributesWithNames();
-        
-        OutfitMethods storedOutfit = getEquippedOutfitUsingSelectedOutfit(outfit, character);
-        
-        Object[] characterAttributesWithoutEquip = character.getTotalStats().getAllTotalAttributesWithNames();
-        
-        addBackEquippedOutfit(storedOutfit, character);
-        
-        Object[] outfitAttributes = outfit.getAllTotalAttributesWithNames();
+        Object[] characterAttributes = character.getTotalStats().getAllTotalAttributesWithNames();
         
         model.addElement("Attributes");
         
@@ -1139,15 +1237,16 @@ public class EquipMenu
         
         int counter = 1;
         
-        for(int i = 0; i < characterAttributesWithEquip.length; i+=2)
+        for(int i = 0; i < characterAttributes.length; i+=2)
         {
-            double currentValue = (double)characterAttributesWithEquip[i + 1];
+            double currentValue = (double)characterAttributes[i + 1];
             
-            double newValue = (double)characterAttributesWithoutEquip[i + 1] + 
-                (double)outfitAttributes[i + 1];
+            // method with hot swap here!
+            double newValue = newValueWithSelectedOutfit(StatType.ATTRIBUTE, 
+                i, outfit, character);
             
             model.addElement(currentNewTotalStatWithOutfit(counter, (String)
-                characterAttributesWithEquip[i], checkAttribute(currentValue), 
+                characterAttributes[i], checkAttribute(currentValue), 
                 checkAttribute(newValue)));
 
             counter++;
@@ -1176,19 +1275,11 @@ public class EquipMenu
         }
     }
     
+    // outfit is casted as armor later on 
     public void addCurrentNewEnchantmentResistanceObjectsWithArmor(GenericCharacter character, 
-        Armor armor, DefaultListModel<String> model)
+        OutfitMethods outfit, DefaultListModel<String> model)
     {
         Object[] characterEnchantmentResistancesWithArmor = character.getTotalStats().
-            getAllTotalEnchantmentResistancesWithNames();
-        
-        OutfitMethods storedArmor = getEquippedOutfitUsingSelectedOutfit(armor, character);
-        
-        Object[] characterEnchantmentsWithoutArmor = character.getTotalStats().getAllTotalAttributesWithNames();
-        
-        addBackEquippedOutfit(storedArmor, character);
-        
-        Object[] armorEnchantmentResistances = armor.
             getAllTotalEnchantmentResistancesWithNames();
         
         model.addElement(" ");
@@ -1203,8 +1294,8 @@ public class EquipMenu
         {
             double currentValue = (double)characterEnchantmentResistancesWithArmor[i + 1];
             
-            double newValue = (double)characterEnchantmentsWithoutArmor[i + 1] + 
-                (double)armorEnchantmentResistances[i + 1];
+            double newValue = newValueWithSelectedOutfit(StatType.ENCHANTMENT_RESISTANCE, 
+                i, outfit, character);
             
             model.addElement(currentNewTotalStatWithOutfit(counter, (String)
                 characterEnchantmentResistancesWithArmor[i], checkResistance(currentValue), 
@@ -1239,19 +1330,11 @@ public class EquipMenu
         }
     }
     
-    public void addCurrentNewStatusEffectResistanceObjectsWithArmor(GenericCharacter character, Armor armor, 
-        DefaultListModel<String> model)
+    public void addCurrentNewStatusEffectResistanceObjectsWithArmor(GenericCharacter character, 
+        OutfitMethods outfit, DefaultListModel<String> model)
     {
         Object[] characterStatusEffectResistancesWithArmor = character.getTotalStats().
-            getAllTotalResistances().toArray( new Object[0]);
-        
-        OutfitMethods storedArmor = getEquippedOutfitUsingSelectedOutfit(armor, character);
-        
-        Object[] characterStatusEffectResistancesWithoutArmor = character.getTotalStats().getAllTotalAttributesWithNames();
-        
-        addBackEquippedOutfit(storedArmor, character);
-        
-        Object[] armorResistances = armor.getAllStatusEffectResistances().toArray(new Object[0]);
+            getAllTotalStatusEffectResistances().toArray( new Object[0]);
         
         model.addElement(" ");
         
@@ -1265,8 +1348,8 @@ public class EquipMenu
         {
             double currentValue = (double)characterStatusEffectResistancesWithArmor[i + 1];
             
-            double newValue = (double)characterStatusEffectResistancesWithoutArmor[i + 1] 
-                + (double)armorResistances[i + 1];
+            double newValue = newValueWithSelectedOutfit(StatType.STATUS_EFFECT_RESISTANCE, 
+                i, outfit, character);
             
             model.addElement(currentNewTotalStatWithOutfit(counter, (String)
                 characterStatusEffectResistancesWithArmor[i], checkResistance(
@@ -1279,7 +1362,7 @@ public class EquipMenu
     public void addCurrentNewStatusEffectResistanceObjectsWithoutArmor(GenericCharacter character, 
         DefaultListModel<String> model)
     {
-        Object[] characterResistances = character.getTotalStats().getAllTotalResistances().toArray( new Object[0]);
+        Object[] characterResistances = character.getTotalStats().getAllTotalStatusEffectResistances().toArray( new Object[0]);
         
         model.addElement(" ");
         
@@ -1450,6 +1533,11 @@ public class EquipMenu
                             // update outfit description 
                             updateOutfitOverviewAndDescription(outfit);
 
+    // ERROR!
+    // if no outfit equipped at location specified by outfit then JList only
+    // displays same stats as character on other side
+    // IT should display <NA>
+                            
                             // update new toal stats JList using character in focus 
                             currentNewTotalStatsJList.setModel((currentNewTotalStatsModelWithOutfit(
                                 getPartyMember(partyMemberJList.getSelectedValue()), outfit)));
@@ -1516,6 +1604,10 @@ public class EquipMenu
     {
         // set JList text font 
         jList.setFont(JListFont);
+        
+        // allign view of JList such that text is displayed at its center 
+        DefaultListCellRenderer renderer = (DefaultListCellRenderer) jList.getCellRenderer();
+        renderer.setHorizontalAlignment(SwingConstants.CENTER);
         
         // add text area with horizontal scroll capability only 
         JScrollPane jListScroll = new JScrollPane(jList, 
@@ -1852,6 +1944,8 @@ public class EquipMenu
                             outfitRemovalAndInventoryJListReload(jListOutfitPosition, 
                                 jListOutfit);
                         }
+                        
+                        externalFrame.dispose();
                     }
                 }
             }
@@ -2085,10 +2179,6 @@ public class EquipMenu
     
     // OUTFIT ARRAYLIST JLIST LISTENER FOR UPDATING EXTERNAL FRAME INFO 
     
-// int jListOutfitPosition = positionOfOutfitInJList(inventoryObjectsJList, jListOutfit);
-    // outfitArrayList().get(positionOfOutfitInJList(jList, jListOutfit))
-        // outfitArrayList
-    
     // listener used for updating information displayed on external frame 
     public void addOutfitArrayListJListUpdateInfoListener(JList jList, JFrame externalFrame)
     {
@@ -2100,17 +2190,24 @@ public class EquipMenu
                 {
                     if(jList.getSelectedValue() != null)
                     {
-                        // add listener for externalOutfitNamesJList that updates 
-                        // button info equipped cores, and outfit stats 
+                        // proceed if JList selection is no longer moving 
+                        if(!evt.getValueIsAdjusting())
+                        {
+                            // proceed if there is focus in external JList 
+                            if(inventoryObjectsJList.getSelectedValue() != null)
+                            {
+                                // add listener for externalOutfitNamesJList that updates 
+                                // button info equipped cores, and outfit stats 
+                                OutfitMethods outfit = (OutfitMethods)outfitArrayList().get(
+                                    positionOfOutfitInJList(jList, (String)jList.getSelectedValue()));
 
-                        OutfitMethods outfit = (OutfitMethods)outfitArrayList().get(
-                            positionOfOutfitInJList(jList, (String)jList.getSelectedValue()));
+                                updateExternalButtonsForOutfitInFocus(outfit);
 
-                        updateExternalButtonsForOutfitInFocus(outfit);
+                                externalEquippedCores.setModel(equipFrameEquippedCoresModel(outfit));
 
-                        externalEquippedCores.setModel(equipFrameEquippedCoresModel(outfit));
-
-                        externalOutfitStats.setModel(outfitStatsModel(outfit));
+                                externalOutfitStats.setModel(outfitStatsModel(outfit));
+                           }
+                        }
                     }
                 }
             }
@@ -2144,6 +2241,9 @@ public class EquipMenu
         }
         else if(equipFrameActive)
         {
+            // to avoid "stacking" listeners, preemptively reset externalOutfitNamesJList
+            externalOutfitNamesJList = new JList();
+            
             externalOutfitNamesJList.setModel(equipFrameOutfitModel(outfitArrayList()));
             externalOutfitStats.setModel(outfitStatsModel((OutfitMethods)outfitArrayList().get(0)));
             
@@ -2425,6 +2525,10 @@ public class EquipMenu
         resetOutfitOverviewAndDescription();
         
         inventoryObjectsJList.setModel(inventoryOutfitsInJListFormat(referenceInventory));
+        
+        // current stats model for character with current outfits 	
+	currentNewTotalStatsJList.setModel(currentNewTotalStatsModelWithoutOutfit(
+            character));
     }
     
     // FOR BUTTON THAT DISPLAYS EQUIPPED OUTFITS POPUP MENU ONLY 
@@ -2554,7 +2658,15 @@ public class EquipMenu
                     // proceed if outfit at location of party member is not null
                     if(outfit != null)
                     {
+                        // state which outfit belongs to button for unequip action
                         outfitTiedToOutfitButton = outfit;
+                        
+                        // variable stores reference to button of specified outfit
+                        // for unequip choice 
+                        equippedOutfitReference = button;
+                        
+                        // update overview and description buttons using outfit
+                        updateOutfitOverviewAndDescription(outfit);
                         
                         // popup menu is displayed on bottom left of butotn 
                         equippedOutfitsJPopupMenu.show(button, 0, button.getBounds().height);
