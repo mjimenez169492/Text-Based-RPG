@@ -1,5 +1,21 @@
 package Demo;
 
+import GUI_Collection.Game_Test;
+import javax.swing.JPanel;
+
+public class Capstone_RPG extends JPanel 
+{
+    public static void main(String args[]) 
+    {
+        //new GUI_Collection.Game_Test();
+        
+        
+
+
+
+
+package Demo;
+
 import GUI_Collection.*;
 import GUI_Collection.OptionsBox;
 import GUI_Collection.CommonGUIMethods;
@@ -352,9 +368,8 @@ public class Capstone_RPG extends JPanel
         PlayerEntityFactory opposition = new PlayerEntityFactory();
             Party opposingParty = opposition.getPlayerEntityExampleTwo().getParty();
     
-        
         pauseBetweenFrames(new GUI_Collection.IntroBox());
-        /*
+        
         String location = "Grand Capital - Metro 31 - Plaza - Factory - Boiler Room - West";
         String eventEventLine = "The End - Last Surprise";
         
@@ -384,9 +399,9 @@ public class Capstone_RPG extends JPanel
                 System.out.println("hehe");
                     break;
         }
-        */
         
-            /*
+        
+        
         BattleMenu.Battle result = pauseBetweenFramesBattle(new BattleMenu.Battle(
             entity, opposingParty));
 
@@ -440,6 +455,6 @@ public class Capstone_RPG extends JPanel
         {
             
         }
-        */
+        
     }
 }
