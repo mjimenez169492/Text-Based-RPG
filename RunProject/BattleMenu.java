@@ -855,7 +855,7 @@ public class BattleMenu
         gridBagConstraints.gridwidth = gridwidth;
         
         // vertical padding in pixels for component in given row 
-	gridBagConstraints.ipady = 150;
+	gridBagConstraints.ipady = 250;
         
         // specifies space component must leave at each edges; (Insets(int 
         // top, int left, int bottom, int right)
@@ -1182,7 +1182,7 @@ public class BattleMenu
     static class Battle
     {
         // keeps track of the number of rounds that have passed in battle 
-        private double round;
+        private static double round;
 
         // 
         private static boolean turnComplete;
@@ -1194,12 +1194,6 @@ public class BattleMenu
         private boolean playerGameOver, endBattleEarlyTrigger, partiesTied, partyTwoEscape, 
             partyOneEscape, playerPartyEscape, partyTwoLoss, partyOneLoss, 
             playerPartyLoss, partyTwoWin, partyOneWin, playerPartyWin;
-
-        // boolean array holds booleans that can end the battle if one of them is true 
-        // Note: "final" array references cannot be changed but elements can be modified 
-        private final boolean[] endBattleConditions = {playerGameOver, endBattleEarlyTrigger, 
-            partiesTied, partyTwoEscape, partyOneEscape, playerPartyEscape, partyTwoLoss, 
-            partyOneLoss, playerPartyLoss, partyTwoWin, partyOneWin, playerPartyWin};
 
         // holds chaarcters that have fled from battle (no post battle reward)
         private static final ArrayList<GenericCharacter> escapedCharacters = new ArrayList<>();
@@ -1257,7 +1251,7 @@ public class BattleMenu
             setRoundCount(getRoundCount() + 1);
         }
 
-        public double getRoundCount()
+        public static double getRoundCount()
         {
             return round;
         }
@@ -1477,43 +1471,23 @@ public class BattleMenu
 
 
 
-        // START: RESETTING BATTLE LOOP CONDITIONS AND END BATTLE LOOP 
+        // START: PRE-BATTLE SET UP 
         /*******************************************************************************/
 
         public void resetBattleLoopConditions()
         {
             unwinnableBattle = false;
 
+            boolean[] endBattleConditions = {playerGameOver, endBattleEarlyTrigger, 
+                partiesTied, partyTwoEscape, partyOneEscape, playerPartyEscape, partyTwoLoss, 
+                partyOneLoss, playerPartyLoss, partyTwoWin, partyOneWin, playerPartyWin};
+            
             for(boolean element: endBattleConditions)
             {
                 element = false;
             }
         }
-
-        public boolean endBattleLoop()
-        {
-            boolean result = false;
-
-            for(boolean element : endBattleConditions)
-            {
-                if(element)
-                {
-                    result = true;
-                        break;
-                }
-            }
-
-            return result;
-        }
-
-        // END: RESETTING BATTLE LOOP CONDITIONS AND END BATTLE LOOP 
-        /*******************************************************************************/
-
-
-
-        // START: PRE-BATTLE SET UP 
-        /*******************************************************************************/
-
+        
         public void resetAllInstanceVariables()
         {
             // reset booleans representing end battle conditions 
@@ -1652,7 +1626,7 @@ public class BattleMenu
 
 
 
-                // START: BATTLE LOGIC
+        // START: BATTLE LOGIC
         /*******************************************************************************/
 
         // returns whether party is suitable for battle 
@@ -1721,31 +1695,27 @@ public class BattleMenu
                 setUpBattleGUI(frame, partyOne, partyTwo);
    
                 // loop until an end battle loop condition is met 
-                while(!endBattleLoop())
+                while(true)
                 {
                     // commence battle between two parties filled with characters 
                     standardBattleLogic(allPqContents, currentRound, nextRound, getRoundCount(), 
                         partyOne, partyTwo);
                        
-                    
-                    System.out.println("d: "+getRoundCount());
-            
                     // fill allPqContents with characters that have not escaped battle 
                     clearAndFillAllPqContents(allPqContents, currentRound, nextRound);
 
-                    // bottom method does not work
-
                     // check end battle loop variables to see if a condition was met 
-checkEndBattleLoopVariables(allPqContents, referencePartyOne, referencePartyTwo);
-
-// works!
-                    if(remainingCombatantsKnockedOut(allPqContents, partyTwo))
+                    if(checkEndBattleLoopVariables(allPqContents, referencePartyOne, referencePartyTwo))
                     {
                         break;
                     }
                 } 
 
                 System.out.println("Game Win :)");
+                
+                // dipose of frame to end battle and use booleans tied to Battle
+                // object to determine outcome post battle via battleHandler 
+                frame.dispose();
                 
                 // after battle, perform appropriate action based on boolean priority 
                 // and whether a party under player control is involved in the battle 
@@ -1776,6 +1746,8 @@ checkEndBattleLoopVariables(allPqContents, referencePartyOne, referencePartyTwo)
                 currentRoundJList.setModel(turnTrackingJListModel(currentRound));
                 nextRoundJList.setModel(turnTrackingJListModel(nextRound));
                 
+                System.out.println("Round: "+getRoundCount());
+            
                 // increment round count by one 
                 incrementRoundCount();
             }
@@ -1867,7 +1839,7 @@ checkEndBattleLoopVariables(allPqContents, referencePartyOne, referencePartyTwo)
                 
                 while(!turnComplete)
                 {
-                    System.out.println("");
+                    System.out.print("");
                 }
                 
             }
@@ -1893,7 +1865,7 @@ checkEndBattleLoopVariables(allPqContents, referencePartyOne, referencePartyTwo)
                 // set true elsewhere 
                 while(!turnComplete)
                 {
-                    System.out.println("");
+                    System.out.print("");
                 }
                 
                 postMoveBehavior(currentRound, nextRound, opposingParty);
@@ -2011,34 +1983,43 @@ checkEndBattleLoopVariables(allPqContents, referencePartyOne, referencePartyTwo)
         // START: BOOLEANS FOR SPECIAL CONDITIONS DETERMINING BATTLE OUTCOME 
         /*******************************************************************************/
 
-        // FIX ALL! NEED SWITCH CASE
-        
-        
         // end battle loop condition 
-        public void playerGameOverUponDeath(Party partyOne, Party partyTwo)
+        public boolean playerGameOverUponDeath(Party partyOne, Party partyTwo)
         {
-            if(partyOne.playerParty() || partyTwo.playerParty())
+            boolean result = false;
+            
+            if(playerPartyExists(partyOne, partyTwo))
             {
-                playerGameOver = (partyOne.partyMemberDead() || partyTwo.partyMemberDead());
+                result = getPlayerParty(partyOne, partyTwo).partyMemberDead();
             }
+            
+            return result;
         }
 
         // end battle loop condition 
-        public void endBattleEarlyTrigger(Party partyOne, Party partyTwo)
+        public boolean endBattleEarlyTrigger(Party partyOne, Party partyTwo)
         {
+            boolean result = false;
+            
             if(partyOne.endBattle() || partyTwo.endBattle())
             {
-                endBattleEarlyTrigger = true;
+                result = true;
             }
+            
+            return result;
         }
 
         // end battle loop condition 
-        public void partiesTied(Party partyOne, Party partyTwo)
+        public boolean partiesTied(Party partyOne, Party partyTwo)
         {
+            boolean result = false;
+            
             if(partyOne.partyKnockedOut() && partyTwo.partyKnockedOut())
             {
-                partiesTied = true;
+                result = true;
             }
+            
+            return result;
         }
 
         /* Party Escape Logic (escaping is ONLY way out of priority queue)
@@ -2061,7 +2042,7 @@ checkEndBattleLoopVariables(allPqContents, referencePartyOne, referencePartyTwo)
 
         public enum SpecificCombatants
         {
-            ALL_CHARACTERS_IN_BATTLE, ALL_NON_KO_CHARACTERS_IN_BATTLE;
+            ALL_CHARACTERS_IN_BATTLE, ALL_KO_CHARACTERS_IN_BATTLE;
         }
 
         public int countSpecificPartyCombatants(PriorityQueue<GenericCharacter> allPqContents, 
@@ -2080,8 +2061,8 @@ checkEndBattleLoopVariables(allPqContents, referencePartyOne, referencePartyTwo)
                             case ALL_CHARACTERS_IN_BATTLE: 
                                 counter++;
                                     break; 
-                            case ALL_NON_KO_CHARACTERS_IN_BATTLE: 
-                                if(!element.getGeneralFeatures().knockedOut())
+                            case ALL_KO_CHARACTERS_IN_BATTLE: 
+                                if(element.getGeneralFeatures().knockedOut())
                                 { 
                                     counter++;
                                 }
@@ -2105,7 +2086,7 @@ checkEndBattleLoopVariables(allPqContents, referencePartyOne, referencePartyTwo)
         public int countCombatantsKnockedOut(PriorityQueue<GenericCharacter> allPqContents, Party party)
         {
             return countSpecificPartyCombatants(allPqContents, party, SpecificCombatants.
-                ALL_NON_KO_CHARACTERS_IN_BATTLE);
+                ALL_KO_CHARACTERS_IN_BATTLE);
         }
 
         public boolean remainingCombatantsKnockedOut(PriorityQueue<GenericCharacter> allPqContents, Party party)
@@ -2133,89 +2114,108 @@ checkEndBattleLoopVariables(allPqContents, referencePartyOne, referencePartyTwo)
         }
 
         // end battle loop condition 
-        public void partyTwoEscape(PriorityQueue<GenericCharacter> allPqContents, Party partyOne)
+        public boolean partyTwoEscape(PriorityQueue<GenericCharacter> allPqContents, Party partyOne)
         {
-            partyTwoEscape = successfulPartyEscape(allPqContents, partyOne);
+            return successfulPartyEscape(allPqContents, partyOne);
         }
 
         // end battle loop condition 
-        public void partyOneEscape(PriorityQueue<GenericCharacter> allPqContents, Party partyTwo)
+        public boolean partyOneEscape(PriorityQueue<GenericCharacter> allPqContents, Party partyTwo)
         {
-            partyOneEscape = successfulPartyEscape(allPqContents, partyTwo);
+            return successfulPartyEscape(allPqContents, partyTwo);
         }
 
         // end battle loop condition 
-        public void playerPartyEscape(PriorityQueue<GenericCharacter> allPqContents, Party partyOne, Party partyTwo)
+        public boolean playerPartyEscape(PriorityQueue<GenericCharacter> allPqContents, Party partyOne, Party partyTwo)
         {
-            if(getPlayerParty(partyOne, partyTwo) != null)
+            boolean result = false;
+            
+            if(playerPartyExists(partyOne, partyTwo))
             {
-                playerPartyEscape = successfulPartyEscape(allPqContents, getPlayerParty(partyOne, partyTwo));
+                result = successfulPartyEscape(allPqContents, getPlayerParty(partyOne, partyTwo));
             }
+            
+            return result;
         }
 
         // Note: in order to determine whether a party wins/loses one needs to know
         //       how many party members are still in battle as well as how many are
         //       not knocked out 
 
-        public void partyLoss(PriorityQueue<GenericCharacter> allPqContents, Party partyTwo,
-            boolean condition)
+        public boolean partyLoss(PriorityQueue<GenericCharacter> allPqContents, Party party)
         {
-            if(remainingCombatantsKnockedOut(allPqContents, partyTwo))
+            boolean result = false;
+            
+            if(remainingCombatantsKnockedOut(allPqContents, party))
             {
-                condition = true;
+                result = true;
             }
+            
+            return result;
         }
 
         // end battle loop condition 
-        public void partyTwoLoss(PriorityQueue<GenericCharacter> allPqContents, Party partyTwo)
+        public boolean partyTwoLoss(PriorityQueue<GenericCharacter> allPqContents, Party partyTwo)
         {
-            partyLoss(allPqContents, partyTwo, partyTwoLoss);
+            return partyLoss(allPqContents, partyTwo);
         }
 
         // end battle loop condition 
-        public void partyOneLoss(PriorityQueue<GenericCharacter> allPqContents, Party partyOne)
+        public boolean partyOneLoss(PriorityQueue<GenericCharacter> allPqContents, Party partyOne)
         {
-            partyLoss(allPqContents, partyOne, partyOneLoss);
+            return partyLoss(allPqContents, partyOne);
         }
 
         // end battle loop condition 
-        public void playerPartyLoss(PriorityQueue<GenericCharacter> allPqContents, Party partyOne, Party partyTwo)
+        public boolean playerPartyLoss(PriorityQueue<GenericCharacter> allPqContents, Party partyOne, Party partyTwo)
         {
-            if(getPlayerParty(partyOne, partyTwo) != null)
+            boolean result = false;
+            
+            if(playerPartyExists(partyOne, partyTwo))
             {
-                playerPartyEscape = successfulPartyEscape(allPqContents, getPlayerParty(partyOne, partyTwo));
+                result = successfulPartyEscape(allPqContents, getPlayerParty(partyOne, partyTwo));
             }
+            
+            return result;
         }
 
         // end battle loop condition 
-        public void partyTwoWin(boolean partyOneLoss, boolean partyTwoLoss)
+        public boolean partyTwoWin(boolean partyOneLoss, boolean partyTwoLoss)
         {
+            boolean result = false;
+            
             if(partyOneLoss && !partyTwoLoss)
             {
-                partyTwoWin = true;
+                result = true;
             }
+            
+            return result;
         }
 
         // end battle loop condition 
-        public void partyOneWin(boolean partyOneWin, boolean partyTwoLoss)
+        public boolean partyOneWin(boolean partyOneLoss, boolean partyTwoLoss)
         {
+            boolean result = false;
+            
             if(!partyOneLoss && partyTwoLoss)
             {
-                partyOneWin = true;
+                result = true;
             }
+            
+            return result;
         }
 
         // end battle loop condition 
-        public void playerPartyWin(boolean partyOneWin, boolean partyTwoWin, Party partyOne, Party partyTwo)
+        public boolean playerPartyWin(boolean partyOneWin, boolean partyTwoWin, Party partyOne, Party partyTwo)
         {
-            if(partyOneWin && partyOne == getPlayerParty(partyOne, partyTwo))
+            boolean result = false;
+            
+            if((partyOneWin && partyOne.playerParty()) || (partyTwoWin && partyTwo.playerParty()))
             {
-                playerPartyWin = true;
+                result = true;
             }
-            else if(partyTwoWin && partyTwo == getPlayerParty(partyOne, partyTwo))
-            {
-                playerPartyWin = true;
-            }
+            
+            return result;
         }
 
         // END: BOOLEANS FOR SPECIAL CONDITIONS DETERMINING BATTLE OUTCOME 
@@ -2226,21 +2226,40 @@ checkEndBattleLoopVariables(allPqContents, referencePartyOne, referencePartyTwo)
         // START: END BATTLE LOOP BOOLEAN MANAGEMENT 
         /*******************************************************************************/
 
-        public void checkEndBattleLoopVariables(PriorityQueue<GenericCharacter> allPqContents, 
+        public boolean checkEndBattleLoopVariables(PriorityQueue<GenericCharacter> allPqContents, 
             Party partyOne, Party partyTwo)
         {
-            playerGameOverUponDeath(partyOne, partyTwo);
-            endBattleEarlyTrigger(partyOne, partyTwo);
-            partiesTied(partyOne, partyTwo);
-            partyTwoEscape(allPqContents, partyTwo);
-            partyOneEscape(allPqContents, partyOne);
-            playerPartyEscape(allPqContents, partyOne, partyTwo);
-            partyTwoLoss(allPqContents, partyTwo);
-            partyOneLoss(allPqContents, partyOne);
-            playerPartyLoss(allPqContents, partyOne, partyTwo);
-            partyTwoWin(partyOneLoss, partyTwoLoss);
-            partyOneWin(partyOneWin, partyTwoLoss);
-            playerPartyWin(partyOneWin, partyTwoWin, partyOne, partyTwo);
+            playerGameOver = playerGameOverUponDeath(partyOne, partyTwo);
+            endBattleEarlyTrigger = endBattleEarlyTrigger(partyOne, partyTwo);
+            partiesTied = partiesTied(partyOne, partyTwo);
+            partyTwoEscape = partyTwoEscape(allPqContents, partyTwo);
+            partyOneEscape = partyOneEscape(allPqContents, partyOne);
+            playerPartyEscape = playerPartyEscape(allPqContents, partyOne, partyTwo);
+            partyTwoLoss = partyTwoLoss(allPqContents, partyTwo);
+            partyOneLoss = partyOneLoss(allPqContents, partyOne);
+            playerPartyLoss = playerPartyLoss(allPqContents, partyOne, partyTwo);
+            partyTwoWin = partyTwoWin(partyOneLoss, partyTwoLoss);
+            partyOneWin = partyOneWin(partyOneWin, partyTwoLoss);
+            playerPartyWin = playerPartyWin(partyOneWin, partyTwoWin, partyOne, partyTwo);
+            
+            boolean result = false;
+            
+            // boolean array holds booleans that can end the battle if one of them is true 
+            boolean[] endBattleConditions = {playerGameOver, endBattleEarlyTrigger, 
+                partiesTied, partyTwoEscape, partyOneEscape, playerPartyEscape, partyTwoLoss, 
+                partyOneLoss, playerPartyLoss, partyTwoWin, partyOneWin, playerPartyWin};
+
+            
+            for(boolean element : endBattleConditions)
+            {
+                if(element)
+                {
+                    result = true;
+                        break;
+                }
+            }
+
+            return result;
         }
 
         // END: END BATTLE LOOP BOOLEAN MANAGEMENT 
