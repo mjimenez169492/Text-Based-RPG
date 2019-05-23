@@ -462,10 +462,6 @@ public class ItemsMenu extends CommonGUIMethods
         // spaces are used to make current value Strings appear alligned 
         if(currentValue < 10)
         {
-            builder.append(desiredSpaces(2));
-        }
-        else if(currentValue < 100)
-        {
             builder.append(desiredSpaces(1));
         }
         
@@ -473,10 +469,6 @@ public class ItemsMenu extends CommonGUIMethods
         
         // spaces are used to make max value Strings appear alligned 
         if(maximumValue < 10)
-        {
-            builder.append(desiredSpaces(2));
-        }
-        else if(maximumValue < 100)
         {
             builder.append(desiredSpaces(1));
         }
@@ -496,7 +488,7 @@ public class ItemsMenu extends CommonGUIMethods
     {
         String inventoryTitle = String.format("%-16s (%s)", "Inventory", 
             formatCurrentMaxValues(inventory.getInventory().size(), 
-            inventory.getObjectGroupsLimit(), " /"));
+            inventory.getObjectGroupsLimit(), " / "));
         
         inventoryJListTitle = newUnusableStandardButton(inventoryJListTitle, inventoryTitle);
             addButtonComponent(inventoryJListTitle, 2, 0, 0.11, 1, 1, 2, frame);
@@ -815,32 +807,32 @@ public class ItemsMenu extends CommonGUIMethods
             formatCurrentMaxValues(inventory.getInventory().size(), 
             inventory.getObjectGroupsLimit(), " /")));
         
-        // Note: distance from first " to ( is 10 characters for consistency
+        // Note: distance from first " to ( is 9 characters for consistency
         
         // set item group info 
-        itemGroupInfo.setText(String.format("%-25s: %s", "Item      (TTL - STK LMT)", 
+        itemGroupInfo.setText(String.format("%-9s %s: %s", "Item", "(TTL - STK LMT)", 
             formatCurrentMaxValues(inventory.getTotalNumberOfItemObjects(), 
-            inventory.getItemGroupMaxSize(), " -")));
+            inventory.getItemGroupMaxSize(), " - ")));
         
         // set core group info 
-        coreGroupInfo.setText(String.format("%-25s: %s", "Core      (TTL - STK LMT)", 
+        coreGroupInfo.setText(String.format("%-9s %s: %s", "Core", "(TTL - STK LMT)", 
             formatCurrentMaxValues(inventory.getTotalNumberOfCoreObjects(), 
-            inventory.getCoreGroupMaxSize(), " -")));
+            inventory.getCoreGroupMaxSize(), " - ")));
         
         // set weapon group info 
-        weaponGroupInfo.setText(String.format("%-25s: %s", "Weapon    (TTL - STK LMT)", 
+        weaponGroupInfo.setText(String.format("%-9s %s: %s", "Weapon", "(TTL - STK LMT)", 
             formatCurrentMaxValues(inventory.getTotalNumberOfWeaponObjects(), 
-            inventory.getWeaponGroupMaxSize(), " -")));
+            inventory.getWeaponGroupMaxSize(), " - ")));
         
         // set armor group info 
-        armorGroupInfo.setText(String.format("%-25s: %s", "Armor     (TTL - STK LMT)", 
+        armorGroupInfo.setText(String.format("%-9s %s: %s", "Armor", "(TTL - STK LMT)", 
             formatCurrentMaxValues(inventory.getTotalNumberOfArmorObjects(), 
-            inventory.getArmorGroupMaxSize(), " -")));
+            inventory.getArmorGroupMaxSize(), " - ")));
         
         // set accessory group info 
-        accessoryGroupInfo.setText(String.format("%-25s: %s", "Accessory (TTL - STK LMT)", 
+        accessoryGroupInfo.setText(String.format("%-9s %s: %s", "Accessory", "(TTL - STK LMT)", 
             formatCurrentMaxValues(inventory.getTotalNumberOfAccessoryObjects(), 
-            inventory.getAccessoryGroupMaxSize(), " -")));
+            inventory.getAccessoryGroupMaxSize(), " - ")));
     }
     
     // END: INVENTORY DETAILS 

@@ -487,17 +487,17 @@ public class EquipMenu extends CommonGUIMethods
             characterName.setText(formatName);
         
         // add Health Points (HP) and current/max points 
-        String health = String.format("%-6s: %s", "HP", formatCurrentMaxGauges(character.
+        String health = String.format("%-2s: %s", "HP", formatCurrentMaxGauges(character.
             getGeneralFeatures().getCurrentHealth(), character.getTotalStats().getTotalMaxHealth()));
                 characterHealth.setText(health);
 
         // add Stamina Points (SP) and current/max points 
-        String stamina = String.format("%-6s: %s", "SP", formatCurrentMaxGauges(character.
+        String stamina = String.format("%-2s: %s", "SP", formatCurrentMaxGauges(character.
             getGeneralFeatures().getCurrentStamina(), character.getTotalStats().getTotalMaxStamina()));
                 characterStamina.setText(stamina);
            
         // add Nanomachine Points (NP) and current/max points
-        String nano = String.format("%-6s: %s", "NP", formatCurrentMaxGauges(character.
+        String nano = String.format("%-2s: %s", "NP", formatCurrentMaxGauges(character.
             getGeneralFeatures().getCurrentNano(), character.getTotalStats().getTotalMaxNano()));
                 characterNano.setText(nano);
     }
@@ -637,9 +637,9 @@ public class EquipMenu extends CommonGUIMethods
         
         button.setBackground(Color.BLACK);
         
-        button.setForeground(Color.WHITE);
+        button.setForeground(Color.YELLOW);
         
-        button.setFont(buttonFont);
+        button.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
         
         return button;
     }
