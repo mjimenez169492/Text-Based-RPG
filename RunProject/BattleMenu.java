@@ -136,7 +136,7 @@ import javax.swing.JInternalFrame;
 
 
 
-public class BattleMenu 
+public class BattleMenu extends CommonGUIMethods
 {
     // When formatting text displayed under certain fonts, it is possible for 
     // text to be displayed "incorrectly" or in an unintended fashion since 
@@ -572,7 +572,7 @@ public class BattleMenu
     // START: UPDATING PARTY MEMBER JLIST BY PARTY
     /*******************************************************************************/
     
-    public static String desiredSpaces(int spaces)
+    public static String desiredStaticSpaces(int spaces)
     {
         StringBuilder builder = new StringBuilder();
         
@@ -595,15 +595,15 @@ public class BattleMenu
         // spaces are used to make current value Strings appear alligned 
         if(currentValue < 10)
         {
-            builder.append(desiredSpaces(3));
+            builder.append(desiredStaticSpaces(3));
         }
         else if(currentValue < 100)
         {
-            builder.append(desiredSpaces(2));
+            builder.append(desiredStaticSpaces(2));
         }
         else if(currentValue < 1000)
         {
-            builder.append(desiredSpaces(1));
+            builder.append(desiredStaticSpaces(1));
         }
         
         builder.append(curValue).append(" / ");
@@ -611,15 +611,15 @@ public class BattleMenu
         // spaces are used to make max value Strings appear alligned 
         if(maximumValue < 10)
         {
-            builder.append(desiredSpaces(3));
+            builder.append(desiredStaticSpaces(3));
         }
         else if(maximumValue < 100)
         {
-            builder.append(desiredSpaces(2));
+            builder.append(desiredStaticSpaces(2));
         }
         else if(maximumValue < 1000)
         {
-            builder.append(desiredSpaces(1));
+            builder.append(desiredStaticSpaces(1));
         }
         
         builder.append(maxValue);
@@ -631,7 +631,7 @@ public class BattleMenu
     {
         // format so all names up to 26 characters are correctly structured 
         String formatName = String.format("%-26s %s %s: %-2s", character.getGeneralFeatures().getName(),
-            desiredSpaces(13), "Member", String.valueOf(counter));
+            desiredStaticSpaces(13), "Member", String.valueOf(counter));
             return formatName;
     }
     
@@ -1179,7 +1179,7 @@ public class BattleMenu
 
     // By default (without static), instances of B contain a hidden reference to 
     // an instance of A (may need a different instance of Enum object per scope)
-    static class Battle
+    static class Battle extends CommonGUIMethods
     {
         // keeps track of the number of rounds that have passed in battle 
         private static double round;
@@ -1191,7 +1191,7 @@ public class BattleMenu
         private boolean unwinnableBattle;
 
         // variables denoting conditions for party win/loss/escape/ending battle early 
-        private boolean playerGameOver, endBattleEarlyTrigger, partiesTied, partyTwoEscape, 
+        private static boolean playerGameOver, endBattleEarlyTrigger, partiesTied, partyTwoEscape, 
             partyOneEscape, playerPartyEscape, partyTwoLoss, partyOneLoss, 
             playerPartyLoss, partyTwoWin, partyOneWin, playerPartyWin;
 
@@ -1222,12 +1222,7 @@ public class BattleMenu
             (a, b) -> (b.getGeneralFeatures().getBattleDexterity()) - (a.getGeneralFeatures().
             getBattleDexterity()));		
 
-        public Battle()
-        {
-            // empty constructor
-        }
-
-
+        
 
         // START: COUNTING ROUNDS IN BATTLE 
         /*******************************************************************************/
@@ -1677,13 +1672,12 @@ public class BattleMenu
             // designates buttons that allow player to perform actions in battle 
             usableButtonActionListeners();
 
-            displayFrameWindow();
+            displayFrameWindow(frame);
         }
         
         // allows characters from two different parties to battle one another 
         // Note: Battle object is passed to get access to boolean conditions
-        public void standardBattle(Battle battle, Party partyOne, Party partyTwo,
-            JFrame frame)
+        public void standardBattle(Party partyOne, Party partyTwo, JFrame frame)
         {
             // proceed only if both parties supplied are considered valid 
             if(validParty(partyOne) && validParty(partyTwo))
@@ -1713,6 +1707,9 @@ public class BattleMenu
 
                 System.out.println("Game Win :)");
                 
+                // signify that Gui is complete 
+                guiComplete(true);
+
                 // dipose of frame to end battle and use booleans tied to Battle
                 // object to determine outcome post battle via battleHandler 
                 frame.dispose();
@@ -2264,76 +2261,23 @@ public class BattleMenu
 
         // END: END BATTLE LOOP BOOLEAN MANAGEMENT 
         /*******************************************************************************/
+        
+        public Battle()
+        {
+            BattleMenu.frame.setLayout(new GridBagLayout());
+            
+            PlayerEntityFactory entityOne = new PlayerEntityFactory();
+                referencePartyOne = entityOne.getPlayerEntityExample().getParty();
+        
+            PlayerEntityFactory entityTwo = new PlayerEntityFactory();
+                referencePartyTwo = entityTwo.getPlayerEntityExampleTwo().getParty();
+
+            standardBattle(entityOne.getPlayerEntityExample().getParty(), 
+                entityTwo.getPlayerEntityExampleTwo().getParty(), BattleMenu.frame);
+        }
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-    
-    
-    
-    public static void displayFrameWindow()
-    {
-        frame.pack();
-        frame.setSize(640, 480);
-        frame.setVisible(true);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    }
-    
     static JFrame frame = new JFrame();
-    
-    public BattleMenu()
-    {
-        frame.setLayout(new GridBagLayout());
-        
-        PlayerEntityFactory entityOne = new PlayerEntityFactory();
-            referencePartyOne = entityOne.getPlayerEntityExample().getParty();
-        
-        PlayerEntityFactory entityTwo = new PlayerEntityFactory();
-            referencePartyTwo = entityTwo.getPlayerEntityExampleTwo().getParty();
-        
-        Battle battle = new Battle();
-        
-        battle.standardBattle(battle, entityOne.getPlayerEntityExample().getParty(), 
-            entityTwo.getPlayerEntityExampleTwo().getParty(), frame);
-    }
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
 }
