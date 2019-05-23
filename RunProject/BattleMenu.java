@@ -916,6 +916,20 @@ public class BattleMenu
         return character;
     }
     
+    // determine whether user object is the same as target object based in name 
+    public static boolean userSameAsTarget(Object userName, Object targetName)
+    {
+        boolean result = false;
+        
+        //null check for same object being referenced (user == target)
+        if(getCharacter(userName) != null && getCharacter(targetName) == null)
+        {
+            result = true;
+        }
+        
+        return result;
+    }
+    
     // GETTING CHARACTER DISPLAYED IN JLIST 
     
     
@@ -970,30 +984,47 @@ public class BattleMenu
                     // set to head of current round 
                     currentRoundJList.setSelectedIndex(0);
                     
-                    GenericCharacter user = getCharacter(currentRoundJList.
-                        getSelectedValue());
+                    Object userName = currentRoundJList.getSelectedValue();
                     
-                    GenericCharacter target = getCharacter(allAvailableNonKoCombatantsJList.
-                        getSelectedValue());
+                    Object targetName = allAvailableNonKoCombatantsJList.getSelectedValue();
                     
-                    // attack target and reload both party JList just in case 
+                    // use factory object to call method for standard attack
                     MovesFactory factory = new MovesFactory();
-                    
+
+                    // create object meant for calculating outcome of move 
                     MoveCalculations calculation = new MoveCalculations();
                     
-// Note: error due to referencing same character object 
-                    
-                    calculation.singleTargetMoveLogic(user, target, factory.getStandardAttack());
+                    // account for when target is the same! (null otherwise 
+                    // due to referencing same character object )
+                    if(userSameAsTarget(userName, targetName))
+                    {
+                        calculation.singleTargetMoveLogic(getCharacter(userName), 
+                            getCharacter(userName), factory.getStandardAttack());
+                        
+                        // display attack info 
+                        // round number, user name, hit/miss/fail text, target name
+                        // 
+                        
+                    }
+                    // else proceed as normal 
+                    else
+                    {
+                        // ERROR!?
+                        calculation.singleTargetMoveLogic(getCharacter(userName), 
+                            getCharacter(targetName), factory.getStandardAttack());
+                        
+                        // display attack info 
+                    }
                     
                     // reload party JLists to display results of action 
                     partyOneBottom.setModel(partyMembersModel(referencePartyOne));
                     partyTwoTop.setModel(partyMembersModel(referencePartyTwo));
                     
+                    // dispose of external frame upon attack
                     externalFrame.dispose();
    
                     // turn complete upon selecting attack
-                    Battle.postMoveBehavior(Battle.currentRound, Battle.nextRound, 
-                        Battle.getOpposingPlayer(user, referencePartyOne, referencePartyTwo));
+                    Battle.turnComplete = true;
                 }
             }); 
     }
@@ -1010,9 +1041,17 @@ public class BattleMenu
             addAttackChoiceButton(externalFrame);
             addConfirmAttackActionListener(attackChoice);
             
+            // 
+            PriorityQueue<GenericCharacter> storePqContents = new PriorityQueue<>( 
+                (a, b) -> (b.getGeneralFeatures().getBattleDexterity()) - (a.getGeneralFeatures().
+                getBattleDexterity()));
+            
+            Battle.clearAndFillAllPqContents(storePqContents, Battle.currentRound, Battle.nextRound);
+            
+            
             // initialize JList
             allAvailableNonKoCombatantsJList.setModel(allNonKoCombatantsModel(
-                Battle.allPqContents)); 
+                storePqContents)); 
             
             // turn complete once "choice" is pressed
         }
@@ -1145,6 +1184,9 @@ public class BattleMenu
         // keeps track of the number of rounds that have passed in battle 
         private double round;
 
+        // 
+        private static boolean turnComplete;
+        
         // denotes whether battle is winnable or not from the start
         private boolean unwinnableBattle;
 
@@ -1435,129 +1477,6 @@ public class BattleMenu
 
 
 
-        // START: BATTLE LOGIC
-        /*******************************************************************************/
-
-        // returns whether party is suitable for battle 
-        public boolean validParty(Party party)
-        {
-            boolean result = false;
-
-            if(party != null && !party.getPartyMembers().isEmpty())
-            {
-                result = true;
-            }
-
-            return result;
-        }
-
-        // sets up GUI meant to display battle to player
-        public void setUpBattleGUI(JFrame frame, Party partyOne, Party partyTwo)
-        {
-            frame.setLayout(new GridBagLayout());
-        
-            // party references used to easily access parties in battle  
-            referencePartyOne = partyOne;
-            referencePartyTwo = partyTwo;
-   
-            // set up frame for battle GUI
-            topLayoutButtons(frame);
-
-            bottomLayoutButtons(frame);
-
-            addUsableButtons(frame);
-
-            addUnusableTurnTrackingJListTitles(frame);
-
-            addPartyMemberJLists(frame);
-
-            // set up party JLists to show parties and their members in battle 
-            partyOneBottom.setModel(partyMembersModel(referencePartyOne));
-            partyTwoTop.setModel(partyMembersModel(referencePartyTwo));
-            
-            addTurnTrackingJLists(frame);
-
-            currentRoundJList.setModel(turnTrackingJListModel(currentRound));
-            
-            addBattleLogJTextArea(frame);
-
-            addJListJTextAreaButtonTitles(frame);
-
-            // designates buttons that allow player to perform actions in battle 
-            usableButtonActionListeners();
-
-            displayFrameWindow();
-        }
-        
-        // allows characters from two different parties to battle one another 
-        // Note: Battle object is passed to get access to boolean conditions
-        public void standardBattle(Battle battle, Party partyOne, Party partyTwo,
-            JFrame frame)
-        {
-            // proceed only if both parties supplied are considered valid 
-            if(validParty(partyOne) && validParty(partyTwo))
-            {
-                // reset end battle triggers, instance variables, and set up current round 
-                preBattleSetUp(currentRound, partyOne, partyTwo);
-
-                // set up battle gui before it is displayed 
-                setUpBattleGUI(frame, partyOne, partyTwo);
-                
-                // loop until an end battle loop condition is met 
-                while(!endBattleLoop())
-                {
-                    // commence battle between two parties filled with characters 
-                    standardBattleLogic(allPqContents, currentRound, nextRound, getRoundCount(), 
-                        partyOne, partyTwo);
-                } 
-
-                System.out.println("Game Win :)");
-                
-                // after battle, perform appropriate action based on boolean priority 
-                // and whether a party under player control is involved in the battle 
-                    // Note: class should return value accessible to Battle Handler 
-            }
-        }
-
-        public void standardBattleLogic(PriorityQueue<GenericCharacter> allPqContents, PriorityQueue
-            <GenericCharacter> currentRound, PriorityQueue<GenericCharacter> nextRound, double 
-            roundCount, Party partyOne, Party partyTwo)
-        {
-            // proceed if currentRound is not empty 
-            if(!currentRound.isEmpty())
-            {
-                // fill allPqContents with characters that have not escaped battle 
-                clearAndFillAllPqContents(allPqContents, currentRound, nextRound);
-                
-                // execute turn logic for character at head of currentRound 
-                characterTurnLogic(allPqContents, currentRound, nextRound, 
-                    roundCount, partyOne, partyTwo);
-            } 
-            // else refill currentRound and reload turn tracking JLists 
-            else 
-            {
-                fillCurrentRoundAndClearNextRound(currentRound, nextRound);
-                
-                // update turn tracking JLists 
-                currentRoundJList.setModel(turnTrackingJListModel(currentRound));
-                nextRoundJList.setModel(turnTrackingJListModel(nextRound));
-            }
-
-            // fill allPqContents with characters that have not escaped battle 
-            clearAndFillAllPqContents(allPqContents, currentRound, nextRound);
-
-            // check end battle loop variables to see if a condition was met 
-            checkEndBattleLoopVariables(allPqContents, partyOne, partyTwo);
-
-            // increment round count by one 
-            incrementRoundCount();
-        }
-
-        // END: BATTLE LOGIC
-        /*******************************************************************************/
-
-
-
         // START: RESETTING BATTLE LOOP CONDITIONS AND END BATTLE LOOP 
         /*******************************************************************************/
 
@@ -1704,7 +1623,7 @@ public class BattleMenu
         // START: MANAGING CURRENT/NEXT ROUND PRIORITY QUEUES AND ALLPQCONTENTS
         /*******************************************************************************/
 
-        public void storeSecondPqContentsInFirstPq(PriorityQueue<GenericCharacter> firstPq, 
+        public static void storeSecondPqContentsInFirstPq(PriorityQueue<GenericCharacter> firstPq, 
             PriorityQueue<GenericCharacter> secondPq)
         {
             for(GenericCharacter element : secondPq)
@@ -1713,14 +1632,14 @@ public class BattleMenu
             }
         }
 
-        public void fillCurrentRoundAndClearNextRound(PriorityQueue<GenericCharacter> currentRound, 
+        public static void fillCurrentRoundAndClearNextRound(PriorityQueue<GenericCharacter> currentRound, 
             PriorityQueue<GenericCharacter> nextRound)
         {
             storeSecondPqContentsInFirstPq(currentRound, nextRound);
             nextRound.clear();
         }
 
-        public void clearAndFillAllPqContents(PriorityQueue<GenericCharacter> allPqContents, 
+        public static void clearAndFillAllPqContents(PriorityQueue<GenericCharacter> allPqContents, 
             PriorityQueue<GenericCharacter> currentRound, PriorityQueue<GenericCharacter> nextRound)
         {
             allPqContents.clear();
@@ -1733,6 +1652,140 @@ public class BattleMenu
 
 
 
+                // START: BATTLE LOGIC
+        /*******************************************************************************/
+
+        // returns whether party is suitable for battle 
+        public boolean validParty(Party party)
+        {
+            boolean result = false;
+
+            if(party != null && !party.getPartyMembers().isEmpty())
+            {
+                result = true;
+            }
+
+            return result;
+        }
+
+        // sets up GUI meant to display battle to player
+        public void setUpBattleGUI(JFrame frame, Party partyOne, Party partyTwo)
+        {
+            frame.setLayout(new GridBagLayout());
+        
+            // party references used to easily access parties in battle  
+            referencePartyOne = partyOne;
+            referencePartyTwo = partyTwo;
+   
+            // set up frame for battle GUI
+            topLayoutButtons(frame);
+
+            bottomLayoutButtons(frame);
+
+            addUsableButtons(frame);
+
+            addUnusableTurnTrackingJListTitles(frame);
+
+            addPartyMemberJLists(frame);
+
+            // set up party JLists to show parties and their members in battle 
+            partyOneBottom.setModel(partyMembersModel(referencePartyOne));
+            partyTwoTop.setModel(partyMembersModel(referencePartyTwo));
+            
+            addTurnTrackingJLists(frame);
+
+            currentRoundJList.setModel(turnTrackingJListModel(currentRound));
+            
+            addBattleLogJTextArea(frame);
+
+            addJListJTextAreaButtonTitles(frame);
+
+            // designates buttons that allow player to perform actions in battle 
+            usableButtonActionListeners();
+
+            displayFrameWindow();
+        }
+        
+        // allows characters from two different parties to battle one another 
+        // Note: Battle object is passed to get access to boolean conditions
+        public void standardBattle(Battle battle, Party partyOne, Party partyTwo,
+            JFrame frame)
+        {
+            // proceed only if both parties supplied are considered valid 
+            if(validParty(partyOne) && validParty(partyTwo))
+            {
+                // reset end battle triggers, instance variables, and set up current round 
+                preBattleSetUp(currentRound, partyOne, partyTwo);
+
+                // set up battle gui before it is displayed 
+                setUpBattleGUI(frame, partyOne, partyTwo);
+   
+                // loop until an end battle loop condition is met 
+                while(!endBattleLoop())
+                {
+                    // commence battle between two parties filled with characters 
+                    standardBattleLogic(allPqContents, currentRound, nextRound, getRoundCount(), 
+                        partyOne, partyTwo);
+                       
+                    
+                    System.out.println("d: "+getRoundCount());
+            
+                    // fill allPqContents with characters that have not escaped battle 
+                    clearAndFillAllPqContents(allPqContents, currentRound, nextRound);
+
+                    // bottom method does not work
+
+                    // check end battle loop variables to see if a condition was met 
+checkEndBattleLoopVariables(allPqContents, referencePartyOne, referencePartyTwo);
+
+// works!
+                    if(remainingCombatantsKnockedOut(allPqContents, partyTwo))
+                    {
+                        break;
+                    }
+                } 
+
+                System.out.println("Game Win :)");
+                
+                // after battle, perform appropriate action based on boolean priority 
+                // and whether a party under player control is involved in the battle 
+                    // Note: class should return value accessible to Battle Handler 
+            }
+        }
+
+        public void standardBattleLogic(PriorityQueue<GenericCharacter> allPqContents, PriorityQueue
+            <GenericCharacter> currentRound, PriorityQueue<GenericCharacter> nextRound, double 
+            roundCount, Party partyOne, Party partyTwo)
+        {
+            // proceed if currentRound is not empty 
+            if(!currentRound.isEmpty())
+            {
+                // fill allPqContents with characters that have not escaped battle 
+                clearAndFillAllPqContents(allPqContents, currentRound, nextRound);
+                
+                // execute turn logic for character at head of currentRound 
+                characterTurnLogic(allPqContents, currentRound, nextRound, 
+                    roundCount, partyOne, partyTwo);
+            } 
+            // else refill currentRound and reload turn tracking JLists 
+            else 
+            {
+                fillCurrentRoundAndClearNextRound(currentRound, nextRound);
+                
+                // update turn tracking JLists 
+                currentRoundJList.setModel(turnTrackingJListModel(currentRound));
+                nextRoundJList.setModel(turnTrackingJListModel(nextRound));
+                
+                // increment round count by one 
+                incrementRoundCount();
+            }
+        }
+
+        // END: BATTLE LOGIC
+        /*******************************************************************************/
+
+        
+        
         // START: CHARACTER TURN LOGIC 
         /*******************************************************************************/
 
@@ -1811,6 +1864,12 @@ public class BattleMenu
                     // currentRound.peek().getAiScript().executeAiPattern() 
                 
                 BattleMenu.disableUsableButtons();
+                
+                while(!turnComplete)
+                {
+                    System.out.println("");
+                }
+                
             }
             else // object is under player control
             {
@@ -1828,6 +1887,16 @@ public class BattleMenu
                 // Party opposingParty)
                 
                 BattleMenu.enableUsableButtons();
+                
+                turnComplete = false;
+                
+                // set true elsewhere 
+                while(!turnComplete)
+                {
+                    System.out.println("");
+                }
+                
+                postMoveBehavior(currentRound, nextRound, opposingParty);
             }
         }
 
@@ -1942,6 +2011,9 @@ public class BattleMenu
         // START: BOOLEANS FOR SPECIAL CONDITIONS DETERMINING BATTLE OUTCOME 
         /*******************************************************************************/
 
+        // FIX ALL! NEED SWITCH CASE
+        
+        
         // end battle loop condition 
         public void playerGameOverUponDeath(Party partyOne, Party partyTwo)
         {
@@ -1997,23 +2069,28 @@ public class BattleMenu
         {
             int counter = 0;
 
-            for(GenericCharacter element : allPqContents)
+            for(GenericCharacter character : allPqContents)
             {
-                if(party.partyMemberExists(element))
+                for(GenericCharacter element : party.getPartyMembers())
                 {
-                    switch(choice)
+                    if(character == element)
                     {
-                        case ALL_CHARACTERS_IN_BATTLE: 
-                            counter++;
-                                break; 
-                        case ALL_NON_KO_CHARACTERS_IN_BATTLE: 
-                            if(!element.getGeneralFeatures().knockedOut())
-                            { 
+                        switch(choice)
+                        {
+                            case ALL_CHARACTERS_IN_BATTLE: 
                                 counter++;
-                            }
-                                break;
+                                    break; 
+                            case ALL_NON_KO_CHARACTERS_IN_BATTLE: 
+                                if(!element.getGeneralFeatures().knockedOut())
+                                { 
+                                    counter++;
+                                }
+                                    break;
+                        }
                     }
                 }
+                
+                
             }
 
             return counter;
