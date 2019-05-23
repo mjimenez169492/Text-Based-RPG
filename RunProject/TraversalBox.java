@@ -44,7 +44,7 @@ public class TraversalBox extends CommonGUIMethods
     // meant to store result of choice selected for switch case 
     private int optionChoice = 0;
     
-    private int characterLimit = 18;
+    private int characterLimit = 22;
 
     
     
@@ -493,7 +493,7 @@ public class TraversalBox extends CommonGUIMethods
         {
             // parse int into String and add "." and space for appearance: "#. "
             // followed by text (loopCount is + 1 since loop count starts at 0)
-            String formatted = String.format("%s. %-18s", String.valueOf(loopCount + 1), text);
+            String formatted = String.format("%s. %-22s", String.valueOf(loopCount + 1), text);
                 builder.append(formatted);
         }
         else
