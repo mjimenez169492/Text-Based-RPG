@@ -97,6 +97,12 @@ public class Capstone_RPG extends JPanel
             + "one people to dissolve the political bands which have connected them "
             + "with another and to assume among the powers of the earth, the separate "
             + "and equal station to which the Laws of Nature and of Nature's God entitle "
+            + "them, a decent respect to the opinions");
+        /*
+        example.add("When in the Course of human events it becomes necessary for "
+            + "one people to dissolve the political bands which have connected them "
+            + "with another and to assume among the powers of the earth, the separate "
+            + "and equal station to which the Laws of Nature and of Nature's God entitle "
             + "them, a decent respect to the opinions of mankind requires that they "
             + "should declare the causes which impel them to the separation. We hold "
             + "these truths to be self-evident, that all men are created equal, that "
@@ -298,6 +304,7 @@ public class Capstone_RPG extends JPanel
             + "accommodation of large districts of people, unless those people would relinquish "
             + "the right of Representation in the Legislature, a right inestimable to them and "
             + "formidable to tyrants only. ");
+        */
         
         return example;
     }
@@ -307,10 +314,10 @@ public class Capstone_RPG extends JPanel
     {
         ArrayList<String> example = new ArrayList<>();
 
-        example.add("This is the text for button 1");
-        example.add("This is the text for button 2");
-        example.add("This is the text for button 3");
-        example.add("This is the text for button 4");
+        example.add("Sign the document and voice your support for it.");
+        example.add("Try your best to stay awake in the face of sheer boredom");
+        example.add("Advocate against signing the document.");
+        example.add("Walk away.");
         //example.add("This is the text for button 5");
         //example.add("This is the text for button 6");
 
@@ -322,12 +329,12 @@ public class Capstone_RPG extends JPanel
     {
         ArrayList<String> example = new ArrayList<>();
 
-        example.add("text for button1");
-        example.add("012345678901234567");
-        example.add("text for but 3");
+        example.add("Approach Cassandra");
+        example.add("To Forgotton Armory");
+        example.add("Search Office Closet ");
         //example.add("text for button 4");
         //example.add("text for button 5");
-        //example.add("text for button 6");
+        //example.add("012345678901234567");
 
         return example;
     }
@@ -339,12 +346,13 @@ public class Capstone_RPG extends JPanel
         
         PlayerEntityFactory opposition = new PlayerEntityFactory();
             Party opposingParty = opposition.getPlayerEntityExampleTwo().getParty();
-        
+    
+            /*
         pauseBetweenFrames(new TitleScreen());
         
         String location = "Grand Capital - Metro 31 - Plaza - Factory - Boiler Room - West";
         String eventEventLine = "The End - Last Surprise";
-        /*
+        
         pauseBetweenFrames(new ExpositionBox(entity, location, 
             eventEventLine, expositionTextArrayList()));
         
@@ -359,7 +367,7 @@ public class Capstone_RPG extends JPanel
                 System.out.println("hehe");
                     break;
         }
-*/
+
 
         switch(pauseBetweenFramesTraversalOptions(new TraversalBox(entity, 
             false, location, eventEventLine, textForTraversalBoxButtons())))
@@ -371,7 +379,7 @@ public class Capstone_RPG extends JPanel
                 System.out.println("hehe");
                     break;
         }
-        
+        */
         
         BattleMenu.Battle result = pauseBetweenFramesBattle(new BattleMenu.Battle(
             entity, opposingParty));

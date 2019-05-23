@@ -921,31 +921,6 @@ public class Moves
     
     
     
-    // START: DOUBLE VALUES RELATING TO MOVE USAGE 
-    /*******************************************************************************/
-
-    public void executeMove(PriorityQueue<GenericCharacter> charactersInBattle, Party 
-        userParty, Party opposingParty, GenericCharacter user, Moves move)
-    {
-        MoveCalculations moveCalculation = new MoveCalculations();
-        
-        moveCalculation.executeMove(charactersInBattle, userParty, opposingParty, user, move);
-    }
-    
-    // Note: move refers to moves object itself NOT another moves object 
-    public void singleTargetMove(GenericCharacter user, GenericCharacter target, Moves move)
-    {
-        MoveCalculations moveCalculation = new MoveCalculations();
-        
-        moveCalculation.singleTargetMoveLogic(user, target, move);
-    }
-    
-    // START: DOUBLE VALUES RELATING TO MOVE USAGE 
-    /*******************************************************************************/
-
-    
-
-
     // START: MOVE MASTERY
     /*******************************************************************************/
 

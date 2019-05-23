@@ -14,6 +14,7 @@ import Player_Entity.PartyWallet;
 import Generic_Object.GenericObject;
 import Player_Entity.Inventory;
 import Player_Entity.Party;
+import Battle_Feature.LevelMechanics;
 
 import java.awt.GridBagLayout;
 import java.util.ArrayList;
@@ -155,11 +156,11 @@ public class BattleResults extends CommonGUIMethods
             1, gridwidth, frame);
     }
     
-    public int totalExpGained(ArrayList<GenericCharacter> defeatedCharacters)
+    public int totalExpGained(ArrayList<GenericCharacter> defeatedEnemies)
     {
         int exp = 0;
         
-        for(GenericCharacter element : defeatedCharacters)
+        for(GenericCharacter element : defeatedEnemies)
         {
             exp += element.getOppositionMethods().getDefeatExp();
         }
@@ -167,11 +168,11 @@ public class BattleResults extends CommonGUIMethods
         return exp;
     }
     
-    public double moneyGained(ArrayList<GenericCharacter> defeatedCharacters)
+    public double moneyGained(ArrayList<GenericCharacter> defeatedEnemies)
     {
         double money = 0;
         
-        for(GenericCharacter element : defeatedCharacters)
+        for(GenericCharacter element : defeatedEnemies)
         {
             money += element.getOppositionMethods().getDefeatMoney();
         }
@@ -179,16 +180,44 @@ public class BattleResults extends CommonGUIMethods
         return money;
     }
     
-// NEED TO ADD EXP AND MONEY TO WALLET 
-    public void addGainedButtons(ArrayList<GenericCharacter> defeatedCharacters, JFrame frame)
+    public void addGainedButtons(ArrayList<GenericCharacter> defeatedEnemies, JFrame frame)
     {
-        String expGainedText = String.format("%14s: %s", "EXP Gained", String.valueOf(
-            totalExpGained(defeatedCharacters)));
+        String expGainedText = String.format("%-14s: %-16s", "EXP Gained", String.valueOf(
+            totalExpGained(defeatedEnemies)));
                 addUnusableInfoButton(expGainedText, 1, 0, 1, frame);
         
-        String moneyGainedText = String.format("%14s: %s", "Money Gained", String.valueOf(
-            moneyGained(defeatedCharacters)));
+        String moneyGainedText = String.format("%-14s: %-16s", "Money Gained", String.valueOf(
+            moneyGained(defeatedEnemies)));
                 addUnusableInfoButton(moneyGainedText, 1, 1, 1, frame);
+    }
+    
+    public ArrayList<GenericCharacter> nonKoPartyMembers(Party party)
+    {
+        ArrayList<GenericCharacter> partyMembers = new ArrayList<>();
+        
+        for(GenericCharacter character : party.getPartyMembers())
+        {
+            if(!character.getGeneralFeatures().knockedOut())
+            {
+                partyMembers.add(character);
+            }
+        }
+        
+        return partyMembers;
+    }
+    
+    // NEED TO ADD EXP AND MONEY TO WALLET 
+    public void addGainedResults(PlayerEntity entity, ArrayList<GenericCharacter> defeatedEnemies)
+    {
+        // add experience to all non KO characters 
+        for(GenericCharacter element : nonKoPartyMembers(entity.getParty()))
+        {
+            element.getGeneralFeatures().setExperience(totalExpGained(defeatedEnemies));
+        }
+        
+        // add money to party wallet 
+        entity.getPartyWallet().setCurrentMoney(entity.getPartyWallet().getCurrentMoney() + 
+            moneyGained(defeatedEnemies));
     }
     
     // END: EXPERIENCE GAINED AND MONEY GAINED BUTTON
@@ -224,7 +253,7 @@ public class BattleResults extends CommonGUIMethods
     {
         addUnusableTitleButton("Characters Gaining EXP", 2, 0, 1, frame);
         
-        addUnusableTitleButton("Objects Dropped", 2, 1, 1, frame);
+        addUnusableTitleButton("Defeated Enemy Drops", 2, 1, 1, frame);
     }
     
     // END: CHARACTERS GAINING EXP AND OBJECTS DROPPED JLIST TITLES 
@@ -296,37 +325,36 @@ public class BattleResults extends CommonGUIMethods
     // START: ADDING CHARACTERS TO CHARACTERS RECEIVING EXP JLIST
     /*******************************************************************************/
     
-    public ArrayList<GenericCharacter> nonKoPartyMembers(Party party)
-    {
-        ArrayList<GenericCharacter> partyMembers = new ArrayList<>();
-        
-        for(GenericCharacter character : party.getPartyMembers())
-        {
-            if(!character.getGeneralFeatures().knockedOut())
-            {
-                partyMembers.add(character);
-            }
-        }
-        
-        return partyMembers;
-    }
-    
     public String name(GenericCharacter character, int counter)
     {
         // format so all names up to 26 characters are correctly structured 
         String formatName = String.format("%-26s %s %s: %-2s", character.getGeneralFeatures().getName(),
             desiredSpaces(5), "Member", String.valueOf(counter));
-            return formatName;
+                return formatName;
     }
     
-    public String level(GenericCharacter character)
+    public String level(int storedLevel, GenericCharacter character)
     {
-        String formatLevel = String.format("%-13s: %s", "LV:", formatExperience(character.
-            getGeneralFeatures().getLevel()));
-                return formatLevel;
+        StringBuilder builder = new StringBuilder();
+        
+        // account for no level up and level up scenarios
+        if(storedLevel == character.getGeneralFeatures().getLevel())
+        {
+            String formatLevel = String.format("%-13s: %s", "Lv:", formatExperience(character.
+                getGeneralFeatures().getLevel()));
+                    builder.append(formatLevel);
+        }
+        else
+        {
+            String formatLevel = String.format("%-13s: %s", "New Lv:", formatExperience(character.
+                getGeneralFeatures().getLevel()));
+                    builder.append(formatLevel);
+        }
+        
+        return builder.toString();
     }
     
-    public String currentExpPostBattle(GenericCharacter character)
+    public String expPostBattle(GenericCharacter character)
     {
         String formatCurrentExpPostBattle = String.format("%-13s: %s", "Current EXP", 
             formatExperience(character.getGeneralFeatures().getExperience()));
@@ -335,10 +363,8 @@ public class BattleResults extends CommonGUIMethods
     
     public String nextLevel(GenericCharacter character)
     {
-        LevelMechanics level = new LevelMechanics();
-        
-        String formatNano = String.format("%-13s: %s", "Next Level", formatExperience(level.
-            nextLevelExp(character)));
+        String formatNano = String.format("%-13s: %s", "To Next Level", formatExperience(
+            new LevelMechanics().nextLevelExp(character)));
                 return formatNano;
     }
     
@@ -346,9 +372,12 @@ public class BattleResults extends CommonGUIMethods
     public void addPartyMemberDetails(DefaultListModel<String> nonKopartyMemberModel, 
         GenericCharacter character, int counter)
     {
+        double storedLevel = character.getGeneralFeatures().getLevel();
+            new LevelMechanics().levelUp(character);
+        
         nonKopartyMemberModel.addElement(name(character, counter));
-        nonKopartyMemberModel.addElement(level(character));
-        nonKopartyMemberModel.addElement(currentExpPostBattle(character));
+        nonKopartyMemberModel.addElement(level((int)storedLevel, character));
+        nonKopartyMemberModel.addElement(expPostBattle(character));
         nonKopartyMemberModel.addElement(nextLevel(character));
     }
     
@@ -373,7 +402,8 @@ public class BattleResults extends CommonGUIMethods
             else
             {
                 addPartyMemberDetails(partyMembers, character, counter);
-                partyMembers.addElement("\n\n");
+                    partyMembers.addElement(" ");
+                        partyMembers.addElement(" ");
             }
             
             counter++;
@@ -390,22 +420,24 @@ public class BattleResults extends CommonGUIMethods
     // START: ADDING OBJECTS TO OBJECTS DROPPED JLIST AND INVENTORY 
     /*******************************************************************************/
 
-    /* idea 
-        from defeated enemies, loop through drops ArrayList and place objects
-        by character into JList (characters from ArrayList<GenericCharacter>)
-            if objects can be added to inventory then add them and then put
-            names of objects added to inventory in JList 
-    */
-    
+    // from defeated enemies, loop through drops ArrayList and place objects
+    // by character into JList (characters from ArrayList<GenericCharacter>)
+    // if objects can be added to inventory then add them and then put names 
+    // of objects added to inventory in JList 
     public static DefaultListModel<String> addObjectsToInventoryAndSetJListModel(
-        ArrayList<GenericCharacter> defeatedCharacters, Inventory inventory)
+        ArrayList<GenericCharacter> defeatedEnemies, Inventory inventory)
     {
         DefaultListModel<String> model = new DefaultListModel<>();
         
-        for(GenericCharacter element : defeatedCharacters)
+        for(GenericCharacter element : defeatedEnemies)
         {
+            // state name of character dropping objects 
+            String formattedName = String.format("%42s", element.getGeneralFeatures().getName());
+                model.addElement(formattedName);
+            
             for(GenericObject object : element.getOppositionMethods().getDroppableObjects())
             {
+                // if object can be added to inventory then state name of object added
                 if(inventory.canAddObject(object))
                 {
                     inventory.addObject(object);
@@ -437,14 +469,6 @@ public class BattleResults extends CommonGUIMethods
         // spaces are used to make current value Strings appear alligned 
         if(currentValue < 10)
         {
-            builder.append(desiredSpaces(3));
-        }
-        else if(currentValue < 100)
-        {
-            builder.append(desiredSpaces(2));
-        }
-        else if(currentValue < 1000)
-        {
             builder.append(desiredSpaces(1));
         }
         
@@ -452,14 +476,6 @@ public class BattleResults extends CommonGUIMethods
         
         // spaces are used to make max value Strings appear alligned 
         if(maximumValue < 10)
-        {
-            builder.append(desiredSpaces(3));
-        }
-        else if(maximumValue < 100)
-        {
-            builder.append(desiredSpaces(2));
-        }
-        else if(maximumValue < 1000)
         {
             builder.append(desiredSpaces(1));
         }
@@ -470,19 +486,16 @@ public class BattleResults extends CommonGUIMethods
     }
     
     public void addInventoryInfoAndWalletInfoButtons(Inventory inventory, PartyWallet wallet, 
-        ArrayList<GenericCharacter> defeatedCharacters, JFrame frame)
+        JFrame frame)
     {
-        String inventoryInfo = String.format("%-8s (%s)", "Inventory", 
+        String inventoryInfo = String.format("%-30s: (%s)", "Total Inventory Object Groups", 
             formatCurrentMaxValues(inventory.getInventory().size(), 
             inventory.getObjectGroupsLimit()));
-                addUnusableInfoButton(inventoryInfo, 7, 0, 1, frame);
-        
-        // add money to wallet 
-        wallet.setCurrentMoney(wallet.getCurrentMoney() + moneyGained(defeatedCharacters));
+                addUnusableInfoButton(inventoryInfo, 7, 0, 2, frame);
                 
-        String walletMoney = String.format("%12s: %s", "Wallet Money", 
-            String.valueOf(wallet.getCurrentMoney()));
-                addUnusableInfoButton(walletMoney, 7, 1, 1, frame);
+        String walletMoney = String.format("%-30s: %s / %s", "Total Party Wallet Money", 
+            String.valueOf(wallet.getCurrentMoney()), String.valueOf(wallet.getWalletCapacity()));
+                addUnusableInfoButton(walletMoney, 8, 0, 2, frame);
     }
     
     // END: INVENTORY CAPACITY INFO AND WALLET MONEY INFO 
@@ -505,10 +518,9 @@ public class BattleResults extends CommonGUIMethods
     public void usableButtonPlacement(JButton button, JFrame frame)
     {
         // Note: if component width is 0, component occupies whole row 
-        addButtonComponent(button, 8, 0, 0.11, 0.33, 1, 0, frame);
+        addButtonComponent(button, 9, 0, 0.11, 0.33, 1, 0, frame);
     }
     
-    // INCOMPLETE 
     public void addUsableButtons(JFrame frame)
     {
         exitBattleResults = newUsableButton("Exit Battle Results");
@@ -535,37 +547,40 @@ public class BattleResults extends CommonGUIMethods
     /*******************************************************************************/
 
     
-    // add ArrayList<GenericCharacter> defeatedCharacters as parameter 
-    public BattleResults(PlayerEntity entity, ArrayList<GenericCharacter> defeatedEnemies)
+    
+    public BattleResults(PlayerEntity entity, ArrayList<GenericCharacter> suppliedDefeatedEnemies)
     {
-        // left off here!
-        
-        
+        // set layout for frame which is used for component placement 
         frame.setLayout(new GridBagLayout());
         
+        // buttons title lets player know what screen is being presented 
         addBattleResultsMenuButton(frame);
-	//addGainedButtons(defeatedCharacters, frame);
-	addJListTitleButtons(frame);
         
+        // add experience and money gained from all defeated enemies 
+	addGainedButtons(suppliedDefeatedEnemies, frame);
+	
+        // add experience to playable characters and money to party wallet 
+        addGainedResults(entity, suppliedDefeatedEnemies);
+        
+        // add titles for JLists
+        addJListTitleButtons(frame);
+        
+        // add JLists associated with battle results 
 	addBattleResultsJLists(frame);
         
-        partyMembersModel(entity.getParty());
-        
-        // this is a model
-        //addObjectsToInventoryAndSetJListModel(defeatedCharacters, entityOne.
-          //  getPlayerEntityExample().getInventory());
-	
-      // need arraylist
-        //addInventoryInfoAndWalletInfoButtons(entity.getInventory(), entity.getPartyWallet(), 
-          //  defeatedCharacters, frame);
-	
-        addUsableButtons(frame);
-        
-        // set up JList models 
+        // set up JList model for non KO party members that can receive experience 
         charactersThatReceivedExperience.setModel(partyMembersModel(entity.getParty()));
         
-        //objectsDropped.setModel(addObjectsToInventoryAndSetJListModel(defeatedCharacters, 
-          //  entity.getInventory()));
+        // set up JList model for enemies and the objects that they drop 
+        objectsDropped.setModel(addObjectsToInventoryAndSetJListModel(suppliedDefeatedEnemies, 
+            entity.getInventory()));
+        
+        // add buttons containing info about inventory groups and wallet money 
+        addInventoryInfoAndWalletInfoButtons(entity.getInventory(), entity.getPartyWallet(), 
+            frame);
+	
+        // add usable buttons allowing escape from battle results menu 
+        addUsableButtons(frame);
         
         displayFrameWindow(frame);
     }

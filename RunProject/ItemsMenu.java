@@ -2,12 +2,12 @@ package RunProject;
 
 import Player_Entity.PlayerEntity;
 import Generic_Character.GenericCharacter;
-import Object_Factories.PlayerEntityFactory;
 import Move_Creation.StatusEffect;
 import Generic_Object.GenericObject;
 import Player_Entity.Inventory;
 import Generic_Object.Item;
 import Move_Creation.Moves;
+import Move_Creation.MoveCalculations;
 
 import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
@@ -805,7 +805,7 @@ public class ItemsMenu extends CommonGUIMethods
         // update title for area
         inventoryJListTitle.setText(String.format("%-8s (%s)", "Inventory", 
             formatCurrentMaxValues(inventory.getInventory().size(), 
-            inventory.getObjectGroupsLimit(), " /")));
+            inventory.getObjectGroupsLimit(), "/")));
         
         // Note: distance from first " to ( is 9 characters for consistency
         
@@ -1374,7 +1374,7 @@ public class ItemsMenu extends CommonGUIMethods
                             getSelectedValue());
 
                         // perform item move on target by supplying item move info 
-                        item.getMove().singleTargetMove(user, target, item.getMove());
+                        new MoveCalculations().singleTargetMoveLogic(user, target, item.getMove());
                         
                         // remove object from inventory using instance variable 
                         referenceInventory.removeObject(objectSelectedForUseFrame);
@@ -1714,7 +1714,7 @@ public class ItemsMenu extends CommonGUIMethods
     {
         for(GenericCharacter character : referencePlayerEntity.getParty().getPartyMembers())
         {
-            move.singleTargetMove(character, character, move);
+            new MoveCalculations().singleTargetMoveLogic(character, character, move);
         }
     }
     
@@ -1724,7 +1724,7 @@ public class ItemsMenu extends CommonGUIMethods
         {
             if(counter == randomNumber)
             {
-                move.singleTargetMove(character, character, move);
+                new MoveCalculations().singleTargetMoveLogic(character, character, move);
             }
 
             counter++;
@@ -1739,7 +1739,7 @@ public class ItemsMenu extends CommonGUIMethods
         {
             if((rand.nextInt(100) + 1) > 50)
             {
-                move.singleTargetMove(character, character, move);
+                new MoveCalculations().singleTargetMoveLogic(character, character, move);
             }
         }
     }
@@ -1750,7 +1750,7 @@ public class ItemsMenu extends CommonGUIMethods
         {
             if(counter != randomNumber)
             {
-                move.singleTargetMove(character, character, move);
+                new MoveCalculations().singleTargetMoveLogic(character, character, move);
             }
             
             counter++;

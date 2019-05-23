@@ -170,17 +170,17 @@ public class OppositionMethods
         }
     }
 
-    public void addToStealableObjects(GenericObject object)
+    public void addStealableObject(GenericObject object)
     {
         addObjectToArrayList(stealableObjects, stealableObjectsMaxCapacity, object);
     }
 
-    public void addToPilferableObjects(GenericObject object)
+    public void addPilferableObject(GenericObject object)
     {
         addObjectToArrayList(pilferableObjects, pilferableObjectsMaxCapacity, object);
     }
 
-    public void addToDroppableObjects(GenericObject object)
+    public void addDroppableObject(GenericObject object)
     {
         addObjectToArrayList(droppableObjects, droppableObjectsMaxCapacity, object);
     }
