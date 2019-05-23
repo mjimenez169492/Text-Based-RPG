@@ -124,18 +124,6 @@ public class StaticMethods
         return Attributes.valueOf(stringToEnum(argument));
     }
     
-    public static String[] attributeValueStrings()
-    {
-        String[] array = new String[Attributes.values().length];
-        
-        for(int i = 0; i < Attributes.values().length; i++)
-        {
-            array[i] = Attributes.values()[i].getEnumAsString();
-        }
-
-        return array;
-    }
-    
     // END: ATTRIBUTES ENUM CLASS
     /*******************************************************************************/	
 
@@ -170,18 +158,6 @@ public class StaticMethods
     public static Enchantments getEnchantmentEnum(String argument) 
     {
         return Enchantments.valueOf(stringToEnum(argument));
-    }
-    
-    public static String[] enchantmentValueStrings()
-    {
-        String[] array = new String[Enchantments.values().length];
-        
-        for(int i = 0; i < Enchantments.values().length; i++)
-        {
-            array[i] = Enchantments.values()[i].getEnumAsString();
-        }
-
-        return array;
     }
     
     // END: ENCHANTMENTS ENUM CLASS
@@ -221,18 +197,6 @@ public class StaticMethods
         return UniqueStatusEffects.valueOf(stringToEnum(argument));
     }
     
-    public static String[] uniqueStatusEffectValueStrings()
-    {
-        String[] array = new String[UniqueStatusEffects.values().length];
-        
-        for(int i = 0; i < UniqueStatusEffects.values().length; i++)
-        {
-            array[i] = UniqueStatusEffects.values()[i].getEnumAsString();
-        }
-
-        return array;
-    }
-    
     // END: UNIQUE STATUS EFFECTS ENUM CLASS
     /*******************************************************************************/	
 
@@ -269,18 +233,6 @@ public class StaticMethods
     {
         return CurrentHealthStatusEffects.valueOf(stringToEnum(argument));
     }
-
-    public static String[] currentHealthStatusEffectValueStrings()
-    {
-        String[] array = new String[CurrentHealthStatusEffects.values().length];
-        
-        for(int i = 0; i < CurrentHealthStatusEffects.values().length; i++)
-        {
-            array[i] = CurrentHealthStatusEffects.values()[i].getEnumAsString();
-        }
-
-        return array;
-    }
     
     // CURRENT HEALTH STATUS EFFECTS
 
@@ -315,18 +267,6 @@ public class StaticMethods
     public static AttributeStatusEffects getAttributeStatusEffectEnum(String argument) 
     {
         return AttributeStatusEffects.valueOf(stringToEnum(argument));
-    }
-    
-    public static String[] attributeStatusEffectValueStrings()
-    {
-        String[] array = new String[AttributeStatusEffects.values().length];
-        
-        for(int i = 0; i < AttributeStatusEffects.values().length; i++)
-        {
-            array[i] = AttributeStatusEffects.values()[i].getEnumAsString();
-        }
-
-        return array;
     }
 
     // ATTRIBUTE STATUS EFFECTS 
@@ -451,18 +391,6 @@ public class StaticMethods
         return NullifyStatusEffects.valueOf(stringToEnum(argument));
     }
     
-    public static String[] nullifyStatusEffectValueStrings()
-    {
-        String[] array = new String[NullifyStatusEffects.values().length];
-        
-        for(int i = 0; i < NullifyStatusEffects.values().length; i++)
-        {
-            array[i] = NullifyStatusEffects.values()[i].getEnumAsString();
-        }
-
-        return array;
-    }
-    
     // NULLIFY STATUS EFFECTS 
     
     
@@ -470,7 +398,7 @@ public class StaticMethods
     
     public static enum AllStatusEffects
     {
-        // 
+        // no status effect selected 
         NONE("None"),
         
         // unique
@@ -579,7 +507,7 @@ public class StaticMethods
     
     public static enum AllStats
     {
-        // None 
+        // no status effect selected 
         NONE("None"),
         
         // attributes 
