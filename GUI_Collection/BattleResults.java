@@ -1,14 +1,7 @@
 package GUI_Collection;
 
-import GUI_Collection.CommonGUIMethods;
-import Generic_Character.*;
-import java.security.SecureRandom;
-import java.util.PriorityQueue;	
-import Player_Entity.Party;
-import java.util.ArrayList;
 import Player_Entity.PlayerEntity;
 import Generic_Character.GenericCharacter;
-import Object_Factories_For_Testing.PlayerEntityFactory;
 import Player_Entity.PartyWallet;
 import Generic_Object.GenericObject;
 import Player_Entity.Inventory;
@@ -211,7 +204,8 @@ public class BattleResults extends CommonGUIMethods
         // add experience to all non KO characters 
         for(GenericCharacter element : nonKoPartyMembers(entity.getParty()))
         {
-            element.getGeneralFeatures().setExperience(totalExpGained(defeatedEnemies));
+            element.getGeneralFeatures().setExperience(element.getGeneralFeatures().getExperience() 
+                + totalExpGained(defeatedEnemies));
         }
         
         // add money to party wallet 
@@ -402,7 +396,6 @@ public class BattleResults extends CommonGUIMethods
             {
                 addPartyMemberDetails(partyMembers, character, counter);
                     partyMembers.addElement(" ");
-                        partyMembers.addElement(" ");
             }
             
             counter++;
@@ -457,7 +450,7 @@ public class BattleResults extends CommonGUIMethods
     // START: INVENTORY CAPACITY INFO AND WALLET MONEY INFO 
     /*******************************************************************************/
 
-    public String formatCurrentMaxValues(double currentValue, double maximumValue)
+    public String formatCurrentMaxValues(int currentValue, int maximumValue)
     {
         String curValue = String.valueOf(currentValue);
         
@@ -487,14 +480,15 @@ public class BattleResults extends CommonGUIMethods
     public void addInventoryInfoAndWalletInfoButtons(Inventory inventory, PartyWallet wallet, 
         JFrame frame)
     {
-        String inventoryInfo = String.format("%-30s: (%s)", "Total Inventory Object Groups", 
+        String inventoryInfo = String.format("%s: (%s)", "Inventory", 
             formatCurrentMaxValues(inventory.getInventory().size(), 
-            inventory.getObjectGroupsLimit()));
-                addUnusableInfoButton(inventoryInfo, 7, 0, 2, frame);
+                inventory.getObjectGroupsLimit()));
+                    addUnusableInfoButton(inventoryInfo, 7, 0, 1, frame);
                 
-        String walletMoney = String.format("%-30s: %s / %s", "Total Party Wallet Money", 
-            String.valueOf(wallet.getCurrentMoney()), String.valueOf(wallet.getWalletCapacity()));
-                addUnusableInfoButton(walletMoney, 8, 0, 2, frame);
+        String walletMoney = String.format("%s: %s / %s", "Money", 
+            String.valueOf((int)wallet.getCurrentMoney()), String.valueOf((int)wallet.
+                getWalletCapacity()));
+                    addUnusableInfoButton(walletMoney, 7, 1, 1, frame);
     }
     
     // END: INVENTORY CAPACITY INFO AND WALLET MONEY INFO 
