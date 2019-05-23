@@ -21,12 +21,34 @@ import java.util.Scanner;
 
 public class MoveCalculations 
 {
-    boolean cancelMove;
+    // meant to store output of move
+    private double output;
+    
+    private boolean cancelMove;
     
     
     
-    // START: MOVE USE STATES
+    // START: MOVE RELATED METHODS
     /*******************************************************************************/
+    
+    public void setOutput(double output)
+    {
+        if(output < -150000)
+        {
+            output = -150000;
+        }
+        else if(output > 150000)
+        {
+            output = 150000;
+        }
+        
+        this.output = Math.floor(Math.abs(output));
+    }
+    
+    public double getOutput()
+    {
+        return output;
+    }
     
     public void cancelMove(boolean cancelMove)
     {
@@ -38,7 +60,7 @@ public class MoveCalculations
         return cancelMove;
     }
     
-    // END: MOVE USE STATES
+    // END: MOVE RELATED METHODS
     /*******************************************************************************/
 
     
@@ -1094,6 +1116,8 @@ System.out.println("3: "+output);
                 
                 output += (output * move.getOutputModifier());
 
+                setOutput(output);
+                
                 postOutputTasks(user, target, move, output);
             }
         }
@@ -1208,6 +1232,8 @@ System.out.println("3: "+output);
                 
                 output += output * move.getOutputModifier();
                 
+                setOutput(output);
+                
 System.out.println("out is: "+output);
                 postItemOutputTasks(user, target, move, output);
             }
@@ -1272,6 +1298,9 @@ System.out.println("out is: "+output);
     public void singleTargetMoveLogic(GenericCharacter user, GenericCharacter target, 
         Moves move)
     {
+        // reset output meant to be displayed in battle log to 0
+        setOutput(0);
+        
         double accuracy, output, critical;
         
         switch(move.getApproachEnum())
