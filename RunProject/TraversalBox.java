@@ -1,5 +1,6 @@
 package RunProject;
 
+import Player_Entity.PlayerEntity;
 import java.awt.Font;
 import java.awt.Color;
 import java.awt.Insets;
@@ -18,6 +19,9 @@ public class TraversalBox extends CommonGUIMethods
 {
     // set frame for TraversalBox 
     private JFrame frame = new JFrame("Capstone RPG");
+    
+    // stores reference to player entity so it can be accessed easily later if needed 
+    PlayerEntity referencePlayerEntity;
     
     // font size used for text of all componenets 
     private Font font = new Font(Font.MONOSPACED, Font.PLAIN, 14);
@@ -299,10 +303,14 @@ public class TraversalBox extends CommonGUIMethods
                     @Override
                     public void actionPerformed(ActionEvent e)
                     {
+                        // shift focus to MainMenu frame 
+                        new MainMenu(frame, referencePlayerEntity);
 
+                        // dispose of Main menu frame 
+                        frame.dispose();
                     }
                 }); 
-                    mainMenu.setEnabled(false);
+                    mainMenu.setEnabled(true);
         
         comms = newUsableButton(comms, "Comms");
             comms.addActionListener(
@@ -314,6 +322,7 @@ public class TraversalBox extends CommonGUIMethods
 
                     }
                 }); 
+                    // not available in this build 
                     comms.setEnabled(false);
                  
         settings = newUsableButton(settings, "Settings");
@@ -326,6 +335,7 @@ public class TraversalBox extends CommonGUIMethods
 
                     }
                 }); 
+                    // not available in this build 
                     settings.setEnabled(false);
         
         activities = newUsableButton(activities, "Activities");
@@ -338,6 +348,7 @@ public class TraversalBox extends CommonGUIMethods
 
                     }
                 }); 
+                    // not available in this build 
                     activities.setEnabled(false);
         
         interactions = newUsableButton(interactions, "Interactions");
@@ -350,6 +361,7 @@ public class TraversalBox extends CommonGUIMethods
 
                     }
                 }); 
+                    // not available in this build 
                     interactions.setEnabled(false);
             
         save = newUsableButton(save, "Save");
@@ -362,6 +374,7 @@ public class TraversalBox extends CommonGUIMethods
 
                     }
                 }); 
+                    // not available in this build 
                     save.setEnabled(false);
         
         load = newUsableButton(load, "Load");
@@ -374,9 +387,10 @@ public class TraversalBox extends CommonGUIMethods
 
                     }
                 }); 
+                    // not available in this build 
                     load.setEnabled(false);
         
-        exitGame= newUsableButton(exitGame, "Exit Game");
+        exitGame = newUsableButton(exitGame, "Exit Game");
             exitGame.addActionListener(
                 new ActionListener() 
                 {
@@ -868,9 +882,12 @@ public class TraversalBox extends CommonGUIMethods
     /*******************************************************************************/
     
     // Note: text per String of supplied ArrayList cannot exceed 14 characters 
-    public TraversalBox(boolean safeZone, String location, String eventEventLine, 
+    public TraversalBox(PlayerEntity entity, boolean safeZone, String location, String eventEventLine, 
         ArrayList<String> textForButtons)
     {
+        // store reference to player entity which is passed to main menu frames
+        referencePlayerEntity = entity;
+        
         // set up properties of frame for GUI consistency 
         frame.getContentPane().setBackground(Color.BLACK);
         frame.getContentPane().setLayout(new GridBagLayout());
