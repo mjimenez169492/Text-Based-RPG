@@ -1,5 +1,6 @@
-package RunProject;
+package GUI_Collection;
 
+import GUI_Collection.CommonGUIMethods;
 import javax.swing.JLabel; 
 import java.awt.Font;
 import java.awt.Color;
@@ -22,13 +23,13 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.ActionEvent;
 
 /*
-    TitleScreen is a GUI for showing the title screen of the porject seen upon
+    IntroBox is a GUI for showing the title screen of the porject seen upon
     start up. This is the first GUI I ever made and it should be considered as
     an example of how NOT to make a GUI on account of how messy it is in terms
     of how it is coded.
 */
 
-public class TitleScreen extends CommonGUIMethods
+public class IntroBox extends CommonGUIMethods
 {
     // set name for frame on top left of frame 
     private JFrame frame = new JFrame("Capstone RPG");
@@ -248,7 +249,7 @@ public class TitleScreen extends CommonGUIMethods
     /*******************************************************************************/
 
     // constructor used to create and display title screen of project 
-    public TitleScreen()
+    public IntroBox()
     {
         // prepare JPanel for components by changing certain properties 
         prepareJPanelForComponents();

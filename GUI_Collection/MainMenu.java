@@ -1,12 +1,13 @@
-package RunProject;
+package GUI_Collection;
 
+import GUI_Collection.CommonGUIMethods;
 import Player_Entity.Party;
 import Generic_Character.GenericCharacter;
-import Battle_Feature.LevelMechanics;
-import Object_Factories.PlayerEntityFactory;
+import Object_Factories_For_Testing.PlayerEntityFactory;
 import Player_Entity.PartyWallet;
 import Move_Creation.StatusEffect;
 import Player_Entity.PlayerEntity;
+import Generic_Character.LevelMechanics;
 
 import java.awt.event.ActionListener; 
 import java.awt.event.ActionEvent; 
@@ -98,8 +99,8 @@ public class MainMenu extends CommonGUIMethods
                     @Override
                     public void actionPerformed(ActionEvent e)
                     {
-                        // shift focus to ItemsMenu frame 
-                        new ItemsMenu(frame, entity);
+                        // shift focus to SubmenuItems frame 
+                        new SubmenuItems(frame, entity);
                         
                         // dispose of Main menu frame 
                         frame.dispose();
@@ -116,7 +117,7 @@ public class MainMenu extends CommonGUIMethods
                     public void actionPerformed(ActionEvent e)
                     {
                         // shift focus to EquipsMenu frame 
-                        new EquipMenu(frame, entity);
+                        new SubmenuEquipment(frame, entity);
                         
                         // dispose of Main menu frame 
                         frame.dispose();

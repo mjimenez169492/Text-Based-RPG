@@ -1,11 +1,12 @@
-package RunProject;
+package GUI_Collection;
 
+import GUI_Collection.CommonGUIMethods;
 import Player_Entity.PlayerEntity;
 import Generic_Character.GenericCharacter;
 import Commonly_Used_Methods.StaticMethods;
 import Generic_Object.GenericObject;
 import Player_Entity.Inventory;
-import Generic_Object.OutfitMethods;
+import Generic_Object.Outfit;
 import Generic_Object.*;
 
 import javax.swing.DefaultListCellRenderer;
@@ -35,7 +36,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JFrame;
 import javax.swing.JPopupMenu;
 
-public class EquipMenu extends CommonGUIMethods
+public class SubmenuEquipment extends CommonGUIMethods
 {
     // frame meant to store components in a desired layout 
     private JFrame frame = new JFrame("Capstone RPG");
@@ -107,7 +108,7 @@ public class EquipMenu extends CommonGUIMethods
     private GenericCharacter characterForOutfitEquip;
     
     // Note: outfit in focus can only be an equipped outfit 
-    private OutfitMethods outfitTiedToOutfitButton;
+    private Outfit outfitTiedToOutfitButton;
     
     // popup menus that appear upon selecting certain components 
     private JPopupMenu inventoryOutfitsJPopupMenu = new JPopupMenu(); 
@@ -546,7 +547,7 @@ public class EquipMenu extends CommonGUIMethods
             unusableButtonPlacement(equippedAccessoryTwo, 6, 2, 1, frame);
     }
     
-    public String equipText(String defaultText, OutfitMethods object)
+    public String equipText(String defaultText, Outfit object)
     {
         StringBuilder builder = new StringBuilder(defaultText);
         
@@ -883,10 +884,10 @@ public class EquipMenu extends CommonGUIMethods
     
     // GETTING NEW VALUE THAT ACCOUNTS FOR SELECTED OUTFIT
     
-    public OutfitMethods getEquippedOutfitUsingSelectedOutfit(OutfitMethods outfit, 
+    public Outfit getEquippedOutfitUsingSelectedOutfit(Outfit outfit, 
         GenericCharacter character)
     {
-        OutfitMethods equippedOutfit = null;
+        Outfit equippedOutfit = null;
         
         if(outfit.getClass() == Weapon.class)
         {
@@ -947,7 +948,7 @@ public class EquipMenu extends CommonGUIMethods
         return equippedOutfit;
     }
     
-    public void equipOutfit(OutfitMethods outfit, GenericCharacter character)
+    public void equipOutfit(Outfit outfit, GenericCharacter character)
     {
         if(outfit.getClass() == Weapon.class)
         {
@@ -982,7 +983,7 @@ public class EquipMenu extends CommonGUIMethods
         }
     }
     
-    public void removeOutfit(OutfitMethods outfit, GenericCharacter character)
+    public void removeOutfit(Outfit outfit, GenericCharacter character)
     {
         if(outfit.getClass() == Weapon.class)
         {
@@ -1046,10 +1047,10 @@ public class EquipMenu extends CommonGUIMethods
     }
     
     public double newValueWithSelectedOutfit(StatType statType, int loopCount, 
-        OutfitMethods selectedOutfit, GenericCharacter character)
+        Outfit selectedOutfit, GenericCharacter character)
     {
         // attempt to store outfit specified by selected outfit if it exists 
-        OutfitMethods equippedOutfit = getEquippedOutfitUsingSelectedOutfit(selectedOutfit, 
+        Outfit equippedOutfit = getEquippedOutfitUsingSelectedOutfit(selectedOutfit, 
             character);
         
         double result = 0;
@@ -1097,7 +1098,7 @@ public class EquipMenu extends CommonGUIMethods
     }
     
     public void addCurrentNewAttributeObjectsWithOutfit(GenericCharacter character, 
-        OutfitMethods outfit, DefaultListModel<String> model)
+        Outfit outfit, DefaultListModel<String> model)
     {
         Object[] characterAttributes = character.getTotalStats().getAllTotalAttributesWithNames();
         
@@ -1147,7 +1148,7 @@ public class EquipMenu extends CommonGUIMethods
     
     // outfit is casted as armor later on 
     public void addCurrentNewEnchantmentResistanceObjectsWithArmor(GenericCharacter character, 
-        OutfitMethods outfit, DefaultListModel<String> model)
+        Outfit outfit, DefaultListModel<String> model)
     {
         Object[] characterEnchantmentResistancesWithArmor = character.getTotalStats().
             getAllTotalEnchantmentResistancesWithNames();
@@ -1201,7 +1202,7 @@ public class EquipMenu extends CommonGUIMethods
     }
     
     public void addCurrentNewStatusEffectResistanceObjectsWithArmor(GenericCharacter character, 
-        OutfitMethods outfit, DefaultListModel<String> model)
+        Outfit outfit, DefaultListModel<String> model)
     {
         Object[] characterStatusEffectResistancesWithArmor = character.getTotalStats().
             getAllTotalStatusEffectResistances().toArray( new Object[0]);
@@ -1254,7 +1255,7 @@ public class EquipMenu extends CommonGUIMethods
     }
     
     public DefaultListModel<String> currentNewTotalStatsModelWithOutfit(GenericCharacter character,
-        OutfitMethods outfit)
+        Outfit outfit)
     {
         DefaultListModel<String> currentNewTotalStats = new DefaultListModel<>();
         
@@ -1313,7 +1314,7 @@ public class EquipMenu extends CommonGUIMethods
             return formattedText;
     }
     
-    public void updateOutfitOverviewAndDescription(OutfitMethods object)
+    public void updateOutfitOverviewAndDescription(Outfit object)
     {
         StringBuilder builder = new StringBuilder();
         
@@ -1338,9 +1339,9 @@ public class EquipMenu extends CommonGUIMethods
         outfitDescription.setText("Description:");
     }
     
-    public OutfitMethods getInventoryOutfit(Inventory inventory, Object jListObjectName)
+    public Outfit getInventoryOutfit(Inventory inventory, Object jListObjectName)
     {
-        OutfitMethods object = null;
+        Outfit object = null;
         
         // Note: to get inventory name, start trimming String from character 
         //       6 since first 5 characters are not part of object's name 
@@ -1353,7 +1354,7 @@ public class EquipMenu extends CommonGUIMethods
             {
                 if(trimmedToName.equals(entry.getKey().getName()))
                 {
-                    object = (OutfitMethods)entry.getKey();
+                    object = (Outfit)entry.getKey();
                 }
             }
         }
@@ -1383,8 +1384,7 @@ public class EquipMenu extends CommonGUIMethods
     // update object description/details upon change in selected value of JList 
     public void addUpdateOutfitInformationJListListener(Inventory inventory, JList jList)
     {
-        jList.addListSelectionListener(
-            new ListSelectionListener() 
+        jList.addListSelectionListener(new ListSelectionListener() 
             {
                 @Override
                 public void valueChanged(ListSelectionEvent evt) 
@@ -1396,7 +1396,7 @@ public class EquipMenu extends CommonGUIMethods
                         if(jList.getSelectedValue() != null)
                         {
                             // use selected value of JList to get desired outfit
-                            OutfitMethods outfit = getInventoryOutfit(inventory, 
+                            Outfit outfit = getInventoryOutfit(inventory, 
                                 jList.getSelectedValue());
 
                             // update outfit description 
@@ -1565,7 +1565,7 @@ public class EquipMenu extends CommonGUIMethods
         }
     } 
     
-    public String outfitLocation(OutfitMethods outfit)
+    public String outfitLocation(Outfit outfit)
     {
         String location = null;
         
@@ -1615,9 +1615,9 @@ public class EquipMenu extends CommonGUIMethods
         return result;
     }
     
-    public OutfitMethods getOutfitAtLocation(String location, GenericCharacter character)
+    public Outfit getOutfitAtLocation(String location, GenericCharacter character)
     {
-        OutfitMethods outfit = null;
+        Outfit outfit = null;
         
         switch(OutfitLocations.valueOf(StaticMethods.stringToEnum(location)))
         {
@@ -1669,7 +1669,7 @@ public class EquipMenu extends CommonGUIMethods
         }
     }
     
-    public void equipOutfitAtLocation(String location, OutfitMethods outfit, GenericCharacter 
+    public void equipOutfitAtLocation(String location, Outfit outfit, GenericCharacter 
         character)
     {
         switch(OutfitLocations.valueOf(StaticMethods.stringToEnum(location)))
@@ -1715,7 +1715,7 @@ public class EquipMenu extends CommonGUIMethods
     }
     
     public void outfitRemovalAndInventoryJListReload(int jListOutfitPosition, 
-        OutfitMethods jListOutfit)
+        Outfit jListOutfit)
     {
         updateCharacterInfo(characterForOutfitEquip);
         
@@ -1732,20 +1732,19 @@ public class EquipMenu extends CommonGUIMethods
     public void addEquipActionListener(JButton button, JList outfitArrayListJList,
         JFrame externalFrame)
     {
-        button.addActionListener(
-            new ActionListener() 
+        button.addActionListener(new ActionListener() 
             {
                 @Override
                 public void actionPerformed(ActionEvent e)
                 {
                     // get selected outfit from list of outfits displayed in JList of
                     // external frame based on its position within JList
-                    OutfitMethods jListOutfit = (OutfitMethods)outfitArrayList().get(
+                    Outfit jListOutfit = (Outfit)outfitArrayList().get(
                         positionOfOutfitInJList(externalOutfitNamesJList, (String)
                         externalOutfitNamesJList.getSelectedValue()));
                     
                     // store equipped outfit at specified location of character if it exists 
-                    OutfitMethods equippedOutfit = getOutfitAtLocation(outfitLocation(
+                    Outfit equippedOutfit = getOutfitAtLocation(outfitLocation(
                         jListOutfit), characterForOutfitEquip);
 
                     // store last position of outfit selected for equip 
@@ -1874,7 +1873,7 @@ public class EquipMenu extends CommonGUIMethods
         return outfits;
     }
     
-    public void updateExternalButtonsForOutfitInFocus(OutfitMethods outfit)
+    public void updateExternalButtonsForOutfitInFocus(Outfit outfit)
     {
         String formattedName = String.format("%-26s", outfit.getName());
             externalOutfitName.setText(formattedName);
@@ -1903,7 +1902,7 @@ public class EquipMenu extends CommonGUIMethods
         return coreFormat;
     }
     
-    public DefaultListModel<String> equipFrameEquippedCoresModel(OutfitMethods outfit)
+    public DefaultListModel<String> equipFrameEquippedCoresModel(Outfit outfit)
     {
         DefaultListModel<String> equippedCoresModel = new DefaultListModel<>();
         
@@ -1933,7 +1932,7 @@ public class EquipMenu extends CommonGUIMethods
                 return currentNewValue;
     }
     
-    public void addOutfitAttributes(OutfitMethods outfit, DefaultListModel<String> model)
+    public void addOutfitAttributes(Outfit outfit, DefaultListModel<String> model)
     {
         Object[] outfitAttributes = outfit.getAllTotalAttributesWithNames();
         
@@ -2000,7 +1999,7 @@ public class EquipMenu extends CommonGUIMethods
         }
     }
     
-    public DefaultListModel<String> outfitStatsModel(OutfitMethods outfit)
+    public DefaultListModel<String> outfitStatsModel(Outfit outfit)
     {
         DefaultListModel<String> outfitStats = new DefaultListModel<>();
         
@@ -2027,8 +2026,7 @@ public class EquipMenu extends CommonGUIMethods
     // listener used for updating information displayed on external frame 
     public void addOutfitArrayListJListUpdateInfoListener(JList jList, JFrame externalFrame)
     {
-        jList.addListSelectionListener(
-            new ListSelectionListener() 
+        jList.addListSelectionListener(new ListSelectionListener() 
             {
                 @Override
                 public void valueChanged(ListSelectionEvent evt) 
@@ -2043,7 +2041,7 @@ public class EquipMenu extends CommonGUIMethods
                             {
                                 // add listener for externalOutfitNamesJList that updates 
                                 // button info, equipped cores, and outfit stats 
-                                OutfitMethods outfit = (OutfitMethods)outfitArrayList().get(
+                                Outfit outfit = (Outfit)outfitArrayList().get(
                                     positionOfOutfitInJList(jList, (String)jList.getSelectedValue()));
 
                                 updateExternalButtonsForOutfitInFocus(outfit);
@@ -2093,10 +2091,10 @@ public class EquipMenu extends CommonGUIMethods
             
             // update external frame components using selected outfit before they are added 
             externalOutfitNamesJList.setModel(equipFrameOutfitNamesJListModel(outfitArrayList()));
-            externalOutfitStats.setModel(outfitStatsModel((OutfitMethods)outfitArrayList().get(0)));
+            externalOutfitStats.setModel(outfitStatsModel((Outfit)outfitArrayList().get(0)));
             
             // display info for first object in outfit ArrayList using buttons 
-            updateExternalButtonsForOutfitInFocus((OutfitMethods)outfitArrayList().get(0));
+            updateExternalButtonsForOutfitInFocus((Outfit)outfitArrayList().get(0));
             
             // add listener for externalOutfitNamesJList that updates button info
             // equipped cores, and outfit stats 
@@ -2256,12 +2254,12 @@ public class EquipMenu extends CommonGUIMethods
     /*******************************************************************************/
 
     // method needs equippedOutfitReference reference set upon buttoon click
-    public OutfitMethods getEquippedOutfit()
+    public Outfit getEquippedOutfit()
     {
         GenericCharacter character = getPartyMember(partyMemberJList.getSelectedValue());
         
-        // meant to store object of OutfitMethods subclass after implicit casting 
-        OutfitMethods outfit = null;
+        // meant to store object of Outfit subclass after implicit casting 
+        Outfit outfit = null;
         
         // equippedOutfitReference uses JButton reference to retrive certain outfit 
         if(equippedOutfitReference == equippedWeapon)
@@ -2469,8 +2467,7 @@ public class EquipMenu extends CommonGUIMethods
     public void addInventoryOutfitsJListOptionsListener(JList jList, JPopupMenu 
         inventoryJListJPopupMenu)
     {
-        jList.addMouseListener(
-            new MouseAdapter() 
+        jList.addMouseListener(new MouseAdapter() 
             {
                 @Override
                 public void mouseClicked(MouseEvent me)
@@ -2483,7 +2480,7 @@ public class EquipMenu extends CommonGUIMethods
                         // proceed if selection in JList focus is not null
                         if(inventoryOutfitsJList.getSelectedValue() != null)
                         {
-                            OutfitMethods inventoryOutfit = getInventoryOutfit(referenceInventory, 
+                            Outfit inventoryOutfit = getInventoryOutfit(referenceInventory, 
                             inventoryOutfitsJList.getSelectedValue());
                             
                             // account for whether or not character can change outfit at location 
@@ -2502,6 +2499,9 @@ public class EquipMenu extends CommonGUIMethods
     
     // ADDING JMENUITEM OBJECTS REPRESENTING OBJECT OPTIONS TO POPUPMENU
     
+    // END: INVENTORY JLIST (OUTFITS ONLY), OBJECT DESCRIPTION, AND NEW JLISTS     
+    // ADDING JMENUITEM OBJECTS REPRESENTING OBJECT OPTIONS TO POPUPMENU
+    
     // END: INVENTORY JLIST (OUTFITS ONLY), OBJECT DESCRIPTION, AND NEW JLISTS 
     /*******************************************************************************/
 
@@ -2512,15 +2512,14 @@ public class EquipMenu extends CommonGUIMethods
 
     public void addButtonJPopupMenuActionListener(JButton button, String outfitLocation)
     {
-        button.addActionListener(
-            new ActionListener() 
+        button.addActionListener(new ActionListener() 
             {
                 String location = outfitLocation;
                 
                 @Override
                 public void actionPerformed(ActionEvent ev) 
                 {
-                    OutfitMethods outfit = getOutfitAtLocation(location, getPartyMember(
+                    Outfit outfit = getOutfitAtLocation(location, getPartyMember(
                         partyMemberJList.getSelectedValue()));
                     
                     // proceed if outfit at location of party member is not null
@@ -2573,7 +2572,7 @@ public class EquipMenu extends CommonGUIMethods
     // START: CONSTRUCTOR 
     /*******************************************************************************/
 
-    public EquipMenu(JFrame mainMenuFrame, PlayerEntity entity)
+    public SubmenuEquipment(JFrame mainMenuFrame, PlayerEntity entity)
     {
         // store main menu frame to call it later 
         callingFrame = mainMenuFrame;

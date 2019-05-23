@@ -1,5 +1,6 @@
-package RunProject;
+package GUI_Collection;
 
+import GUI_Collection.CommonGUIMethods;
 import Player_Entity.PlayerEntity;
 import Generic_Character.GenericCharacter;
 import Move_Creation.StatusEffect;
@@ -39,7 +40,7 @@ import java.awt.Font;
 import java.awt.Insets;
 import javax.swing.SwingConstants;
 
-public class ItemsMenu extends CommonGUIMethods
+public class SubmenuItems extends CommonGUIMethods
 {
     // frame meant to store components in a desired layout 
     private JFrame frame = new JFrame("Capstone RPG");
@@ -1968,7 +1969,7 @@ public class ItemsMenu extends CommonGUIMethods
 
     
     
-    public ItemsMenu(JFrame mainMenuFrame, PlayerEntity entity)
+    public SubmenuItems(JFrame mainMenuFrame, PlayerEntity entity)
     {
         // store main menu frame to call it later 
         callingFrame = mainMenuFrame;

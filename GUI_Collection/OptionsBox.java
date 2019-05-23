@@ -1,5 +1,6 @@
-package RunProject;
+package GUI_Collection;
 
+import GUI_Collection.CommonGUIMethods;
 import java.awt.Color;
 import java.awt.Font;
 import java.util.ArrayList;
@@ -14,7 +15,7 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 
 // box is designed to return a number from 0 -> # of buttons that exist 
-public class OptionsPostExpositionBox extends CommonGUIMethods
+public class OptionsBox extends CommonGUIMethods
 {
     // set frame for options post exposition box 
     private JFrame frame = new JFrame("Capstone RPG");
@@ -346,7 +347,7 @@ public class OptionsPostExpositionBox extends CommonGUIMethods
     
     // Note: exposition text with boundary "/" is supplied 
     // number of buttons (options) varies depending on text supplied for buttons 
-    public OptionsPostExpositionBox(ArrayList<String> expositionBoxText, 
+    public OptionsBox(ArrayList<String> expositionBoxText, 
         ArrayList<String> variableOptionsStrings)
     { 
         // set color and layout for frame 

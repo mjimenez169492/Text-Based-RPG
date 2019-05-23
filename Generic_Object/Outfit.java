@@ -1,7 +1,7 @@
 package Generic_Object;
 
 /*
-    OutfitMethods concerns managing aspects common amongst equippable outfits such 
+    Outfit concerns managing aspects common amongst equippable outfits such 
     as the ability to equip Cores objects and boost the object's durability values. 
     
     Note on Cores objects and outfits: 
@@ -14,7 +14,7 @@ import Commonly_Used_Methods.StaticMethods;
 import java.util.HashSet;
 import java.util.Arrays;
 
-public class OutfitMethods extends GenericObject
+public class Outfit extends GenericObject
 {
     // variables concerning max gauges 
     private double maxHealth, maxNano, maxStamina;

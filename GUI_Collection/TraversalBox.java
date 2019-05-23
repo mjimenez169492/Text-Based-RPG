@@ -1,5 +1,6 @@
-package RunProject;
+package GUI_Collection;
 
+import GUI_Collection.CommonGUIMethods;
 import Player_Entity.PlayerEntity;
 import java.awt.Font;
 import java.awt.Color;

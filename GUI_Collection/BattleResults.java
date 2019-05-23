@@ -1,20 +1,19 @@
-package RunProject;
+package GUI_Collection;
 
+import GUI_Collection.CommonGUIMethods;
 import Generic_Character.*;
 import java.security.SecureRandom;
 import java.util.PriorityQueue;	
 import Player_Entity.Party;
 import java.util.ArrayList;
-import Battle_Feature.LevelMechanics;
 import Player_Entity.PlayerEntity;
 import Generic_Character.GenericCharacter;
-import Battle_Feature.LevelMechanics;
-import Object_Factories.PlayerEntityFactory;
+import Object_Factories_For_Testing.PlayerEntityFactory;
 import Player_Entity.PartyWallet;
 import Generic_Object.GenericObject;
 import Player_Entity.Inventory;
 import Player_Entity.Party;
-import Battle_Feature.LevelMechanics;
+import Generic_Character.LevelMechanics;
 
 import java.awt.GridBagLayout;
 import java.util.ArrayList;
