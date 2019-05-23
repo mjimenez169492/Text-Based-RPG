@@ -237,7 +237,7 @@ public class OptionsPostExpositionBox extends CommonGUIMethods
             builder.append(". ");
         
         // attempt to add text to builder by appending it to the end 
-        if(text.length() < characterLimit)
+        if(text.length() <= characterLimit)
         {
             builder.append(text);
         }
