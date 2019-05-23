@@ -3,6 +3,7 @@ package RunProject;
 import Player_Entity.PlayerEntity;
 import Generic_Character.GenericCharacter;
 import Battle_Feature.LevelMechanics;
+import Commonly_Used_Methods.StaticMethods;
 import Object_Factories.PlayerEntityFactory;
 import Player_Entity.PartyWallet;
 import Move_Creation.StatusEffect;
@@ -166,10 +167,15 @@ public class EquipMenu
     private boolean viewFrameActive, equipFrameActive;
     
     private JButton externalOutfitName, externalExperienceMultiplier, 
-        externalDurabilityInfo, externalSlotInfo, externalEquip;
+        externalDurabilityInfo, externalSlotCoreInfo, externalEquip;
         
     private JList externalOutfitNamesJList, externalEquippedCores, 
         externalOutfitStats;
+    
+    private GenericCharacter characterForOutfitEquip;
+    
+    // Note: outfit in focus can only be an equipped outfit 
+    private OutfitMethods outfitFromOutfitButton;
     
     
     
@@ -979,7 +985,6 @@ public class EquipMenu
         for(Map.Entry<GenericObject, ArrayList<GenericObject>> entry : inventory.
             getInventory().entrySet())
         {
-            // 
             if(validOutfit(entry.getKey()))
             {
                 // String contains size of outfit group and name of outfit 
@@ -1384,8 +1389,7 @@ public class EquipMenu
     
     // METHODS FOR ADDING COMPONENTS TO EXTERNAL FRAME 
     
-    public void addJListToExternalFrame(JList jList, int gridy, int gridx, 
-        JFrame externalFrame)
+    public void addJListToExternalFrame(JList jList, int gridx, JFrame externalFrame)
     {
         // set JList text font 
         jList.setFont(JListFont);
@@ -1401,7 +1405,7 @@ public class EquipMenu
         gridBagConstraints.fill = GridBagConstraints.BOTH;
         
         // row position 
-        gridBagConstraints.gridy = gridy;
+        gridBagConstraints.gridy = 0;
         
         // column of specified row position
         gridBagConstraints.gridx = gridx;
@@ -1424,6 +1428,13 @@ public class EquipMenu
     {
         button = new JButton();
         
+        // text will be displayed starting at furthest left of button text area 
+        button.setHorizontalAlignment(SwingConstants.LEADING);
+        
+        button.setBackground(Color.BLACK);
+        
+        button.setForeground(Color.WHITE);
+        
         button.setFont(buttonFont);
         
         return button;
@@ -1435,7 +1446,7 @@ public class EquipMenu
         addButtonComponent(newExternalButton(button), gridy, gridx, 0.11, 0.11, 1, 1, frame);
     }
     
-    public void addExternalButtons(int gridy, JFrame frame)
+    public void addOutfitInfoButtonsToExternalFrame(int gridy, JFrame frame)
     {
         addButtonToExternalFrame(externalOutfitName, 0, gridy, frame);
         
@@ -1443,13 +1454,292 @@ public class EquipMenu
         
         addButtonToExternalFrame(externalDurabilityInfo, 2, gridy, frame);
         
-        addButtonToExternalFrame(externalSlotInfo, 3, gridy, frame);
+        addButtonToExternalFrame(externalSlotCoreInfo, 3, gridy, frame);
     }
     
     // METHODS FOR ADDING COMPONENTS TO EXTERNAL FRAME 
     
     
+    
+    // EQUIP BUTTON ACTION FOR EQUIP EXTERNAL FRAME 
+    
+    public enum OutfitLocations
+    { 
+        WEAPON("Weapon"), BODY_ARMOR("Body Armor"), LEG_ARMOR("Leg Armor"), 
+            FOOT_ARMOR("Foot Armor"), ACCESSORY_ONE("Accessory One"), 
+            ACCESSORY_TWO("Accessory Two");
+        
+        private String outfitLocation;
+        
+        OutfitLocations(String outfitLocation)
+        {
+            this.outfitLocation = outfitLocation;
+        }
+        
+        public String getEnumAsString()
+        {
+            return outfitLocation;
+        }
+    } 
+    
+    public String outfitLocation(OutfitMethods outfit)
+    {
+        String location = null;
+        
+        // different ways to retrieve location based on weapon, armor, or accessory 
+        if(outfit.getClass() == Weapon.class || outfit.getClass() == Accessory.class)
+        {
+            // Note: differs from Armor objects since Weapon/Accessory objects are 
+            //       created according to a different naming scheme 
+            location = outfit.getMainClassString();
+        }
+        // account for armor which can be placed on body, legs, or feet
+        else
+        {
+            location = outfit.getCategory();
+        }
+        
+        return location;
+    }
+    
+    public boolean canEquipOutfitAtLocation(String location, GenericCharacter character)
+    {
+        boolean result = false;
+        
+        switch(OutfitLocations.valueOf(StaticMethods.stringToEnum(location)))
+        {
+            case WEAPON:
+                result = character.getEquippableOutfits().getWeaponChangeState();
+                    break;
+            case BODY_ARMOR:
+                result = character.getEquippableOutfits().getBodyArmorChangeState();
+                    break;
+            case LEG_ARMOR:
+                result = character.getEquippableOutfits().getLegArmorChangeState();
+                    break;
+            case FOOT_ARMOR:
+                result = character.getEquippableOutfits().getFootArmorChangeState();
+                    break;
+            case ACCESSORY_ONE:
+                result = character.getEquippableOutfits().getAccessoryOneChangeState();
+                    break;
+            case ACCESSORY_TWO:
+                result = character.getEquippableOutfits().getAccessoryTwoChangeState();
+                    break;
+        }
+        
+        return result;
+    }
+    
+    public OutfitMethods getOutfitAtLocation(String location, GenericCharacter character)
+    {
+        OutfitMethods outfit = null;
+        
+        switch(OutfitLocations.valueOf(StaticMethods.stringToEnum(location)))
+        {
+            case WEAPON:
+                outfit = character.getEquippableOutfits().getWeapon();
+                    break;
+            case BODY_ARMOR:
+                outfit = character.getEquippableOutfits().getBodyArmor();
+                    break;
+            case LEG_ARMOR:
+                outfit = character.getEquippableOutfits().getLegArmor();
+                    break;
+            case FOOT_ARMOR:
+                outfit = character.getEquippableOutfits().getFootArmor();
+                    break;
+            case ACCESSORY_ONE:
+                outfit = character.getEquippableOutfits().getAccessoryOne();
+                    break;
+            case ACCESSORY_TWO:
+                outfit = character.getEquippableOutfits().getAccessoryTwo();
+                    break;
+        }
+        
+        return outfit;
+    }
+    
+    public void removeEquippedOutfit(String location, GenericCharacter character)
+    {
+        switch(OutfitLocations.valueOf(StaticMethods.stringToEnum(location)))
+        {
+            case WEAPON:
+                character.getEquippableOutfits().setWeapon(null);
+                    break;
+            case BODY_ARMOR:
+                character.getEquippableOutfits().setBodyArmor(null);
+                    break;
+            case LEG_ARMOR:
+                character.getEquippableOutfits().setLegArmor(null);
+                    break;
+            case FOOT_ARMOR:
+                character.getEquippableOutfits().setFootArmor(null);
+                    break;
+            case ACCESSORY_ONE:
+                character.getEquippableOutfits().setAccessoryOne(null);
+                    break;
+            case ACCESSORY_TWO:
+                character.getEquippableOutfits().setAccessoryTwo(null);
+                    break;
+        }
+    }
+    
+    public void equipOutfitAtLocation(String location, OutfitMethods outfit, GenericCharacter 
+        character)
+    {
+        switch(OutfitLocations.valueOf(StaticMethods.stringToEnum(location)))
+        {
+            case WEAPON:
+                character.getEquippableOutfits().setWeapon((Weapon)outfit);
+                    break;
+            case BODY_ARMOR:
+                character.getEquippableOutfits().setBodyArmor((Armor)outfit);
+                    break;
+            case LEG_ARMOR:
+                character.getEquippableOutfits().setLegArmor((Armor)outfit);
+                    break;
+            case FOOT_ARMOR:
+                character.getEquippableOutfits().setFootArmor((Armor)outfit);
+                    break;
+            case ACCESSORY_ONE:
+                character.getEquippableOutfits().setAccessoryOne((Accessory)outfit);
+                    break;
+            case ACCESSORY_TWO:
+                character.getEquippableOutfits().setAccessoryTwo((Accessory)outfit);
+                    break;
+        }
+    }
+    
+    public int positionOfOutfitInJList(JList inventoryJList, OutfitMethods outfit)
+    {
+        int counter = 0;
+        
+        for(int i = 0; i < inventoryJList.getModel().getSize(); i++)
+        {
+            if(outfit.getName().equals(inventoryJList.getModel().getElementAt(i)))
+            {
+                break;
+            }
+            else
+            {
+                counter++;
+            }
+        }
+        
+        return counter;
+    }
+    
+    public void outfitRemovalAndInventoryJListReload(int jListOutfitPosition, 
+        OutfitMethods jListOutfit)
+    {
+        updateCharacterInfo(characterForOutfitEquip);
+        
+	updateEquippedOutfitsButtons(characterForOutfitEquip);
+        
+        referenceInventory.removeObject(jListOutfit);
+                                
+        inventoryObjectsJList.setModel(inventoryOutfitsInJListFormat
+            (referenceInventory));
 
+        shiftToNextExistingObject(inventoryObjectsJList, 
+            jListOutfitPosition);
+    }
+    
+    public void addEquipActionListener(JButton button, JList outfitArrayListJList,
+        JFrame externalFrame)
+    {
+        button.addActionListener(
+            new ActionListener() 
+            {
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    OutfitMethods jListOutfit = (OutfitMethods)externalOutfitNamesJList.
+                        getSelectedValue();
+                    
+                    // proceed if outfit can be placed at character's outfit location
+                    if(canEquipOutfitAtLocation(outfitLocation(jListOutfit), characterForOutfitEquip))
+                    {
+                        OutfitMethods equippedOutfit = getOutfitAtLocation(outfitLocation(
+                            jListOutfit), characterForOutfitEquip);
+                        
+                        int jListOutfitPosition = positionOfOutfitInJList(inventoryObjectsJList, jListOutfit);
+                        
+                        // if location that outfit must be equipped at has an outfit in
+                        // place, then attempt to "swap" it with equipped outfit 
+                        if(equippedOutfit != null)
+                        {
+                            // proceed if inventory can hold instance of equipped outfit 
+                            if(referenceInventory.canAddObject(equippedOutfit))
+                            {
+                                removeEquippedOutfit(outfitLocation(equippedOutfit), 
+                                    characterForOutfitEquip);
+                                
+                                equipOutfitAtLocation(outfitLocation(jListOutfit), 
+                                    jListOutfit, characterForOutfitEquip);
+                                
+                                referenceInventory.addObject(equippedOutfit);
+                                
+                                outfitRemovalAndInventoryJListReload(jListOutfitPosition, 
+                                    jListOutfit);
+                            }
+                        }
+                        // else equip outfit to character at appropriate location 
+                        else
+                        {
+                            equipOutfitAtLocation(outfitLocation(jListOutfit), 
+                                jListOutfit, characterForOutfitEquip);
+                            
+                            outfitRemovalAndInventoryJListReload(jListOutfitPosition, 
+                                jListOutfit);
+                        }
+                    }
+                }
+            }
+        );
+        
+    }
+    
+    public void addEquipButton(JList outfitArrayListJList, int gridy, int gridx, 
+        JFrame externalFrame)
+    {
+        JButton button = new JButton("Equip");
+        
+        // set button font 
+        button.setFont(buttonFont);
+        
+        // add use item on multiple targets functionality for button 
+        addEquipActionListener(button, outfitArrayListJList, externalFrame);
+        
+        GridBagConstraints gridBagConstraints = new GridBagConstraints();
+        
+        // button will expand horizontally and vertically to fill empty space 
+        gridBagConstraints.fill = GridBagConstraints.BOTH;
+        
+        // row position 
+        gridBagConstraints.gridy = gridy;
+        
+        // column of specified row position
+        gridBagConstraints.gridx = gridx;
+        
+        // specified column length component takes up (3/10 of frame if no 
+        // other components are in the way)
+        gridBagConstraints.weighty = 0.3;
+        
+        // specified row length component takes up (3/10 of frame if no 
+        // other components are in the way)
+        gridBagConstraints.weightx = 0.3;
+        
+        externalFrame.add(button, gridBagConstraints);
+    }
+    
+    // EQUIP BUTTON ACTION FOR EQUIP EXTERNAL FRAME 
+
+    
+    
+    // INITIALIZING EXTERNL FRAME COMPONENTS
+    
     public ArrayList<GenericObject> outfitArrayList()
     {
         ArrayList<GenericObject> outfitArrayList = new ArrayList<>();
@@ -1482,8 +1772,26 @@ public class EquipMenu
         return outfits;
     }
     
-// set up button format stuff here...
-    c
+    // Note: if 1 outfit, supply outfit immediately in external frame set up 
+    public void updateExternalButtonsForOutfitInFocus(OutfitMethods outfit)
+    {
+        String formattedName = String.format("%-26s", outfit.getName());
+            externalOutfitName.setText(formattedName);
+        
+        String formattedExpMultiplier = String.format("%-14s: %-3s", "EXP Multiplier",
+            statValueSpacing(String.valueOf(outfit.getExpMultiplier())));
+            externalExperienceMultiplier.setText(formattedExpMultiplier);
+        
+        String formattedDurability = String.format("%-12s: %s / % s", "Durability",
+            statValueSpacing(String.valueOf(outfit.getCurrentDurability())), 
+            statValueSpacing(String.valueOf(outfit.getMaxDurability())));
+            externalDurabilityInfo.setText(formattedDurability);
+        
+        String formattedSlotCoreInfo = String.format("%-12s: %s / % s", "Core / Slot",
+            statValueSpacing(String.valueOf(outfit.getNumberOfExistingCores())), 
+            statValueSpacing(String.valueOf(outfit.getMaxNumberOfOutfitSlots())));
+            externalSlotCoreInfo.setText(formattedSlotCoreInfo);
+    }
     
     public String coreInformationFormat(int counter, Core core)
     {
@@ -1608,6 +1916,8 @@ public class EquipMenu
         return outfitStats;
     }
     
+    // INITIALIZING EXTERNL FRAME COMPONENTS
+    
     
     
     
@@ -1615,6 +1925,61 @@ public class EquipMenu
     // how external frame is set up as well as functionality it provides 
     public void externalFrameByBoolean(JFrame externalFrame)
     {
+        // if concerns view frame suited only for equipped outfits  
+        if(viewFrameActive)
+        {
+            // components: col 0 -> info buttons, col 1 -> equipped cores, 
+            //             col 2 -> all outfit stats 
+            addOutfitInfoButtonsToExternalFrame(0, externalFrame);
+            addJListToExternalFrame(externalEquippedCores, 1, externalFrame);
+            addJListToExternalFrame(externalOutfitStats, 2, externalFrame);
+            
+            // initialize components 
+            
+                // NEED TO DETERMINE OUTFIT FROM OUTFIT BUTTON!!!
+            updateExternalButtonsForOutfitInFocus(outfitFromOutfitButton);
+            externalEquippedCores.setModel(equipFrameEquippedCoresModel(outfitFromOutfitButton));
+            externalOutfitStats.setModel(outfitStatsModel(outfitFromOutfitButton));
+        }
+        else if(equipFrameActive)
+        {
+            // components: col 0 -> outfitArrayList     col 1 -> info buttons, 
+            //             col 2 -> equipped cores,     col 3 -> all outfit stats 
+            addJListToExternalFrame(externalOutfitNamesJList, 0, externalFrame);
+            addOutfitInfoButtonsToExternalFrame(1, externalFrame);
+            addJListToExternalFrame(externalEquippedCores, 2, externalFrame);
+            addJListToExternalFrame(externalOutfitStats, 3, externalFrame);
+            
+            
+            
+            /* idea
+                must count number of outfit instances exist post adding components 
+            */
+            
+            // equip frame behavior differs depending on 
+            // if there is only 1
+            if(outfitArrayList().size() == 1)
+            {
+                
+                
+                
+            }
+            else
+            {
+                // add listener for externalOutfitNamesJList that updates button info
+                // equipped cores, and outfit stats 
+                
+                
+                
+                
+                
+            }
+            
+            
+            
+        }
+        
+        
             // outfitArrayListJList model 
     // outfitNamesJList = new JList(equipFrameOutfitModel(outfitArrayList()));
         // equippedCoresJList model 
@@ -1623,7 +1988,7 @@ public class EquipMenu
     // equippedCoresJList = new JList(equipFrameEquippedCoresModel(outfitStatsModel(outfit)));
         // note: outfit received from jlist listener for outfitArrayListJList 
     
-        
+        des
         if()
         {
             
@@ -1653,14 +2018,8 @@ public class EquipMenu
     
     
     
-    x
-    
-    
-    
-    
-    
     // update object overview/description and inventory object group count upon equip 
-    public void shiftToNextExistingObject(JList inventoryJList, int lastObjectGroupPosition)
+    public void shiftToNextExistingObject(JList inventoryJList, int outfitPositionInJList)
     {
         // account for when no object exists first
         if(inventoryJList.getModel().getSize() == 0)
@@ -1668,19 +2027,19 @@ public class EquipMenu
             resetOutfitOverviewAndDescription();
         }
         // move forward or backward until another object is found FROM position last
-        // occupied by tossed object group (if possible)
+        // occupied by outfit that was equipped (if possible)
         else
         {
-            // if attempts to update object info using object at supplied position
-            if(lastObjectGroupPosition < inventoryJList.getModel().getSize())
+            // if attempts to update outfit info using supplied position
+            if(outfitPositionInJList < inventoryJList.getModel().getSize())
             {
                 // get object at designated location and update object information
                 updateOutfitOverviewAndDescription(getInventoryOutfit(referenceInventory,
-                    inventoryJList.getModel().getElementAt(lastObjectGroupPosition)));
+                    inventoryJList.getModel().getElementAt(outfitPositionInJList)));
                 
                 // set selected index to be position of last object group - 1 since 
-                // inventory positions range from 0 to (inventory.size() - 1)
-                inventoryJList.setSelectedIndex(lastObjectGroupPosition - 1);
+                // positions range from 0 to (inventoryJList.getModel().size() - 1)
+                inventoryJList.setSelectedIndex(outfitPositionInJList - 1);
             }
             // move backward to position (inventoryJList.getModel().getSize() - 1) to 
             // display next object that exists to account for when an object at position 
@@ -1692,7 +2051,7 @@ public class EquipMenu
                     inventoryJList.getModel().getElementAt(inventoryJList.getModel().getSize() - 1)));
                 
                 // set selected index to be position of inventoryJList.getModel().getSize() - 1 since 
-                // inventory positions range from 0 to (inventory.size() - 1)
+                // positions range from 0 to (inventoryJList.getModel().size() - 1)
                 inventoryJList.setSelectedIndex(inventoryJList.getModel().getSize() - 1);
             }
         }
