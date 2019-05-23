@@ -45,8 +45,7 @@ public class Accessory extends OutfitMethods
 
     public enum AccessoryCategory
     { 
-        APPAREL("Apparel"), JEWELERY("Jewelery"), ATTACHMENTS("Attachments"), MISCELLEANOUS
-        ("Miscelleanous");
+        SLOT_ONE("Slot One"), SLOT_TWO("Slot Two");
         
         private String accessoryCategory;
         
@@ -74,7 +73,9 @@ public class Accessory extends OutfitMethods
     
     public enum AccessorySuperTypes 
     {
-        COMBAT_ORIENTED("Combat Oriented"), SKILLS_ORIENTED("Skills Oriented");
+        COMBAT_ORIENTED("Combat Oriented"), SKILLS_ORIENTED("Skills Oriented"), 
+        APPAREL("Apparel"), JEWELERY("Jewelery"), ATTACHMENTS("Attachments"), 
+        MISCELLEANOUS("Miscelleanous");
         
         private String accessorySuperType;
         
