@@ -643,7 +643,7 @@ public class MoveCalculations
         {
             if(critical >= (rand.nextInt(100) + 1))
             {
-                output += (output * 2.67);
+                output += (output * 2.10);
             }
         }
         else
@@ -751,15 +751,15 @@ public class MoveCalculations
     // Note: output will ALWAYS serve as base value for variance
     public double applyOutputVariance(double variance, double output)
     {
-        double resultingVariance = (output * (outputVarianceCalculation(variance)));
+        double resultingVariance = (outputVarianceCalculation(variance));
         
         if(variance < 0.00)
         {
-            output -= resultingVariance;
+            output -= ((output * resultingVariance) * -1);
         }
         else
         {
-            output += resultingVariance;
+            output += (output * resultingVariance);
         }
         
         return output;
@@ -786,16 +786,17 @@ public class MoveCalculations
     public double totalOutput(GenericCharacter user, GenericCharacter target, 
         Moves move, double output, double critical)
     {
+        System.out.println("1: "+output);
         output = totalEnchantment(user, target, move, output);
-
+System.out.println("2: "+output);
         output = applyCritical(user, target, critical, output);
-
+System.out.println("3: "+output);
         output = applyOutputVariance(move.getOutputVariance(), output); 
-        
+    System.out.println("4: "+output);
         output = immuneTosReducingOutput(target, move, output);
-        
+    System.out.println("5: "+output);
         output = positiveOrNegativeOutput(move, output);
-        
+    System.out.println("6: "+output);
         return output;
     }
     
@@ -1089,7 +1090,9 @@ public class MoveCalculations
             for(int i = 0; i < move.getTimesMoveAffectsTarget(); i++)
             {
                 output = (outputBasedOnAccuracy(user, target, move, accuracy, 
-                    output, critical) * move.getOutputModifier());
+                    output, critical));
+                
+                output += (output * move.getOutputModifier());
 
                 postOutputTasks(user, target, move, output);
             }
@@ -1205,7 +1208,7 @@ public class MoveCalculations
                 
                 output += output * move.getOutputModifier();
                 
-                System.out.println("out is: "+output);
+System.out.println("out is: "+output);
                 postItemOutputTasks(user, target, move, output);
             }
         }
