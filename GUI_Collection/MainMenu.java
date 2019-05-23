@@ -1,9 +1,7 @@
 package GUI_Collection;
 
-import GUI_Collection.CommonGUIMethods;
 import Player_Entity.Party;
 import Generic_Character.GenericCharacter;
-import Object_Factories_For_Testing.PlayerEntityFactory;
 import Player_Entity.PartyWallet;
 import Move_Creation.StatusEffect;
 import Player_Entity.PlayerEntity;
@@ -99,8 +97,8 @@ public class MainMenu extends CommonGUIMethods
                     @Override
                     public void actionPerformed(ActionEvent e)
                     {
-                        // shift focus to SubmenuItems frame 
-                        new SubmenuItems(frame, entity);
+                        // shift focus to SubmenuItems frame and store calling frame 
+                        new SubmenuItems(callingFrame, entity);
                         
                         // dispose of Main menu frame 
                         frame.dispose();
@@ -116,8 +114,8 @@ public class MainMenu extends CommonGUIMethods
                     @Override
                     public void actionPerformed(ActionEvent e)
                     {
-                        // shift focus to EquipsMenu frame 
-                        new SubmenuEquipment(frame, entity);
+                        // shift focus to SubmenuEquipment frame and store calling frame 
+                        new SubmenuEquipment(callingFrame, entity);
                         
                         // dispose of Main menu frame 
                         frame.dispose();
@@ -185,11 +183,11 @@ public class MainMenu extends CommonGUIMethods
                     @Override
                     public void actionPerformed(ActionEvent e)
                     {
-                        // dispose of Main menu frame 
-                        frame.dispose();
-
                         // return focus to frame that orginally called Main Menu 
                         displayFrameWindow(callingFrame);
+                        
+                        // dispose of Main menu frame 
+                        frame.dispose();
                     }
                 }); 
                     exitMenu.setEnabled(true);
@@ -219,9 +217,9 @@ public class MainMenu extends CommonGUIMethods
             wallet.getTierString().length() - 1));
         
         String walletMoney = String.format("Money: %s / %s", String.valueOf(
-            wallet.getCurrentMoney()), String.valueOf(wallet.getWalletCapacity()));
+            (int)wallet.getCurrentMoney()), String.valueOf((int)wallet.getWalletCapacity()));
         
-        String walletInfo = String.format("%-16s %-14s %-10s %s", "Wallet Info:", 
+        String walletInfo = String.format("%-14s %-13s %-9s %s", "Wallet Info:", 
             walletSize, walletTier, walletMoney);
         
         return walletInfo;
