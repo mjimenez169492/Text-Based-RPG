@@ -412,7 +412,7 @@ public class EquippableOutfits
         {
             if(element != null)
             {
-                resistanceValue += element.getResistanceValueForKey(resistanceName);
+                resistanceValue += element.getTotalResistanceValue(resistanceName);
             }
         }
         
