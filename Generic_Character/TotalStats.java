@@ -540,7 +540,7 @@ public class TotalStats
                 return arrayOfArrays;
     }
     
-    public ArrayList<Object> getAllTotalResistances()
+    public ArrayList<Object> getAllTotalStatusEffectResistances()
     {
         ArrayList<Object> arrayList = new ArrayList<>();
 
@@ -559,9 +559,9 @@ public class TotalStats
     {
         double result = 0.0;
         
-        ArrayList<Object> arrayList = getAllTotalResistances();
+        ArrayList<Object> arrayList = getAllTotalStatusEffectResistances();
         
-        for(int i = 0; i < getAllTotalResistances().size(); i += 2)
+        for(int i = 0; i < getAllTotalStatusEffectResistances().size(); i += 2)
         {
             if(key.equals((String)arrayList.get(i)))
             {
