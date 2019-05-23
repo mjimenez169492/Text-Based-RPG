@@ -75,7 +75,7 @@ public class ExpositionBox extends CommonGUIMethods
     private JButton currentLocation, eventAndEventLine, currentAndFinalLines;
     
     // set vertical padding in pixels for components meant for displaying text 
-    private final int textDisplayingComponentPixelPadding = 68;
+    private final int textDisplayingComponentPixelPadding = 85;
     
     // buttons meant to store text concerning speaking roles and speech relayed 
     private JButton speakerOrDescription, lineOne, lineTwo, lineThree; 
@@ -91,11 +91,9 @@ public class ExpositionBox extends CommonGUIMethods
     // can display in a button (can be changed with no issue)
     private final int characterLimit = 70;
     
-    // Note: number BEFORE - 1 (in this case number 3) signifies buttons that 
-    //       can be used to store text meant to be displayed to players. The
-    //       equation (3 - 1) results in a value which will be used to loop
-    //       through text and buttons themselves in order to set button text 
-    private final int fragmentsNeededForConnectedFragement = 3 - 1;
+    // Note: number (in this case number 3) signifies buttons that can be used 
+    //       to store text meant to be displayed to players. 
+    private final int fragmentsNeededForConnectedFragement = 3;
     
     // meant to store exposition that will be broken up and displayed in pieces 
     private ArrayList<String> exposition = new ArrayList<>();
@@ -187,12 +185,14 @@ public class ExpositionBox extends CommonGUIMethods
     public void topRightComponents(String location, String eventEventLine)
     {
         // Ex: "Nothing Place - Nothing City - Nothing Plaza - Nothing Bar - Nothing Chair"
-        currentLocation = unusableTopRightButton(currentLocation, location);
-            addButtonComponent(currentLocation, topRightComponentPixelPadding, 0, 0, 5, frame);
+        String formatLocation = String.format("%73s", location);
+            currentLocation = unusableTopRightButton(currentLocation, formatLocation);
+                addButtonComponent(currentLocation, topRightComponentPixelPadding, 0, 0, 0, frame);
         
         // Ex: "The Tale Of Nothing - Nothing Nowhere" 
-        eventAndEventLine = unusableTopRightButton(eventAndEventLine, eventEventLine);
-            addButtonComponent(eventAndEventLine, topRightComponentPixelPadding, 1, 2, 3, frame);
+        String formatEventEventLine = String.format("%43s", eventEventLine);
+            eventAndEventLine = unusableTopRightButton(eventAndEventLine, formatEventEventLine);
+                addButtonComponent(eventAndEventLine, topRightComponentPixelPadding, 1, 2, 3, frame);
 
         currentAndFinalLines = unusableTopRightButton(currentAndFinalLines, "");
             addButtonComponent(currentAndFinalLines, topRightComponentPixelPadding, 2, 4, 1, frame);
@@ -216,7 +216,7 @@ public class ExpositionBox extends CommonGUIMethods
     public void speakerComponent()
     {
         speakerOrDescription = unusableSpeakerButton(speakerOrDescription);
-            addButtonComponent(speakerOrDescription, textDisplayingComponentPixelPadding, 4, 0, 2, frame);
+            addButtonComponent(speakerOrDescription, textDisplayingComponentPixelPadding, 3, 0, 2, frame);
     }
     
     public JButton unusableTextDisplayingButton(JButton button)
@@ -237,13 +237,13 @@ public class ExpositionBox extends CommonGUIMethods
     public void textDisplayingComponents()
     {
         lineOne = unusableTextDisplayingButton(lineOne);
-            addButtonComponent(lineOne, textDisplayingComponentPixelPadding, 5, 0, 6, frame);
+            addButtonComponent(lineOne, textDisplayingComponentPixelPadding, 4, 0, 0, frame);
         
         lineTwo = unusableTextDisplayingButton(lineTwo);
-            addButtonComponent(lineTwo, textDisplayingComponentPixelPadding, 6, 0, 6, frame);
+            addButtonComponent(lineTwo, textDisplayingComponentPixelPadding, 5, 0, 0, frame);
         
         lineThree = unusableTextDisplayingButton(lineThree);
-            addButtonComponent(lineThree, textDisplayingComponentPixelPadding, 7, 0, 6, frame);
+            addButtonComponent(lineThree, textDisplayingComponentPixelPadding, 6, 0, 0, frame);
     }
     
     // END: UNUSABLE GRIDBAGLAYOUT COMPONENTS
@@ -266,19 +266,19 @@ public class ExpositionBox extends CommonGUIMethods
     public void usableButtonsComponents()
     {
         mainMenu = usableButton(mainMenu, "Main Menu", font);
-            addButtonComponent(mainMenu, usableButtonComponentPixelPadding, 9, 0, 1, frame);
+            addButtonComponent(mainMenu, usableButtonComponentPixelPadding, 7, 0, 1, frame);
 
         settings = usableButton(settings, "Settings", font);
-            addButtonComponent(settings, usableButtonComponentPixelPadding, 9, 1, 1, frame);
+            addButtonComponent(settings, usableButtonComponentPixelPadding, 7, 1, 1, frame);
 
         altNav = usableButton(altNav, "Alt Nav", font);
-            addButtonComponent(altNav, usableButtonComponentPixelPadding, 9, 2, 1, frame);
+            addButtonComponent(altNav, usableButtonComponentPixelPadding, 7, 2, 1, frame);
         
         backward = usableButton(backward, "Backward", font);
-            addButtonComponent(backward, usableButtonComponentPixelPadding, 9, 3, 1, frame);
+            addButtonComponent(backward, usableButtonComponentPixelPadding, 7, 3, 1, frame);
                 
         forward = usableButton(forward, "Forward", font);
-            addButtonComponent(forward, usableButtonComponentPixelPadding, 9, 4, 1, frame);
+            addButtonComponent(forward, usableButtonComponentPixelPadding, 7, 4, 1, frame);
     }
     
     // END: GRIDBAGLAYOUT COMPONENT PLACEMENT
@@ -352,7 +352,7 @@ public class ExpositionBox extends CommonGUIMethods
             
             // if length of StringBuilder object and word to be added does not
             // exceed character limit then append word to StringBuilder 
-            if((fragment.toString().length() + element.length()) < characterLimit)
+            if((fragment.toString().length() + element.length()) <= characterLimit)
             {
                 fragment.append(element).append(" "); 
             }
@@ -384,23 +384,22 @@ public class ExpositionBox extends CommonGUIMethods
         StringBuilder sentence = new StringBuilder();
         
         // add fragments together such that each connectedFragment String is
-        // composed of 4 fragments (if there are enough fragments to do so)
-        for(int i = 0; i < fragmentArrayList.size(); i++)
+        // composed of 3 fragments (if there are enough fragments to do so)
+        for(int i = 1; i < fragmentArrayList.size() + 1; i++)
         {
-            // frag no char size ??
-            
-            // completed fragments occur when i is divisible by variable value 
-            if(i != 0 && (i % fragmentsNeededForConnectedFragement == 0))
+            // completed fragments occur when there is no remainder
+            // Note: i is 1 since it is easier to perform mod calculation on multiple of 3 
+            if((i % fragmentsNeededForConnectedFragement == 0))
             {
                 // remember to add sentence fragement befor adding all of the
                 // fragements connected so far to connectedFragments 
-                sentence.append(fragmentArrayList.get(i));
+                sentence.append(fragmentArrayList.get(i-1));
                     connectedFragments.add(sentence.toString());
                         sentence = new StringBuilder();
             }
             else
             {
-                sentence.append(fragmentArrayList.get(i));
+                sentence.append(fragmentArrayList.get(i-1));
             }
         }    
 
@@ -440,7 +439,7 @@ public class ExpositionBox extends CommonGUIMethods
                 }
                 
                 // turn small fragments into larger fragments that can be seen
-                // in 4 lines of text that can hold 64 characters long each 
+                // in 3 lines of text that caps at character limit 
                 for(String result : connectSentenceFragments(sentenceFragments))
                 {
                     namesAndLines.add(result);
@@ -560,7 +559,9 @@ public class ExpositionBox extends CommonGUIMethods
         
         builder.append(" / ").append(totalLines);
         
-        currentAndFinalLines.setText(builder.toString());
+        String result = String.format("%10s", builder.toString());
+        
+        currentAndFinalLines.setText(result);
     }
     
     public void incrementCurrentLineNoNames()
@@ -603,13 +604,6 @@ public class ExpositionBox extends CommonGUIMethods
         }
     }
     
-    // Note: value after %- MUST be the same as characterLimit value 
-    public String formatExpositionText(String text)
-    {
-        String result = String.format("%-70s", text);
-            return result;
-    }
-    
     // set sentence fragments as button text for all buttons provided 
     public void setLines(String connectedFragment, JButton lineOne, JButton lineTwo, 
         JButton lineThree, boolean choice)
@@ -632,13 +626,13 @@ public class ExpositionBox extends CommonGUIMethods
             switch(i)
             {
                 case 0:
-                    lineOne.setText(formatExpositionText(cleanedArrayList.get(i)));
+                    lineOne.setText(cleanedArrayList.get(i));
                         break;
                 case 1:
-                    lineTwo.setText(formatExpositionText(cleanedArrayList.get(i)));
+                    lineTwo.setText(cleanedArrayList.get(i));
                         break;
                 case 2:
-                    lineThree.setText(formatExpositionText(cleanedArrayList.get(i)));
+                    lineThree.setText(cleanedArrayList.get(i));
                         break;
             }
         }
@@ -811,7 +805,7 @@ public class ExpositionBox extends CommonGUIMethods
     // START: HANDLERS AND ACTION LISTENERS
     /*******************************************************************************/
     
-    // Note: use to SKIP text insanely fast using mouse wheel 
+    // Note: use to SKIP forward text insanely fast using mouse wheel 
     // listener for frame mouse wheel when alternative navigation is active 
     private class AltNavMouseWheel extends MouseAdapter
     {
@@ -821,8 +815,8 @@ public class ExpositionBox extends CommonGUIMethods
             // enter only if altNav button movement scheme is considered active 
             if(altNavState)
             {
-                // move up else move down
-                if(e.getWheelRotation() < 0)
+                // move forward through text regardless of (-1, 0, 1) rotation 
+                if(e.getWheelRotation() <= 1)
                 {
                     // Note: since mouse wheel moves too fast, do not account
                     //       for window transfer/exit via mouse wheel movement 
@@ -832,12 +826,6 @@ public class ExpositionBox extends CommonGUIMethods
                             forward.doClick();
                                 forward.setEnabled(false);
                     }
-                }
-                else
-                {
-                    backward.setEnabled(true);
-                        backward.doClick();
-                            backward.setEnabled(false);
                 }
             }
        }
@@ -1047,8 +1035,8 @@ public class ExpositionBox extends CommonGUIMethods
         // set frame layou signifying component positioning style 
         frame.setLayout(new GridBagLayout());
         
-        // set color for panel by decoding string of hexadecimal color 
-        frame.getContentPane().setBackground(Color.decode("#4d5461"));
+        // set color for frame background
+        frame.getContentPane().setBackground(Color.BLACK);
 	
         // add components to frame 
         topRightComponents(location, eventEventLine);
