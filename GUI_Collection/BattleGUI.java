@@ -1,23 +1,11 @@
-package RunProject;
-
-/*
-    Battle concerns creating objects/methods relating to the concept of battle 
-    commonly found in various RPGs (Role Playing Games). Battles occur between
-    AT MOST two parties consisting of characters which may be under AI control
-    (low level AI script based on certain conditions) or under player control. 
-    A battle between two parties has a success state and a fail state with the
-    criteria for meeting each varying based on the type of battle initiated.
-*/
-
+package GUI_Collection;
 
 import Generic_Character.GenericCharacter;
-import Object_Factories.PlayerEntityFactory;
 import Move_Creation.StatusEffect;
 import Move_Creation.MoveCalculations;
 import Player_Entity.PlayerEntity;
 import Player_Entity.Party;
-import Object_Factories.MovesFactory;
-
+import Object_Factories_For_Testing.MovesFactory;
 
 import java.util.PriorityQueue;
 import java.security.SecureRandom;
@@ -39,9 +27,18 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.SwingConstants;
 import java.awt.Rectangle;
 
-public class BattleMenu 
+/*
+    Battle concerns creating objects/methods relating to the concept of battle 
+    commonly found in various RPGs (Role Playing Games). Battles occur between
+    AT MOST two parties consisting of characters which may be under AI control
+    (low level AI script based on certain conditions) or under player control. 
+    A battle between two parties has a success state and a fail state with the
+    criteria for meeting each varying based on the type of battle initiated.
+*/
+
+public class BattleGUI 
 {
-    // frame has access to methods available to BattleMenu and BattleMenu.Battle 
+    // frame has access to methods available to BattleGUI and BattleGUI.Battle 
     private static JFrame frame = new JFrame("Capstone RPG");
     
     // references to both parties in battle allow easy access to party members 
@@ -1553,15 +1550,15 @@ public class BattleMenu
         {
             character.getGeneralFeatures().setCurrentHealth(character.getGeneralFeatures().
                 getCurrentHealth() + (character.getGeneralFeatures().getCurrentHealth() * 
-                character.getStatusEffectContainer().sumOfEffects("Current Health")));
+                character.getStatusEffectContainer().sumOfStatusEffectEffects("Current Health")));
 
             character.getGeneralFeatures().setCurrentStamina(character.getGeneralFeatures().
                 getCurrentStamina() + (character.getGeneralFeatures().getCurrentStamina() * 
-                character.getStatusEffectContainer().sumOfEffects("Current Stamina")));
+                character.getStatusEffectContainer().sumOfStatusEffectEffects("Current Stamina")));
 
             character.getGeneralFeatures().setCurrentNano(character.getGeneralFeatures().
                 getCurrentNano() + (character.getGeneralFeatures().getCurrentNano() * 
-                character.getStatusEffectContainer().sumOfEffects("Current Nano")));
+                character.getStatusEffectContainer().sumOfStatusEffectEffects("Current Nano")));
     }
 
         public static void endOfTurnEffects(GenericCharacter character)
@@ -1836,7 +1833,7 @@ public class BattleMenu
                 // if character is not under player control then execute AI script 
                     // currentRound.peek().getAiScript().executeAiPattern() 
                 
-                BattleMenu.disableUsableButtons();
+                BattleGUI.disableUsableButtons();
                 
                 while(!turnComplete)
                 {
@@ -2269,9 +2266,9 @@ public class BattleMenu
         
         public Battle(PlayerEntity entity, Party opposingParty)
         {
-            BattleMenu.frame.setLayout(new GridBagLayout());
+            BattleGUI.frame.setLayout(new GridBagLayout());
             
-            standardBattle(entity.getParty(), opposingParty, BattleMenu.frame);
+            standardBattle(entity.getParty(), opposingParty, BattleGUI.frame);
         }
     }
 }
