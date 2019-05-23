@@ -488,10 +488,11 @@ public class TotalStats
     
     public Object[] getAllTotalAttributesWithNames()
     {
-        Object[] characterAttributes = {"Attack", getTotalAttack(), "Defense", 
-            getTotalDefense(), "Dexterity", getTotalDexterity(), "Critical", 
-            getTotalCritical(), "Accuracy", getTotalAccuracy(), "Nano Attack", 
-            getTotalNanoAttack(), "Nano Defense", getTotalNanoDefense()};
+        Object[] characterAttributes = {"Max Health", getTotalMaxHealth(), "Max Stamina", 
+            getTotalMaxStamina(), "Max Nano", getTotalMaxNano(), "Attack", getTotalAttack(), 
+            "Defense", getTotalDefense(), "Dexterity", getTotalDexterity(), "Critical", 
+            getTotalCritical(), "Accuracy", getTotalAccuracy(), "Nano Attack", getTotalNanoAttack(), 
+            "Nano Defense", getTotalNanoDefense()};
                 return characterAttributes;
     }
     
@@ -531,7 +532,6 @@ public class TotalStats
     public Object[][] getArrayContainingResistances()
     {
         Object[] arrayOfArrays [] = {
-            getAllTotalEnchantmentResistancesWithNames(),
             getAllTotalUniqueStatusEffectResistancesWithNames(),
             getAllTotalCurrentHealthStatusEffectResistancesWithNames(),
             getAllTotalAttributeStatusEffectResistancesWithNames(),
