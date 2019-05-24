@@ -1,79 +1,95 @@
 package Player_Entity;
 
 /*
-    PartyLocation concerns showing the current location of the party in the game.
+    FormerPartyMemberTracker concerns storing characters that were previously in 
+    the player party in a HashMap in order to keep track of their state. 
 */
 
-public class CurrentLocation 
+import Generic_Character.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.HashMap;
+
+public class FormerPartyMemberTracker 
 {
-    /* Hierarchy of location by importance
-        "Story Part" concerns a major part of story the party is in (like: "Underworld"))
-        "Central Hub" concerns central location pivotal to story part (like: City Colnera)
-        "Major Location" concerns very important place in central hub (like: Plaza Pontix)
-        "Minor Location" concerns semi-important place in major location (like: Factory)
-        "Intra Location" concerns specific location within minor location (like: Factory Hidden Room) */
-    private String storyPart, centralHub, majorLocation, minorLocation, intraLocation;
-    
-    public CurrentLocation()
+    private final HashMap<String, GenericCharacter> trackingFormerPartyMembers = new HashMap<>();
+
+    public FormerPartyMemberTracker()
     {
-        // empty constructor 
+        // empty constructor
     }
     
     
     
-    // START: SETTING AND GETTING MOVE LOCATIONS BY PLAYER LOCATIION
+    // START: ADDING/REMOVING CHARACTERS FROM HASHMAP 
     /*******************************************************************************/
 
-    public void setStoryPart(String storyPart)
+    public void addToCharacterStorage(GenericCharacter character)
     {
-        this.storyPart = storyPart;
+        if(character != null)
+        {
+            trackingFormerPartyMembers.put(character.getGeneralFeatures().getName(), character);
+        }
     }
     
-    public String getStoryPart()
+    public void addToCharacterStorage(ArrayList<GenericCharacter> characters)
     {
-        return storyPart;
+        for(GenericCharacter element : characters)
+        {
+            if(element != null)
+            {
+                trackingFormerPartyMembers.put(element.getGeneralFeatures().getName(), element);
+            }
+        }        
     }
     
-    public void setCentralHub(String centralHub)
+    // Note: iterator is used to remove an element while iterating over collection 
+    //       which is useful for avoiding a ConcurrentModificationException which
+    //       occurs if collection is altered while it is being looped through 
+    public GenericCharacter getAndRemoveCharacter(String characterName)
     {
-        this.centralHub = centralHub;
+        GenericCharacter character = null;
+        
+        if(characterName != null)
+        {
+            /* Note: Aside from importing iterator, iterator must be same type as  
+                     object that the iterator is iterating to function properly */
+            // iterator structure below must be the same (HashMap)
+            Iterator<HashMap.Entry<String, GenericCharacter>> it = 
+                trackingFormerPartyMembers.entrySet().iterator();
+            
+            // loop while there is still another element in collection 
+            while(it.hasNext())
+            {
+                // cast out object from iterator and store it in entry 
+                // Note: next() must be called to get next element in iteration
+                //       which allows remove() to be called successfully 
+                HashMap.Entry<String, GenericCharacter> entry = it.next();
+                
+                // if character exists in HashMap then get character and remove 
+                // it from HashMap
+                if(characterName.equals(entry.getKey()))
+                {
+                    character = entry.getValue();
+                        it.remove();
+                }
+            }
+        }
+        
+        return character;
     }
     
-    public String getCentralHub()
+    // Note: NOT A LEGIT METHOD SO REPLACE IT LATER 
+    public void printNamesOfStoredCharacters()
     {
-        return centralHub;
+        System.out.printf("%s\t",trackingFormerPartyMembers);
     }
     
-    public void setMajorLocation(String majorLocation)
+    public HashMap<String, GenericCharacter> getFormerPartyMembers()
     {
-        this.majorLocation = majorLocation;
+        return trackingFormerPartyMembers;
     }
     
-    public String getMajorLocation()
-    {
-        return majorLocation;
-    }
-    
-    public void setMinorLocation(String minorLocation)
-    {
-        this.minorLocation = minorLocation;
-    }
-    
-    public String getMinorLocation()
-    {
-        return minorLocation;
-    }
-    
-    public void setIntraLocation(String intraLocation)
-    {
-        this.intraLocation = intraLocation;
-    }
-    
-    public String getIntraLocation()
-    {
-        return intraLocation;
-    }
-    
-    // END: SETTING AND GETTING MOVE LOCATIONS BY PLAYER LOCATIION
+    // END: ADDING/REMOVING CHARACTERS FROM HASHMAP 
     /*******************************************************************************/
 }

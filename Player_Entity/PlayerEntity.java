@@ -9,8 +9,6 @@ package Player_Entity;
 
 public class PlayerEntity 
 {
-    CurrentLocation currentLocation = new CurrentLocation();
-    
     FormerPartyMemberTracker formerPartyMemberTracker = new FormerPartyMemberTracker();
     
     PlayerChoices playerChoices = new PlayerChoices();
@@ -31,11 +29,6 @@ public class PlayerEntity
     // START: GETTING OBJECTS CREATED USING OTHER CLASSES 
     /*******************************************************************************/
 
-    public CurrentLocation getCurrentLocation()
-    {
-        return currentLocation;
-    }
-    
     public FormerPartyMemberTracker getFormerPartyMemberTracker()
     {
         return formerPartyMemberTracker;

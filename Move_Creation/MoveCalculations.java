@@ -27,9 +27,7 @@ public class MoveCalculations
     // meant to store output of move
     private double output;
     
-    private boolean cancelMove;
-    
-    
+
     
     // START: MOVE RELATED METHODS
     /*******************************************************************************/
@@ -61,16 +59,6 @@ public class MoveCalculations
     public double getOutput()
     {
         return output;
-    }
-    
-    public void cancelMove(boolean cancelMove)
-    {
-        this.cancelMove = cancelMove;
-    }
-    
-    public boolean cancelMove()
-    {
-        return cancelMove;
     }
     
     // END: MOVE RELATED METHODS
