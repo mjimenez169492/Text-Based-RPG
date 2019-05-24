@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="11"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group>
+            <file>file:/C:/Users/Miguel/Documents/NetBeansProjects/Capstone_RPG/src/Player_Entity/Inventory.java</file>
+            <file>file:/C:/Users/Miguel/Documents/NetBeansProjects/Capstone_RPG/src/Generic_Character/Moveset.java</file>
+            <file>file:/C:/Users/Miguel/Documents/NetBeansProjects/Capstone_RPG/src/Generic_Character/Stats.java</file>
+            <file>file:/C:/Users/Miguel/Documents/NetBeansProjects/Capstone_RPG/src/Commonly_Used_Methods/StaticMethods.java</file>
+            <file>file:/C:/Users/Miguel/Documents/NetBeansProjects/Capstone_RPG/src/Generic_Object/Item.java</file>
+            <file>file:/C:/Users/Miguel/Documents/NetBeansProjects/Capstone_RPG/src/Move_Creation/Moves.java</file>
+            <file>file:/C:/Users/Miguel/Documents/NetBeansProjects/Capstone_RPG/src/GUI_Collection/SubmenuInventory.java</file>
+            <file>file:/C:/Users/Miguel/Documents/NetBeansProjects/Capstone_RPG/src/Generic_Character/MoveImmunity.java</file>
+            <file>file:/C:/Users/Miguel/Documents/NetBeansProjects/Capstone_RPG/src/GUI_Collection/BattleResults.java</file>
+            <file>file:/C:/Users/Miguel/Documents/NetBeansProjects/Capstone_RPG/src/Object_Factories_For_Testing/PlayerEntityFactory.java</file>
+            <file>file:/C:/Users/Miguel/Documents/NetBeansProjects/Capstone_RPG/src/Generic_Object/GenericObject.java</file>
+            <file>file:/C:/Users/Miguel/Documents/NetBeansProjects/Capstone_RPG/src/Generic_Character/TotalStats.java</file>
+            <file>file:/C:/Users/Miguel/Documents/NetBeansProjects/Capstone_RPG/src/Move_Creation/MoveCalculations.java</file>
+            <file>file:/C:/Users/Miguel/Documents/NetBeansProjects/Capstone_RPG/src/Generic_Character/StatusEffectContainer.java</file>
+            <file>file:/C:/Users/Miguel/Documents/NetBeansProjects/Capstone_RPG/src/Player_Entity/PlayerEntity.java</file>
+            <file>file:/C:/Users/Miguel/Documents/NetBeansProjects/Capstone_RPG/src/Player_Entity/PartyWallet.java</file>
+            <file>file:/C:/Users/Miguel/Documents/NetBeansProjects/Capstone_RPG/src/Object_Factories_For_Testing/GenericCharacterFactory.java</file>
+            <file>file:/C:/Users/Miguel/Documents/NetBeansProjects/Capstone_RPG/src/GUI_Collection/Battle.java</file>
+            <file>file:/C:/Users/Miguel/Documents/NetBeansProjects/Capstone_RPG/src/Player_Entity/PlayerChoices.java</file>
+            <file>file:/C:/Users/Miguel/Documents/NetBeansProjects/Capstone_RPG/src/Generic_Character/OppositionMethods.java</file>
+            <file>file:/C:/Users/Miguel/Documents/NetBeansProjects/Capstone_RPG/src/Generic_Character/GeneralFeatures.java</file>
+            <file>file:/C:/Users/Miguel/Documents/NetBeansProjects/Capstone_RPG/src/Generic_Object/Accessory.java</file>
+            <file>file:/C:/Users/Miguel/Documents/NetBeansProjects/Capstone_RPG/src/GUI_Collection/SubmenuEquipment.java</file>
+            <file>file:/C:/Users/Miguel/Documents/NetBeansProjects/Capstone_RPG/src/Generic_Object/Core.java</file>
+            <file>file:/C:/Users/Miguel/Documents/NetBeansProjects/Capstone_RPG/src/Generic_Object/Armor.java</file>
+            <file>file:/C:/Users/Miguel/Documents/NetBeansProjects/Capstone_RPG/src/Player_Entity/FormerPartyMemberTracker.java</file>
+            <file>file:/C:/Users/Miguel/Documents/NetBeansProjects/Capstone_RPG/src/Demo/Capstone_RPG.java</file>
+            <file>file:/C:/Users/Miguel/Documents/NetBeansProjects/Capstone_RPG/src/Player_Entity/Party.java</file>
+            <file>file:/C:/Users/Miguel/Documents/NetBeansProjects/Capstone_RPG/src/GUI_Collection/MainMenu.java</file>
+            <file>file:/C:/Users/Miguel/Documents/NetBeansProjects/Capstone_RPG/src/Generic_Character/EquippableOutfits.java</file>
+            <file>file:/C:/Users/Miguel/Documents/NetBeansProjects/Capstone_RPG/src/Generic_Object/Weapon.java</file>
+            <file>file:/C:/Users/Miguel/Documents/NetBeansProjects/Capstone_RPG/src/Move_Creation/StatusEffect.java</file>
+            <file>file:/C:/Users/Miguel/Documents/NetBeansProjects/Capstone_RPG/src/Generic_Character/GenericCharacter.java</file>
+        </group>
+    </open-files>
+</project-private>
