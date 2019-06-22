@@ -1,84 +1,31 @@
+/*
+    StaticMethods contains static methods commonly used by methods in other 
+    classes within this project. 
+*/
+
 package Commonly_Used_Methods;
 
 import Move_Creation.StatusEffect;
 
 public class StaticMethods 
 {    
-    // START: METHODS COMMONLY USED
+    // START: COMMONLY USED METHODS
     /*******************************************************************************/	
     
-    // prepares a String for usage in Enum related methods (see valueOf())
-    public static String stringToEnum(String argument)
+    // prepares string for conversion into an Enum constant 
+    public static String prepareStringForEnumConversion(String argument)
     {
         // make String uppercase and replace all whitespaces and non-visible 
-        // characters with underscores ("A dog" -> "A_DOG")
-        return argument = argument.replaceAll("\\s","_").toUpperCase();
+        // characters with underscores (Ex: "A dog" -> "A_DOG")
+        return argument.replaceAll("\\s", "_").toUpperCase();
     } 
     
-    public static int getNumberOfNonNullElements(Object[] array)
-    {
-        int counter = 0;
-        
-        for(Object element : array)
-        {
-            if(element != null)
-            {
-                counter++;
-            }
-        }
-        
-        return counter;
-    }
-    
-    // CANDIDATE FOR BINARY SEARCH IF ENUMS WERE SORTED...
-    public static boolean stringValid(String[] enumClassValuesAsStrings, String argument)
-    {   
-        boolean argumentExists = false;
-        
-        for(String element : enumClassValuesAsStrings)
-        {  
-            if(element.equals(argument))
-            {
-                argumentExists = true;
-            }
-        }
-        
-        return argumentExists;
-    }
-    
-    // CANDIDATE FOR BINARY SEARCH IF ENUMS WERE SORTED...
-    public static String getString(String[] enumClassValuesAsStrings, String argument)
-    {
-        for(String element : enumClassValuesAsStrings)
-        {  
-            if(element.equals(argument))
-            {
-                argument = element;
-            }
-        }
-        
-        return argument;
-    }
-    
-    public static boolean sameStatusEffectName(StatusEffect statusOne, StatusEffect statusTwo)
-    {
-        boolean result = false;
-        
-        if(StaticMethods.getStatusEffectEnum(statusOne.getName()) == 
-            StaticMethods.getStatusEffectEnum(statusTwo.getName()))
-        {
-            result = true;
-        }
-        
-        return result;
-    }
-    
+    // returns true if strings representing status effect names are identical
     public static boolean sameStatusEffectName(String statusName, StatusEffect statusTwo)
     {
         boolean result = false;
         
-        if(StaticMethods.getStatusEffectEnum(statusName) == StaticMethods.
-            getStatusEffectEnum(statusTwo.getName()))
+        if(StaticMethods.getStatusEffectEnum(statusName) == StaticMethods.getStatusEffectEnum(statusTwo.getName()))
         {
             result = true;
         }
@@ -86,7 +33,7 @@ public class StaticMethods
         return result;
     }
     
-    // END: METHODS COMMONLY USED
+    // END: COMMONLY USED METHODS
     /*******************************************************************************/	
 
 
@@ -94,34 +41,36 @@ public class StaticMethods
     // START: ATTRIBUTES ENUM CLASS
     /*******************************************************************************/	
     
+    // enum class containing enums representing attributes tied to a GenericCharacter object 
     public static enum Attributes
     {
         MAX_HEALTH("Max Health"), MAX_STAMINA("Max Stamina"), MAX_NANO("Max Nano"), 
         ATTACK("Attack"), DEFENSE("Defense"), DEXTERITY("Dexterity"), CRITICAL("Critical"), 
-        ACCURACY("Accuracy"), NANO_ATTACK("Nano Attack"), NANO_DEFENSE("Nano Defense"), 
-        LUCK("Luck");
+        ACCURACY("Accuracy"), NANO_ATTACK("Nano Attack"), NANO_DEFENSE("Nano Defense"), LUCK("Luck");
         
-        private String attributes;
+        private String attribute;
         
-        Attributes(String attributes)
+        Attributes(String attribute)
         {
-            this.attributes = attributes;
+            this.attribute = attribute;
         }
         
         public String getEnumAsString()
         {
-            return attributes;
+            return attribute;
         }
     }
     
+    // returns string tied to Attributes enum constant 
     public static String getAttributeString(String argument) 
     {
-        return Attributes.valueOf(stringToEnum(argument)).getEnumAsString();
+        return Attributes.valueOf(prepareStringForEnumConversion(argument)).getEnumAsString();
     }
     
+    // returns Attributes enum constant associated with the string supplied
     public static Attributes getAttributeEnum(String argument) 
     {
-        return Attributes.valueOf(stringToEnum(argument));
+        return Attributes.valueOf(prepareStringForEnumConversion(argument));
     }
     
     // END: ATTRIBUTES ENUM CLASS
@@ -132,10 +81,11 @@ public class StaticMethods
     // START: ENCHANTMENTS ENUM CLASS
     /*******************************************************************************/	
     
+    // enum class containing enums representing enchantments that can damage GenericCharacter objects 
     public static enum Enchantments
     {
-        FIRE("Fire"), WATER("Water"), ICE("Ice"), ELECTRICITY("Electricity"), 
-        POISON("Poison"), SONIC("Sonic"), PLASMA("Plasma"), WIND("Wind"), NONE("None");
+        NONE("None"), FIRE("Fire"), WATER("Water"), ICE("Ice"), ELECTRICITY("Electricity"), 
+        POISON("Poison"), SONIC("Sonic"), PLASMA("Plasma"), WIND("Wind"); 
         
         private String enchantment;
         
@@ -150,54 +100,19 @@ public class StaticMethods
         }
     }
     
+    // returns string tied to Enchantments enum constant 
     public static String getEnchantmentString(String argument) 
     {
-        return Enchantments.valueOf(stringToEnum(argument)).getEnumAsString();
+        return Enchantments.valueOf(prepareStringForEnumConversion(argument)).getEnumAsString();
     }
     
+    // returns Enchantments enum constant associated with the string supplied
     public static Enchantments getEnchantmentEnum(String argument) 
     {
-        return Enchantments.valueOf(stringToEnum(argument));
+        return Enchantments.valueOf(prepareStringForEnumConversion(argument));
     }
     
     // END: ENCHANTMENTS ENUM CLASS
-    /*******************************************************************************/	
-
-
-    
-    // START: UNIQUE STATUS EFFECTS ENUM CLASS
-    /*******************************************************************************/	
-    
-    public static enum UniqueStatusEffects
-    {
-        DRY("Dry"), WET("Wet"), COLD("Cold"), CONDUCTIVE("Conductive"), SICKNESS("Sickness"), 
-        HYPERSENSITIVE("Hypersensistive"), COATED("Coated"), LIGHTWEIGHT("Lightweight"), 
-        IRRADIATED("Irradiated");
-        
-        private String uniqueStatusEffect;
-        
-        UniqueStatusEffects(String uniqueStatusEffect)
-        {
-            this.uniqueStatusEffect = uniqueStatusEffect;
-        }
-        
-        public String getEnumAsString()
-        {
-            return uniqueStatusEffect;
-        }
-    }
-    
-    public static String getUniqueStatusEffectString(String argument) 
-    {
-        return UniqueStatusEffects.valueOf(stringToEnum(argument)).getEnumAsString();
-    }
-    
-    public static UniqueStatusEffects getUniqueStatusEffectEnum(String argument) 
-    {
-        return UniqueStatusEffects.valueOf(stringToEnum(argument));
-    }
-    
-    // END: UNIQUE STATUS EFFECTS ENUM CLASS
     /*******************************************************************************/	
 
     
@@ -207,9 +122,10 @@ public class StaticMethods
     
     // CURRENT HEALTH STATUS EFFECTS
     
+    // enum class containing enums representing status effects targeting current health 
     public static enum CurrentHealthStatusEffects
     {
-        ABLAZE("Ablaze"), BLEED("Bleed"), TOXIC("Toxic"); 
+        ABLAZE("Ablaze"), BLEED("Bleed"), POISON("Poison"); 
         
         private String currentHealthStatusEffect;
         
@@ -224,14 +140,16 @@ public class StaticMethods
         }
     }
     
+    // returns string tied to CurrentHealthStatusEffects enum constant 
     public static String getCurrentHealthStatusEffectString(String argument) 
     {
-        return CurrentHealthStatusEffects.valueOf(stringToEnum(argument)).getEnumAsString();
+        return CurrentHealthStatusEffects.valueOf(prepareStringForEnumConversion(argument)).getEnumAsString();
     }
     
+    // returns CurrentHealthStatusEffects enum constant associated with the string supplied
     public static CurrentHealthStatusEffects getCurrentHealthStatusEffectEnum(String argument) 
     {
-        return CurrentHealthStatusEffects.valueOf(stringToEnum(argument));
+        return CurrentHealthStatusEffects.valueOf(prepareStringForEnumConversion(argument));
     }
     
     // CURRENT HEALTH STATUS EFFECTS
@@ -239,6 +157,7 @@ public class StaticMethods
 
     // ATTRIBUTE STATUS EFFECTS 
     
+    // enum class containing enums representing status effects targeting attributes 
     public static enum AttributeStatusEffects
     {
         ATTACK_DOWN("Attack Down"), DEFENSE_DOWN("Defense Down"), SHUTDOWN("Shutdown"), 
@@ -259,14 +178,16 @@ public class StaticMethods
         }
     }
 
+    // returns string tied to AttributeStatusEffects enum constant 
     public static String getAttributeStatusEffectString(String argument) 
     {
-        return AttributeStatusEffects.valueOf(stringToEnum(argument)).getEnumAsString();
+        return AttributeStatusEffects.valueOf(prepareStringForEnumConversion(argument)).getEnumAsString();
     }
     
+    // returns AttributeStatusEffects enum constant associated with the string supplied
     public static AttributeStatusEffects getAttributeStatusEffectEnum(String argument) 
     {
-        return AttributeStatusEffects.valueOf(stringToEnum(argument));
+        return AttributeStatusEffects.valueOf(prepareStringForEnumConversion(argument));
     }
 
     // ATTRIBUTE STATUS EFFECTS 
@@ -274,6 +195,7 @@ public class StaticMethods
 
     // BEHAVIOR STATUS EFFECTS 
     
+    // enum class containing enums representing status effects targeting character behavior 
     public static enum BehaviorStatusEffects
     {
         CONFUSED("Confused"), ENAMORED("Enamored"), BERSERK("Berserk");
@@ -291,21 +213,24 @@ public class StaticMethods
         }
     }
     
+    // returns string tied to BehaviorStatusEffects enum constant 
     public static String getBehaviorStatusEffectString(String argument) 
     {
-        return BehaviorStatusEffects.valueOf(stringToEnum(argument)).getEnumAsString();
+        return BehaviorStatusEffects.valueOf(prepareStringForEnumConversion(argument)).getEnumAsString();
     }
     
+    // returns BehaviorStatusEffects enum constant associated with the string supplied
     public static BehaviorStatusEffects getBehaviorStatusEffectEnum(String argument) 
     {
-        return BehaviorStatusEffects.valueOf(stringToEnum(argument));
+        return BehaviorStatusEffects.valueOf(prepareStringForEnumConversion(argument));
     }
     
+    // returns an array of strings corresponding to BehaviorStatusEffects enum constants 
     public static String[] behaviorStatusEffectValueStrings()
     {
         String[] array = new String[BehaviorStatusEffects.values().length];
         
-        for(int i = 0; i < BehaviorStatusEffects.values().length; i++)
+        for(int i = 0; i < array.length; i++)
         {
             array[i] = BehaviorStatusEffects.values()[i].getEnumAsString();
         }
@@ -318,6 +243,7 @@ public class StaticMethods
     
     // TURN BEHAVIOR STATUS EFFECTS 
 
+    // enum class containing enums representing status effects targeting character turn behavior 
     public static enum TurnBehaviorStatusEffects
     {
         FLINCHED("Flinched"), STUNNED("Stunned"), SCARED("Scared"), BOUND("Bound"), 
@@ -337,21 +263,24 @@ public class StaticMethods
         }
     }
 
+    // returns string tied to TurnBehaviorStatusEffects enum constant 
     public static String getTurnBehaviorStatusEffectString(String argument) 
     {
-        return TurnBehaviorStatusEffects.valueOf(stringToEnum(argument)).getEnumAsString();
+        return TurnBehaviorStatusEffects.valueOf(prepareStringForEnumConversion(argument)).getEnumAsString();
     }
     
+    // returns TurnBehaviorStatusEffects enum constant associated with the string supplied
     public static TurnBehaviorStatusEffects getTurnBehaviorStatusEffectEnum(String argument) 
     {
-        return TurnBehaviorStatusEffects.valueOf(stringToEnum(argument));
+        return TurnBehaviorStatusEffects.valueOf(prepareStringForEnumConversion(argument));
     }
     
+    // returns an array of strings corresponding to TurnBehaviorStatusEffects enum constants 
     public static String[] turnBehaviorStatusEffectValueStrings()
     {
         String[] array = new String[TurnBehaviorStatusEffects.values().length];
         
-        for(int i = 0; i < TurnBehaviorStatusEffects.values().length; i++)
+        for(int i = 0; i < array.length; i++)
         {
             array[i] = TurnBehaviorStatusEffects.values()[i].getEnumAsString();
         }
@@ -362,47 +291,16 @@ public class StaticMethods
     // TURN BEHAVIOR STATUS EFFECTS 
 
     
-    // NULLIFY STATUS EFFECTS 
-    
-    public static enum NullifyStatusEffects
-    {
-        NULLIFY_STATUS_EFFECTS("Nullify Status Effects");
-        
-        private String nullifyStatusEffects;
-        
-        NullifyStatusEffects(String nullifyStatusEffects)
-        {
-            this.nullifyStatusEffects = nullifyStatusEffects;
-        }
-        
-        public String getEnumAsString()
-        {
-            return nullifyStatusEffects;
-        }
-    }
-    
-    public static String getNullifyStatusEffectString(String argument) 
-    {
-        return NullifyStatusEffects.valueOf(stringToEnum(argument)).getEnumAsString();
-    }
-    
-    public static NullifyStatusEffects getNullifyStatusEffectEnum(String argument) 
-    {
-        return NullifyStatusEffects.valueOf(stringToEnum(argument));
-    }
-    
-    // NULLIFY STATUS EFFECTS 
-    
-    
     // ALL STATUS EFFECTS 
     
+    // enum class containing enums representing all status effects that can be inflicted 
     public static enum AllStatusEffects
     {
         // no status effect selected 
         NONE("None"),
         
         // unique
-        ABLAZE("Ablaze"), BLEED("Bleed"), TOXIC("Toxic"),
+        ABLAZE("Ablaze"), BLEED("Bleed"), POISON("Poison"),
         
         // attribute
         ATTACK_DOWN("Attack Down"), DEFENSE_DOWN("Defense Down"), SHUTDOWN("Shutdown"), 
@@ -417,10 +315,7 @@ public class StaticMethods
         FLINCHED("Flinched"), STUNNED("Stunned"), SCARED("Scared"), BOUND("Bound"), 
         SLEEP("Sleep"), TRANCED("Tranced"), SHOCKED("Shocked"), SLOWED("Slowed"), 
         STOPPED("Stopped"),
-		
-        // nullify
-        NULLIFY_STATUS_EFFECTS("Nullify Status Effects"),
-        
+	
         // stamina style move omission
         OMIT_UNIVERSAL_STAMINA_MOVES("Omit Universal Stamina Moves"), 
         OMIT_HAND_TO_HAND_STAMINA_MOVES("Omit Hand To Hand Stamina Moves"), 
@@ -485,14 +380,16 @@ public class StaticMethods
         }
     }
     
+    // returns string tied to AllStatusEffects enum constant 
     public static String getStatusEffectString(String argument)
     {
-        return AllStatusEffects.valueOf(StaticMethods.stringToEnum(argument)).getEnumAsString();
+        return AllStatusEffects.valueOf(StaticMethods.prepareStringForEnumConversion(argument)).getEnumAsString();
     }
     
+    // returns AllStatusEffects enum constant associated with the string supplied
     public static AllStatusEffects getStatusEffectEnum(String argument)
     {
-        return AllStatusEffects.valueOf(StaticMethods.stringToEnum(argument));
+        return AllStatusEffects.valueOf(StaticMethods.prepareStringForEnumConversion(argument));
     }
     
     // ALL STATUS EFFECTS 
@@ -505,119 +402,7 @@ public class StaticMethods
     // START: ALL STATS AND ARMOR RESISTANCES 
     /*******************************************************************************/	
     
-    public static enum AllStats
-    {
-        // no status effect selected 
-        NONE("None"),
-        
-        // attributes 
-        MAX_HEALTH("Max Health"), MAX_STAMINA("Max Stamina"), MAX_NANO("Max Nano"), 
-        ATTACK("Attack"), DEFENSE("Defense"), DEXTERITY("Dexterity"), CRITICAL("Critical"), 
-        ACCURACY("Accuracy"), NANO_ATTACK("Nano Attack"), NANO_DEFENSE("Nano Defense"), 
-        LUCK("Luck"),
-        
-        // current attributes
-        CURRENT_HEALTH("Current Health"), CURRENT_STAMINA("Current Stamina"), 
-        CURRENT_NANO("Current Nano"),
-        
-        // enchantments
-        FIRE("Fire"), WATER("Water"), ICE("Ice"), ELECTRICITY("Electricity"), 
-        POISON("Poison"), SONIC("Sonic"), PLASMA("Plasma"), WIND("Wind"),
-        
-        // unique
-        ABLAZE("Ablaze"), BLEED("Bleed"), TOXIC("Toxic"),
-        
-        // attribute
-        ATTACK_DOWN("Attack Down"), DEFENSE_DOWN("Defense Down"), SHUTDOWN("Shutdown"), 
-        DEXTERITY_DOWN("Dexterity Down"), CRITICAL_DOWN("Critical Down"), ACCURACY_DOWN
-        ("Accuracy Down"), BLIND("Blind"), NANO_ATTACK_DOWN("Nano Attack Down"), 
-        NANO_DEFENSE_DOWN("Nano Defense Down"),
-		
-        // behavior
-        CONFUSED("Confused"), ENAMORED("Enamored"), BERSERK("Berserk"),
-		
-        // turn behavior
-        FLINCHED("Flinched"), STUNNED("Stunned"), SCARED("Scared"), BOUND("Bound"), 
-        SLEEP("Sleep"), TRANCED("Tranced"), SHOCKED("Shocked"), SLOWED("Slowed"), 
-        STOPPED("Stopped"),
-		
-        // nullify
-        NULLIFY_STATUS_EFFECTS("Nullify Status Effects"),
-        
-        // stamina style move omission
-        OMIT_UNIVERSAL_STAMINA_MOVES("Omit Universal Stamina Moves"), 
-        OMIT_HAND_TO_HAND_STAMINA_MOVES("Omit Hand To Hand Stamina Moves"), 
-        OMIT_ONE_HANDED_STAMINA_MOVES("Omit One Handed Stamina Moves"), 
-        OMIT_TWO_HANDED_STAMINA_MOVES("Omit Two Handed Stamina Moves"), 
-        OMIT_DUAL_WIELDED_STAMINA_MOVES("Omit Dual Wielded Stamina Moves"), 
-        
-        // nano style move omission
-        OMIT_UNIVERSAL_NANO_MOVES("Omit Universal Nano Moves"), 
-        OMIT_HAND_TO_HAND_NANO_MOVES("Omit Hand To Hand Nano Moves"), 
-        OMIT_ONE_HANDED_NANO_MOVES("Omit One Handed Nano Moves"), 
-        OMIT_TWO_HANDED_NANO_MOVES("Omit Two Handed Nano Moves"), 
-        OMIT_DUAL_WIELDED_NANO_MOVES("Omit Dual Wielded Nano Moves"), 
-        
-        // special style move omission
-        OMIT_TECHNIQUES_MOVES("Omit Techniques Moves"), 
-        OMIT_OTHER_MOVES("Omit Other Moves"), 
-        
-        // stamina technique move omission
-        OMIT_UNIVERSAL_HAND_TO_HAND_STAMINA_MOVES("Omit Universal Hand To Hand Stamina Moves"), 
-        OMIT_CLOSE_QUARTERS_COMBAT_STAMINA_MOVES("Omit Close Quarters Combat Stamina Moves"), 
-        OMIT_UNIVERSAL_ONE_HANDED_STAMINA_MOVES("Omit Universal One Handed Stamina Moves"), 
-        OMIT_SWORD_STAMINA_MOVES("Omit Sword Stamina Moves"), 
-        OMIT_KNIFE_STAMINA_MOVES("Omit Knife Stamina Moves"), 
-        OMIT_OTHER_ONE_HANDED_STAMINA_MOVES("Omit Other One Handed Stamina Moves"), 
-        OMIT_UNIVERSAL_TWO_HANDED_STAMINA_MOVES("Omit Universal Two Handed Stamina Moves"), 
-        OMIT_GREAT_SWORD_STAMINA_MOVES("Omit Great Sword Stamina Moves"), 
-        OMIT_SPEAR_STAMINA_MOVES("Omit Spear Stamina Moves"), 
-        OMIT_OTHER_TWO_HANDED_STAMINA_MOVES("Omit Other Two Handed Stamina Moves"), 
-        OMIT_UNIVERSAL_DUAL_WIELDED_STAMINA_MOVES("Omit Universal Dual Wielded Stamina Moves"), 
-        OMIT_BLADES_STAMINA_MOVES("Omit Blades Stamina Moves"), 
-        OMIT_OTHER_DUAL_WIELDED_STAMINA_MOVES("Omit Other Dual Wielded Stamina Moves"), 
-
-        // nano technique move omission
-        OMIT_UNIVERSAL_HAND_TO_HAND_NANO_MOVES("Omit Universal Hand To Hand Nano Moves"), 
-        OMIT_CLOSE_QUARTERS_COMBAT_NANO_MOVES("Omit Close Quarters Combat Nano Moves"), 
-        OMIT_UNIVERSAL_ONE_HANDED_NANO_MOVES("Omit Universal One Handed Nano Moves"), 
-        OMIT_SWORD_NANO_MOVES("Omit Sword Nano Moves"), 
-        OMIT_KNIFE_NANO_MOVES("Omit Knife Nano Moves"), 
-        OMIT_OTHER_ONE_HANDED_NANO_MOVES("Omit Other One Handed Nano Moves"), 
-        OMIT_UNIVERSAL_TWO_HANDED_NANO_MOVES("Omit Universal Two Handed Nano Moves"), 
-        OMIT_GREAT_SWORD_NANO_MOVES("Omit Great Sword Nano Moves"), 
-        OMIT_SPEAR_NANO_MOVES("Omit Spear Nano Moves"), 
-        OTHER_TWO_HANDED_NANO_MOVES("Omit Other Two Handed Nano Moves"), 
-        OMIT_UNIVERSAL_DUAL_WIELDED_NANO_MOVES("Omit Universal Dual Wielded Nano Moves"), 
-        OMIT_BLADES_NANO_MOVES("Omit Blades Nano Moves"), 
-        OMIT_OTHER_DUAL_WIELDED_NANO_MOVES("Omit Other Dual Wielded Nano Moves"),
-
-        // special technique move omission
-        OMIT_GENERAL_PURPOSE_MOVES("Omit General Purpose Moves"); 
-        
-        private String allStats;
-        
-        AllStats(String allStats)
-        {
-            this.allStats = allStats;
-        }
-        
-        public String getEnumAsString()
-        {
-            return allStats;
-        }
-    }
-    
-    public static String getStatString(String argument)
-    {
-        return AllStats.valueOf(StaticMethods.stringToEnum(argument)).getEnumAsString();
-    }
-    
-    public static AllStats getStatEnum(String argument)
-    {
-        return AllStats.valueOf(StaticMethods.stringToEnum(argument));
-    }
-    
+    // enum class containing enums representing all resistances covered by armor pieces 
     public static enum ArmorResistances
     {
         // enchantments
@@ -639,10 +424,7 @@ public class StaticMethods
         // turn behavior
         FLINCHED("Flinched"), STUNNED("Stunned"), SCARED("Scared"), BOUND("Bound"), 
         SLEEP("Sleep"), TRANCED("Tranced"), SHOCKED("Shocked"), SLOWED("Slowed"), 
-        STOPPED("Stopped"),
-		
-        // nullify
-        NULLIFY_STATUS_EFFECTS("Nullify Status Effects");
+        STOPPED("Stopped");
 		
         private String armorResistances;
         
@@ -657,21 +439,23 @@ public class StaticMethods
         }
     }
     
+    // returns string tied to ArmorResistances enum constant 
     public static String getArmorResistanceString(String argument)
     {
-        return ArmorResistances.valueOf(StaticMethods.stringToEnum(argument)).getEnumAsString();
+        return ArmorResistances.valueOf(StaticMethods.prepareStringForEnumConversion(argument)).getEnumAsString();
     }
     
+    // returns ArmorResistances enum constant associated with the string supplied
     public static ArmorResistances getArmorResistanceEnum(String argument)
     {
-        return ArmorResistances.valueOf(StaticMethods.stringToEnum(argument));
+        return ArmorResistances.valueOf(StaticMethods.prepareStringForEnumConversion(argument));
     }
     
     // END: ALL STATS AND ARMOR RESISTANCES 
     /*******************************************************************************/	
 
     
-
+    
     // START: COMPARATOR LOGIC FOR ORDERING STRINGS
     /*******************************************************************************/
 
